@@ -90,7 +90,7 @@ function Encounter:Constructor()
 
     self.Panel3.Label:SetText('PC查看视频及站位请按<Ctrl+C>复制地址到浏览器打开')
 
-    self:Open(ns.THE_CRUSADES_TRIAL_ID)
+    self:Open(ns.ICECROWN_CITADEL_ID)
 
     self:SetScript('OnShow', self.OnShow)
 

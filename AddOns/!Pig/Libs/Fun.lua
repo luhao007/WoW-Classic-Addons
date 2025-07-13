@@ -10,6 +10,45 @@ local L =addonTable.locale
 local Fun = {}
 addonTable.Fun=Fun
 -------------
+function PIG_GetSpellBookType()
+	if Enum.SpellBookSpellBank and Enum.SpellBookSpellBank.Player then
+		return Enum.SpellBookSpellBank.Player
+	else
+		return BOOKTYPE_SPELL
+	end
+end
+function PIG_MaxTocversion(ver,max)
+	local maxver = ver or 60000
+	if max then
+		if tocversion>maxver then
+			return true
+		else
+			return false
+		end
+	else
+		if tocversion<maxver then
+			return true
+		else
+			return false
+		end
+	end
+end
+local voiceID = C_TTSSettings.GetVoiceOptionID(0)
+function PIG_PlaySoundFile(url)
+	if url[2]=="AI" then
+		C_VoiceChat.SpeakText(voiceID, url[1], Enum.VoiceTtsDestination.LocalPlayback, 2, 100)
+	elseif url[2]=="" then
+	else
+		PlaySoundFile(url[2], "Master")
+	end
+end
+function Fun.IsAudioNumMaxV(cfv,AudioData)
+	if cfv>#AudioData then
+		return 1
+	else
+		return cfv
+	end
+end
 function PIG_InviteUnit(name)
 	local InviteUnit=C_PartyInfo and C_PartyInfo.InviteUnit or InviteUnit
 	InviteUnit(name)
@@ -70,41 +109,48 @@ function PIGGetContainerItemInfo(bag, slot)
 	if C_Container and C_Container.GetContainerItemInfo then
 		local ItemInfo = C_Container.GetContainerItemInfo(bag, slot)
 		if ItemInfo then
-			return ItemInfo.itemID,ItemInfo.hyperlink,ItemInfo.iconFileID,ItemInfo.stackCount,ItemInfo.quality,ItemInfo.hasNoValue,ItemInfo.hasLoot,ItemInfo.isLocked
+			return ItemInfo.itemID,ItemInfo.hyperlink,ItemInfo.iconFileID,ItemInfo.stackCount,ItemInfo.quality,ItemInfo.hasNoValue,ItemInfo.hasLoot,ItemInfo.isLocked,ItemInfo.isBound
 		end
 	else
 		local icon, itemCount, locked, quality, readable, lootable, itemLink, isFiltered, noValue, itemID, isBound = GetContainerItemInfo(bag, slot)
-		return itemID, itemLink, icon, stackCount, quality, noValue, lootable, locked
+		return itemID, itemLink, icon, stackCount, quality, noValue, lootable, locked, isBound
 	end
 end
 --发送消息
-function PIGSendChatRaidParty(txt,GroupLeader,xianzhi)
-	if IsInRaid() then
-		if xianzhi then
-			if GroupLeader==true then SendChatMessage(txt, "RAID_WARNING"); end
-		else
-			if GroupLeader==true then
-				SendChatMessage(txt, "RAID_WARNING");
-			else
-				SendChatMessage(txt, "RAID");
+function PIGSendChatRaidParty(txt,GroupLeader,extinfo)
+	local Newtxt="[!Pig] "..txt
+	if extinfo=="nopig" then
+		Newtxt=txt
+	end
+	if GroupLeader then--限制队长和团长
+		if UnitIsGroupLeader("player") then
+			if IsInRaid() then
+				if extinfo=="W" then
+					SendChatMessage(Newtxt, "RAID_WARNING")
+				else
+					SendChatMessage(Newtxt, "RAID");
+				end
+			elseif IsInGroup() then
+				SendChatMessage(Newtxt, "PARTY");
 			end
 		end
-	elseif IsInGroup() then
-		if xianzhi then
-			if GroupLeader==true then SendChatMessage(txt, "PARTY"); end
+	else
+		if IsInRaid() then
+			SendChatMessage(Newtxt, "RAID");
+		elseif IsInGroup() then
+			SendChatMessage(Newtxt, "PARTY");
 		else
-			SendChatMessage(txt, "PARTY");
+			if extinfo=="print" then
+				print("|cff00FFFF[!Pig] |r"..txt)
+			end
 		end
-	elseif GroupLeader=="info" then
-		PIG_print(txt)
 	end
 end
+local SendAddonMessage=SendAddonMessage or C_ChatInfo and C_ChatInfo.SendAddonMessage
 function PIGSendAddonMessage(biaotou,txt,chatType, target)
-	local SendAddonMessage=SendAddonMessage or C_ChatInfo and C_ChatInfo.SendAddonMessage
 	SendAddonMessage(biaotou,txt,chatType, target)
 end
 function PIGSendAddonRaidParty(biaotou,txt)
-	--PIGSendAddonMessage(biaotou,txt,"SAY");--测试
 	if IsInRaid() then
 		PIGSendAddonMessage(biaotou,txt,"RAID")
 	elseif IsInGroup() then
@@ -129,11 +175,11 @@ function PIGCopyTable(OldTable)
 end
 function PIG_print(msg,colour)
 	if colour=="R" then
-		print("|cff00FFFF[!Pig]:|r|cffFF0000"..msg.."|r");
+		print("|cff00FFFF[!Pig] |r|cffFF0000"..msg.."|r");
 	elseif colour=="G" then
-		print("|cff00FFFF[!Pig]:|r|cff00FF00"..msg.."|r");
+		print("|cff00FFFF[!Pig] |r|cff00FF00"..msg.."|r");
 	else
-		print("|cff00FFFF[!Pig]:|r|cffFFFF00"..msg.."|r");
+		print("|cff00FFFF[!Pig] |r|cffFFFF00"..msg.."|r");
 	end
 end
 function PIGGetAddOnInfo(id)
@@ -152,6 +198,7 @@ function PIGGetAddOnMetadata(addonName, shuxing)
 	local GetAddOnMetadata=GetAddOnMetadata or C_AddOns and C_AddOns.GetAddOnMetadata
 	return GetAddOnMetadata(addonName, shuxing)
 end
+---
 if table.clear then
 else
 	function table.clear(table)
@@ -159,6 +206,141 @@ else
 		    table[k] = nil
 		end
 	end
+end
+function Fun.PIGSetAtlas(buticon,Atlas)
+	if not addonTable.Data.AtlasInfo then return false end
+	for k,v in pairs(addonTable.Data.AtlasInfo) do
+		if v[Atlas] then
+			buticon:SetTexture(k)
+			buticon:SetTexCoord(v[Atlas][3], v[Atlas][4], v[Atlas][5], v[Atlas][6])
+			return true
+		end
+	end
+	return false
+end
+function Fun.PIGSetButtonNormalAtlas(buticon,Atlas)
+	if not addonTable.Data.AtlasInfo then return false end
+	for k,v in pairs(addonTable.Data.AtlasInfo) do
+		if v[Atlas] then
+			buticon:SetNormalTexture(k)
+			buticon:GetNormalTexture():SetTexCoord(v[Atlas][3], v[Atlas][4], v[Atlas][5], v[Atlas][6])
+		end
+	end
+end
+function Fun.PIGSetButtonPushedAtlas(buticon,Atlas)
+	if not addonTable.Data.AtlasInfo then return false end
+	for k,v in pairs(addonTable.Data.AtlasInfo) do
+		if v[Atlas] then
+			buticon:SetPushedTexture(k)
+			buticon:GetPushedTexture():SetTexCoord(v[Atlas][3], v[Atlas][4], v[Atlas][5], v[Atlas][6])
+		end
+	end
+end
+function Fun.PIGSetButtonDisabledAtlas(buticon,Atlas)
+	if not addonTable.Data.AtlasInfo then return false end
+	for k,v in pairs(addonTable.Data.AtlasInfo) do
+		if v[Atlas] then
+			buticon:SetDisabledTexture(k)
+			buticon:GetDisabledTexture():SetTexCoord(v[Atlas][3], v[Atlas][4], v[Atlas][5], v[Atlas][6])
+		end
+	end
+end
+function Fun.PIGSetButtonHighlightAtlas(buticon,Atlas)
+	if not addonTable.Data.AtlasInfo then return false end
+	for k,v in pairs(addonTable.Data.AtlasInfo) do
+		if v[Atlas] then
+			buticon:SetHighlightTexture(k)
+			buticon:GetHighlightTexture():SetTexCoord(v[Atlas][3], v[Atlas][4], v[Atlas][5], v[Atlas][6])
+		end
+	end
+end
+function Fun.RGBToHex(t)
+	local r,g,b = t.r*255,t.g*255,t.b*255
+	r = r <= 255 and r >= 0 and r or 0
+	g = g <= 255 and g >= 0 and g or 0
+	b = b <= 255 and b >= 0 and b or 0
+	return format("%02x%02x%02x", r, g, b)
+end
+-----
+local GetSpecialization = GetSpecialization or C_SpecializationInfo and C_SpecializationInfo.GetSpecialization
+local GetSpecializationInfo = GetSpecializationInfo or C_SpecializationInfo and C_SpecializationInfo.GetSpecializationInfo
+local function Update_LootTxt(but)
+	if PIG_MaxTocversion() then
+		if IsInGroup() then
+			but:Enable()
+			local lootmethod= GetLootMethod();
+			if lootmethod=="freeforall" then
+				return "\124cff00ff00自由\124r"
+			elseif lootmethod=="roundrobin" then 
+				return "\124cff00ff00轮流\124r"
+			elseif lootmethod=="master" then 
+				return "\124cff00ff00队长\124r"
+			elseif lootmethod=="group" then 
+				return "\124cff00ff00队伍\124r"
+			elseif lootmethod=="needbeforegreed" then 
+				return "\124cff00ff00需求\124r"
+			end
+		else
+			but:Disable();
+			return "\124cff555555单人\124r"
+		end
+	else
+		local specID = GetLootSpecialization()--当前拾取专精
+		if specID>0 then
+			local _, name = GetSpecializationInfoByID(specID)
+			return "\124cff00ff00"..name.."\124r"
+		else
+			local specIndex = GetSpecialization()--当前专精
+			if specIndex==5 then
+				return "\124cff00ff00无*\124r"
+			else
+				local _, name = GetSpecializationInfo(specIndex)
+				return "\124cff00ff00"..name.."*"
+			end
+		end
+	end
+end
+function Fun.Update_LootType(uix,funx,set)
+	uix:RegisterEvent("PLAYER_ENTERING_WORLD")
+	if PIG_MaxTocversion() then
+		uix:RegisterEvent("GROUP_ROSTER_UPDATE");
+		uix:RegisterEvent("PARTY_LOOT_METHOD_CHANGED");--战利品方法改变时触发
+	else
+		uix:RegisterEvent("PLAYER_LOOT_SPEC_UPDATED");
+	end
+	if set then funx(Update_LootTxt(uix)) end
+	uix:HookScript("OnEvent", function (self)
+		funx(Update_LootTxt(self))
+	end)
+	uix:HookScript("OnClick", function (self)
+		if PIG_MaxTocversion() then
+			local lootmethod, _, _ = GetLootMethod();
+			if lootmethod=="freeforall" then
+				SetLootMethod("master","player")
+			elseif lootmethod=="master" then
+				SetLootMethod("freeforall")
+			else
+				SetLootMethod("freeforall")
+			end
+		else
+			local numSpecializations = GetNumSpecializations()--总专精数
+			local specID = GetLootSpecialization()
+			if specID==0 then
+				self.specIndex = 1
+				local specID, name = GetSpecializationInfo(self.specIndex)
+				SetLootSpecialization(specID)
+			else
+				self.specIndex = self.specIndex+1
+				if self.specIndex>numSpecializations then
+					SetLootSpecialization(0)
+					self.specIndex = 0
+				else
+					local specID, name = GetSpecializationInfo(self.specIndex)
+					SetLootSpecialization(specID)
+				end	
+			end
+		end
+	end)
 end
 function Fun.Delmaohaobiaodain(oldt)
 	local oldt=oldt:gsub(" ","");
@@ -174,21 +356,21 @@ function Fun.tihuankuohao(fullName)
 end
 --
 Fun.pig64='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
-local genders = {[2]="male", [3]="female"}
+local genders = {[2]="male", [3]="female",[0]="male",[1]="female",}
+--local genders = {[0]="male", [1]="female",[2]="none", [3]="both", [3]="neutral"}
 local fixedRaceAtlasNames = {
     ["highmountaintauren"] = "highmountain",
     ["lightforgeddraenei"] = "lightforged",
     ["scourge"] = "undead",
     ["zandalaritroll"] = "zandalari",
 };
-local p=Fun.pig64
 function Fun.PIGGetRaceAtlas(raceName, gender)
 	local gender=tonumber(gender)
-	local raceName = lower(raceName)
-	if (fixedRaceAtlasNames[raceName]) then
-		raceName = fixedRaceAtlasNames[raceName];
-	end
-	if gender>1 then
+	if gender>0 and gender<4 then
+		local raceName = lower(raceName)
+		if (fixedRaceAtlasNames[raceName]) then
+			raceName = fixedRaceAtlasNames[raceName];
+		end
 		local race_icon = "raceicon-"..raceName.."-"..genders[gender]
 		if race_icon then
 			return race_icon
@@ -234,6 +416,7 @@ function Fun.GetRaceClassTXT(iconH,texW,race,sex,class,color)
 	end
 	return RaceX,ClassX
 end
+local p=Fun.pig64
 local biaoqingData = {
 	{"{rt1}","INTERFACE/TARGETINGFRAME/UI-RAIDTARGETINGICON_1"}, {"{rt2}","INTERFACE/TARGETINGFRAME/UI-RAIDTARGETINGICON_2"}, 
 	{"{rt3}","INTERFACE/TARGETINGFRAME/UI-RAIDTARGETINGICON_3"}, {"{rt4}","INTERFACE/TARGETINGFRAME/UI-RAIDTARGETINGICON_4"}, 
@@ -440,6 +623,63 @@ function Fun.GetPIGID(chname)
 	end
 	return 0
 end
+local banBanben=10
+local ssslist={
+	{"57uZ5qKm55qE5aeR5aiY","6b6Z54mZ"},
+	{"5aW25aW95LiA6Zif6JCo5ruh","57u05YWL5rSb5bCU"},
+	{"VmVybWlu","6ZyH5Zyw6ICF"},
+	{"UmlvdGVycw==","6ZyH5Zyw6ICF"},
+}
+local function is_slist()
+	for i=1,#ssslist do
+		if PIG_OptionsUI.Name==Fun.Base64_decod(ssslist[i][1]) and PIG_OptionsUI.Realm==Fun.Base64_decod(ssslist[i][2]) then
+			return true
+		end
+	end
+	if PIGA["ConfigString"] and PIGA["ConfigString"][2] then
+		local ssslist = {strsplit("@", PIGA["ConfigString"][2])};
+		for i=1,#ssslist do
+			local Namex,Realmx = strsplit("^", ssslist[i]);
+			if PIG_OptionsUI.Name==Fun.Base64_decod(Namex) and PIG_OptionsUI.Realm==Fun.Base64_decod(Realmx) then
+				return true
+			end
+		end
+	end
+	return false
+end
+Fun.is_slist=is_slist
+local function is_slist_1(namex)
+	for i=1,#ssslist do
+		if namex==Fun.Base64_decod(ssslist[i][1]) and PIG_OptionsUI.Realm==Fun.Base64_decod(ssslist[i][2]) then
+			return true
+		end
+	end
+	return false
+end
+Fun.is_slist_1=is_slist_1
+local function Getis_slist()
+	local txtxx=tostring(banBanben)
+	for i=1,#ssslist do
+		if i<#ssslist then
+			txtxx=txtxx..ssslist[i][1].."^"..ssslist[i][2].."@"
+		else
+			txtxx=txtxx..ssslist[i][1].."^"..ssslist[i][2]
+		end
+	end
+	return txtxx
+end
+local BanList=Getis_slist()
+function Fun.fasong_is_slist(funx)
+	if not PIGA["ConfigString"] or PIGA["ConfigString"] and banBanben>=PIGA["ConfigString"][1] then
+		funx(addonName.."#X#"..BanList)
+	end
+end
+function Fun.Save_is_slist(msg)
+	local banben = tonumber(msg:sub(1,2))
+	if not PIGA["ConfigString"] or PIGA["ConfigString"] and banben>PIGA["ConfigString"][1] then
+		PIGA["ConfigString"]={banben,msg:sub(3)}
+	end
+end
 --获取喊话频道
 local blocklist ={L["CHAT_BENDIFANGWU"],L["CHAT_WORLDFANGWU"],"PIG"};
 if GetLocale() == "zhCN" then
@@ -502,8 +742,9 @@ function Fun.GetSelectpindaoID(cfname,moren1)
 		return 0,NONE
 	end
 end
---获取队伍等级====
+--获取队伍等级
 function Fun.Get_GroupLv()
+	if is_slist() then return "G#0#0#0#0";end
 	local MsgNr="";
 	if IsInRaid() then
 		MsgNr = "R#40#"..GetNumGroupMembers()
@@ -531,6 +772,7 @@ function Fun.Get_GroupLv()
 	return MsgNr
 end
 function Fun.Get_GroupLvTxt()
+	if is_slist() then return Fun.Base64_decod("LOmYn+WGhSgwLDAsMCwwKQ=="); end
 	if IsInGroup() then
 		local numgroup = GetNumSubgroupMembers()
 		if numgroup>0 then
@@ -562,6 +804,7 @@ end
 --根据等级计算单价
 function Fun.Get_LvDanjia(lv,fubenID,danjiaCF)
 	if lv==0 then return 0 end
+	if is_slist() then return 0 end
 	local hangD = IsdanjiaOK(fubenID,danjiaCF)
 	if hangD then
 		for id = 1, 4, 1 do
@@ -577,6 +820,7 @@ function Fun.Get_LvDanjia(lv,fubenID,danjiaCF)
 end
 --获取所带副本级别单价文本
 function Fun.Get_LvDanjiaYC(fubenID,danjiaCF)
+	if is_slist() then return "-" end
 	local hangD = IsdanjiaOK(fubenID,danjiaCF)
 	if hangD then
 		local MsgNr = ""
@@ -592,6 +836,9 @@ function Fun.Get_LvDanjiaYC(fubenID,danjiaCF)
 	return "-"
 end
 function Fun.Get_LvDanjiaTxt(fubenID,danjiaCF)
+	if is_slist() then
+		return Fun.Base64_decod("PDEtODA+5YWN6LS5")
+	end
 	local MsgNr = ""
 	local hangD = IsdanjiaOK(fubenID,danjiaCF)
 	if hangD then
@@ -601,7 +848,7 @@ function Fun.Get_LvDanjiaTxt(fubenID,danjiaCF)
 				if SavetG[3]>0 then
 					MsgNr=MsgNr.."<"..SavetG[1].."-"..SavetG[2]..">"..SavetG[3].."G"
 				else
-					MsgNr=MsgNr.."<"..SavetG[1].."-"..SavetG[2]..">".."免费"
+					MsgNr=MsgNr.."<"..SavetG[1].."-"..SavetG[2]..">"..Fun.Base64_decod("5YWN6LS5")
 				end
 			end
 		end
@@ -609,7 +856,8 @@ function Fun.Get_LvDanjiaTxt(fubenID,danjiaCF)
 	return MsgNr
 end
 --获取设置的最小和最大级别
-function Fun.Get_LVminmax(fubenID,danjiaCF)
+local function Get_LVminmax(fubenID,danjiaCF)
+	if is_slist() then return 0,0 end
 	local min,max = nil,nil
 	local hangD = IsdanjiaOK(fubenID,danjiaCF)
 	if hangD then
@@ -633,17 +881,16 @@ function Fun.Get_LVminmax(fubenID,danjiaCF)
 			end
 		end
 	end
-	local min,max = min or 0,max or 0
-	return min,max
+	return min or 0,max or 0	
 end
 function Fun.Get_LVminmaxTxt(fubenID,danjiaCF)
-	local min,max = Fun.Get_LVminmax(fubenID,danjiaCF)
+	local min,max = Get_LVminmax(fubenID,danjiaCF)
 	return min.."#"..max
 end
 function Fun.Get_famsg(laiyuan,famsg,CMD_Opne,CMDtxt,otdata)
 	if laiyuan=="yell" then
 		if CMD_Opne then
-			famsg=famsg..",进组暗号"..CMDtxt.."";
+			famsg=famsg..Fun.Base64_decod("LOi/m+e7hOaal+WPtw==")..CMDtxt.."";
 		end
 	elseif laiyuan=="Farm_Yell" then
 		if CMD_Opne then
@@ -661,14 +908,13 @@ function Fun.Get_famsg(laiyuan,famsg,CMD_Opne,CMDtxt,otdata)
 			famsg=famsg..", "..danjiatxt
 		end
 		if CMD_Opne then
-			famsg=famsg..",进组暗号"..CMDtxt..""
+			famsg=famsg..Fun.Base64_decod("LOi/m+e7hOaal+WPtw==")..CMDtxt..""
 		end
 	elseif laiyuan=="Farm_chedui" then
 
 	end
 	return famsg
 end
-
 ----
 function Fun.Key_hebing(str,fengefu)
 	local fengefu=fengefu or ","
@@ -873,6 +1119,13 @@ function Fun.jieya_NumberString(sss)
     return txtdec
 end
 --压缩配置
+local pig_teshuzifu = {"&","@","#"}
+function Fun.quchu_teshufuhao(str)
+   	for i=1,#pig_teshuzifu do
+        str = str:gsub(pig_teshuzifu[i], "")
+    end
+    return str
+end
 local pig_yasuoCF = {
 	['"%]=true,']="&",
 	['"%]=false,']="@",
@@ -911,6 +1164,7 @@ do
 	end
 end
 function Fun.yasuo_string(str)
+	str = Fun.quchu_teshufuhao(str)
     for key, value in pairs(pig_yasuoCF) do
         str = str:gsub(key, tostring(value))
     end

@@ -14,9 +14,7 @@ local WCLpm = ns.WCLpm
 local WCLcolor = ns.WCLcolor
 local Trade = ns.Trade
 local Maxb = ns.Maxb
-local Maxi = ns.Maxi
 local BossNum = ns.BossNum
-local FrameHide = ns.FrameHide
 
 local pt = print
 
@@ -132,16 +130,35 @@ local function UpdateModel(model, NPCID)
 end
 
 -- BOSS模型
-local function CreateBossModel(FB, bossnum, point_x, point_y, NPCID, scale, PortraitZoom, CamDistanceScale)
+-- local function CreateBossModel(FB, bossnum, point_x, point_y, NPCID, scale, ModelScene)
+--     local model = CreateFrame(ModelScene and "ModelScene" or "PlayerModel", nil, BG["Frame" .. FB], "BackdropTemplate")
+--     model:SetSize(500, 500)
+--     model:SetPoint("CENTER", BG.Frame[FB]["boss" .. bossnum].bossName, "CENTER", point_x, point_y)
+--     model:SetFrameLevel(101)
+--     model:SetAlpha(0.8)
+--     model:SetScale(scale or 1)
+--     if ModelScene then
+--         model.actor = model:CreateActor()
+--         model.actor:SetModelByCreatureDisplayID(NPCID)
+--     end
+--     model:SetScript("OnShow", function(self)
+--         if ModelScene then
+--             model.actor:SetModelByCreatureDisplayID(NPCID)
+--         else
+--             model:SetCreature(NPCID)
+--         end
+--     end)
+--     tinsert(BG.bossModels, model)
+--     return model
+-- end
+local function CreateBossModel(FB, bossnum, point_x, point_y, NPCID, scale)
     local model = CreateFrame("PlayerModel", nil, BG["Frame" .. FB], "BackdropTemplate")
     model:SetSize(500, 500)
     model:SetPoint("CENTER", BG.Frame[FB]["boss" .. bossnum].bossName, "CENTER", point_x, point_y)
     model:SetFrameLevel(101)
     model:SetAlpha(0.8)
-    model:SetCreature(NPCID)
     model:SetScale(scale or 1)
-    model:SetPortraitZoom(PortraitZoom or 0)
-    model:SetCamDistanceScale(CamDistanceScale or 1)
+    model:SetCreature(NPCID)
     model:SetScript("OnShow", function(self)
         model:SetCreature(NPCID)
     end)
@@ -155,11 +172,6 @@ function BG.CreateBossModel()
         model:SetFacing(-0.3)         -- 左右
         model:SetPitch(0)             -- 上下
         model:SetRoll(0)              -- 倾斜
-        -- local model = CreateBossModel("OL", 1, 0, -40, 10184, 1)
-        -- model:SetPosition(-50, 5, 60)
-        -- model:SetFacing(-0.6)
-        -- model:SetPitch(0.8)
-        -- model:SetRoll(-0.5)
         local model = CreateBossModel("BWL", 8, 50, 0, 11583, 0.75)
         model:SetPosition(-50, 0, 60)
         model:SetFacing(-0.6)
@@ -290,18 +302,28 @@ function BG.CreateBossModel()
         model:SetFacing(-0.6)
         model:SetPitch(0.8)
         model:SetRoll(-0.5)
-    elseif BG.IsCTM then
+        local model = CreateBossModel("TAQ", 9, 10, 0, 15727, 0.45) -- 底下
+        model:SetPosition(-8, 0, -5)
+        model:SetFacing(0)
+        model:SetPitch(0)
+        model:SetRoll(0)
+        local model = CreateBossModel("TAQ", 9, 0, -10, 15589, 0.75) -- 眼睛
+        model:SetPosition(-37, 0, -3)
+        model:SetFacing(0)
+        model:SetPitch(0)
+        model:SetRoll(0)
+    elseif BG.IsCTM or BG.IsMOP then
         local model = CreateBossModel("BOT", 5, 40, 110, 45213, 0.7)
         model:SetPosition(-2, 0, 0) -- Z,X,Y
         model:SetFacing(-0.1)       -- 左右
         model:SetPitch(0)           -- 上下
         model:SetRoll(0)            -- 倾斜
         -- -- CreateAllTestButton(model)
-        local model = CreateBossModel("BOT", 11, 60, -30, 41376, 0.7)
-        model:SetPosition(-8, 0, 0) -- Z,X,Y
-        model:SetFacing(-0.4)       -- 左右
-        model:SetPitch(0)           -- 上下
-        model:SetRoll(0)            -- 倾斜
+        local model = CreateBossModel("BOT", 11, 50, -30, 41376, 0.7)
+        model:SetPosition(-8, 0, 0)    -- Z,X,Y
+        model:SetFacing(math.rad(-20)) -- 左右
+        model:SetPitch(0)              -- 上下
+        model:SetRoll(0)               -- 倾斜
         -- CreateAllTestButton(model)
         local model = CreateBossModel("BOT", 13, 0, -20, 46753, 0.6)
         model:SetPosition(-20, 0, 0) -- Z,X,Y
@@ -309,5 +331,44 @@ function BG.CreateBossModel()
         model:SetPitch(0)            -- 上下
         model:SetRoll(0)             -- 倾斜
         -- -- CreateAllTestButton(model)
+        local model = CreateBossModel("FL", 7, 30, 40, 52409, 0.55)
+        model:SetPosition(-25, 0, 9) -- Z,X,Y
+        model:SetFacing(0)           -- 左右
+        model:SetPitch(0)            -- 上下
+        model:SetRoll(0)             -- 倾斜
+        -- CreateAllTestButton(model)
+        local model = CreateBossModel("DS", 8, 50, -30, 47103, .9)
+        model:SetPosition(-8, 0, 0)    -- Z,X,Y
+        model:SetFacing(math.rad(-20)) -- 左右
+        model:SetPitch(0)              -- 上下
+        model:SetRoll(0)               -- 倾斜
+        -- CreateAllTestButton(model)
+        if BG.IsMOP then
+            local model = CreateBossModel("MSV", 6, 0, 0, 60400, .55)
+            model:SetPosition(-0, 0, 0) -- Z,X,Y
+            model:SetFacing(0)          -- 左右
+            model:SetPitch(0)           -- 上下
+            model:SetRoll(0)            -- 倾斜
+            -- CreateAllTestButton(model)
+            local model = CreateBossModel("MSV", 12, 10, 20, 62837, .75)
+            model:SetPosition(-1, 0, 0) -- Z,X,Y
+            model:SetFacing(math.rad(-10)) -- 左右
+            model:SetPitch(0)           -- 上下
+            model:SetRoll(0)            -- 倾斜
+            -- CreateAllTestButton(model)
+            local model = CreateBossModel("MSV", 16, 20, 60, 60999, .7)
+            model:SetPosition(-1, 0, 0)    -- Z,X,Y
+            model:SetFacing(math.rad(-10)) -- 左右
+            model:SetPitch(0)              -- 上下
+            model:SetRoll(0)               -- 倾斜
+            -- CreateAllTestButton(model)
+        end
+    elseif BG.IsRetail then
+        local model = CreateBossModel("NP", 8, 0, -10, 219778, 0.6)
+        model:SetPosition(-0, 0, 0) -- Z,X,Y
+        model:SetFacing(0)          -- 左右
+        model:SetPitch(0)           -- 上下
+        model:SetRoll(0)            -- 倾斜
+        -- CreateAllTestButton(model)
     end
 end

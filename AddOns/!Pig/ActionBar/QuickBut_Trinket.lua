@@ -1,10 +1,8 @@
 local addonName, addonTable = ...;
-local _, _, _, tocversion = GetBuildInfo()
+local L=addonTable.locale
 --------
 local Create = addonTable.Create
 local PIGFrame=Create.PIGFrame
-local PIGButton = Create.PIGButton
-local PIGLine=Create.PIGLine
 local PIGQuickBut=Create.PIGQuickBut
 local PIGCheckbutton=Create.PIGCheckbutton
 local PIGCheckbutton_R=Create.PIGCheckbutton_R
@@ -20,6 +18,11 @@ local GetContainerItemCooldown=C_Container.GetContainerItemCooldown
 local GetItemInfoInstant=GetItemInfoInstant or C_Item and C_Item.GetItemInfoInstant
 local GetItemSpell=GetItemSpell or C_Item and C_Item.GetItemSpell
 -----
+local QuickButUIname=Data.QuickButUIname
+local QuickButUI=_G[QuickButUIname]
+local UIname= "PIG_QuickTrinketUI"
+Data.QuickTrinketUIname=UIname
+--
 local function QuickButSet_OnEnter(TrinketUI,ShowUI)
 	TrinketUI:HookScript("OnEnter", function(self)
 		ShowUI:Show()
@@ -79,10 +82,11 @@ local function add_Button(fujiUI,butW,slotID,ShowUI)
 end
 QuickButUI.ButList[3]=function()
 	if not PIGA["QuickBut"]["Open"] or not PIGA["QuickBut"]["Trinket"] then return end
-	local GnUI = "QkBut_AutoTrinket"
-	if _G[GnUI] then return end
+	if QuickButUI.TrinketOpen then return end
+	QuickButUI.TrinketOpen=true
 	-------
-	TrinketAutoModeUI.GET_shipinxuanzhongL()
+	local GnUI = "PIG_QkBut_AutoTrinket"
+	_G[QuickButUI.TrinketAutoMode].GET_shipinxuanzhongL()
 	local Icon,anniushu=136528,20
 	local AutoTrinket=PIGQuickBut(GnUI,TRINKET0SLOT_UNIQUE,Icon,nil,nil,"SecureActionButtonTemplate")--UseInventoryItem(13)
 	local butW = AutoTrinket:GetHeight()
@@ -100,37 +104,38 @@ QuickButUI.ButList[3]=function()
 
 	add_Button(AutoTrinket,butW,13,AutoTrinketList)
 	add_Button(AutoTrinket1,butW,14,AutoTrinketList)
-	
+	AutoTrinketList.ButList={}
 	for i=1,anniushu do
-		local QkbutBut = CreateFrame("Button", "QkBut_AutoTrinket_but"..i, AutoTrinketList,nil,i)
-		QkbutBut:SetHighlightTexture(130718);
-		QkbutBut:SetSize(butW, butW)
-		QkbutBut.Cooldown = CreateFrame("Frame", nil, QkbutBut);
-		QkbutBut.Cooldown:SetAllPoints()
-		QkbutBut.Cooldown.N = CreateFrame("Cooldown", nil, QkbutBut.Cooldown, "CooldownFrameTemplate")
-		QkbutBut.Cooldown.N:SetAllPoints()
-		QkbutBut:RegisterForClicks("LeftButtonUp", "RightButtonUp");
-		QkbutBut:SetScript("OnEnter", function(self)
+		local hangBut = CreateFrame("Button", nil, AutoTrinketList,nil,i)
+		AutoTrinketList.ButList[i]=hangBut
+		hangBut:SetHighlightTexture(130718);
+		hangBut:SetSize(butW, butW)
+		hangBut.Cooldown = CreateFrame("Frame", nil, hangBut);
+		hangBut.Cooldown:SetAllPoints()
+		hangBut.Cooldown.N = CreateFrame("Cooldown", nil, hangBut.Cooldown, "CooldownFrameTemplate")
+		hangBut.Cooldown.N:SetAllPoints()
+		hangBut:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+		hangBut:SetScript("OnEnter", function(self)
 			GameTooltip:ClearLines();
 			GameTooltip:SetOwner(AutoTrinketList, "ANCHOR_NONE");
 			GameTooltip:SetPoint("BOTTOMLEFT",AutoTrinketList,"BOTTOMRIGHT",0,0);
 			GameTooltip:SetBagItem(self.bagID, self.slot)
 			GameTooltip:Show();
-			if tocversion<100000 then
+			if GameTooltip_HideShoppingTooltips then
+				GameTooltip_HideShoppingTooltips(GameTooltip);
+			else
 				local tooltip, anchorFrame, shoppingTooltip1, shoppingTooltip2 = GameTooltip_InitializeComparisonTooltips(GameTooltip);
 				shoppingTooltip1:Hide()
 				shoppingTooltip2:Hide()
-			else
-				GameTooltip_HideShoppingTooltips(GameTooltip);
 			end
 		end)
-		QkbutBut:SetScript("OnLeave", function()
+		hangBut:SetScript("OnLeave", function()
 			GameTooltip:ClearLines();
 			GameTooltip:Hide()
 		end)
-		QuickButSet_OnEnter(QkbutBut,AutoTrinketList)
-		QuickButSet_OnLeave(QkbutBut,AutoTrinketList)
-		QkbutBut:HookScript("OnClick", function(self,button)
+		QuickButSet_OnEnter(hangBut,AutoTrinketList)
+		QuickButSet_OnLeave(hangBut,AutoTrinketList)
+		hangBut:HookScript("OnClick", function(self,button)
 			if button=="LeftButton" then
 				if InCombatLockdown() then
 					AutoTrinket.NextList={self.bagID,self.slot,self.itemicon}
@@ -151,8 +156,8 @@ QuickButUI.ButList[3]=function()
 			AutoTrinketList:Hide()
 		end);
 	end
-	_G["BINDING_NAME_CLICK QkBut_AutoTrinket:LeftButton"]= "PIG"..TRINKET0SLOT_UNIQUE
-	_G["BINDING_NAME_CLICK QkBut_AutoTrinket1:LeftButton"]= "PIG"..TRINKET1SLOT_UNIQUE
+	_G["BINDING_NAME_CLICK PIG_QkBut_AutoTrinket:LeftButton"]= "PIG"..L["ACTION_TABNAME2"]..TRINKET0SLOT_UNIQUE
+	_G["BINDING_NAME_CLICK PIG_QkBut_AutoTrinket1:LeftButton"]= "PIG"..L["ACTION_TABNAME2"]..TRINKET1SLOT_UNIQUE
 	--已在队列
 	local function IsDuilieFun(bag,slot)
 		if AutoTrinket.NextList then
@@ -224,9 +229,9 @@ QuickButUI.ButList[3]=function()
 		local NewTrinketL = {}
 		local id_13 = GetInventoryItemID("player", 13)
 		local id_14 = GetInventoryItemID("player", 14)
-		for i=1,#TrinketAutoModeUI.NextList do
-			if TrinketAutoModeUI.NextList[i]~=id_13 and TrinketAutoModeUI.NextList[i]~=id_14 then
-				table.insert(NewTrinketL,TrinketAutoModeUI.NextList[i])
+		for i=1,#_G[QuickButUI.TrinketAutoMode].NextList do
+			if _G[QuickButUI.TrinketAutoMode].NextList[i]~=id_13 and _G[QuickButUI.TrinketAutoMode].NextList[i]~=id_14 then
+				table.insert(NewTrinketL,_G[QuickButUI.TrinketAutoMode].NextList[i])
 			end
 		end
 		zhixingqiehuanFun_1(13,NewTrinketL)
@@ -245,7 +250,7 @@ QuickButUI.ButList[3]=function()
 			Update_Cooldown()
 		elseif event=="PLAYER_REGEN_ENABLED" then
 			if not InCombatLockdown() then
-				if TrinketAutoModeUI.TrinketMode==1 then
+				if _G[QuickButUI.TrinketAutoMode].TrinketMode==1 then
 					if AutoTrinket.NextList then
 						PickupContainerItem(AutoTrinket.NextList[1],AutoTrinket.NextList[2])
 						PickupInventoryItem(13)
@@ -258,7 +263,7 @@ QuickButUI.ButList[3]=function()
 						AutoTrinket1.NextList=nil
 						AutoTrinket1:NextListFun()
 					end
-				elseif TrinketAutoModeUI.TrinketMode==2 then
+				elseif _G[QuickButUI.TrinketAutoMode].TrinketMode==2 then
 					zhixingqiehuanFun()
 				end
 			end
@@ -267,13 +272,15 @@ QuickButUI.ButList[3]=function()
 		end
 	end);
 	if PIGA["QuickBut"]["TrinketFenli"] then
-		local ActionW = ActionButton1:GetWidth()-Pig_OptionsUI.qiege
-		local QuickTrinket=PIGFrame(UIParent,{"BOTTOM",UIParent,"BOTTOM",-200,400},nil,"QuickTrinketUI")
+		local ActionW = QuickButUI:GetHeight()
+		Data.UILayout[UIname]={"BOTTOM","BOTTOM",-200,200}
+		local QuickTrinket=PIGFrame(UIParent,nil,nil,UIname)
+		Create.PIG_SetPoint(UIname)
 		QuickTrinket:SetScale(PIGA["QuickBut"]["TrinketScale"]);
 		QuickTrinket.yidong=PIGFrame(QuickTrinket)
 		QuickTrinket.yidong:PIGSetBackdrop()
 		QuickTrinket.yidong:PIGSetMovable(QuickTrinket)
-		QuickTrinketUI.yidong:SetShown(not PIGA["QuickBut"]["TrinketFenlilock"])
+		QuickTrinket.yidong:SetShown(not PIGA["QuickBut"]["TrinketFenlilock"])
 		QuickTrinket.yidong:SetScript("OnEnter", function (self)
 			self:SetBackdropBorderColor(0,0.8,1, 0.9);
 			GameTooltip:ClearLines();
@@ -287,16 +294,16 @@ QuickButUI.ButList[3]=function()
 			GameTooltip:Hide() 
 		end)
 		QuickTrinket.yidong:SetScript("OnMouseUp", function (self,Button)
-			TrinketAutoModeUI:yidongButClick(self,Button)
+			_G[QuickButUI.TrinketAutoMode]:yidongButClick(self,Button)
 		end);
 		QuickTrinket.yidong.t = PIGFontString(QuickTrinket.yidong,nil,nil,nil,9)
 		QuickTrinket.yidong.t:SetAllPoints(QuickTrinket.yidong)
-		TrinketAutoModeUI:SetyidongButText(QuickTrinket.yidong)
+		_G[QuickButUI.TrinketAutoMode]:SetyidongButText(QuickTrinket.yidong)
 		QuickTrinket.nr=PIGFrame(QuickTrinket)
 		QuickTrinket.nr:PIGSetBackdrop()
 		AutoTrinket:SetParent(QuickTrinket.nr)
 		AutoTrinket1:SetParent(QuickTrinket.nr)
-		function QuickTrinketUI.UpdataPailie()
+		function QuickTrinket.UpdataPailie()
 			QuickTrinket.yidong:ClearAllPoints();
 			QuickTrinket.nr:ClearAllPoints();
 			AutoTrinket:ClearAllPoints();
@@ -313,15 +320,15 @@ QuickButUI.ButList[3]=function()
 			elseif PIGA["QuickBut"]["TrinketFenliPailie"]==2 then
 				QuickTrinket:SetSize(ActionW,ActionW*2+14);
 				QuickTrinket.yidong:SetHeight(12);
-				QuickTrinket.yidong:SetPoint("TOPLEFT",QuickTrinketUI,"TOPLEFT",0,0)
-				QuickTrinket.yidong:SetPoint("TOPRIGHT", QuickTrinketUI, "TOPRIGHT", 0, 0);
+				QuickTrinket.yidong:SetPoint("TOPLEFT",QuickTrinket,"TOPLEFT",0,0)
+				QuickTrinket.yidong:SetPoint("TOPRIGHT", QuickTrinket, "TOPRIGHT", 0, 0);
 				QuickTrinket.nr:SetPoint("TOPLEFT",QuickTrinket.yidong,"BOTTOMLEFT",0,-1)
 				QuickTrinket.nr:SetPoint("BOTTOMRIGHT", QuickTrinket, "BOTTOMRIGHT", 0, 0);
 				AutoTrinket:SetPoint("TOP",QuickTrinket.nr,"TOP",0,-1);
 				AutoTrinket1:SetPoint("TOP",AutoTrinket,"BOTTOM",0,-1);
 			end
 		end
-		QuickTrinketUI.UpdataPailie()
+		QuickTrinket.UpdataPailie()
 	end
 	---
 	local function Getweizhiinfo()
@@ -360,7 +367,7 @@ QuickButUI.ButList[3]=function()
 			end
 		end
 		for i=1,anniushu do
-			local fujikj = _G["QkBut_AutoTrinket_but"..i]
+			local fujikj = AutoTrinketList.ButList[i]
 			if beibaoshipinList[i] then
 				fujikj.bagID=beibaoshipinList[i][2]
 				fujikj.slot=beibaoshipinList[i][3]
@@ -383,14 +390,14 @@ QuickButUI.ButList[3]=function()
 		AutoTrinketList:ClearAllPoints();
 		local zhuuiP,anniuUI_1,anniuNext,anniuhuan = Getweizhiinfo()
 		for i=1,anniushu do
-			local fujikj = _G["QkBut_AutoTrinket_but"..i]
+			local fujikj = AutoTrinketList.ButList[i]
 			fujikj:ClearAllPoints();
 			if i==1 then
 				fujikj:SetPoint(anniuUI_1[1],AutoTrinketList,anniuUI_1[2],anniuUI_1[3],anniuUI_1[4]);
 			elseif i==(lieshuNUM+1) then
-				fujikj:SetPoint(anniuhuan[1],_G["QkBut_AutoTrinket_but1"],anniuhuan[2],anniuhuan[3],anniuhuan[4]);
+				fujikj:SetPoint(anniuhuan[1],AutoTrinketList.ButList[1],anniuhuan[2],anniuhuan[3],anniuhuan[4]);
 			else
-				fujikj:SetPoint(anniuNext[1],_G["QkBut_AutoTrinket_but"..(i-1)],anniuNext[2],anniuNext[3],anniuNext[4]);
+				fujikj:SetPoint(anniuNext[1],AutoTrinketList.ButList[i-1],anniuNext[2],anniuNext[3],anniuNext[4]);
 			end
 		end
 		AutoTrinketList:SetPoint(zhuuiP[1],AutoTrinket,zhuuiP[2],zhuuiP[3],zhuuiP[4]);

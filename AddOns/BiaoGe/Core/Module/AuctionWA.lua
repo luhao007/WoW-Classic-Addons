@@ -5,7 +5,7 @@ local pt = print
 
 BG.Init(function()
     local aura = aura_env or {}
-    aura.ver = "v2.5"
+    aura.ver = "v3.0"
 
     function aura.GetVerNum(str)
         return tonumber(string.match(str, "v(%d+%.%d+)")) or 0
@@ -40,6 +40,8 @@ BG.Init(function()
             return tostring(key)
         end
     })
+    local After = C_Timer.After
+    local _auctionID_ = "auctionID"
 
     if (GetLocale() == "zhTW") then
         L["Alt+点击才能生效"] = "Alt+點擊才能生效"
@@ -60,7 +62,6 @@ BG.Init(function()
         L["出价"] = "出價"
         L["正常模式"] = "正常模式"
         L["匿名模式"] = "匿名模式"
-        L["{rt1}拍卖开始{rt1} %s 起拍价：%s 拍卖时长：%ss %s"] = "{rt1}拍賣開始{rt1} %s 起拍價：%s 拍賣時長：%ss %s"
         L["拍卖结束"] = "拍賣結束"
         L["|cffFF0000流拍：|r"] = "|cffFF0000流拍：|r"
         L["{rt7}流拍{rt7} %s"] = "{rt7}流拍{rt7} %s"
@@ -99,6 +100,40 @@ BG.Init(function()
         L["ALT+点击：全部展开"] = "ALT+點擊：全部展開"
         L["点击：单个折叠"] = "點擊：單個摺疊"
         L["ALT+点击：全部折叠"] = "ALT+點擊：全部摺疊"
+        L["你已是%s的出价最高者，|cffff0000没必要自己顶自己|r。真的要继续出价到 %s ？"] = "你已是%s的出價最高者，|cffff0000沒必要自己頂自己|r。真的要繼續出價到 %s ？"
+        L["备注："] = "備註："
+        L["{rt1}拍卖开始{rt1} %s 起拍价：%s"] = "{rt1}拍賣開始{rt1} %s 起拍價：%s"
+        L["团长："] = "團長"
+    end
+
+    function aura.GN(unit)
+        unit = unit or "player"
+        if unit == "t" then
+            unit = "target"
+        end
+        return GetUnitName(unit, true)
+    end
+
+    function aura.GFN(name)
+        if not name then return end
+        local name, realm = strsplit("-", name)
+        realm = realm or GetRealmName()
+        return name .. "-" .. realm
+    end
+
+    function aura.GSN(name)
+        if not name then return end
+        local name, realm = strsplit("-", name)
+        if not realm or realm == "" or realm == GetRealmName() then
+            return name
+        else
+            return name .. "-" .. realm
+        end
+    end
+
+    function aura.SPN(name)
+        if not name then return end
+        return strsplit("-", name)
     end
 
     function aura.RGB(hex, Alpha)
@@ -123,7 +158,7 @@ BG.Init(function()
         if player then
             _, class = UnitClass(player)
         else
-            _, class = UnitClass(name)
+            _, class = UnitClass(aura.GSN(name))
         end
         local colorname = ""
         if class then
@@ -142,10 +177,12 @@ BG.Init(function()
         aura.GREEN1 = "00FF00"
         aura.RED1 = "FF0000"
 
+        aura.maxNumFrame = 20
         aura.WIDTH = 310
         aura.HEIGHT = 105
+        aura.SMALL_HEIGHT = 23
         aura.REPEAT_TIME = 20
-        aura.HIDEFRAME_TIME = 3
+        aura.HIDEFRAME_TIME = 1
         aura.edgeSize = 2.5
         aura.backdropColor = { 0, 0, 0, .6 }
         aura.backdropBorderColor = { 1, 1, 0, 1 }
@@ -158,7 +195,7 @@ BG.Init(function()
 
         aura.MiniMoneyTbl = {
             -- 小于该价格时，每次加价幅度，最低加价幅度
-            { 30, 1, 1 },
+            { 50, 1, 1 },
             { 100, 10, 1 },
             { 5000, 100, 100 },
             { 10000, 500, 100 },
@@ -220,7 +257,7 @@ BG.Init(function()
 
     function aura.IsRaidLeader(player)
         if not player then
-            player = UnitName("player")
+            player = aura.GN()
         end
         if player == aura.raidLeader then
             return true
@@ -229,9 +266,9 @@ BG.Init(function()
 
     function aura.IsML(player)
         if not player then
-            player = UnitName("player")
+            player = aura.GN()
         end
-        if (player == aura.raidLeader) or (player == aura.ML) then
+        if (player == aura.raidLeader) or (player == aura.masterLooter) then
             return true
         end
     end
@@ -239,13 +276,12 @@ BG.Init(function()
     function aura.UpdateRaidRosterInfo()
         wipe(aura.raidRosterInfo)
         aura.raidLeader = nil
-        aura.ML = nil
+        aura.masterLooter = nil
         if IsInRaid(1) then
             for i = 1, GetNumGroupMembers() do
                 local name, rank, subgroup, level, class2, class, zone, online,
                 isDead, role, isML, combatRole = GetRaidRosterInfo(i)
                 if name then
-                    name = strsplit("-", name)
                     local a = {
                         name = name,
                         rank = rank,
@@ -260,19 +296,18 @@ BG.Init(function()
                         isML = isML,
                         combatRole = combatRole
                     }
-                    table.insert(aura.raidRosterInfo, a)
+                    tinsert(aura.raidRosterInfo, a)
                     if rank == 2 then
                         aura.raidLeader = name
                     end
                     if isML then
-                        aura.ML = name
+                        aura.masterLooter = name
                     end
                 end
             end
-
             C_ChatInfo.SendAddonMessage(aura.AddonChannel, "MyVer" .. "," .. aura.ver, "RAID")
         end
-        for i, f in ipairs(_G.BGA.Frames) do
+        for _, f in pairs(_G.BGA.Frames) do
             if not f.IsEnd and aura.IsML() then
                 f.cancel:Show()
                 f.autoTextButton:ClearAllPoints()
@@ -289,7 +324,7 @@ BG.Init(function()
         if not IsInRaid(1) then return end
         aura.canGetAuctioning = true
         C_ChatInfo.SendAddonMessage(aura.AddonChannel, "GetAuctioning", "RAID")
-        C_Timer.After(1, function()
+        After(1, function()
             aura.canGetAuctioning = false
         end)
     end
@@ -298,9 +333,17 @@ BG.Init(function()
         local f = self.owner
         if f.IsSmallWindow then
             local function SetBigWindos(f)
-                -- if f.isAuto then return end
                 f.IsSmallWindow = false
                 f.hide:SetText(L["折叠"])
+
+                if f.highlight then
+                    f.highlight.flashGroup:Stop()
+                    f.highlight:Hide()
+                end
+                if f.autoFrame.highlight then
+                    f.autoFrame.highlight.flashGroup:Stop()
+                    f.autoFrame.highlight:Hide()
+                end
 
                 if aura.IsML() then
                     f.cancel:Show()
@@ -333,7 +376,7 @@ BG.Init(function()
                 f.bar:SetPoint("BOTTOMRIGHT", f.itemFrame, "BOTTOMRIGHT", 0, 0)
             end
             if IsAltKeyDown() then
-                for i, f in ipairs(_G.BGA.Frames) do
+                for _, f in pairs(_G.BGA.Frames) do
                     SetBigWindos(f)
                 end
             else
@@ -345,6 +388,15 @@ BG.Init(function()
                 f.IsSmallWindow = true
                 f.hide:SetText(L["展开"])
 
+                if f.highlight then
+                    f.highlight.flashGroup:Stop()
+                    f.highlight:Hide()
+                end
+                if f.autoFrame.highlight then
+                    f.autoFrame.highlight.flashGroup:Stop()
+                    f.autoFrame.highlight:Hide()
+                end
+
                 f.autoFrame:Hide()
                 f.cancel:Hide()
                 f.autoTextButton:Hide()
@@ -354,7 +406,7 @@ BG.Init(function()
                 f.myMoneyEdit:Hide()
                 f.itemFrame2:Hide()
 
-                f:SetSize(aura.WIDTH, 23)
+                f:SetSize(aura.WIDTH, aura.SMALL_HEIGHT)
                 f.itemFrame:ClearAllPoints()
                 f.itemFrame:SetAllPoints()
                 f.itemFrame.iconFrame:ClearAllPoints()
@@ -371,7 +423,7 @@ BG.Init(function()
                 f.bar:SetPoint("BOTTOMRIGHT", f.itemFrame, "BOTTOMRIGHT", -aura.edgeSize, aura.edgeSize)
             end
             if IsAltKeyDown() then
-                for i, f in ipairs(_G.BGA.Frames) do
+                for _, f in pairs(_G.BGA.Frames) do
                     SetSmallWindos(f)
                 end
             else
@@ -379,6 +431,7 @@ BG.Init(function()
             end
         end
         aura.UpdateAllOnEnters()
+        aura.UpdateAllFrames()
         PlaySound(aura.sound1)
     end
 
@@ -404,9 +457,10 @@ BG.Init(function()
     end
 
     function aura.Cancel_OnClick(self)
+        local f = self.owner
         if IsAltKeyDown() then
             C_ChatInfo.SendAddonMessage(aura.AddonChannel, "CancelAuction" .. "," ..
-                self.owner.auctionID, "RAID")
+                f[_auctionID_], "RAID")
             PlaySound(aura.sound1)
         end
     end
@@ -555,7 +609,7 @@ BG.Init(function()
             local v = a * max
             f.bar:SetValue(v)
             if remaining <= 10 then
-                if f.filter and not (f.player and f.player == UnitName("player")) then
+                if f.filter and not (f.player and f.player == aura.GN()) then
                     f.bar:SetStatusBarColor(unpack(BGA.aura_env.barColor_filter))
                 else
                     f.bar:SetStatusBarColor(1, 0, 0, 0.6)
@@ -563,7 +617,7 @@ BG.Init(function()
                 f.remainingTime:SetTextColor(1, 0, 0)
                 f.remainingTime:SetFont(STANDARD_TEXT_FONT, 20, "OUTLINE")
             else
-                if f.filter and not (f.player and f.player == UnitName("player")) then
+                if f.filter and not (f.player and f.player == aura.GN()) then
                     f.bar:SetStatusBarColor(unpack(BGA.aura_env.barColor_filter))
                 else
                     f.bar:SetStatusBarColor(1, 1, 0, 0.6)
@@ -574,7 +628,7 @@ BG.Init(function()
             f.remainingTime:SetText((format("%d", remaining) + 1) .. "s")
             f.remaining = remaining
 
-            if remaining <= 0 then
+            if remaining <= 0.5 then
                 f.myMoneyEdit:Hide()
                 f.remainingTime:SetText("0s")
             end
@@ -594,7 +648,7 @@ BG.Init(function()
                     t:SetText(L["拍卖成功"])
                     t:SetTextColor(0, 1, 0)
                     f.currentMoneyText:SetText(L["|cff00FF00成交价：|r"] .. f.money)
-                    if f.player == UnitName("player") then
+                    if f.player == aura.GN() then
                         f.topMoneyText:SetText(L["|cff00FF00买家：|r"] .. "|cff" .. aura.GREEN1 .. L[">> 你 <<"])
                     else
                         f.topMoneyText:SetText(L["|cff00FF00买家：|r"] .. f.colorplayer)
@@ -606,7 +660,9 @@ BG.Init(function()
                     end
 
                     if aura.IsRaidLeader() then
-                        SendChatMessage(format(L["{rt6}拍卖成功{rt6} %s %s %s"], f.link, f.player, f.money), "RAID")
+                        C_Timer.After(.2, function()
+                            SendChatMessage(format(L["{rt6}拍卖成功{rt6} %s %s %s"], f.link, f.player, f.money), "RAID")
+                        end)
                     end
                 else
                     t:SetText(L["流拍"])
@@ -619,7 +675,7 @@ BG.Init(function()
                     end
                 end
 
-                C_Timer.After(aura.HIDEFRAME_TIME, function()
+                After(aura.HIDEFRAME_TIME, function()
                     aura.UpdateFrame(f)
                 end)
             end
@@ -642,7 +698,7 @@ BG.Init(function()
             if money < f.money then
                 self:SetTextColor(1, 0, 0)
                 f.ButtonSendMyMoney:Disable()
-                if f.player ~= UnitName("player") then
+                if f.player ~= aura.GN() then
                     f.ButtonSendMyMoney.disf:Show()
                     f.ButtonSendMyMoney.disf.text = L["需高于或等于起拍价"]
                 end
@@ -653,7 +709,7 @@ BG.Init(function()
             end
         elseif money <= f.money then
             f.ButtonSendMyMoney:Disable()
-            if f.player ~= UnitName("player") then
+            if f.player ~= aura.GN() then
                 self:SetTextColor(1, 0, 0)
                 f.ButtonSendMyMoney.disf:Show()
                 f.ButtonSendMyMoney.disf.text = L["需高于当前价格"]
@@ -713,7 +769,7 @@ BG.Init(function()
         local _, fudu = aura.Addmoney(myMoney, self._type)
         GameTooltip:SetOwner(f, "ANCHOR_BOTTOM", 0, 0)
         GameTooltip:ClearLines()
-        if not f.start and not f.IsEnd and f.player ~= UnitName("player") and self._type == "+" and myMoney <= f.money then
+        if not f.start and not f.IsEnd and f.player ~= aura.GN() and self._type == "+" and myMoney <= f.money then
             GameTooltip:AddLine(L["出价设为："] .. "|cffffffff" .. aura.FormatNumber(aura.Addmoney(f.money, "+")), 1, 0.82, 0, true)
         else
             local r, g, b = 1, 0, 0
@@ -731,7 +787,7 @@ BG.Init(function()
     function aura.JiaJian_OnClick(self)
         local f = self.owner
         local myMoney = tonumber(self.edit:GetText()) or 0
-        if not f.start and not f.IsEnd and f.player ~= UnitName("player") and self._type == "+" and myMoney <= f.money then
+        if not f.start and not f.IsEnd and f.player ~= aura.GN() and self._type == "+" and myMoney <= f.money then
             self.edit:SetText(aura.Addmoney(f.money, "+"))
         else
             self.edit:SetText(aura.Addmoney(myMoney, self._type))
@@ -761,20 +817,44 @@ BG.Init(function()
         self:SetScript("OnUpdate", nil)
     end
 
-    function aura.SendMyMoney_OnClick(self)
-        local f = self.owner
+    local function SendMyMoney(f)
         if f.ButtonSendMyMoney:IsEnabled() then
             local money = tonumber(f.myMoneyEdit:GetText()) or 0
             C_ChatInfo.SendAddonMessage(aura.AddonChannel, "SendMyMoney" .. "," ..
-                f.auctionID .. "," .. money, "RAID")
+                f[_auctionID_] .. "," .. money, "RAID")
             f.myMoneyEdit:ClearFocus()
             PlaySound(aura.sound1)
 
             if not f.start and BiaoGe and BiaoGe.options and BiaoGe.options.Sound then
-                local num = random(10)
-                if num <= 1 then
-                    PlaySoundFile(BG["sound_HusbandComeOn" .. BiaoGe.options.Sound], "Master")
+                if random(10) <= 1 then
+                    BG.PlaySound("HusbandComeOn")
                 end
+            end
+        end
+    end
+    function aura.SendMyMoney_OnClick(self)
+        local f = self.owner
+        if f.ButtonSendMyMoney:IsEnabled() then
+            if f.player and f.player == aura.GN() then
+                if not StaticPopupDialogs["BiaoGeAuction_RepeatSend"] then
+                    StaticPopupDialogs["BiaoGeAuction_RepeatSend"] = {
+                        text = L["你已是%s的出价最高者，|cffff0000没必要自己顶自己|r。真的要继续出价到 %s ？"],
+                        button1 = _G.YES,
+                        button2 = _G.NO,
+                        OnCancel = function()
+                        end,
+                        timeout = 10,
+                        whileDead = true,
+                        hideOnEscape = true,
+                        showAlert = true,
+                    }
+                end
+                StaticPopupDialogs["BiaoGeAuction_RepeatSend"].OnAccept = function()
+                    SendMyMoney(f)
+                end
+                StaticPopup_Show("BiaoGeAuction_RepeatSend", f.link, tonumber(f.myMoneyEdit:GetText()) or 0)
+            else
+                SendMyMoney(f)
             end
         end
     end
@@ -791,7 +871,7 @@ BG.Init(function()
         f.colorplayer = aura.SetClassCFF(player)
         f.myMoneyEdit:Show()
         f.start = false
-        if player == UnitName("player") then
+        if player == aura.GN() then
             f.topMoneyText:SetText(L["|cffFFD100出价最高者：|r"] .. "|cff" .. aura.GREEN1 .. L[">> 你 <<"])
             f:SetBackdropColor(unpack(aura.backdropColor_IsMe))
             f:SetBackdropBorderColor(unpack(aura.backdropBorderColor_IsMe))
@@ -831,9 +911,11 @@ BG.Init(function()
                 f.autoTextButton:SetNormalFontObject(_G.BGA.FontGreen15)
                 f.logTextButton:SetNormalFontObject(_G.BGA.FontGreen15)
             end
-            C_Timer.After(.5, function()
-                aura.AutoSendMyMoney(f)
-            end)
+            if f.isAuto then
+                After(aura.AutoSendLate(), function()
+                    aura.AutoSendMyMoney(f)
+                end)
+            end
         end
         aura.myMoney_OnTextChanged(f.myMoneyEdit)
 
@@ -853,6 +935,7 @@ BG.Init(function()
             f.autoMoneyEdit:SetEnabled(true)
             f.autoMoneyEdit.isLocked = false
             f.hide:Enable()
+            aura.AutoSendEndPlaySound()
         end
 
         aura.UpdateAutoButton(f)
@@ -872,7 +955,7 @@ BG.Init(function()
     end
 
     function aura.UpdateAllOnEnters()
-        for i, f in ipairs(_G.BGA.Frames) do
+        for _, f in pairs(_G.BGA.Frames) do
             if f.myMoneyEdit.isOnEnter then
                 aura.myMoney_OnEnter(f.myMoneyEdit)
             end
@@ -894,8 +977,59 @@ BG.Init(function()
         end
     end
 
+    local function GetHeight(num)
+        local height = 0
+        for i = 1, num - 1 do
+            local f = _G.BGA.Frames[i]
+            if f then
+                if f.IsSmallWindow then
+                    height = height + aura.SMALL_HEIGHT + 5
+                else
+                    height = height + aura.HEIGHT + 5
+                end
+            end
+        end
+        return height
+    end
+
+    local function CheckAllFrameOverlap()
+        for i = 1, aura.maxNumFrame do
+            local f = _G.BGA.Frames[i]
+            if f and not f.animing then
+                local top = f:GetTop()
+                local bottom = f:GetBottom()
+                for i = 1, aura.maxNumFrame do
+                    local _f = _G.BGA.Frames[i]
+                    if _f and not _f.animing and f.num ~= _f.num then
+                        local _top = _f:GetTop()
+                        local _bottom = _f:GetBottom()
+                        if (top <= _top and top >= _bottom) or (bottom <= _top and bottom >= _bottom) then
+                            aura.UpdateAllFrames()
+                            return
+                        end
+                    end
+                end
+            end
+        end
+    end
+
+    local function UpdateAllFrameNum()
+        local num = 0
+        local tbl = {}
+        for i = 1, aura.maxNumFrame do
+            local f = _G.BGA.Frames[i]
+            if f then
+                num = num + 1
+                f.num = num
+                tbl[num] = f
+            end
+        end
+        _G.BGA.Frames = tbl
+    end
+
     function aura.UpdateAllFrames()
-        for i, f in ipairs(_G.BGA.Frames) do
+        UpdateAllFrameNum()
+        for _, f in pairs(_G.BGA.Frames) do
             if f.showCantClickFrame and not f.IsSmallWindow then
                 f.cantClickFrame:Show()
                 f.cantClickFrame.t = 0
@@ -907,13 +1041,8 @@ BG.Init(function()
                     end
                 end)
             end
-
             f:ClearAllPoints()
-            if i == 1 then
-                f:SetPoint("TOPLEFT", _G.BGA.AuctionMainFrame, "TOPLEFT", 0, 0)
-            else
-                f:SetPoint("TOPLEFT", _G.BGA.Frames[i - 1], "BOTTOMLEFT", 0, -5)
-            end
+            f:SetPoint("TOP", 0, -GetHeight(f.num))
         end
     end
 
@@ -924,21 +1053,20 @@ BG.Init(function()
             if t >= 0 then
                 f:SetAlpha(t)
             else
-                for i, _f in ipairs(_G.BGA.Frames) do
-                    if i < f.num then
-                        _f.showCantClickFrame = false
-                    else
-                        _f.showCantClickFrame = true
-                    end
-                end
                 f:SetScript("OnUpdate", nil)
-                tremove(_G.BGA.Frames, f.num)
+                _G.BGA.Frames[f.num] = nil
                 f:Hide()
                 _G.BGA.AuctionMainFrame:StopMovingOrSizing()
-                for i, f in ipairs(_G.BGA.Frames) do
-                    f.num = i
+                if BG and BG.options and BiaoGe.options.autoAuctionUp == 1 then
+                    for _, _f in pairs(_G.BGA.Frames) do
+                        if _f.num < f.num then
+                            _f.showCantClickFrame = false
+                        else
+                            _f.showCantClickFrame = true
+                        end
+                    end
+                    aura.UpdateAllFrames()
                 end
-                aura.UpdateAllFrames()
             end
         end)
     end
@@ -946,13 +1074,19 @@ BG.Init(function()
     function aura.anim(parent)
         parent.alltime = 0.5
         parent.t = 0.5
-        parent:SetScale(3)
+        parent.animing = true
         parent:SetScript("OnUpdate", function(self, t)
             self.t = self.t - t
             if self.t <= 0 then self.t = 0 end
-            self:SetScale(1 + self.t / self.alltime)
+            self:SetAlpha(max(1 - self.t / self.alltime, 0.01))
+            self:SetScale(max(1 - self.t / self.alltime, 0.01))
+            self.myMoneyEdit:SetCursorPosition(0)
             if self.t <= 0 then
+                self.animing = nil
                 self:SetScript("OnUpdate", nil)
+                C_Timer.After(0, function()
+                    CheckAllFrameOverlap()
+                end)
             end
         end)
     end
@@ -1073,7 +1207,7 @@ BG.Init(function()
 
         function aura.AutoSendMyMoney(f)
             if not f.isAuto then return end
-            if f.player and f.player == UnitName("player") then return end
+            if f.player and f.player == aura.GN() then return end
 
             local newmoney
             if f.start then
@@ -1087,14 +1221,32 @@ BG.Init(function()
 
             if newmoney <= f.autoMoney then
                 C_ChatInfo.SendAddonMessage(aura.AddonChannel, "SendMyMoney" .. "," ..
-                    f.auctionID .. "," .. newmoney, "RAID")
+                    f[_auctionID_] .. "," .. newmoney, "RAID")
             end
+        end
+
+        function aura.AutoSendEndPlaySound()
+            if BiaoGe and BiaoGe.options and BiaoGe.options.autoAuctionAutoEndTips == 1 then
+                BG.PlaySound("autoAuctionAutoEndTips")
+            end
+        end
+
+        function aura.AutoSendLate()
+            if BiaoGe and BiaoGe.options and BiaoGe.options.aotoSendLate == 1 then
+                local num = tonumber(BiaoGe.Auction.aotoSendLate)
+                if num then
+                    num = min(max(num, 1), 5)
+                    num = random(1 * 10, num * 10) / 10
+                    return num
+                end
+            end
+            return 0.5
         end
     end
 
     function aura.CreateAuction(auctionID, itemID, money, duration, player, mod, notAfter)
-        for i, f in ipairs(_G.BGA.Frames) do
-            if f.auctionID == auctionID then
+        for _, f in pairs(_G.BGA.Frames) do
+            if f[_auctionID_] == auctionID then
                 return
             end
         end
@@ -1102,13 +1254,15 @@ BG.Init(function()
         local name, link, quality, level, _, itemType, itemSubType, _, itemEquipLoc, Texture, _, classID, subclassID, bindType = GetItemInfo(itemID)
         if not link then
             if not notAfter then
-                C_Timer.After(0.5, function()
+                After(0.5, function()
                     aura.CreateAuction(auctionID, itemID, money, duration - 0.5, player, mod, true)
                 end)
             end
             return
         end
         local AuctionFrame
+
+        mod = "normal"
 
         -- 主界面
         do
@@ -1122,20 +1276,26 @@ BG.Init(function()
             f:SetBackdropBorderColor(unpack(aura.backdropBorderColor))
             f:SetSize(aura.WIDTH, aura.HEIGHT)
             if #_G.BGA.Frames == 0 then
-                f:SetPoint("TOP", 0, 0)
+                f:SetPoint("TOP")
+                f.num = 1
             else
-                f:SetPoint("TOP", _G.BGA.Frames[#_G.BGA.Frames], "BOTTOM", 0, -5)
+                for i = 1, aura.maxNumFrame do
+                    if not _G.BGA.Frames[i] then
+                        f.num = i
+                        f:SetPoint("TOP", 0, -GetHeight(f.num))
+                        break
+                    end
+                end
             end
             f:EnableMouse(true)
-            f.auctionID = auctionID
+            f[_auctionID_] = auctionID
             f.itemID = itemID
             f.link = link
             f.mod = mod
-            f.num = #_G.BGA.Frames + 1
             f.logs = {}
             f.logs2 = {}
             AuctionFrame = f
-            tinsert(_G.BGA.Frames, f)
+            _G.BGA.Frames[f.num] = f
             f:SetScript("OnMouseUp", function(self)
                 local mainFrame = _G.BGA.AuctionMainFrame
                 mainFrame:StopMovingOrSizing()
@@ -1156,7 +1316,7 @@ BG.Init(function()
                     mainFrame.time = mainFrame.time + time
                     if mainFrame.time >= 0.2 then
                         mainFrame.time = 0
-                        for _, f in ipairs(_G.BGA.Frames) do
+                        for _, f in pairs(_G.BGA.Frames) do
                             if f.itemFrame.isOnEnter then
                                 GameTooltip:Hide()
                                 f.itemFrame:GetScript("OnEnter")(f.itemFrame)
@@ -1173,7 +1333,7 @@ BG.Init(function()
             f.cantClickFrame:SetAllPoints()
             f.cantClickFrame:SetFrameLevel(200)
             f.cantClickFrame:EnableMouse(true)
-            C_Timer.After(.6, function()
+            After(.6, function()
                 f.cantClickFrame:Hide()
             end)
 
@@ -1238,7 +1398,7 @@ BG.Init(function()
                 AuctionFrame.cantClickFrame.autoFrame:SetPoint("TOPLEFT", f, 0, 0)
                 AuctionFrame.cantClickFrame.autoFrame:SetPoint("BOTTOMRIGHT", f, 0, 0)
                 AuctionFrame.cantClickFrame.autoFrame:EnableMouse(true)
-                C_Timer.After(.6, function()
+                After(.6, function()
                     AuctionFrame.cantClickFrame.autoFrame:Hide()
                 end)
 
@@ -1267,6 +1427,7 @@ BG.Init(function()
                 edit:SetPoint("BOTTOM", 2, 27)
                 edit:SetAutoFocus(false)
                 edit:SetNumeric(true)
+                edit:SetMaxBytes(8)
                 edit.owner = AuctionFrame
                 edit.alpha = .3
                 AuctionFrame.autoMoney = 0
@@ -1533,7 +1694,7 @@ BG.Init(function()
                 AuctionFrame.colorplayer = aura.SetClassCFF(player)
             end
             if player and player ~= "" then
-                if player == UnitName("player") then
+                if player == aura.GN() then
                     t:SetText(L["|cffFFD100出价最高者：|r"] .. "|cff" .. aura.GREEN1 .. L[">> 你 <<"])
                     AuctionFrame:SetBackdropColor(unpack(aura.backdropColor_IsMe))
                     AuctionFrame:SetBackdropBorderColor(unpack(aura.backdropBorderColor_IsMe))
@@ -1560,9 +1721,10 @@ BG.Init(function()
             local edit = CreateFrame("EditBox", nil, currentMoneyText, "InputBoxTemplate")
             edit:SetSize(AuctionFrame:GetRight() - currentMoneyText:GetRight() - 3, 20)
             edit:SetPoint("TOPLEFT", currentMoneyText, "TOPRIGHT", 0, 0)
-            edit:SetText(money)
             edit:SetAutoFocus(false)
             edit:SetNumeric(true)
+            edit:SetText(money)
+            edit:SetMaxBytes(8)
             edit.owner = AuctionFrame
             edit:SetScript("OnTextChanged", aura.myMoney_OnTextChanged)
             edit:SetScript("OnEnterPressed", aura.SendMyMoney_OnClick)
@@ -1642,12 +1804,16 @@ BG.Init(function()
     do
         local f = CreateFrame("Frame", nil, UIParent, "BackdropTemplate")
         f:SetSize(aura.WIDTH, aura.HEIGHT)
-        f:SetFrameStrata('HIGH')
+        if BiaoGe and BiaoGe.options and BiaoGe.options.autoAuctionFrameLevel then
+            f:SetFrameStrata(BiaoGe.options.autoAuctionFrameLevel)
+        else
+            f:SetFrameStrata('HIGH')
+        end
         f:SetClampedToScreen(true)
         f:SetFrameLevel(100)
         f:SetToplevel(true)
         f:SetMovable(true)
-        f:SetScale(BiaoGe and BiaoGe.options and BiaoGe.options["autoAuctionScale"] or 0.95)
+        f:SetScale(BiaoGe and BiaoGe.options and BiaoGe.options["autoAuctionScale"] or 0.9)
         _G.BGA.AuctionMainFrame = f
 
         if _G.BiaoGe and _G.BiaoGe.point and _G.BiaoGe.point.Auction then
@@ -1665,15 +1831,15 @@ BG.Init(function()
     _G.BGA.Event:RegisterEvent("MODIFIER_STATE_CHANGED")
     _G.BGA.Event:SetScript("OnEvent", function(self, event, ...)
         if event == "CHAT_MSG_ADDON" then
-            local prefix, msg, distType, senderFullName = ...
+            local prefix, msg, distType, sender = ...
             if prefix ~= aura.AddonChannel then return end
             local arg1, arg2, arg3, arg4, arg5, arg6, arg7 = strsplit(",", msg)
-            local sender, realm = strsplit("-", senderFullName)
+            sender = aura.GSN(sender)
             if arg1 == "SendMyMoney" and distType == "RAID" then
                 local auctionID = tonumber(arg2)
                 local money = tonumber(arg3)
-                for i, f in ipairs(_G.BGA.Frames) do
-                    if not f.IsEnd and f.auctionID == auctionID then
+                for _, f in pairs(_G.BGA.Frames) do
+                    if not f.IsEnd and f[_auctionID_] == auctionID then
                         if f.start then
                             if money >= f.money then
                                 aura.SetMoney(f, money, sender)
@@ -1695,29 +1861,56 @@ BG.Init(function()
                 aura.CreateAuction(auctionID, itemID, money, duration, player, mod)
 
                 if aura.IsRaidLeader() then
-                    local tbl = {
-                        normal = L["正常模式"],
-                        anonymous = L["匿名模式"],
-                    }
-
+                    local function GetVIPTipsText(link)
+                        local tipsText = ""
+                        if BiaoGeVIP and BiaoGeVIP.auction then
+                            local tbl = {}
+                            for _, FB in pairs(BG.FBtable) do
+                                if FB == BG.FB1 then
+                                    tinsert(tbl, 1, FB)
+                                else
+                                    tinsert(tbl, FB)
+                                end
+                            end
+                            local itemID = GetItemInfoInstant(link)
+                            for _, FB in ipairs(tbl) do
+                                local text = BiaoGeVIP.auction[FB].money[itemID .. "tips"]
+                                if text then
+                                    tipsText = " " .. L["团长："] .. text
+                                    break
+                                end
+                            end
+                        end
+                        return tipsText
+                    end
                     local _, link = GetItemInfo(itemID)
                     if link then
-                        SendChatMessage(format(L["{rt1}拍卖开始{rt1} %s 起拍价：%s 拍卖时长：%ss %s"],
-                            link, money, duration, (tbl[mod] and "<" .. tbl[mod] .. ">" or "")), "RAID_WARNING")
+                        local msg = format(L["{rt1}拍卖开始{rt1} %s 起拍价：%s"],
+                            link, money)
+                        local tipsText = GetVIPTipsText(link)
+                        if strlen(msg .. tipsText) < 255 then
+                            msg = msg .. tipsText
+                        end
+                        SendChatMessage(msg, "RAID_WARNING")
                     else
-                        C_Timer.After(0.5, function()
+                        After(0.5, function()
                             local _, link = GetItemInfo(itemID)
                             if link then
-                                SendChatMessage(format(L["{rt1}拍卖开始{rt1} %s 起拍价：%s 拍卖时长：%ss %s"],
-                                    link, money, duration, (tbl[mod] and "<" .. tbl[mod] .. ">" or "")), "RAID_WARNING")
+                                local msg = format(L["{rt1}拍卖开始{rt1} %s 起拍价：%s"],
+                                    link, money)
+                                local tipsText = GetVIPTipsText(link)
+                                if strlen(msg .. tipsText) < 255 then
+                                    msg = msg .. tipsText
+                                end
+                                SendChatMessage(msg, "RAID_WARNING")
                             end
                         end)
                     end
                 end
             elseif arg1 == "CancelAuction" and distType == "RAID" then
                 local auctionID = tonumber(arg2)
-                for i, f in ipairs(_G.BGA.Frames) do
-                    if f.auctionID == auctionID and not f.IsEnd then
+                for _, f in pairs(_G.BGA.Frames) do
+                    if f[_auctionID_] == auctionID and not f.IsEnd then
                         local t = f.itemFrame2:CreateFontString()
                         t:SetFont(STANDARD_TEXT_FONT, 30, "OUTLINE")
                         t:SetPoint("TOPRIGHT", f.itemFrame, "BOTTOMRIGHT", -10, -5)
@@ -1734,21 +1927,21 @@ BG.Init(function()
                             SendChatMessage(format(L["{rt7}拍卖取消{rt7} %s"], f.link), "RAID")
                         end
 
-                        C_Timer.After(aura.HIDEFRAME_TIME, function()
+                        After(aura.HIDEFRAME_TIME, function()
                             aura.UpdateFrame(f)
                         end)
                         return
                     end
                 end
-            elseif arg1 == "GetAuctioning" and distType == "RAID" and sender ~= UnitName("player") then
-                for i, f in ipairs(_G.BGA.Frames) do
+            elseif arg1 == "GetAuctioning" and distType == "RAID" and sender ~= aura.GN() then
+                for _, f in pairs(_G.BGA.Frames) do
                     if (not f.IsEnd) and f.remaining and f.remaining >= 2 then
-                        local text = "Auctioning" .. "," .. f.auctionID .. "," .. f.itemID .. "," .. f.money ..
+                        local text = "Auctioning" .. "," .. f[_auctionID_] .. "," .. f.itemID .. "," .. f.money ..
                             "," .. (f.remaining) .. "," .. (f.player or "") .. "," .. (f.mod or "")
-                        C_ChatInfo.SendAddonMessage(aura.AddonChannel, text, "WHISPER", senderFullName)
+                        C_ChatInfo.SendAddonMessage(aura.AddonChannel, text, "WHISPER", sender)
                     end
                 end
-            elseif arg1 == "Auctioning" and distType == "WHISPER" and sender ~= UnitName("player") then
+            elseif arg1 == "Auctioning" and distType == "WHISPER" and sender ~= aura.GN() then
                 local auctionID = tonumber(arg2)
                 local itemID = tonumber(arg3)
                 local money = tonumber(arg4)
@@ -1756,8 +1949,8 @@ BG.Init(function()
                 local player = arg6
                 local mod = arg7
 
-                for i, f in ipairs(_G.BGA.Frames) do
-                    if f.auctionID == auctionID then
+                for _, f in pairs(_G.BGA.Frames) do
+                    if f[_auctionID_] == auctionID then
                         return
                     end
                 end
@@ -1767,16 +1960,15 @@ BG.Init(function()
                 C_ChatInfo.SendAddonMessage(aura.AddonChannel, "MyVer" .. "," .. aura.ver, "RAID")
             end
         elseif event == "GROUP_ROSTER_UPDATE" then
-            C_Timer.After(0.5, function()
+            After(0.5, function()
                 aura.UpdateRaidRosterInfo()
             end)
         elseif event == "PLAYER_ENTERING_WORLD" then
-            local isLogin, isReload = ...
-            if not (isLogin or isReload) then return end
-            C_Timer.After(0.5, function()
+            self:UnregisterEvent("PLAYER_ENTERING_WORLD")
+            After(2, function()
                 aura.UpdateRaidRosterInfo()
             end)
-            C_Timer.After(2, function()
+            After(3, function()
                 aura.GetAuctioningFromRaid()
             end)
         elseif event == "MODIFIER_STATE_CHANGED" then
@@ -1796,4 +1988,7 @@ end)
 
 --[[
 /run C_ChatInfo.SendAddonMessage("BiaoGeAuction","StartAuction,"..GetTime()..",".."50011"..",".."5000"..",".."60","RAID")
- ]]
+
+BiaoGeVIP.auction["ICC"].money[4367]=100
+BiaoGeVIP.auction["ICC"].money["4367".."tips"]="极品啊，法系BIS"
+]]

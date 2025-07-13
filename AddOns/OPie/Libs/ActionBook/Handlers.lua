@@ -1443,8 +1443,14 @@ securecall(function() -- uipanel: token
 			else
 				GameTooltip:AddLine(WEEKLY_REWARDS_ADD_ITEMS, 0.75, 0.75, 0.75, 1)
 			end
+			if InCombatLockdown() and not WeeklyRewardsFrame:IsShown() then
+				GameTooltip:AddLine("|A:gmchat-icon-blizz:0:0|a " .. ERR_NOT_IN_COMBAT, 1, 0, 0, 1)
+			end
 			GameTooltip:Show()
 		end
+	end
+	local function openPanelFallback(panel)
+		return not InCombatLockdown() and ShowUIPanel(panel)
 	end
 	local panelMap, panels = {}, {
 		character={CHARACTER, icon="Interface/PVPFrame/Icons/prestige-icon-7-3", gw=PaperDollFrame, tw=CharacterFrameTab1},
@@ -1466,7 +1472,7 @@ securecall(function() -- uipanel: token
 		macro={MACROS, icon="Interface/Icons/INV_Misc_Note_06", gn="MacroFrame", tmt=SLASH_MACRO1, cw=closeButton(MacroFrame), postmt=pyCLICK .. "csp 1\n" .. pyCLICK .. "cgm 1"},
 		profs=MODERN and {TRADE_SKILLS, icon="interface/icons/inv_pick_02", tw=ProfessionMicroButton},
 		gamemenu={MAINMENU_BUTTON, icon=CF_CLASSIC and "Interface/Icons/INV_Misc_PunchCards_Red", atlas="UI-HUD-MicroMenu-GameMenu-Up", gw=GameMenuFrame, tmt="/click GameMenuButtonContinue", noduck=1, pre=function() return not GameMenuFrame:IsShown() or nil end, post=function() RatingMenuFrame:Show() RatingMenuFrame:Hide() PlaySound(SOUNDKIT.IG_MAINMENU_OPEN) end},
-		vault=MODERN and {DELVES_GREAT_VAULT_LABEL, icon="Interface/Icons/INV_Cape_Special_Treasure_C_01", gn="WeeklyRewardsFrame", skipCloseSound=169062, req=function() return UnitLevel("player") == 80 end, tip=ShowVaultTip},
+		vault=MODERN and {DELVES_GREAT_VAULT_LABEL, icon="Interface/Icons/INV_Cape_Special_Treasure_C_01", gn="WeeklyRewardsFrame", skipCloseSound=169062, req=function() return UnitLevel("player") == 80 end, tip=ShowVaultTip, open=openPanelFallback},
 		csp={gw=SettingsPanel, cpreamble=true, cw=closeButton(SettingsPanel, "csp")},
 		cgm={gw=GameMenuFrame, cpreamble=true, cw=closeButton(GameMenuFrame, "cgm")},
 		csf={pre=function() return StoreFrame_IsShown and StoreFrame_SetShown and StoreFrame_IsShown() and StoreFrame_SetShown(false) end, cpreamble=true},
@@ -1500,7 +1506,7 @@ securecall(function() -- uipanel: token
 					end
 				end
 				if ofun and gh == od then
-					securecall(ofun)
+					securecall(ofun, gw, k)
 				end
 			end
 			return r ~= 0 and r or nil
@@ -1571,7 +1577,7 @@ securecall(function() -- uipanel: token
 		end
 	end
 	do -- further panels init
-		local fpd = (MODERN or CF_WRATH) and securecall(function()
+		local fpd = CF_WRATH and securecall(function()
 			local tf, x2, x = CreateFrame("Frame"), EnumerateFrames(), nil
 			tf:SetAttribute("UIPanelLayout-defined", 1)
 			tf:SetAttribute("UIPanelLayout-area", "none")
@@ -1609,22 +1615,17 @@ securecall(function() -- uipanel: token
 				end
 				return "remove"
 			end
-			if fpd then
-				pcall(C_AddOns.LoadAddOn, "Blizzard_WeeklyRewards")
-				panels.vault.cw = closeButton(panels.vault.gw)
-				panels.vault.premt = widgetClickCommand("vault", panels.vault.cw) .. widgetAttrCommand(fpd, "panel-force",false, "panel-frame",panels.vault.gw, "panel-show",true)
-			else
-				panels.vault = nil
-			end
+			pcall(C_AddOns.LoadAddOn, "Blizzard_WeeklyRewards")
+			panels.vault.cw = closeButton(panels.vault.gw)
 		else -- not MODERN
 			if CF_WRATH then
 				panels.achievements.icon = "Interface/PvPFrame/Icons/prestige-icon-4"
+				local gfp = panels.groupfinder
+				gfp.tw, gfp.cw, gfp.skipCloseSound = nil, closeButton(gfp.gw), 839
 				if fpd then
-					local gfp = panels.groupfinder
-					gfp.tw, gfp.cw, gfp.skipCloseSound = nil, closeButton(gfp.gw), 839
 					gfp.premt = widgetClickCommand("groupfinder", gfp.cw) .. widgetAttrCommand(fpd, "panel-force",false, "panel-frame",gfp.gw, "panel-show",true) .. CLICK .. "GroupFinderFrameGroupButton1"
 				else
-					panels.groupfinder = nil
+					gfp.open, gfp.premt = openPanelFallback, CLICK .. "GroupFinderFrameGroupButton1"
 				end
 				function panels.currency.req()
 					return GetCurrencyListSize() > 0
@@ -1653,7 +1654,8 @@ securecall(function() -- uipanel: token
 			icon, s = i.atlas, s + 262144
 		end
 		local tf = i.tip or nil
-		return tk == "gamemenu" or not (MODERN and AreAllPanelsDisallowed()), s, icon, i[1], nil, nil, nil, tf, tf and tk
+		local willFail = MODERN and AreAllPanelsDisallowed() or (gw and i.open == openPanelFallback and InCombatLockdown() and not gw:IsVisible())
+		return tk == "gamemenu" or not willFail, s, icon, i[1], nil, nil, nil, tf, tf and tk
 	end
 	local function createPanel(tk)
 		local r = panelMap[tk]

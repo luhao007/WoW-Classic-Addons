@@ -1,5 +1,4 @@
 local _, addonTable = ...;
-local _, _, _, tocversion = GetBuildInfo()
 local Create=addonTable.Create
 local PIGFontString=Create.PIGFontString
 local FramePlusfun=addonTable.FramePlusfun
@@ -30,47 +29,71 @@ end
 --根据事件加载的UI
 local UINameList_AddOn={
 	{"MacroFrame","Blizzard_MacroUI",},--宏命令UI
-	{"AchievementFrame","Blizzard_AchievementUI",{"AchievementFrame","Header"}},--成就UI
+	{"AchievementFrame","Blizzard_AchievementUI",{"AchievementFrameHeader"}},--成就UI
 	{"CommunitiesFrame","Blizzard_Communities",},--公会与社区
 	{"CollectionsJournal","Blizzard_Collections",},--藏品
 	{"EncounterJournal","Blizzard_EncounterJournal",},--冒险手册
 	{"CraftFrame","Blizzard_CraftUI",},--附魔
 	{"InspectFrame","Blizzard_InspectUI",},--观察
 	{"GuildBankFrame","Blizzard_GuildBankUI",},--公会银行
+	{"CalendarFrame","Blizzard_Calendar",},--日历
 }
-if tocversion<50000 then
+if PIG_MaxTocversion() then
 	table.insert(UINameList_AddOn,{"TradeSkillFrame","Blizzard_TradeSkillUI"})--专业面板
-	table.insert(UINameList_AddOn,{"PlayerTalentFrame","Blizzard_TalentUI"})--天赋UI 
-	table.insert(UINameList_AddOn,{"AuctionFrame","Blizzard_AuctionUI"})--拍卖{"AuctionFrameBrowse","piglist"}	
-elseif tocversion<110000 then
-	table.insert(UINameList_AddOn,{"ClassTalentFrame","Blizzard_ClassTalentUI",})--天赋UI 
 else
 	table.insert(UINameList_AddOn,{"ProfessionsBookFrame","Blizzard_ProfessionsBook"})--专业
 	table.insert(UINameList_AddOn,{"ProfessionsFrame","Blizzard_Professions"})--专业面板
-	table.insert(UINameList_AddOn,{"AuctionHouseFrame","Blizzard_AuctionHouseUI"})--拍卖
-	--table.insert(UINameList_AddOn,{"PlayerSpellsFrame","Blizzard_PlayerSpells"})--天赋UI 有BUG
 end
-local function add_Movebiaoti(oldbiaoti,point)
+--天赋UI
+if PIG_MaxTocversion() then
+	table.insert(UINameList_AddOn,{"PlayerTalentFrame","Blizzard_TalentUI"})
+elseif PIG_MaxTocversion(110000) then
+	table.insert(UINameList_AddOn,{"ClassTalentFrame","Blizzard_ClassTalentUI",})
+else
+	--table.insert(UINameList_AddOn,{"PlayerSpellsFrame","Blizzard_PlayerSpells"})--有BUG
+end
+--拍卖
+if PIG_MaxTocversion(50000) then
+	table.insert(UINameList_AddOn,{"AuctionFrame","Blizzard_AuctionUI"})
+else	
+	table.insert(UINameList_AddOn,{"AuctionHouseFrame","Blizzard_AuctionHouseUI"})--拍卖
+end
+
+---
+local function GetUIConfigDataV(MovingUIName,vvv)
+	if vvv=="Scale" then
+		if PIGA["Blizzard_UI"][MovingUIName] and PIGA["Blizzard_UI"][MovingUIName]["Scale"] then
+			return PIGA["Blizzard_UI"][MovingUIName]["Scale"]
+		else
+			return 1
+		end
+	else
+		if PIGA["Blizzard_UI"][MovingUIName] and PIGA["Blizzard_UI"][MovingUIName]["Point"] then
+			return PIGA["Blizzard_UI"][MovingUIName]["Point"]
+		else
+			return nil
+		end
+	end	
+end
+local function SetUIConfigData(MovingUIName,vvv)
+	PIGA["Blizzard_UI"][MovingUIName]=PIGA["Blizzard_UI"][MovingUIName] or {}
+	if vvv=="Scale" then
+		PIGA["Blizzard_UI"][MovingUIName]["Scale"]=PIGA["Blizzard_UI"][MovingUIName]["Scale"] or 1
+	end
+end
+local function add_Movebiaoti(oldbiaoti)
 	local Movebiaoti = CreateFrame("Frame", nil, oldbiaoti);
 	Movebiaoti:SetPoint("TOPLEFT",oldbiaoti,"TOPLEFT",0,0);
 	Movebiaoti:SetPoint("BOTTOMRIGHT",oldbiaoti,"BOTTOMRIGHT",0,0);
 	Movebiaoti:EnableMouse(true)
 	return Movebiaoti
 end
-local function PIG_SetPoint(self)
-   	local point, relativeTo, relativePoint, offsetX, offsetY=unpack(PIGA["BlizzardUI"][self:GetName()]["Point"])
-	self:ClearAllPoints();
-	self:SetPoint(point, relativeTo, relativePoint, offsetX, offsetY);
-end
-local function Moving(MovingUI,Frame)
+local PIG_SetPoint=Create.PIG_SetPoint
+local function MovingFun(MovingUI,Frame)
 	if MovingUI then
 		local Frame = Frame or MovingUI
 		local MovingUIName=MovingUI:GetName()
-		PIGA["BlizzardUI"][MovingUIName]=PIGA["BlizzardUI"][MovingUIName] or {}
 		--位置
-		MovingUI:EnableMouse(true)
-		MovingUI:SetMovable(true)
-	 	MovingUI:SetClampedToScreen(true)
 	 	Frame:RegisterForDrag("LeftButton")
 	    Frame:HookScript("OnDragStart",function()
 	        MovingUI:StartMoving();
@@ -78,58 +101,86 @@ local function Moving(MovingUI,Frame)
 	    Frame:HookScript("OnDragStop",function()
 	        MovingUI:StopMovingOrSizing()
 	        if PIGA["FramePlus"]["BlizzardUI_Move_Save"] then
+	        	SetUIConfigData(MovingUIName)
 	        	local point, relativeTo, relativePoint, offsetX, offsetY = MovingUI:GetPoint()
-	        	PIGA["BlizzardUI"][MovingUIName]=PIGA["BlizzardUI"][MovingUIName] or {}
-	       		PIGA["BlizzardUI"][MovingUIName]["Point"]={point, relativeTo, relativePoint, offsetX, offsetY}
+	        	local offsetX = floor(offsetX*100+0.5)*0.01
+				local offsetY = floor(offsetY*100+0.5)*0.01
+	       		PIGA["Blizzard_UI"][MovingUIName]["Point"]={point, relativePoint, offsetX, offsetY}
+	       		--if not InCombatLockdown() then SetUIPanelAttribute(MovingUI, "area", nil) end
+				-- print(offsetX,offsetY)
+				-- SetUIPanelAttribute(MovingUI, "xoffset", offsetX);
+				-- SetUIPanelAttribute(MovingUI, "yoffset", offsetY);
 	       	end
 	    end)
-
 	    MovingUI:HookScript("OnShow",function(self)
-	    	if PIGA["BlizzardUI"][MovingUIName] and PIGA["FramePlus"]["BlizzardUI_Move_Save"] and PIGA["BlizzardUI"][self:GetName()]["Point"] and #PIGA["BlizzardUI"][self:GetName()]["Point"]>0 then
-		    	PIG_SetPoint(self)
-		    	C_Timer.After(0,function() PIG_SetPoint(self) end)
-		    	C_Timer.After(0.001,function() PIG_SetPoint(self) end)
+	    	if MovingUIName=="WorldMapFrame" then return end
+	    	if not InCombatLockdown() and GetUIConfigDataV(MovingUIName) then
+		    	PIG_SetPoint(MovingUIName,true)
+		    	C_Timer.After(0,function() PIG_SetPoint(MovingUIName,true) end)
+		    	C_Timer.After(0.001,function() PIG_SetPoint(MovingUIName,true) end)
 		    end
 	    end)
-	    
 	    --缩放
-	    if PIGA["BlizzardUI"][MovingUIName]["Scale"] then
-			MovingUI:SetScale(PIGA["BlizzardUI"][MovingUIName]["Scale"]);
+	    local function funxx(self)
+	    	MovingUI:EnableMouse(true)
+			MovingUI:SetMovable(true)
+	 		MovingUI:SetClampedToScreen(true)
+	    	MovingUI:SetScale(GetUIConfigDataV(MovingUIName,"Scale"));
+			MovingUI:EnableMouseWheel(true) 
+	    end
+		if MovingUIName=="CollectionsJournal" and InCombatLockdown() then
+			MovingUI:RegisterEvent("PLAYER_REGEN_ENABLED")
+		else
+			funxx()
 		end
-	    MovingUI:EnableMouseWheel(true);
+		MovingUI:HookScript("OnEvent", function(self, event)
+			if event=="PLAYER_REGEN_ENABLED" then
+				funxx()
+			end
+		end)
 	    MovingUI:HookScript("OnMouseWheel", function(self, arg1)
 			if IsControlKeyDown() and IsAltKeyDown() then
-				PIGA["BlizzardUI"][self:GetName()]["Scale"]=PIGA["BlizzardUI"][self:GetName()]["Scale"] or 1
+				SetUIConfigData(MovingUIName,"Scale")
 	    		local vera = arg1*0.1
-	    		local newbvv = PIGA["BlizzardUI"][self:GetName()]["Scale"]+vera
+	    		local newbvv = PIGA["Blizzard_UI"][MovingUIName]["Scale"]+vera
 	    		if newbvv>=1.8 then
-	    			PIGTopMsg:add("已达最大缩放比例: 1.8")
-	    			PIGA["BlizzardUI"][self:GetName()]["Scale"]=1.8
+	    			PIG_OptionsUI:ErrorMsg("已达最大缩放比例: 1.8")
+	    			PIGA["Blizzard_UI"][MovingUIName]["Scale"]=1.8
 	    		elseif newbvv<=0.6 then
-	    			PIGTopMsg:add("已达最小缩放比例: 0.6")
-	    			PIGA["BlizzardUI"][self:GetName()]["Scale"]=0.6
+	    			PIG_OptionsUI:ErrorMsg("已达最小缩放比例: 0.6")
+	    			PIGA["Blizzard_UI"][MovingUIName]["Scale"]=0.6
 	    		else
-	    			PIGA["BlizzardUI"][self:GetName()]["Scale"]=newbvv
-	    			PIGTopMsg:add("当前缩放: "..PIGA["BlizzardUI"][self:GetName()]["Scale"])
+	    			PIGA["Blizzard_UI"][MovingUIName]["Scale"]=newbvv
+	    			PIG_OptionsUI:ErrorMsg("当前缩放: "..PIGA["Blizzard_UI"][MovingUIName]["Scale"])
 	    		end
-	    		self:SetScale(PIGA["BlizzardUI"][self:GetName()]["Scale"]);
+	    		if newbvv==1 then PIGA["Blizzard_UI"][MovingUIName]["Scale"]=nil end
+	    		self:SetScale(GetUIConfigDataV(MovingUIName,"Scale"));
 			end
 		end)
 	end
 end
 --
+local function SetMovingEvent(v)
+	if v[3] then
+		for k1,v1 in pairs(v[3]) do
+			MovingFun(_G[v[1]],_G[v1])
+		end
+	else
+		MovingFun(_G[v[1]])
+	end
+end
 function FramePlusfun.BlizzardUI_Move()
 	if not PIGA['FramePlus']['BlizzardUI_Move'] then return end
 	if PIGA["FramePlus"]["BlizzardUI_Move_Save"] then
 		local oldshowframe = nil
 		hooksecurefunc("UpdateUIPanelPositions", function(Frame)
 			local Frame = Frame or oldshowframe
-			if Frame and PIGA["BlizzardUI"][UIName] then
+			if Frame and PIGA["Blizzard_UI"][UIName] then
 				local UIName = Frame:GetName()
 				if UIName then
 					oldshowframe=Frame
-					if PIGA["BlizzardUI"][UIName]["Point"] and #PIGA["BlizzardUI"][UIName]["Point"]>0 then
-				    	PIG_SetPoint(Frame)
+					if PIGA["Blizzard_UI"][UIName]["Point"] and #PIGA["Blizzard_UI"][UIName]["Point"]>0 then
+				    	PIG_SetPoint(UIName,true)
 				    end
 				end
 			end
@@ -138,33 +189,23 @@ function FramePlusfun.BlizzardUI_Move()
 	for k,v in pairs(UINameList) do
 		if v[2] then
 			if v[2]=="add" then
-				local Movebiaoti=add_Movebiaoti(v[3],point)
-				Moving(v[1],Movebiaoti)
+				MovingFun(v[1],add_Movebiaoti(v[3]))
 			else
-				Moving(v[1],v[2])
+				MovingFun(v[1],v[2])
 			end
 		else
-			Moving(v[1])
+			MovingFun(v[1])
 		end
 	end
 	for k,v in pairs(UINameList_AddOn) do
 		if IsAddOnLoaded(v[2]) then
-			if v[3] then
-				if type(v[3])=="table" then
-					C_Timer.After(0.1,function()
-						Moving(_G[v[1]],_G[v[3][1]][v[3][2]])
-					end)
-				else
-					Moving(_G[v[1]],_G[v[3]])
-				end
-			else
-				Moving(_G[v[1]])
-			end
+			SetMovingEvent(v)
 	    else
-	        local shequFRAME = CreateFrame("FRAME")
-	        shequFRAME:RegisterEvent("ADDON_LOADED")
-	        shequFRAME:SetScript("OnEvent", function(self, event, arg1)
+	        local bizzUIFRAME = CreateFrame("Frame")
+	        bizzUIFRAME:RegisterEvent("ADDON_LOADED")
+	        bizzUIFRAME:SetScript("OnEvent", function(self, event, arg1)
 	            if arg1 == v[2] then
+	            	self:UnregisterEvent("ADDON_LOADED")
 	            	if arg1=="Blizzard_Collections" then
 	            		if WardrobeTransmogFrame then
 		            		local checkBox = _G.WardrobeTransmogFrame.ToggleSecondaryAppearanceCheckbox;
@@ -174,18 +215,7 @@ function FramePlusfun.BlizzardUI_Move()
 						    label:SetPoint('RIGHT', checkBox, 'RIGHT', 160, 1);
 						end
 					end
-					if v[3] then
-						if type(v[3])=="table" then
-							C_Timer.After(0.1,function()
-								Moving(_G[v[1]],_G[v[3][1]][v[3][2]])
-							end)
-						else
-							Moving(_G[v[1]],_G[v[3]])
-						end
-					else
-						Moving(_G[v[1]])
-					end
-	                shequFRAME:UnregisterEvent("ADDON_LOADED")
+					SetMovingEvent(v)
 	            end
 	        end)
 	    end

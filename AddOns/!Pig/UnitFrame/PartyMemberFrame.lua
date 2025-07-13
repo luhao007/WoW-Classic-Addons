@@ -1,5 +1,4 @@
 ﻿local _, addonTable = ...;
-local _, _, _, tocversion = GetBuildInfo()
 local Create = addonTable.Create
 local PIGFontString=Create.PIGFontString
 local UnitFramefun=addonTable.UnitFramefun
@@ -38,7 +37,7 @@ local function Update_zhiye(Party,id)
 		Party.Icon:SetTexCoord(unpack(coords));
 		local Role = UnitGroupRolesAssigned(id)
 		Party.role.Icon:SetAtlas(PIGGetIconForRole(Role, false));
-		if tocversion>100000 then
+		if PIG_MaxTocversion(100000,true) then
 			local pfujiui = Party:GetParent()
 			pfujiui.PartyMemberOverlay.RoleIcon:Hide()
 			pfujiui.Name:SetWidth(170)
@@ -92,7 +91,7 @@ local function Update_BUFF(Party,id)
 end
 local function Update_Debuff(Party,id)
 	if IsInRaid() then return end
-	if tocversion<100000 then
+	if PIG_MaxTocversion() then
 	else
 		for j = 1, UFP_MAX_PARTY_DEBUFFS, 1 do
 			local _, icon = UnitDebuff(id, j);
@@ -168,7 +167,7 @@ local function PartyMember_Plus()
 			Party.zhiye = CreateFrame("Button", nil, Party);
 			Party.zhiye:SetFrameLevel(5)
 			Party.zhiye:SetSize(28,28);
-			if tocversion<100000 then
+			if PIG_MaxTocversion() then
 				Party.zhiye:SetPoint("BOTTOMLEFT", Party, "TOPLEFT", 22, -18);
 			else
 				Party.zhiye:SetPoint("BOTTOMLEFT", Party, "TOPLEFT", 17, -16);
@@ -226,7 +225,7 @@ local function PartyMember_HPFF()
 			insets = { left = 2, right = 2, top = 2, bottom = 2 }});
 			Party.HP:SetBackdropColor(0, 0, 0, 0.6);
 			Party.HP:SetBackdropBorderColor(1, 1, 1, 0.6);
-			if tocversion<100000 then
+			if PIG_MaxTocversion() then
 				Party.HP:SetPoint("TOPLEFT", Party, "TOPRIGHT", -11, -10);
 			else
 				Party.HP:SetPoint("TOPLEFT", Party, "TOPRIGHT", -3, -17.6);
@@ -270,14 +269,14 @@ local function PartyMember_HPFF()
 			manabar:HookScript("OnLeave", yinHPMP)
 		end
 	end
-	if tocversion>50000 then C_Timer.After(3,HideHPMPTT) end
+	if not PIG_MaxTocversion() then C_Timer.After(3,HideHPMPTT) end
 end
 local function PartyMember_Buff()
 	if not PIGA["UnitFrame"]["PartyMemberFrame"]["Buff"] then return end
 	if duiyouFrameReg.Buff then return end
 	duiyouFrameReg.Buff=true
 	--隐藏系统自带队友buff鼠标提示
-	if tocversion<100000 then
+	if PIG_MaxTocversion() then
 		hooksecurefunc("PartyMemberBuffTooltip_Update", function(self)
 		    PartyMemberBuffTooltip:Hide();
 		end)
@@ -294,7 +293,7 @@ local function PartyMember_Buff()
 				local buff = CreateFrame("Button", "Party"..id.."Buff"..j, Party);
 				buff:SetSize(15,15);
 				if j == 1 then
-					if tocversion<100000 then
+					if PIG_MaxTocversion() then
 		           		buff:SetPoint("TOPLEFT", Party, "TOPLEFT", 48, -32);
 		           	else
 						buff:SetPoint("TOPLEFT", Party, "TOPLEFT", 40, -39);
@@ -321,7 +320,7 @@ local function PartyMember_Buff()
 		    end
 	    end
 	    --改动系统DEBUFF位置
-	    if tocversion<100000 then
+	    if PIG_MaxTocversion() then
 	    	_G["PartyMemberFrame"..id.."Debuff1"]:ClearAllPoints();
 			_G["PartyMemberFrame"..id.."Debuff1"]:SetPoint("TOPRIGHT", _G["PartyMemberFrame"..id], "TOPRIGHT", 50, 8);
 	    else

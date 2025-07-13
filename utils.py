@@ -1,10 +1,10 @@
+from collections.abc import Callable, Iterable
 import functools
 import logging
 import os
 import shutil
-from collections.abc import Callable
 from pathlib import Path
-from typing import Optional
+from typing import Optional, Literal
 
 from chardet.enums import LanguageFilter
 from chardet.universaldetector import UniversalDetector
@@ -13,7 +13,8 @@ logger = logging.getLogger('process')
 
 TOCS = ['.toc'] + [f'{s}{p}.toc' for s in ('-', '_') for p in ('Classic', 'BCC', 'WOTLKC', 'Mainline', 'TBC', 'Vanilla', 'Wrath', 'Cata')]
 
-def process_file(path: str | Path, func: Callable):
+def process_file(path: str | Path,
+                 func: Callable[[Iterable[str]], Iterable[str]]) -> None:
     """Helper function to process the files.
 
     :param str path: Path of the file.
@@ -28,6 +29,9 @@ def process_file(path: str | Path, func: Callable):
     detector = UniversalDetector(LanguageFilter.CHINESE)
     detector.feed(file_bytes)
     encoding = detector.close()['encoding']
+    if encoding is None:
+        logger.warning('Could not detect encoding for %s, using utf-8.', path)
+        encoding = 'utf-8'
 
     lines = file_bytes.decode(encoding).splitlines()
     lines = [line.rstrip()+'\n' for line in lines]
@@ -48,8 +52,10 @@ def rm_tree(path: str | Path):
         shutil.rmtree(path)
 
 
+PLATFORM = Literal['retail', 'classic', 'classic_era']
+
 @functools.lru_cache
-def get_platform():
+def get_platform() -> PLATFORM:
     path = os.getcwd()
     while path:
         path, last = os.path.split(path)
@@ -59,7 +65,7 @@ def get_platform():
     return 'retail'
 
 
-def remove_libs_in_file(path: str | Path, libs: list[str] | set[str]):
+def remove_libs_in_file(path: str | Path, libs: Iterable[str]):
     def process(lines):
         return [line for line in lines
                 if not any(f'{lib}\\'.lower() in line.lower() for lib in libs)]
@@ -68,7 +74,7 @@ def remove_libs_in_file(path: str | Path, libs: list[str] | set[str]):
 
 
 @functools.lru_cache
-def get_libraries_list():
+def get_libraries_list() -> list[str]:
     root = Path('AddOns/!!Libs')
     paths = [root, root / 'Ace3', root / 'Ace3' / 'AceConfig-3.0', root / 'LibBabble']
     libs = sum([[lib for lib in os.listdir(path) if os.path.isdir(path / lib)] for path in paths], [])
@@ -114,7 +120,7 @@ def remove_libraries_all(addon: str, lib_path: Optional[str] = None):
         remove_libs_in_file(path, libs)
 
 
-def remove_libraries(libs, root: str, xml_path: str):
+def remove_libraries(libs: Iterable[str], root: str, xml_path: str):
     """Remove selected embedded libraries from root and xml."""
     for lib in libs:
         rm_tree(Path(root) / lib)
@@ -139,7 +145,7 @@ def change_defaults(path: str, defaults: str | list[str]):
     process_file(path, handle)
 
 
-def lib_to_toc(lib: str):
+def lib_to_toc(lib: str) -> str:
     if lib == 'Krowi_WorldMapButtons':
         return 'Krowi_WorldMapButtons\\Krowi_WorldMapButtons-1.4.xml\n'
     root = Path('Addons/!!Libs')

@@ -1,7 +1,6 @@
 <Ui>
 	<Script file="Options.lua" />
 	<Script file="Marker.lua" />
-	<Script file="CombatTime.lua" />
 	<Script file="HPMPbar.lua" />
 	<Script file="AttackBar.lua" />
 	<Script file="BabySitter.lua" />

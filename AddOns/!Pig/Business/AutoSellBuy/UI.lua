@@ -1,5 +1,4 @@
 local _, addonTable = ...;
-local _, _, _, tocversion = GetBuildInfo()
 local L=addonTable.locale
 local Data=addonTable.Data
 local Quality = Data.Quality
@@ -71,13 +70,13 @@ function BusinessInfo.ADDScroll(fuFrame,text,hangName,hang_NUM,Config1)
 		local itemLink=Fun.GetItemLinkJJ(itemLink)
 		if fuFrame.List.addList.lx=="filtra" and ly~="Cursor" then
 			if IsItemExist(FiltraConfig0,itemID) then
-				PIGTopMsg:add("物品已在排除列表","R");
+				PIG_OptionsUI:ErrorMsg("物品已在排除列表","R");
 				return false
 			end
 			table.insert(FiltraConfig0,1,{itemID,itemLink,itemTexture,itemStackCount,itemStackCount,false})
 		else
 			if IsItemExist(Config0,itemID) then
-				PIGTopMsg:add("物品已在"..text.."列表","R");
+				PIG_OptionsUI:ErrorMsg("物品已在"..text.."列表","R");
 				return false
 			end
 			table.insert(Config0,1,{itemID,itemLink,itemTexture,itemStackCount,itemStackCount,false})
@@ -105,7 +104,7 @@ function BusinessInfo.ADDScroll(fuFrame,text,hangName,hang_NUM,Config1)
 			if add then
 				return true
 			else
-				if classID==0 or classID==5 or classID==6 or classID==7 then
+				if classID==0 or classID==5 or classID==6 or classID==7 or classID==15 then
 					return true
 				else
 					return false,"非消费品"
@@ -280,7 +279,7 @@ function BusinessInfo.ADDScroll(fuFrame,text,hangName,hang_NUM,Config1)
 					if jieguo then
 						InsertItemData(NewVVV,itemLink,itemTexture,itemStackCount)
 					else
-						PIGTopMsg:add(errtishi,"R") 
+						PIG_OptionsUI:ErrorMsg(errtishi,"R") 
 					end	
 				end
 			end
@@ -295,17 +294,20 @@ function BusinessInfo.ADDScroll(fuFrame,text,hangName,hang_NUM,Config1)
 	fuFrame.List.addList.NR:PIGSetBackdrop()
 	fuFrame.List.addList.NR.Scroll = CreateFrame("ScrollFrame",nil,fuFrame.List.addList.NR, "FauxScrollFrameTemplate");  
 	fuFrame.List.addList.NR.Scroll:SetPoint("TOPLEFT",fuFrame.List.addList.NR,"TOPLEFT",0,-2);
-	fuFrame.List.addList.NR.Scroll:SetPoint("BOTTOMRIGHT",fuFrame.List.addList.NR,"BOTTOMRIGHT",-25,2);
+	fuFrame.List.addList.NR.Scroll:SetPoint("BOTTOMRIGHT",fuFrame.List.addList.NR,"BOTTOMRIGHT",-19,2);
+	fuFrame.List.addList.NR.Scroll.ScrollBar:SetScale(0.8);
 	fuFrame.List.addList.NR.Scroll:SetScript("OnVerticalScroll", function(self, offset)
 	    FauxScrollFrame_OnVerticalScroll(self, offset, hang_Height, fuFrame.UpdateListHang_addBag)
 	end)
+	fuFrame.List.addList.NR.ButList={}
 	for id = 1, addBag_hang_NUM do
-		local hang = CreateFrame("Frame", hangName.."addList"..id, fuFrame.List.addList.NR);
+		local hang = CreateFrame("Frame", nil, fuFrame.List.addList.NR);
+		fuFrame.List.addList.NR.ButList[id]=hang--hangName.."addList"..id
 		hang:SetSize(Width-40, hang_Height);
 		if id==1 then
 			hang:SetPoint("TOP",fuFrame.List.addList.NR.Scroll,"TOP",0,-2);
 		else
-			hang:SetPoint("TOP",_G[hangName.."addList"..(id-1)],"BOTTOM",0,0);
+			hang:SetPoint("TOP",fuFrame.List.addList.NR.ButList[id-1],"BOTTOM",0,0);
 		end
 		if id~=addBag_hang_NUM then
 			PIGLine(hang,"BOT",nil,nil,{2,-2},{0.3,0.3,0.3,0.5})
@@ -315,7 +317,7 @@ function BusinessInfo.ADDScroll(fuFrame,text,hangName,hang_NUM,Config1)
 		hang.icon:SetSize(hang_Height-1,hang_Height-1);
 		hang.icon:SetPoint("LEFT", hang.check, "RIGHT", 0,0);
 		hang.link = PIGFontString(hang,{"LEFT", hang.icon, "RIGHT", 4,0})
-		function hang:SetFun(_,itemLink)
+		function hang:ShowInfoFun(itemLink)
 			self.itemLink=itemLink
 			local ItemLevel = GetDetailedItemLevelInfo(itemLink)
 			local ItemLevel=ItemLevel or "*"
@@ -326,7 +328,7 @@ function BusinessInfo.ADDScroll(fuFrame,text,hangName,hang_NUM,Config1)
 		if not fuFrame.List.addList:IsShown() then return end
 		local Scroll = fuFrame.List.addList.NR.Scroll
 		for id = 1, addBag_hang_NUM do
-			local hang = _G[hangName.."addList"..id]
+			local hang =fuFrame.List.addList.NR.ButList[id]
 			hang:Hide()
 			hang.check:SetScript("OnClick", nil);
 	    end
@@ -374,12 +376,12 @@ function BusinessInfo.ADDScroll(fuFrame,text,hangName,hang_NUM,Config1)
 	    for id = 1, addBag_hang_NUM do
 	    	local dangqianH = id+offset;
 	    	if bagshujuy[dangqianH] then
-	    		local hang = _G[hangName.."addList"..id]
+	    		local hang =fuFrame.List.addList.NR.ButList[id]
 	    		hang:Show();
 	    		hang.check:SetID(dangqianH);
 		    	hang.icon:SetTexture(bagshujuy[dangqianH][3]);
 		    	hang.itemID=bagshujuy[dangqianH][1]
-				Fun.HY_ShowItemLink(hang,bagshujuy[dangqianH][2],bagshujuy[dangqianH][1])
+				Fun.HY_ShowItemLink(hang,bagshujuy[dangqianH][1],bagshujuy[dangqianH][2])
 				if fuFrame.List.addList.lx=="filtra" then
 					hang.check.icon:SetSize(hang_Height-9,hang_Height-9);
 					hang.check.icon:SetTexture("interface/common/voicechat-muted.blp");
@@ -434,13 +436,15 @@ function BusinessInfo.ADDScroll(fuFrame,text,hangName,hang_NUM,Config1)
 	fuFrame.List.Scroll:SetScript("OnVerticalScroll", function(self, offset)
 	    FauxScrollFrame_OnVerticalScroll(self, offset, hang_Height, fuFrame.UpdateListHang)
 	end)
+	fuFrame.List.ButList={}
 	for id = 1, hang_NUM do
-		local hang = CreateFrame("Frame", hangName.."hang"..id, fuFrame.List);
+		local hang = CreateFrame("Frame", nil, fuFrame.List);
+		fuFrame.List.ButList[id]=hang
 		hang:SetSize(Width-19, hang_Height);
 		if id==1 then
 			hang:SetPoint("TOP",fuFrame.List.Scroll,"TOP",0,-2);
 		else
-			hang:SetPoint("TOP",_G[hangName.."hang"..(id-1)],"BOTTOM",0,0);
+			hang:SetPoint("TOP",fuFrame.List.ButList[id-1],"BOTTOM",0,0);
 		end
 		if id~=hang_NUM then
 			PIGLine(hang,"BOT",nil,nil,{2,-2},{0.3,0.3,0.3,0.5})
@@ -458,7 +462,7 @@ function BusinessInfo.ADDScroll(fuFrame,text,hangName,hang_NUM,Config1)
 		hang.item.icon:SetSize(hang_Height-1,hang_Height-1);
 		hang.item.icon:SetPoint("LEFT", hang.item, "LEFT", 0,0);
 		hang.item.link = PIGFontString(hang,{"LEFT", hang.item, "LEFT", hang_Height+4,0})
-		function hang.item:SetFun(_,itemLink)
+		function hang.item:ShowInfoFun(itemLink)
 			self.itemLink=itemLink
 			local ItemLevel = GetDetailedItemLevelInfo(itemLink)
 			local ItemLevel=ItemLevel or "*"
@@ -514,7 +518,7 @@ function BusinessInfo.ADDScroll(fuFrame,text,hangName,hang_NUM,Config1)
 	function fuFrame.UpdateListHang()
 		local Scroll = fuFrame.List.Scroll
 		for id = 1, hang_NUM do
-			_G[hangName.."hang"..id]:Hide();
+			fuFrame.List.ButList[id]:Hide();
 	    end
 	    local ItemsNum = #Config0;
 		if ItemsNum>0 then
@@ -523,11 +527,11 @@ function BusinessInfo.ADDScroll(fuFrame,text,hangName,hang_NUM,Config1)
 		    for id = 1, hang_NUM do
 		    	local dangqianH = id+offset;
 		    	if Config0[dangqianH] then
-		    		local hang = _G[hangName.."hang"..id]
+		    		local hang = fuFrame.List.ButList[id]
 		    		hang:Show();
 			    	hang.item.icon:SetTexture(Config0[dangqianH][3]);
 					hang.item.itemID=Config0[dangqianH][1]
-					Fun.HY_ShowItemLink(hang.item,Config0[dangqianH][2],Config0[dangqianH][1])
+					Fun.HY_ShowItemLink(hang.item,Config0[dangqianH][1],Config0[dangqianH][2])
 					hang.del:SetID(dangqianH);
 					if hangName=="Buy" then
 						hang.Cont:Show();
@@ -571,7 +575,7 @@ function BusinessInfo.ADDScroll(fuFrame,text,hangName,hang_NUM,Config1)
 		if jieguo then
 			InsertItemData(chazhaowupinID,itemLink,itemTexture,itemStackCount,"Cursor")
 		else
-			PIGTopMsg:add(errtishi,"R") 
+			PIG_OptionsUI:ErrorMsg(errtishi,"R") 
 		end	
 		chazhaowupinID = nil
 		chazhaowupinlink = nil

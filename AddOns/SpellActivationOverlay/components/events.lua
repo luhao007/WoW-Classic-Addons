@@ -3,107 +3,86 @@ local Module = "events"
 
 -- Optimize frequent calls
 local CombatLogGetCurrentEventInfo = CombatLogGetCurrentEventInfo
-local GetSpellInfo = GetSpellInfo
 local UnitGUID = UnitGUID
 
 -- Events starting with SPELL_AURA e.g., SPELL_AURA_APPLIED
 -- This should be invoked only if the buff is done on the player i.e., UnitGUID("player") == destGUID
 function SAO.SPELL_AURA(self, ...)
-    local timestamp, event, _, sourceGUID, sourceName, sourceFlags, sourceRaidFlags, destGUID, destName, destFlags, destRaidFlags = CombatLogGetCurrentEventInfo();
-    local spellID, spellName, spellSchool, auraType, amount = select(12, CombatLogGetCurrentEventInfo());
-    local auraApplied = event:sub(0,18) == "SPELL_AURA_APPLIED";
-    local auraRemoved = event:sub(0,18) == "SPELL_AURA_REMOVED";
-    local auraRefresh = event:sub(0,18) == "SPELL_AURA_REFRESH";
+    local _, event, _, _, _, _, _, _, _, _, _, spellID, spellName = CombatLogGetCurrentEventInfo();
 
-    local auras;
-    if not self.IsEra() then
-        auras = self.RegisteredAurasBySpellID[spellID];
-    else
-        -- Due to Classic Era limitation, aura is registered by its spell name
-        auras = self.RegisteredAurasBySpellID[spellName];
-        if (auras) then
-            -- Must fetch spellID from aura, because spellID from CLEU is most likely 0 at this point
-            -- We can fetch any aura from auras because all auras store the same spellID
-            for _, auraStacks in pairs(auras) do
-                spellID = auraStacks[1][3]; -- [1] for first aura in auraStacks, [3] because spellID is the third item
-                break;
-            end
-        end
+    --[[ Aura event chart
+
+    For un-stackable auras:
+    - "SPELL_AURA_APPLIED" = buff is being applied now
+    - "SPELL_AURA_REMOVED" = buff is being removed now
+
+    For stackable auras:
+    - "SPELL_AURA_APPLIED" = first stack applied
+    - "SPELL_AURA_APPLIED_DOSE" = second stack applied or beyond
+    - "SPELL_AURA_REMOVED_DOSE" = removed a stack, but there is at least one stack left
+    - "SPELL_AURA_REMOVED" = removed last remaining stack
+
+    For any aura:
+    - "SPELL_AURA_REFRESH" = buff is refreshed, usually the remaining time is reset to its max duration
+    ]]
+    local auraApplied = event:sub(0,18) == "SPELL_AURA_APPLIED"; -- includes "SPELL_AURA_APPLIED" and "SPELL_AURA_APPLIED_DOSE"
+    local auraRemovedLast = event == "SPELL_AURA_REMOVED";
+    local auraRemovedDose = event == "SPELL_AURA_REMOVED_DOSE";
+    local auraRefresh = event == "SPELL_AURA_REFRESH";
+    if not auraApplied and not auraRemovedLast and not auraRemovedDose and not auraRefresh then
+        return; -- Not an event we're interested in
     end
 
-    if auras and (auraApplied or auraRemoved or auraRefresh) then
-        local count = 0;
-        if (not auras[0]) then
-            -- If there is no aura with stacks == 0, this must mean that this aura is stackable
-            -- To handle stackable auras, we must find the aura (ugh!) to get its number of stacks
-            -- In an ideal world, we'd use the 'amount' which, unfortunately, is unreliable
-            count = select(3, self:FindPlayerAuraByID(spellID));
-        end
-
-        local currentlyActiveOverlay = self:GetActiveOverlay(spellID);
-        if (
-            -- Aura not visible yet
-            (not currentlyActiveOverlay)
-        and
-            -- Aura is there, either because it was added or upgraded or downgraded but still visible
-            (auraApplied or (auraRemoved and count and count > 0))
-        and
-            -- The number of stacks is supported
-            (auras[count])
-        ) then
-            -- Activate aura
-            self:Debug(Module, "Activating aura of "..spellID.." "..(GetSpellInfo(spellID) or ""));
-            for _, aura in ipairs(auras[count]) do
-                self:ActivateOverlay(count, select(3,unpack(aura)));
-                self:AddGlow(spellID, select(11,unpack(aura)));
-            end
-        elseif (
-            -- Aura is already visible
-            (currentlyActiveOverlay)
-        and
-            -- Aura is re-applied
-            (auraRefresh)
-        and
-            -- The number of stacks is supported
-            (auras[count])
-        ) then
-            -- Reactivate aura timer
-            self:Debug(Module, "Refreshing aura of "..spellID.." "..(GetSpellInfo(spellID) or ""));
-            self:RefreshOverlayTimer(spellID);
-        elseif (
-            -- Aura is already visible but its number of stack changed
-            (currentlyActiveOverlay and currentlyActiveOverlay ~= count)
-        and
-            -- The new stack count allows it to be visible
-            ((auraApplied or auraRemoved) and (count and count > 0))
-        and
-            -- The number of stacks is supported
-            (auras[count])
-        ) then
-            -- Deactivate old aura and activate the new one
-            self:Debug(Module, "Changing number of stacks from "..tostring(currentlyActiveOverlay).." to "..count.." for aura "..spellID.." "..(GetSpellInfo(spellID) or ""));
-            self:DeactivateOverlay(spellID);
-            self:RemoveGlow(spellID);
-            for _, aura in ipairs(auras[count]) do
-                local texture, positions, scale, r, g, b, autoPulse, _, combatOnly = select(4,unpack(aura));
-                local forcePulsePlay = autoPulse;
-                self:ActivateOverlay(count, spellID, texture, positions, scale, r, g, b, autoPulse, forcePulsePlay, nil, combatOnly);
-                self:AddGlow(spellID, select(11,unpack(aura)));
-            end
-        elseif (
-            -- Aura is already visible and its number of stacks changed
-            (currentlyActiveOverlay and currentlyActiveOverlay ~= count)
-        and
-            ((auraApplied and count and count > 0) or auraRemoved)
-            -- If condition end up here, it means the previous 'if' was false
-            -- Which means either there is no stacks, or the number of stacks is not supported
-        ) then
-            -- Aura just disappeared or is not supported for this number of stacks
-            self:Debug(Module, "Removing aura of "..spellID.." "..(GetSpellInfo(spellID) or ""));
-            self:DeactivateOverlay(spellID);
-            self:RemoveGlow(spellID);
-        end
+    -- Use the game's aura from CLEU to find its corresponding aura item in SAO, if any
+    local bucket;
+    bucket, spellID = self:GetBucketBySpellIDOrSpellName(spellID, spellName);
+    if not bucket then
+        -- This spell is not tracked by SAO
+        return;
     end
+    if not bucket.trigger:reactsWith(SAO.TRIGGER_AURA) then
+        -- This spell ignores aura-based triggers
+        return;
+    end
+
+    -- Handle unique case first: aura refresh
+    if (auraRefresh) then
+        bucket:refresh();
+        -- Can return now, because SPELL_AURA_REFRESH is used only to refresh timer
+        return;
+    end
+
+    -- Now, we are in a situation where we either got a buff (SPELL_AURA_APPLIED*) or lost it (SPELL_AURA_REMOVED*)
+
+    if (auraRemovedLast) then
+        bucket:setAuraStacks(nil); -- nil means "not currently holding any stacks"
+        -- Can return now, because SPELL_AURA_REMOVED resets everything
+        return;
+    end
+
+    --[[ Now, we are in a situation where either:
+        - we got a buff (SPELL_AURA_APPLIED*)
+        - or we lost a stack but still have the buff (SPELL_AURA_REMOVED_DOSE)
+        Either way, the player currently has the buff or debuff
+    ]]
+
+    local stacks = 0; -- Number of stacks of the aura, unless the aura is stack-agnostic (see below)
+    if not bucket.stackAgnostic then
+        -- To handle stackable auras, we must find the aura (ugh!) to get its number of stacks
+        -- In an ideal world, we would use a stack count from the combat log which, unfortunately, is unavailable
+        if event ~= "SPELL_AURA_REMOVED" then -- No need to find aura with complete removal: the buff is not there anymore
+            stacks = self:GetPlayerAuraStacksBySpellID(spellID) or 0;
+        end
+        -- For the record, stacks will always be 0 for stack-agnostic auras, even if the aura actually has stacks
+        -- This is an optimization that prevents the above call of GetPlayerAuraStacksBySpellID, which has a significant cost
+    end
+
+    --[[ Aura is enabled, either because:
+        - it was added now (SPELL_AURA_APPLIED)
+        - or was upgraded (SPELL_AURA_APPLIED_DOSE)
+        - or was downgraded but still visible (SPELL_AURA_REMOVED_DOSE)
+    ]]
+    bucket:setAuraStacks(stacks);
 end
 
 -- The (in)famous CLEU event
@@ -115,19 +94,26 @@ function SAO.COMBAT_LOG_EVENT_UNFILTERED(self, ...)
     end
 end
 
--- Check if auras are still there after a loading screen
--- This circumvents a limitation of the CLEU which may not trigger during a loading screen
+local arePendingEffectsRegistered = false;
 function SAO.LOADING_SCREEN_DISABLED(self, ...)
-    for spellID, stacks in pairs(self.ActiveOverlays) do
-        if not self:IsFakeSpell(spellID) and not self:FindPlayerAuraByID(spellID) then
-            self:DeactivateOverlay(spellID);
-            self:RemoveGlow(spellID);
-        end
+    -- Register effects right after the loading screen ends
+    -- Initially, this was called after PLAYER_LOGIN
+    -- But in some situations, PLAYER_LOGIN is "too soon" to be able to use the game's glow engine
+    if not arePendingEffectsRegistered then
+        arePendingEffectsRegistered = true;
+        self:RegisterPendingEffectsAfterPlayerLoggedIn();
     end
+
+    -- Check manually if buckets are triggered immediately after their creation (see above code)
+    -- Or after a loading screen in-between zones, because CLEU may not trigger everything during a loading screen
+    -- If it is possible to create effects after this point, this kind of manual checks should be called there too
+    self:CheckManuallyAllBuckets();
 end
 
 function SAO.PLAYER_ENTERING_WORLD(self, ...)
-    C_Timer.NewTimer(1, function() self:CheckAllCounterActions() end);
+    C_Timer.NewTimer(1, function()
+        self:CheckAllCounterActions();
+    end);
 end
 
 function SAO.SPELL_UPDATE_USABLE(self, ...)
@@ -136,10 +122,16 @@ end
 
 function SAO.PLAYER_REGEN_ENABLED(self, ...)
     self:CheckAllCounterActions(true);
+
+    local inCombat = false; -- Cannot rely on InCombatLockdown() at this point
+    self:ForEachBucket(function(bucket) bucket:checkCombat(inCombat) end);
 end
 
 function SAO.PLAYER_REGEN_DISABLED(self, ...)
     self:CheckAllCounterActions(true);
+
+    local inCombat = true; -- Cannot rely on InCombatLockdown() at this point
+    self:ForEachBucket(function(bucket) bucket:checkCombat(inCombat) end);
 end
 
 -- Specific spellbook update
@@ -155,10 +147,52 @@ function SAO.LEARNED_SPELL_IN_TAB(self, ...)
     self:LearnNewSpell(spellID);
 end
 
+local warnedSaoVsNecrosis = false;
+function SAO.ADDON_LOADED(self, addOnName, containsBindings)
+    if warnedSaoVsNecrosis then
+        return;
+    end
+
+    local iamSAO = strlower(AddonName) == "spellactivationoverlay";
+    local itisSAO = strlower(addOnName) == "spellactivationoverlay";
+
+    local iamNecrosis = strlower(AddonName):sub(0,8) == "necrosis";
+    local itisNecrosis = strlower(addOnName):sub(0,8) == "necrosis";
+
+    if (iamSAO and (itisNecrosis or itisSAO and NecrosisConfig)) or
+       (iamNecrosis and (itisSAO or itisNecrosis and _G["Spell".."ActivationOverlayDB"])) then
+        local className, classFilename, classId = UnitClass("player");
+        if classFilename == "WARLOCK" then
+            self:Info("==", "You have installed Necrosis and Spell".."ActivationOverlay at the same time.")
+            if iamSAO then
+                self.Shutdown:EnableCategory("NECROSIS_INSTALLED");
+                local shutdownCategory = self.Shutdown:GetCategory();
+                if shutdownCategory.Name == "NECROSIS_INSTALLED" and shutdownCategory.DisableCondition.IsDisabled() then
+                    self:Warn("==", "Spell".."ActivationOverlay will be disabled for this character to avoid double procs with Necrosis. "..
+                        "You can go to Options > AddOns to change the preferred addon.");
+                end
+            elseif iamNecrosis then
+                self.Shutdown:EnableCategory("SAO_INSTALLED");
+                local shutdownCategory = self.Shutdown:GetCategory();
+                if shutdownCategory.Name == "SAO_INSTALLED" and shutdownCategory.DisableCondition.IsDisabled() then
+                    self:Warn("==", "Necrosis Spell Activations will be disabled for this character to avoid double procs with Spell".."ActivationOverlay. "..
+                        "You can go to Options > AddOns to change the preferred addon. "..
+                        "This concerns only \"Spell Activations\" of Necrosis; it has no effect on other features of Necrosis.");
+                end
+            end
+        else
+            self:Info("==", "You have installed Necrosis and SpellActivationOverlay at the same time.")
+            self:Info("==", "Because you are playing "..className..", Necrosis is not necessary.");
+        end
+        warnedSaoVsNecrosis = true;
+    end
+end
+
 -- Event receiver
 function SAO.OnEvent(self, event, ...)
     if self[event] then
         self[event](self, ...);
     end
+    SAO.VariableEventProxy:OnEvent(event, ...);
     self:InvokeClassEvent(event, ...)
 end

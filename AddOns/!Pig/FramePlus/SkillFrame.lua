@@ -1,5 +1,4 @@
 local _, addonTable = ...;
-local _, _, _, tocversion = GetBuildInfo()
 local FramePlusfun=addonTable.FramePlusfun
 local ActionFun=addonTable.Fun.ActionFun
 local PIGUseKeyDown=ActionFun.PIGUseKeyDown
@@ -8,29 +7,51 @@ local Update_State=ActionFun.Update_State
 local Data=addonTable.Data
 local butW = ActionButton1:GetWidth()
 local PIGSkillinfo={
-	["bookType"]=nil,
+	["bookType"]=PIG_GetSpellBookType(),
 	["butnum"]=10,
 	["Width"]=butW,
 	["Height"]=butW,
 }
-if tocversion<50000 then
+if PIG_MaxTocversion() then
 	PIGSkillinfo.butnum= 8
-	PIGSkillinfo.bookType=BOOKTYPE_SPELL
-else
-	PIGSkillinfo.bookType=Enum.SpellBookSpellBank.Player
 end
 local IsCurrentSpell=IsCurrentSpell or C_Spell and C_Spell.IsCurrentSpell
 local GetSpellTexture=GetSpellTexture or C_Spell and C_Spell.GetSpellTexture
 local IsAddOnLoaded=IsAddOnLoaded or C_AddOns and C_AddOns.IsAddOnLoaded
 -----------------------
+local function PIG_ADDON_LOADED(BlizzardName,addfun)
+	if IsAddOnLoaded(BlizzardName) then
+		addfun()
+	else
+		local jiazaiui = CreateFrame("Frame")
+		jiazaiui:RegisterEvent("ADDON_LOADED")
+		jiazaiui:SetScript("OnEvent", function(self, event, arg1)
+			if event=="ADDON_LOADED" then
+				if arg1==BlizzardName then
+					self:UnregisterEvent("ADDON_LOADED")
+					if InCombatLockdown() then
+						jiazaiui:RegisterEvent("PLAYER_REGEN_ENABLED")
+					else
+						addfun()
+					end
+				end
+			elseif event=="PLAYER_REGEN_ENABLED" then
+				self:UnregisterEvent("PLAYER_REGEN_ENABLED")
+				addfun()				
+			end
+		end)
+	end
+end
 local function ADD_Skill_QK_Button(fujiui,uiname,ly)
+	if fujiui.ButList then return end
+	fujiui.ButList={}
 	for F=1,PIGSkillinfo.butnum do
 		local But
-		if tocversion<40000 then
-			But = CreateFrame("CheckButton", uiname.."_Button_"..F, fujiui, "SecureActionButtonTemplate,ActionButtonTemplate");
+		if PIG_MaxTocversion(40000) then
+			But = CreateFrame("CheckButton",nil, fujiui, "SecureActionButtonTemplate,ActionButtonTemplate");
 			But.NormalTexture:SetAlpha(0);
 		else
-			But = CreateFrame("CheckButton", uiname.."_Button_"..F, fujiui, "SecureActionButtonTemplate");
+			But = CreateFrame("CheckButton",nil, fujiui, "SecureActionButtonTemplate");
 			But.icon = But:CreateTexture()
 			But.icon:SetSize(54,54);
 			But.icon:SetAllPoints(But)
@@ -47,9 +68,9 @@ local function ADD_Skill_QK_Button(fujiui,uiname,ly)
 				end
 			end)
 		end
+		fujiui.ButList[F]=But
 		But:SetSize(PIGSkillinfo.Width,PIGSkillinfo.Height);
 		PIGUseKeyDown(But)
-		
 		if F==1 then
 			if ly~="Mainline" then
 				But:SetPoint("TOPLEFT",fujiui,"TOPRIGHT",-37,-46);
@@ -57,7 +78,7 @@ local function ADD_Skill_QK_Button(fujiui,uiname,ly)
 				But:SetPoint("TOPLEFT",fujiui,"TOPRIGHT",0,-46);
 			end
 		else
-			But:SetPoint("TOP", _G[uiname.."_Button_"..(F-1)], "BOTTOM", 0, -16);
+			But:SetPoint("TOP", fujiui.ButList[F-1], "BOTTOM", 0, -16);
 		end
 		But:SetAttribute("type", "spell");
 		But:Hide();
@@ -85,7 +106,7 @@ local function ADD_Skill_QK_Button(fujiui,uiname,ly)
 	end
 	local Skill_List = Data.Get_Skill_Info()
 	for F=1, #Skill_List.top do
-		local fujiK = _G[uiname.."_Button_"..F]
+		local fujiK = fujiui.ButList[F]
 		fujiK.Type="spell"
 		fujiK.SimID=Skill_List.top[F][2]
 		fujiK.icon:SetTexture(GetSpellTexture(Skill_List.top[F][2]));
@@ -94,9 +115,9 @@ local function ADD_Skill_QK_Button(fujiui,uiname,ly)
 	end
 	for F=1, #Skill_List.bot do
 		local FF = F+#Skill_List.top;
-		local fujiK = _G[uiname.."_Button_"..FF]
+		local fujiK = fujiui.ButList[FF]
 		if FF==(#Skill_List.top+1) then
-			fujiK:SetPoint("TOP", _G[uiname.."_Button_"..(FF-1)], "BOTTOM", 0, -44);
+			fujiK:SetPoint("TOP", fujiui.ButList[FF-1], "BOTTOM", 0, -44);
 		end
 		fujiK.Type="spell"
 		fujiK.SimID=Skill_List.bot[F][2]
@@ -107,14 +128,13 @@ local function ADD_Skill_QK_Button(fujiui,uiname,ly)
 	fujiui:HookScript("OnShow", function(self)
 		if ElvUI then
 			for F=1, PIGSkillinfo.butnum do
-				_G[uiname.."_Button_"..F].Border:Hide()
+				fujiui.ButList[F].Border:Hide()
 			end
 		end	
 	end);
 end
 local function ADD_Skill_QK()
-	if Skill_Button_1 then return end
-	if tocversion<50000 then
+	if PIG_MaxTocversion() then
 		ADD_Skill_QK_Button(TradeSkillFrame,"Skill")
 	else
 		ADD_Skill_QK_Button(ProfessionsFrame,"Skill","Mainline") 
@@ -122,74 +142,16 @@ local function ADD_Skill_QK()
 end
 ---
 local function ADD_Craft_QK()	
-	if Craft_Button_1 then return end
 	ADD_Skill_QK_Button(CraftFrame,"Craft")
 end
 function FramePlusfun.Skill_QKbut()
 	if not PIGA["FramePlus"]["Skill_QKbut"] then return end
 	if NDui then return end
-	if tocversion<50000 then
-		if IsAddOnLoaded("Blizzard_TradeSkillUI") then
-			ADD_Skill_QK()
-		else
-			local zhuanyeQuickQH = CreateFrame("FRAME")
-			zhuanyeQuickQH:RegisterEvent("ADDON_LOADED")
-			zhuanyeQuickQH:SetScript("OnEvent", function(self, event, arg1)
-				if arg1 == "Blizzard_TradeSkillUI" then
-					if InCombatLockdown() then
-						zhuanyeQuickQH:RegisterEvent("PLAYER_REGEN_ENABLED")
-					else
-						ADD_Skill_QK()
-					end
-					zhuanyeQuickQH:UnregisterEvent("ADDON_LOADED")
-				end
-				if event=="PLAYER_REGEN_ENABLED" then
-					ADD_Skill_QK()
-					zhuanyeQuickQH:UnregisterEvent("PLAYER_REGEN_ENABLED")
-				end
-			end)
-		end
-		if IsAddOnLoaded("Blizzard_CraftUI") then
-			ADD_Craft_QK()
-		else
-			local fumoQuickQH = CreateFrame("FRAME")
-			fumoQuickQH:RegisterEvent("ADDON_LOADED")
-			fumoQuickQH:SetScript("OnEvent", function(self, event, arg1)
-				if arg1 == "Blizzard_CraftUI" then
-					if InCombatLockdown() then
-						fumoQuickQH:RegisterEvent("PLAYER_REGEN_ENABLED")
-					else
-						ADD_Craft_QK()
-					end
-					fumoQuickQH:UnregisterEvent("ADDON_LOADED")
-				end
-				if event=="PLAYER_REGEN_ENABLED" then
-					ADD_Craft_QK()
-					fumoQuickQH:UnregisterEvent("PLAYER_REGEN_ENABLED")
-				end
-			end)
-		end
+	if PIG_MaxTocversion() then
+		PIG_ADDON_LOADED("Blizzard_TradeSkillUI",ADD_Skill_QK)
+		PIG_ADDON_LOADED("Blizzard_CraftUI",ADD_Craft_QK)
 	else
-		if IsAddOnLoaded("Blizzard_Professions") then
-			ADD_Skill_QK()
-		else
-			local zhuanyeQuickQH = CreateFrame("FRAME")
-			zhuanyeQuickQH:RegisterEvent("ADDON_LOADED")
-			zhuanyeQuickQH:SetScript("OnEvent", function(self, event, arg1)
-				if arg1 == "Blizzard_Professions" then
-					if InCombatLockdown() then
-						zhuanyeQuickQH:RegisterEvent("PLAYER_REGEN_ENABLED")
-					else
-						ADD_Skill_QK()
-					end
-					zhuanyeQuickQH:UnregisterEvent("ADDON_LOADED")
-				end
-				if event=="PLAYER_REGEN_ENABLED" then
-					ADD_Skill_QK()
-					zhuanyeQuickQH:UnregisterEvent("PLAYER_REGEN_ENABLED")
-				end
-			end)
-		end
+		PIG_ADDON_LOADED("Blizzard_Professions",ADD_Skill_QK)
 	end
 end
 --专业/附魔界面扩展
@@ -274,7 +236,7 @@ local function TradeSkillFunc()
 				end);
 			else
 				local regions = {TradeSkillFrame:GetRegions()}
-				if tocversion<20000 then
+				if PIG_MaxTocversion(20000) then
 					--隐藏全部折叠附近纹理
 					TradeSkillExpandTabLeft:Hide()
 					TradeSkillExpandTabRight:Hide()
@@ -291,7 +253,7 @@ local function TradeSkillFunc()
 					regions[8]:Hide()
 					regions[9]:Hide()
 					regions[10]:Hide()
-				elseif tocversion<30000 then
+				elseif PIG_MaxTocversion(30000) then
 					--隐藏全部折叠附近纹理
 					TradeSkillExpandTabLeft:Hide()
 					TradeSkillHorizontalBarLeft:Hide()
@@ -305,7 +267,7 @@ local function TradeSkillFunc()
 					regions[5]:Hide()
 					regions[6]:Hide()
 					regions[8]:Hide()
-				elseif tocversion<50000 then
+				elseif PIG_MaxTocversion() then
 					--隐藏全部折叠附近纹理
 					TradeSkillExpandTabLeft:Hide()
 					TradeSkillExpandTabRight:Hide()
@@ -364,9 +326,9 @@ local function CraftFunc()
 			CraftSkillBorderLeft:SetAlpha(0)
 			CraftSkillBorderRight:SetAlpha(0)
 			---
-			if tocversion<20000 then
+			if PIG_MaxTocversion(20000) then
 
-			elseif tocversion<30000 then
+			elseif PIG_MaxTocversion(30000) then
 				CraftFrameAvailableFilterCheckButton:ClearAllPoints()
 				CraftFrameAvailableFilterCheckButton:SetPoint("TOPLEFT", CraftFrame, "TOPLEFT", 84, -42)
 				CraftFrameFilterDropDown:ClearAllPoints()
@@ -446,30 +408,8 @@ end
 function FramePlusfun.Skill()
 	if not PIGA["FramePlus"]["Skill"] then return end
 	if NDui then return end
-	if tocversion<50000 then
-		if IsAddOnLoaded("Blizzard_TradeSkillUI") then
-			TradeSkillFunc()
-		else
-			local zhuanyeFrame = CreateFrame("FRAME")
-			zhuanyeFrame:RegisterEvent("ADDON_LOADED")
-			zhuanyeFrame:SetScript("OnEvent", function(self, event, arg1)
-				if arg1 == "Blizzard_TradeSkillUI" then
-					TradeSkillFunc()
-					zhuanyeFrame:UnregisterEvent("ADDON_LOADED")
-				end
-			end)
-		end
-		if IsAddOnLoaded("Blizzard_CraftUI") then
-			CraftFunc();
-		else
-			local fumoFrame = CreateFrame("FRAME")
-			fumoFrame:RegisterEvent("ADDON_LOADED")
-			fumoFrame:SetScript("OnEvent", function(self, event, arg1)
-				if arg1 == "Blizzard_CraftUI" then
-					CraftFunc();
-					fumoFrame:UnregisterEvent("ADDON_LOADED")
-				end
-			end)
-		end
+	if PIG_MaxTocversion() then
+		PIG_ADDON_LOADED("Blizzard_TradeSkillUI",TradeSkillFunc)
+		PIG_ADDON_LOADED("Blizzard_CraftUI",CraftFunc)
 	end
 end

@@ -2,7 +2,11 @@ do
 -- App locals
 local _,app = ...;
 local pairs, tostring, math_floor, setmetatable, rawget
-	= pairs, tostring, math.floor, setmetatable, rawget
+	= pairs, tostring, math.floor, setmetatable, rawget;
+
+-- Get Current Expansion Number by in-game API.
+app.CURRENT_EXPANSION = GetServerExpansionLevel() + 1
+
 local function GetExpansionName(expansionID)
 	-- /script for key,value in pairs(_G) do if key:find("EXPANSION_NAME") then print(key, value); end end
 	return _G["EXPANSION_NAME" .. (expansionID - 1)] or (EXPANSION_FILTER_TEXT .. " " .. expansionID);
@@ -77,8 +81,7 @@ setmetatable(ExpansionInfoByID, {
 });
 
 app.CreateExpansion = app.CreateClassWithInfo("Expansion", "expansionID", ExpansionInfoByID, {
-	["ignoreSourceLookup"] = function(t)
-		return true;
-	end,
+	["ignoreSourceLookup"] = app.ReturnTrue,
+	["ShouldShowEventSchedule"] = app.ReturnTrue,
 });
 end

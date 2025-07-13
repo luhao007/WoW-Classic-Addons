@@ -1,6 +1,6 @@
-## Interface: 30404
+## Interface: 30405
 ## Author: MysticalOS
-## Version: r786
+## Version: r812
 
 ## Title: |cffffe00a<|r|cffff7d0aDBM Mod|r|cffffe00a>|r |cffff6010Raids (Vanilla)|r
 ## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r |cFFFFFFFF副本助手|r |cFF69CCF0团队|r |cFF22B14C经典旧世|r
@@ -18,7 +18,7 @@
 ## X-DBM-Mod-Type: RAID
 ## X-DBM-Mod-Category: Classic
 ## X-DBM-StatTypes: normal
-## X-DBM-Mod-SubCategoriesID: 533, 531, 509, 309, 469, 409, 249, 109, 90, 48
+## X-DBM-Mod-SubCategoriesID: 533, 531, 509, 309, 469, 409, 249, 109, 90, 48, 2856
 ## X-DBM-Mod-Name: Raids (Vanilla)
 ## X-DVM-Mod-Name-esES: Bandas (Clásico)
 ## X-DVM-Mod-Name-esMX: Bandas (Clásico)
@@ -152,3 +152,13 @@ VanillaSoD_SunkenTemple\JammalanAndOgom.lua
 VanillaSoD_SunkenTemple\MorphazAndHazzas.lua
 VanillaSoD_SunkenTemple\ShadeOfEranikus.lua
 VanillaSoD_SunkenTemple\AvatarofHakkar.lua
+
+VanillaSoD_ScarletEnclave\Trash.lua
+VanillaSoD_ScarletEnclave\Balnazzar.lua
+VanillaSoD_ScarletEnclave\Beatrix.lua
+VanillaSoD_ScarletEnclave\Solistrasza.lua
+VanillaSoD_ScarletEnclave\Beastmaster.lua
+VanillaSoD_ScarletEnclave\Mason.lua
+VanillaSoD_ScarletEnclave\RebornCouncil.lua
+VanillaSoD_ScarletEnclave\LillianVoss.lua
+VanillaSoD_ScarletEnclave\Caldoran.lua

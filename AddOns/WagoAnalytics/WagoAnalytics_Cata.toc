@@ -1,4 +1,4 @@
-## Interface: 30404
+## Interface: 30405
 ## Author: Wago Addons Team
 ## Version: 1.0
 

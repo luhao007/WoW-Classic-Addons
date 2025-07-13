@@ -1,28 +1,24 @@
 local addonName, addonTable = ...;
-local _, _, _, tocversion = GetBuildInfo()
-local Create, Data, Fun, L, Default, Default_Per= unpack(PIG)
------
-local PIGFrame=Create.PIGFrame
-local PIGButton = Create.PIGButton
-local PIGDownMenu=Create.PIGDownMenu
-local PIGLine=Create.PIGLine
-local PIGEnter=Create.PIGEnter
-local PIGSlider = Create.PIGSlider
-local PIGDiyBut=Create.PIGDiyBut
-local PIGCheckbutton=Create.PIGCheckbutton
-local PIGOptionsList_RF=Create.PIGOptionsList_RF
-local PIGOptionsList_R=Create.PIGOptionsList_R
-local PIGQuickBut=Create.PIGQuickBut
-local Show_TabBut_R=Create.Show_TabBut_R
-local PIGFontString=Create.PIGFontString
-local PIGSetFont=Create.PIGSetFont
--- ----------
 local GDKPInfo=addonTable.GDKPInfo
 function GDKPInfo.ADD_Fakuan(RaidR)
+	local Create, Data, Fun, L, Default, Default_Per= unpack(PIG)
+	-----
+	local PIGFrame=Create.PIGFrame
+	local PIGButton = Create.PIGButton
+	local PIGDownMenu=Create.PIGDownMenu
+	local PIGLine=Create.PIGLine
+	local PIGEnter=Create.PIGEnter
+	local PIGSlider = Create.PIGSlider
+	local PIGDiyBut=Create.PIGDiyBut
+	local PIGCheckbutton=Create.PIGCheckbutton
+	local PIGOptionsList_R=Create.PIGOptionsList_R
+	local PIGQuickBut=Create.PIGQuickBut
+	local Show_TabBut_R=Create.Show_TabBut_R
+	local PIGFontString=Create.PIGFontString
+	local PIGSetFont=Create.PIGSetFont
 	local GnName,GnUI,GnIcon,FrameLevel = unpack(GDKPInfo.uidata)
 	local iconWH,hang_Height,hang_NUM,lineTOP  =  GDKPInfo.iconWH,GDKPInfo.hang_Height,GDKPInfo.hang_NUM,GDKPInfo.lineTOP
-	
-	local RaidR=_G[GnUI]
+	---
 	local fujiF=PIGOptionsList_R(RaidR.F,"罚款/其他",80)
 	----
 	fujiF.fakuan = PIGFrame(fujiF,{"TOPLEFT",fujiF,"TOPLEFT",0,0});  
@@ -46,7 +42,7 @@ function GDKPInfo.ADD_Fakuan(RaidR)
 	fujiF.fakuan.guangbaoBut:SetScript("OnClick", function()
 		local dataX = PIGA["GDKP"]["fakuan"]
     	for p=1,#dataX do
-			if dataX[p][3]~="N/A" then
+			if dataX[p][3]~=NONE then
 				if dataX[p][4]>0 then
 					PIGSendChatRaidParty("["..dataX[p][1].."]收入"..dataX[p][2].."G<"..dataX[p][3]..">尚欠"..dataX[p][4].."G")
 				else
@@ -124,7 +120,7 @@ function GDKPInfo.ADD_Fakuan(RaidR)
 					return
 				end
 			end
-			local qitashouruinfo={huoquV,0,"N/A",0};
+			local qitashouruinfo={huoquV,0,NONE,0};
 			table.insert(PIGA["GDKP"]["fakuan"],qitashouruinfo);
 			fuji:Hide();
 			RaidR.Update_Fakuan()
@@ -152,60 +148,20 @@ function GDKPInfo.ADD_Fakuan(RaidR)
 	fujiF.fakuan.TOPline = PIGLine(fujiF.fakuan,"TOP",-lineTOP)
 	fujiF.fakuan.Scroll = CreateFrame("ScrollFrame",nil,fujiF.fakuan, "FauxScrollFrameTemplate");  
 	fujiF.fakuan.Scroll:SetPoint("TOPLEFT",fujiF.fakuan.TOPline,"BOTTOMLEFT",0,-1);
-	fujiF.fakuan.Scroll:SetPoint("BOTTOMRIGHT",fujiF.fakuan,"BOTTOMRIGHT",-24,lineTOP);
+	fujiF.fakuan.Scroll:SetPoint("BOTTOMRIGHT",fujiF.fakuan,"BOTTOMRIGHT",-19,lineTOP);
+	fujiF.fakuan.Scroll.ScrollBar:SetScale(0.8);
 	fujiF.fakuan.Scroll:SetScript("OnVerticalScroll", function(self, offset)
 	    FauxScrollFrame_OnVerticalScroll(self, offset, hang_Height, RaidR.Update_Fakuan)
 	end)
-	function RaidR.Update_Fakuan()
-		if not fujiF.fakuan:IsShown() then return end
-		local self = fujiF.fakuan.Scroll
-		for i = 1, hang_NUM do
-			_G["fakuan_hang_"..i]:Hide()
-	    end
-		local dataX = PIGA["GDKP"]["fakuan"]
-		local ItemsNum=#dataX
-		FauxScrollFrame_Update(self, ItemsNum, hang_NUM, hang_Height);
-		local offset = FauxScrollFrame_GetOffset(self);
-		for i = 1, hang_NUM do
-			local dangqian = i+offset;
-			if dataX[dangqian] then
-				local fameX = _G["fakuan_hang_"..i]
-				fameX:Show();
-				fameX.del:SetID(dangqian);
-				fameX.jianglixiang:SetText(dataX[dangqian][1])
-				fameX.G.E:SetID(dangqian);
-				fameX.G.Q:SetID(dangqian);
-				fameX.G.V:SetText(dataX[dangqian][2])
-				shiqujiaodian(fameX.G)
-				fameX.QKG.E:SetID(dangqian);
-				fameX.QKG.Q:SetID(dangqian);
-				fameX.QKG.V:SetText(dataX[dangqian][4])
-				shiqujiaodian(fameX.QKG)
-				fameX.JiangliRen:SetID(dangqian);
-				local AllName = dataX[dangqian][3]
-				if AllName=="N/A" then
-						fameX.JiangliRen:SetText("\124cffff0000        "..NONE.."\124r");
-				else
-					local name,server = strsplit("-", AllName);
-					if server then
-						fameX.JiangliRen:SetText(name.."(*)")
-					else
-						fameX.JiangliRen:SetText(name);
-					end
-					-- local color = RAID_CLASS_COLORS[zhiyecc]
-					-- fameX.JiangliRen:SetTextColor(color.r, color.g, color.b,1);
-				end
-			end
-		end
-		RaidR:UpdateGinfo()
-	end
+	fujiF.fakuan.ButList={}
 	for id = 1, hang_NUM do
-		local hang = CreateFrame("Frame", "fakuan_hang_"..id, fujiF.fakuan);
+		local hang = CreateFrame("Frame", nil, fujiF.fakuan);
+		fujiF.fakuan.ButList[id]=hang
 		hang:SetSize(fujiF.fakuan:GetWidth()-25, hang_Height);
 		if id==1 then
 			hang:SetPoint("TOP",fujiF.fakuan.Scroll,"TOP",0,0);
 		else
-			hang:SetPoint("TOP",_G["fakuan_hang_"..(id-1)],"BOTTOM",0,0);
+			hang:SetPoint("TOP",fujiF.fakuan.ButList[id-1],"BOTTOM",0,0);
 		end
 		if id~=hang_NUM then PIGLine(hang,"BOT",nil,nil,nil,{0.3,0.3,0.3,0.3}) end
 		hang.del = PIGDiyBut(hang,{"LEFT", hang, "LEFT", 0,0},{hang_Height-12})
@@ -256,8 +212,8 @@ function GDKPInfo.ADD_Fakuan(RaidR)
 		end);
 		hang.G.B:SetScript("OnClick", function (self)
 			for qq=1,hang_NUM do
-				shiqujiaodian(_G["fakuan_hang_"..qq].G)
-				shiqujiaodian(_G["fakuan_hang_"..qq].QKG)
+				shiqujiaodian(fujiF.fakuan.ButList[qq].G)
+				shiqujiaodian(fujiF.fakuan.ButList[qq].QKG)
 			end
 			local shangjiF=self:GetParent()
 			shiqujiaodian(shangjiF,true)
@@ -308,8 +264,8 @@ function GDKPInfo.ADD_Fakuan(RaidR)
 		end);
 		hang.QKG.B:SetScript("OnClick", function (self)
 			for qq=1,hang_NUM do
-				shiqujiaodian(_G["fakuan_hang_"..qq].G)
-				shiqujiaodian(_G["fakuan_hang_"..qq].QKG)
+				shiqujiaodian(fujiF.fakuan.ButList[qq].G)
+				shiqujiaodian(fujiF.fakuan.ButList[qq].QKG)
 			end
 			local shangjiF=self:GetParent()
 			shiqujiaodian(shangjiF,true)
@@ -341,11 +297,53 @@ function GDKPInfo.ADD_Fakuan(RaidR)
 	fujiF.fakuan:SetScript("OnShow", function (self)
 		RaidR.Update_Fakuan()
 	end)
-
+	function RaidR.Update_Fakuan()
+		if not fujiF.fakuan:IsShown() then return end
+		local self = fujiF.fakuan.Scroll
+		for id = 1, hang_NUM do
+			fujiF.fakuan.ButList[id]:Hide()
+	    end
+		local dataX = PIGA["GDKP"]["fakuan"]
+		local ItemsNum=#dataX
+		FauxScrollFrame_Update(self, ItemsNum, hang_NUM, hang_Height);
+		local offset = FauxScrollFrame_GetOffset(self);
+		for id = 1, hang_NUM do
+			local dangqian = id+offset;
+			if dataX[dangqian] then
+				local fameX = fujiF.fakuan.ButList[id]
+				fameX:Show();
+				fameX.del:SetID(dangqian);
+				fameX.jianglixiang:SetText(dataX[dangqian][1])
+				fameX.G.E:SetID(dangqian);
+				fameX.G.Q:SetID(dangqian);
+				fameX.G.V:SetText(dataX[dangqian][2])
+				shiqujiaodian(fameX.G)
+				fameX.QKG.E:SetID(dangqian);
+				fameX.QKG.Q:SetID(dangqian);
+				fameX.QKG.V:SetText(dataX[dangqian][4])
+				shiqujiaodian(fameX.QKG)
+				fameX.JiangliRen:SetID(dangqian);
+				local AllName = dataX[dangqian][3]
+				if AllName==NONE then
+						fameX.JiangliRen:SetText("\124cffff0000        "..NONE.."\124r");
+				else
+					local name,server = strsplit("-", AllName);
+					if server then
+						fameX.JiangliRen:SetText(name.."(*)")
+					else
+						fameX.JiangliRen:SetText(name);
+					end
+					-- local color = PIG_CLASS_COLORS[zhiyecc]
+					-- fameX.JiangliRen:SetTextColor(color.r, color.g, color.b,1);
+				end
+			end
+		end
+		RaidR:UpdateGinfo()
+	end
 	--导入罚款设置----------
 	fujiF.fakuan.daoruBut=PIGDownMenu(fujiF.fakuan,{"TOP",fujiF.fakuan.yedibuF,"BOTTOM",0,-4},{60,22})
 	fujiF.fakuan.daoruBut:PIGDownMenu_SetText("导入")
-	function fujiF.fakuan.daoruBut:PIGDownMenu_Update_But(self)
+	function fujiF.fakuan.daoruBut:PIGDownMenu_Update_But()
 		local info = self:PIGDownMenu_CreateInfo()
 		info.func = self.PIGDownMenu_SetValue
 		local ziding = PIGA["GDKP"]["fakuan_config"]
@@ -396,7 +394,7 @@ function GDKPInfo.ADD_Fakuan(RaidR)
 
 	fujiF.fakuan.SaveBut.F.oldName=PIGDownMenu(fujiF.fakuan.SaveBut.F,{"LEFT",fujiF.fakuan.SaveBut.F.shijianNameT,"RIGHT",10,0},{120,22})
 	fujiF.fakuan.SaveBut.F.oldName:PIGDownMenu_SetText("选择已有设置")
-	function fujiF.fakuan.SaveBut.F.oldName:PIGDownMenu_Update_But(self)
+	function fujiF.fakuan.SaveBut.F.oldName:PIGDownMenu_Update_But()
 		local info = self:PIGDownMenu_CreateInfo()
 		info.func = self.PIGDownMenu_SetValue
 		local ziding = PIGA["GDKP"]["fakuan_config"]

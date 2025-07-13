@@ -1,5 +1,4 @@
 local addonName, addonTable = ...;
-local _, _, _, tocversion = GetBuildInfo()
 local Create, Data, Fun, L= unpack(PIG)
 local match = _G.string.match
 ------------------------
@@ -788,11 +787,9 @@ function TardisInfo.Chedui(Activate)
 	-- 	if self:IsShown() then
 	-- 		if event == "LFG_LIST_SEARCH_RESULTS_RECEIVED" then
 	-- 			self.Hang_Gengxin()
-	-- 		end
-	-- 		if event == "LFG_LIST_SEARCH_RESULT_UPDATED" then
+	-- 		elseif event == "LFG_LIST_SEARCH_RESULT_UPDATED" then
 	-- 			self.Hang_Gengxin_H(searchResultID)
-	-- 		end
-	-- 		if event == "LFG_LIST_APPLICATION_STATUS_UPDATED" then
+	-- 		elseif event == "LFG_LIST_APPLICATION_STATUS_UPDATED" then
 	-- 			self.Hang_Gengxin_H(searchResultID)
 	-- 		end
 	-- 	end	
@@ -1476,7 +1473,7 @@ function TardisInfo.Chedui(Activate)
 	-- --FCTabF.ADD.GroupDropDown =PIGDownMenu(FCTabF.ADD,{"TOPLEFT",FCTabF.ADD.Category_T,"TOPLEFT",0,-100},{FCTabF.ADD.Width,nil})
 	-- -- FCTabF.ADD.GroupDropDown:Hide()
 	-- -- FCTabF.ADD.GroupDropDown.t=PIGFontString(FCTabF.ADD.GroupDropDown,{"BOTTOMLEFT",FCTabF.ADD.GroupDropDown,"TOPLEFT",0,4},"目的地")
-	-- -- function FCTabF.ADD.GroupDropDown:PIGDownMenu_Update_But(self)
+	-- -- function FCTabF.ADD.GroupDropDown:PIGDownMenu_Update_But()
 	-- -- 	local info = {}
 	-- -- 	info.func = self.PIGDownMenu_SetValue
 	-- -- 	local ActivityGroups = C_LFGList.GetAvailableActivityGroups(FCTabF.selectedCategory)
@@ -1507,7 +1504,7 @@ function TardisInfo.Chedui(Activate)
 	-- 	end
 	-- 	return true
 	-- end
-	-- function FCTabF.ADD.ActivityDropDown:PIGDownMenu_Update_But(self)
+	-- function FCTabF.ADD.ActivityDropDown:PIGDownMenu_Update_But()
 	-- 	local ActivityGroups = C_LFGList.GetAvailableActivityGroups(FCTabF.selectedCategory)
 	-- 	local info = {}
 	-- 	info.func = self.PIGDownMenu_SetValue
@@ -1526,7 +1523,7 @@ function TardisInfo.Chedui(Activate)
 	-- 	for i=1,#newActivities,1 do
 	-- 	    info.text, info.arg1, info.arg2 = newActivities[i][1], newActivities[i][2], "activity";
 	-- 	    info.checked = newActivities[i][2] == FCTabF.selectedActivity
-	-- 		FCTabF.ADD.ActivityDropDown:PIGDownMenu_AddButton(info)
+	-- 		self:PIGDownMenu_AddButton(info)
 	-- 	end 
 	-- end
 	-- function FCTabF.ADD.ActivityDropDown:PIGDownMenu_SetValue(value,arg1,arg2)
@@ -1673,7 +1670,7 @@ function TardisInfo.Chedui(Activate)
 	-- NameBox:SetMultiLine(true)
 	-- FCTabF.ADD.NameF.Label=PIGFontString(FCTabF.ADD.NameF,{"BOTTOMLEFT",FCTabF.ADD.NameF,"TOPLEFT",0,2},"标题")
 	-- FCTabF.ADD.NameF:SetScript('OnShow', function(self)
- --        self:SetObject(NameBox, self, {4, -4, -4, 4})
+ --        self:SetObject(NameBox, {4, -4, -4, 4})
  --        NameBox.Left:Hide()
  --        NameBox.Middle:Hide()
  --        NameBox.Right:Hide()
@@ -1691,7 +1688,7 @@ function TardisInfo.Chedui(Activate)
 	-- local DescriptionBox = LFGListFrame.EntryCreation.Description
 	-- FCTabF.ADD.DescriptionF.t=PIGFontString(FCTabF.ADD.DescriptionF,{"BOTTOMLEFT",FCTabF.ADD.DescriptionF,"TOPLEFT",0,2},LFG_LIST_DETAILS)
 	-- FCTabF.ADD.DescriptionF:SetScript('OnShow', function(self)
- --        self:SetObject(DescriptionBox, self, {4, -4, -4, 4})
+ --        self:SetObject(DescriptionBox, {4, -4, -4, 4})
 	-- 	DescriptionBox.EditBox:SetWidth(DescriptionBox:GetWidth())
  --        DescriptionBox.TopTex:Hide()
  --        DescriptionBox.TopLeftTex:Hide()

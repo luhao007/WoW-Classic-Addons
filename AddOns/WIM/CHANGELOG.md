@@ -1,6 +1,13 @@
 # WIM
 
-## [3.12.11](https://github.com/Legacy-of-Sylvanaar/wow-instant-messenger/tree/3.12.11) (2025-03-18)
-[Full Changelog](https://github.com/Legacy-of-Sylvanaar/wow-instant-messenger/compare/3.12.10...3.12.11) [Previous Releases](https://github.com/Legacy-of-Sylvanaar/wow-instant-messenger/releases)
+## [3.12.13](https://github.com/Legacy-of-Sylvanaar/wow-instant-messenger/tree/3.12.13) (2025-06-02)
+[Full Changelog](https://github.com/Legacy-of-Sylvanaar/wow-instant-messenger/compare/3.12.12...3.12.13) [Previous Releases](https://github.com/Legacy-of-Sylvanaar/wow-instant-messenger/releases)
 
-- Add "Copy Name" under profile links as a way to work around Copy Name not working from clicking on the name in the chat window.  
+- Merge branch 'master' of https://github.com/Legacy-of-Sylvanaar/wow-instant-messenger  
+- Add history logging of emote channel. This is part of SAY chat.  
+- Merge pull request #124 from JARVIS-AI/master  
+    Warcraftlogs patch - Add classic and fresh anniversary version for logs  
+- Merge pull request #1 from JARVIS-AI/JARVIS-AI-patch-1  
+    Update URLHandler.lua  
+- Update URLHandler.lua  
+    Add Classic and Fresh Anniversary version for WoW Logs  

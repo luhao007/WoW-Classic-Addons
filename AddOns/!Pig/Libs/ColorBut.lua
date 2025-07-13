@@ -1,19 +1,17 @@
 local addonName, addonTable = ...;
-local _, _, _, tocversion = GetBuildInfo()
 local Create = addonTable.Create
 -----------------------
 function Create.ColorBut(fuF,Point,WH)
 	local but
-	local oldversion = tocversion<0
-	if oldversion then
+	if ColorSwatchMixin then
+		but = CreateFrame("Button", nil, fuF, "ColorSwatchTemplate")
+	else
 		but = CreateFrame("Button", nil, fuF, "BackdropTemplate")
 		but:SetBackdrop({
 			bgFile = Create.bgFile, tile = true, tileSize = 0,
 			edgeFile = Create.edgeFile, edgeSize = 8, 
 			insets = { left = 0, right = 0, top = 0, bottom = 0 }});
 		but:SetBackdropBorderColor(1, 1, 1, 1);
-	else
-		but = CreateFrame("Button", nil, fuF, "ColorSwatchTemplate")
 	end
 	but:SetPoint(Point[1],Point[2],Point[3],Point[4],Point[5]);
 	but:SetSize(WH[1],WH[2]);

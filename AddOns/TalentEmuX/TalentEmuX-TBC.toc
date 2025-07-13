@@ -1,6 +1,6 @@
-## Interface: 30404
+## Interface: 30405
 ## Author: |cff00ff00ALA|r
-## Version: 205r.250327
+## Version: 205r.250601
 
 ## Title: Talent Emu TBC
 ## Notes: Talent Emu

@@ -12,16 +12,18 @@ local RGB = ns.RGB
 local GetClassRGB = ns.GetClassRGB
 local SetClassCFF = ns.SetClassCFF
 local Maxb = ns.Maxb
-local Maxi = ns.Maxi
 local HopeMaxn = ns.HopeMaxn
 local HopeMaxb = ns.HopeMaxb
 local HopeMaxi = ns.HopeMaxi
-local FrameHide = ns.FrameHide
 local AddTexture = ns.AddTexture
 local RGB_16 = ns.RGB_16
 local GetItemID = ns.GetItemID
 
 local pt = print
+
+local realmID = GetRealmID()
+local player = BG.playerName
+local realmName = GetRealmName()
 
 BG.History = {}
 
@@ -80,7 +82,7 @@ function BG.HistoryUI()
         local text = BG.History.List:CreateFontString() -- 提示文字
         text:SetPoint("TOP", BG.History.List, "BOTTOM", 0, 0)
         text:SetFont(STANDARD_TEXT_FONT, 14, "OUTLINE")
-        text:SetText(BG.STC_w1(L["（ALT+左键改名，ALT+右键删除表格）"]))
+        text:SetText(BG.STC_w1(format(L["（ALT+%s改名，ALT+%s删除表格）"], AddTexture("LEFT"), AddTexture("RIGHT"))))
     end
     ------------------历史表格按键------------------
     do
@@ -89,34 +91,61 @@ function BG.HistoryUI()
         bt:SetNormalFontObject(BG.FontGreen15)
         bt:SetDisabledFontObject(BG.FontDis15)
         bt:SetHighlightFontObject(BG.FontWhite15)
+        bt:RegisterForClicks("AnyUp")
         BG.SetTextHighlightTexture(bt)
         BG.History.HistoryButton = bt
         BG.UpdateHistoryButton()
         -- 单击触发
-        bt:SetScript("OnClick", function(self)
-            FrameHide(2)
-            if BG.History.SaveButton:GetButtonState() ~= "DISABLED" then
-                BG.CreatHistoryListButton(BG.FB1)
-            end
-            if BG.History.List and BG.History.List:IsVisible() then
-                BG.History.List:Hide()
-            else
-                BG.History.List:Show()
+        bt:SetScript("OnClick", function(self, button)
+            if button == "LeftButton" then
+                BG.FrameHide(2)
+                if BG.History.SaveButton:GetButtonState() ~= "DISABLED" then
+                    BG.CreatHistoryListButton(BG.FB1)
+                end
+                if BG.History.List and BG.History.List:IsVisible() then
+                    BG.History.List:Hide()
+                else
+                    BG.History.List:Show()
+                end
+            elseif button == "RightButton" and BGV and BGV.HistoryMainFrame then
+                BG.MainFrame:Hide()
+                BGV.HistoryMainFrame:Hide()
+                BGV.HistoryMainFrame:Show()
             end
             BG.PlaySound(1)
+        end)
+        BG.Init2(function()
+            if BGV then
+                bt:SetScript("OnEnter", function(self)
+                    GameTooltip:SetOwner(self, "ANCHOR_TOPLEFT")
+                    GameTooltip:ClearLines()
+                    GameTooltip:AddLine(self:GetText(), 1, 1, 1, true)
+                    GameTooltip:AddLine(AddTexture("LEFT") .. L["打开历史表格"], 1, 0.82, 0, true)
+                    GameTooltip:AddLine(AddTexture("RIGHT") .. L["打开历史表格汇总"], 1, 0.82, 0, true)
+                    GameTooltip:Show()
+                end)
+                bt:SetScript("OnLeave", function(self)
+                    GameTooltip:Hide()
+                end)
+            end
         end)
     end
     ------------------保存当前表格按键------------------
     do
         function BG.SaveBiaoGe(FB)
             local FB = FB or BG.FB1
-            local DT = tonumber(date("%y%m%d%H%M%S", GetServerTime()))
-            local DTcn = date(L["%m月%d日%H:%M:%S\n"], GetServerTime())
+            local serverTime = BiaoGe[FB].raidRoster and BiaoGe[FB].raidRoster.time or GetServerTime()
+            local DT = tonumber(date("%y%m%d%H%M%S", serverTime))
+            if BiaoGe.History[FB][DT] then
+                serverTime =  GetServerTime()
+                DT = tonumber(date("%y%m%d%H%M%S", serverTime))
+            end
+            local DTcn = date(L["%m月%d日%H:%M:%S\n"], serverTime)
             BiaoGe.History[FB][DT] = {}
             BiaoGe.History[FB][DT].tradeTbl = {}
             for b = 1, Maxb[FB] + 2 do
                 BiaoGe.History[FB][DT]["boss" .. b] = {}
-                for i = 1, Maxi[FB] do
+                for i = 1, BG.GetMaxi(FB, b) do
                     local zhuangbei = BG.Frame[FB]["boss" .. b]["zhuangbei" .. i]
                     if zhuangbei then
                         if zhuangbei:GetText() ~= "" then
@@ -202,15 +231,14 @@ function BG.HistoryUI()
         bt:SetScript("OnLeave", function(self)
             GameTooltip:Hide()
         end)
-
-        -- 单击触发
         bt:SetScript("OnClick", function(self)
-            FrameHide(2)
-            self:SetEnabled(false) -- 点击后按钮变灰2秒
+            BG.FrameHide(2)
+            self:SetEnabled(false)
             C_Timer.After(0.5, function()
                 bt:SetEnabled(true)
             end)
             BG.SaveBiaoGe()
+            BG.ClearBiaoGe("biaoge", BG.FB1)
             BG.PlaySound(2)
         end)
     end
@@ -252,11 +280,11 @@ function BG.HistoryUI()
                 end
             end)
 
-            FrameHide(2)
+            BG.FrameHide(2)
 
             local text = ""
-            local playerFullName, server = UnitFullName("player")
-            playerFullName = playerFullName .. "-" .. server
+            local player, server = UnitFullName("player")
+            local playerFullName = player .. "-" .. server
             text = "[BiaoGe:" .. playerFullName .. "-"
             if not BG.History.EscButton:IsVisible() then
                 text = text .. L["当前表格-"] .. BG.FB1 .. "]" -- [BiaoGe:风行-阿拉希盆地-当前表格-ULD]
@@ -273,48 +301,6 @@ function BG.HistoryUI()
     end
     ------------------导出表格按键------------------
     do
-        BG.frameWenBen = {}
-        local f = CreateFrame("Frame", nil, BG.MainFrame, "BasicFrameTemplate")
-        f:SetWidth(350)
-        f:SetHeight(650)
-        f.TitleText:SetText(L["导出表格"])
-        f:SetFrameLevel(300)
-        f:SetPoint("CENTER")
-        f:EnableMouse(true)
-        f:SetMovable(true)
-        f:SetToplevel(true)
-        f:Hide()
-        f:SetScript("OnMouseUp", function(self)
-            self:StopMovingOrSizing()
-        end)
-        f:SetScript("OnMouseDown", function(self)
-            self:StartMoving()
-        end)
-        BG.frameWenBen.frame = f
-
-        local edit = CreateFrame("EditBox", nil, BG.frameWenBen.frame)
-        edit:SetWidth(BG.frameWenBen.frame:GetWidth() - 27)
-        edit:SetHeight(1)
-        edit:SetAutoFocus(true)
-        edit:EnableMouse(true)
-        edit:SetTextInsets(10, 10, 10, 10)
-        edit:SetMultiLine(true)
-        edit:SetFontObject(GameFontNormal)
-        edit:HookScript("OnEscapePressed", function()
-            BG.frameWenBen.frame:Hide()
-        end)
-        BG.frameWenBen.edit = edit
-
-        local scroll = CreateFrame("ScrollFrame", nil, BG.frameWenBen.frame, "UIPanelScrollFrameTemplate")
-        scroll:SetWidth(BG.frameWenBen.frame:GetWidth() - 27)
-        scroll:SetHeight(BG.frameWenBen.frame:GetHeight() - 29)
-        scroll:SetPoint("BOTTOMLEFT", BG.frameWenBen.frame, "BOTTOMLEFT", 0, 2)
-        scroll.ScrollBar.scrollStep = BG.scrollStep
-        BG.CreateSrollBarBackdrop(scroll.ScrollBar)
-        BG.HookScrollBarShowOrHide(scroll)
-        scroll:SetScrollChild(edit)
-        BG.frameWenBen.scroll = scroll
-
         -- 创建按键
         local bt = CreateFrame("Button", nil, parent)
         bt:SetPoint("TOPRIGHT", BG.History.SendButton, "TOPLEFT", width_jiange, 0)
@@ -337,45 +323,34 @@ function BG.HistoryUI()
             GameTooltip:Hide()
         end)
         bt:SetScript("OnClick", function(self)
-            if BG.frameWenBen.frame:IsVisible() then
-                BG.frameWenBen.frame:Hide()
-                return
-            else
-                BG.frameWenBen.frame:Show()
-            end
             local FB = BG.FB1
             local Frame
-            local text
+            local text = ""
             if BG["Frame" .. FB]:IsVisible() then
                 Frame = BG.Frame
             elseif BG["HistoryFrame" .. FB]:IsVisible() then
                 Frame = BG.HistoryFrame
             end
-            BG.frameWenBen.edit:SetText("")
             for b = 1, Maxb[FB] + 2 do
                 local bossname2 = BG.Boss[FB]["boss" .. b].name2
                 local bosscolor = BG.Boss[FB]["boss" .. b].color
-                text = "|cff" .. bosscolor .. bossname2 .. RN
-                BG.frameWenBen.edit:Insert(text) -- BOSS名字
-                for i = 1, Maxi[FB] do
+                text = text .. "|cff" .. bosscolor .. bossname2 .. "|r\n"
+                for i = 1, BG.GetMaxi(FB, b) do
                     if Frame[FB]["boss" .. b]["zhuangbei" .. i] then
-                        if Frame[FB]["boss" .. b]["zhuangbei" .. i]:GetText() ~= "" or Frame[FB]["boss" .. b]["maijia" .. i]:GetText() ~= "" or Frame[FB]["boss" .. b]["jine" .. i]:GetText() ~= "" then
-                            text = Frame[FB]["boss" .. b]["zhuangbei" .. i]:GetText() .. " " .. RGB_16(Frame[FB]["boss" .. b]["maijia" .. i]) .. " " .. Frame[FB]["boss" .. b]["jine" .. i]:GetText() .. "\n"
-                            BG.frameWenBen.edit:Insert(text)
+                        if Frame[FB]["boss" .. b]["zhuangbei" .. i]:GetText() ~= ""
+                            or Frame[FB]["boss" .. b]["maijia" .. i]:GetText() ~= ""
+                            or Frame[FB]["boss" .. b]["jine" .. i]:GetText() ~= "" then
+                            text = text .. Frame[FB]["boss" .. b]["zhuangbei" .. i]:GetText() .. " "
+                                .. RGB_16(Frame[FB]["boss" .. b]["maijia" .. i]) .. " "
+                                .. Frame[FB]["boss" .. b]["jine" .. i]:GetText() .. "|r\n"
                         end
                     end
                 end
-                BG.frameWenBen.edit:Insert("\n")
+                if b ~= Maxb[FB] + 2 then
+                    text = text .. "\n"
+                end
             end
-            -- 删掉末尾的两个回车
-            local text = BG.frameWenBen.edit:GetText()
-            text = strsub(text, 1, -2)
-            BG.frameWenBen.edit:SetText(text)
-            BG.frameWenBen.edit:HighlightText()
-            -- 设置滚动条到末尾
-            C_Timer.After(0, function()
-                BG.SetScrollBottom(BG.frameWenBen.scroll, BG.frameWenBen.edit)
-            end)
+            BG.CreateExportFrame(L["导出表格"], text)
         end)
     end
     ------------------应用表格按键------------------
@@ -387,7 +362,7 @@ function BG.HistoryUI()
                 if tonumber(_date) == tonumber(BiaoGe.HistoryList[FB][num][1]) then
                     local DT = BiaoGe.HistoryList[FB][num][1]
                     for b = 1, Maxb[FB] + 2 do
-                        for i = 1, Maxi[FB] do
+                        for i = 1, BG.GetMaxi(FB, b) do
                             if BG.Frame[FB]["boss" .. b]["zhuangbei" .. i] then
                                 BG.Frame[FB]["boss" .. b]["zhuangbei" .. i]:SetText(BiaoGe.History[FB][DT]["boss" .. b]["zhuangbei" .. i] or "")
                                 BG.Frame[FB]["boss" .. b]["maijia" .. i]:SetText(BiaoGe.History[FB][DT]["boss" .. b]["maijia" .. i] or "")
@@ -530,7 +505,7 @@ function BG.HistoryUI()
         BG.History.EscButton = bt
 
         bt:SetScript("OnClick", function(self)
-            FrameHide(2)
+            BG.FrameHide(2)
             BG.FBMainFrame:Show()
             BG.UpdateAuctionLogFrame()
             BG.PlaySound(1)
@@ -624,21 +599,19 @@ function BG.HistoryUI()
     end
 
     -- 删除历史表格里的loot记录
-    do
-        BG.Once("history", 250312, function()
-            for _, FB in ipairs(BG.FBtable) do
-                for DT, v in pairs(BiaoGe.History[FB]) do
-                    local b = 1
-                    while BiaoGe.History[FB][DT]["boss" .. b] do
-                        for i = 1, BG.Maxi do
-                            BiaoGe.History[FB][DT]["boss" .. b]["loot" .. i] = nil
-                        end
-                        b = b + 1
+    BG.Once("history", 250312, function()
+        for _, FB in ipairs(BG.FBtable) do
+            for DT, v in pairs(BiaoGe.History[FB]) do
+                local b = 1
+                while BiaoGe.History[FB][DT]["boss" .. b] do
+                    for i = 1, BG.GetMaxi(FB, b) do
+                        BiaoGe.History[FB][DT]["boss" .. b]["loot" .. i] = nil
                     end
+                    b = b + 1
                 end
             end
-        end)
-    end
+        end
+    end)
 end
 
 ------------------下拉框架的内容------------------
@@ -651,7 +624,6 @@ do
             BG.History["ListButton" .. i] = nil
             i = i + 1
         end
-        -- BG.History.scroll.ScrollBar:Hide()
 
         -- 再重新创建新的列表内容
         for i = 1, #BiaoGe.HistoryList[FB] do
@@ -689,7 +661,8 @@ do
 
             -- 单击触发
             bt:SetScript("OnMouseUp", function(self, button)
-                FrameHide(2)
+                BG.CreateFBUI(FB, "History")
+                BG.FrameHide(2)
 
                 if IsAltKeyDown() then
                     if button == "RightButton" then -- 删除
@@ -697,7 +670,7 @@ do
                         BG.DeleteHistory(FB, i)
                         BG.History.GaiMingFrame:Hide()
                         for b = 1, Maxb[FB] + 2 do
-                            for i = 1, Maxi[FB] do
+                            for i = 1, BG.GetMaxi(FB, b) do
                                 if BG.HistoryFrame[FB]["boss" .. b]["zhuangbei" .. i] then
                                     BG.HistoryFrame[FB]["boss" .. b]["zhuangbei" .. i]:SetText("")
                                     BG.HistoryFrame[FB]["boss" .. b]["maijia" .. i]:SetText("")
@@ -743,7 +716,7 @@ do
                 local DT = BiaoGe.HistoryList[FB][i][1]
                 for b = 1, Maxb[FB] + 2 do
                     if BiaoGe.History[FB][DT]["boss" .. b] then
-                        for i = 1, Maxi[FB] do
+                        for i = 1, BG.GetMaxi(FB, b) do
                             if BG.HistoryFrame[FB]["boss" .. b]["zhuangbei" .. i] then
                                 BG.HistoryFrame[FB]["boss" .. b]["zhuangbei" .. i]:SetText(BiaoGe.History[FB][DT]["boss" .. b]["zhuangbei" .. i] or "")
                                 BG.HistoryFrame[FB]["boss" .. b]["maijia" .. i]:SetText(BiaoGe.History[FB][DT]["boss" .. b]["maijia" .. i] or "")
@@ -874,7 +847,7 @@ do
             if db.History[FB][DT] then
                 local b = 1
                 while db.History[FB][DT]["boss" .. b] do
-                    for i = 1, BG.Maxi do
+                    for i = 1, BG.GetMaxi(FB, b) do
                         if #tbl >= maxCount then break end
                         local zhuangbei = db.History[FB][DT]["boss" .. b]["zhuangbei" .. i]
                         local _itemID = GetItemID(zhuangbei)

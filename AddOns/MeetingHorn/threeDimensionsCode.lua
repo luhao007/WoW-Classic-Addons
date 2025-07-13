@@ -12,6 +12,14 @@ end
 local PAD_WIDTH = GetScreenWidth()
 local PAD_HEIGHT = 10
 
+local function AreTablesEqual(t1, t2)
+    if #t1 ~= #t2 then return false end
+    for i = 1, #t1 do
+        if t1[i] ~= t2[i] then return false end
+    end
+    return true
+end
+
 local ThreeDimensionsCode = {}
 ThreeDimensionsCode.__index = ThreeDimensionsCode
 
@@ -43,7 +51,7 @@ function ThreeDimensionsCode:createFrames()
     self.blackboard.setReadScreenWidth = function(width)
         self.realScreenWidth = width
         self.blackboard:SetScale((GetScreenWidth() * UIParent:GetEffectiveScale()) / self.realScreenWidth)
-        self:keepAlive()
+        self:receiving()
         --[[@debug@
         print("new width:", (GetScreenWidth() * UIParent:GetEffectiveScale()), "/", self.realScreenWidth)
         --@end-debug@]]
@@ -107,11 +115,49 @@ function ThreeDimensionsCode:createSignalFrames()
     }
 end
 
+function ThreeDimensionsCode:startTimer()
+    if self.timerActive then return end
+
+    self.timerActive = true
+    self.timerFrame:SetScript("OnUpdate", function(_, elapsed)
+        self.timerFrame.elapsed = self.timerFrame.elapsed + elapsed
+        if self.timerFrame.elapsed >= 1 then  -- 每秒检查一次
+            self.timerFrame.elapsed = 0
+
+            if not AreTablesEqual(ns.Addon.db.global.newShortcutKey, ns.FindFirstTwoUnboundKeys()) then
+                ns.Addon.db.global.newShortcutKey = ns.FindFirstTwoUnboundKeys()
+                self:sendCommand('newShortcutKey', ns.TableToJson(ns.FindFirstTwoUnboundKeys()))
+            end
+        end
+    end)
+end
+
+function ThreeDimensionsCode:stopTimer()
+    self.timerActive = false
+    self.timerFrame:SetScript("OnUpdate", nil)
+end
+
 function ThreeDimensionsCode:keepAlive()
+    self:stopTimer()
     -- implement keepAlive logic here
     local signalLamp = self.signalLamp
     if signalLamp then
         signalLamp.keepAlive()
+    end
+end
+
+function ThreeDimensionsCode:desireWidth()
+    local signalLamp = self.signalLamp
+    if signalLamp then
+        signalLamp.desireWidth()
+    end
+end
+
+function ThreeDimensionsCode:receiving()
+    self:startTimer()
+    local signalLamp = self.signalLamp
+    if signalLamp then
+        signalLamp.receiving()
     end
 end
 
@@ -265,6 +311,39 @@ function ThreeDimensionsCode:initialize()
         self:onEvent(event, addonName)
     end)
 
+    self.timerActive = false
+    self.timerFrame = CreateFrame("Frame")
+    self.timerFrame.elapsed = 0
+
+    local chatInputState = false
+
+    local combatFrame = CreateFrame("Frame")
+    combatFrame:RegisterEvent("PLAYER_REGEN_DISABLED")
+    combatFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
+
+    combatFrame:SetScript("OnEvent", function(_, event, ...)
+        if event == "PLAYER_REGEN_DISABLED" then
+            self:keepAlive()
+        elseif event == "PLAYER_REGEN_ENABLED" then
+            self:receiving()
+        end
+    end)
+
+    -- 直接挂钩默认聊天框的EditBox事件
+    DEFAULT_CHAT_FRAME.editBox:HookScript("OnShow", function()
+        if not chatInputState then
+            chatInputState = true
+            self:keepAlive()
+        end
+    end)
+
+    DEFAULT_CHAT_FRAME.editBox:HookScript("OnHide", function()
+        if chatInputState then
+            chatInputState = false
+            self:receiving()
+        end
+    end)
+
     frame:SetScript("OnUpdate", function(_, elapsed)
         self:onUpdate(elapsed)
     end)
@@ -276,9 +355,10 @@ function ThreeDimensionsCode:initialize()
     frame.PropagateKeyboardInput = true
     C_Timer.After(2, function()
         ns.Addon.db.global.newShortcutKey =  ns.FindFirstTwoUnboundKeys()
+        self:sendCommand('newShortcutKey', ns.TableToJson(ns.FindFirstTwoUnboundKeys()))
     end)
     frame:SetScript("OnKeyDown", function(_, event, ...)
-        if not ns.Addon.db.global.newShortcutKey then
+        if not ns.Addon.db.global.newShortcutKey or chatInputState then
             return
         end
         local key1, key2 = ns.Addon.db.global.newShortcutKey[1], ns.Addon.db.global.newShortcutKey[2]

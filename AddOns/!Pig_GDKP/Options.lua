@@ -1,5 +1,4 @@
 local addonName, addonTable = ...;
-local _, _, _, tocversion = GetBuildInfo()
 local Create, Data, Fun, L, Default, Default_Per= unpack(PIG)
 local PIGFrame=Create.PIGFrame
 local PIGLine=Create.PIGLine
@@ -11,20 +10,22 @@ local PIGFontString=Create.PIGFontString
 local PIGModCheckbutton=Create.PIGModCheckbutton
 local PIGQuickBut=Create.PIGQuickBut
 local PIGSetFont=Create.PIGSetFont
-
+---
+local GetItemInfoInstant=GetItemInfoInstant or C_Item and C_Item.GetItemInfoInstant
 ------
 local GDKPInfo = {}
 addonTable.GDKPInfo=GDKPInfo
 ------------
 local QuickBut_xuhaoID=15
-local GnName,GnUI,GnIcon,FrameLevel = L["PIGaddonList"][addonName],"PigGDKP_UI",133742,50
+local GnName,GnUI,GnIcon,FrameLevel = L["PIGaddonList"][addonName],"PIG_GDKPUI",133784,50
 GDKPInfo.uidata={GnName,GnUI,GnIcon,FrameLevel}
 local fuFrame,fuFrameBut,Tooltip = unpack(Data.Ext[L.extLsit[2]])
 if not fuFrame.OpenMode then return end
 fuFrame.extaddonT:Hide()
+local QuickButUI=_G[Data.QuickButUIname]
 GDKPInfo.fuFrame,GDKPInfo.fuFrameBut=fuFrame,fuFrameBut
 ---
-function GDKPInfo.ADD_Options()
+local function ADD_Options()
 	local Key_fenge=Fun.Key_fenge
 	fuFrame.Open = PIGModCheckbutton(fuFrame,{GnName,Tooltip},{"TOPLEFT",fuFrame,"TOPLEFT",20,-20})
 	fuFrame.Open:SetScript("OnClick", function (self)
@@ -35,7 +36,7 @@ function GDKPInfo.ADD_Options()
 		else
 			PIGA["GDKP"]["Open"]=false;
 			fuFrame.SetListF:Hide()
-			Pig_Options_RLtishi_UI:Show()
+			PIG_OptionsUI.RLUI:Show()
 		end
 		QuickButUI.ButList[QuickBut_xuhaoID]()
 	end);
@@ -45,21 +46,21 @@ function GDKPInfo.ADD_Options()
 			QuickButUI.ButList[QuickBut_xuhaoID]()
 		else
 			PIGA["GDKP"]["AddBut"]=false
-			Pig_Options_RLtishi_UI:Show();
+			PIG_OptionsUI.RLUI:Show();
 		end
 	end);
 	QuickButUI.ButList[QuickBut_xuhaoID]=function()
 		if PIGA["QuickBut"]["Open"] and PIGA["GDKP"]["Open"] and PIGA["GDKP"]["AddBut"] then
-			local QkButUI = "QkBut_PigGDKP"
-			if _G[QkButUI] then return end
+			if QuickButUI.GDKPOpen then return end
+			QuickButUI.GDKPOpen=true
 			local QuickTooltip = KEY_BUTTON1.."-|cff00FFFF打开"..GnName.."|r\n"..KEY_BUTTON2.."-|cff00FFFF"..SETTINGS.."|r"
-			local QkBut=PIGQuickBut(QkButUI,QuickTooltip,GnIcon,GnUI,FrameLevel)
+			local QkBut=PIGQuickBut(nil,QuickTooltip,GnIcon,GnUI,FrameLevel)
 			QkBut:HookScript("OnClick", function(self,button)
 				if button=="RightButton" then
-					if Pig_OptionsUI:IsShown() then
-						Pig_OptionsUI:Hide()
+					if PIG_OptionsUI:IsShown() then
+						PIG_OptionsUI:Hide()
 					else
-						Pig_OptionsUI:Show()
+						PIG_OptionsUI:Show()
 						Create.Show_TabBut(fuFrame,fuFrameBut)
 					end
 				end
@@ -91,7 +92,7 @@ function GDKPInfo.ADD_Options()
 	fuFrame.SetListF:SetPoint("BOTTOMRIGHT",fuFrame,"BOTTOMRIGHT",0,0);
 	--
 	local autofentishi = "开启后队长分配模式下且你是战利品分配人会自动分配掉落到自己背包(分配品质"..KEY_BUTTON2.."点击自己头像设置)\n"..
-	"|cffFF0000不会分配任务物品，也不会分配埃提耶什的碎片/瓦兰奈尔的碎片/影霜碎片。|r\n开启此功能后会在队伍/团队频道发送拾取明细"
+	"|cffFF0000不会分配任务物品，也不会分配埃提耶什的碎片/瓦兰奈尔的碎片/影霜碎片/烂肠的酸性血液/腐面的酸性血液。|r\n开启此功能后会在队伍/团队频道发送拾取明细"
 	fuFrame.SetListF.autofen = PIGCheckbutton_R(fuFrame.SetListF,{"自动分配物品给自己\124cff00FF00(你必须是战利品分配人)\124r",autofentishi},true)
 	fuFrame.SetListF.autofen:SetScript("OnClick", function (self)
 		if self:GetChecked() then
@@ -115,6 +116,7 @@ function GDKPInfo.ADD_Options()
 		45038,--瓦兰奈尔的碎片
 		50274,--影霜碎片
 		30311,30312,30313,30314,30316,30317,30318,30319,30320,--七武器
+		50226,50231,--烂肠的酸性血液/腐面的酸性血液
 	}
 	local function funbufenpei(itemID)
 		if itemID then
@@ -131,8 +133,7 @@ function GDKPInfo.ADD_Options()
 	autofenffff:SetScript("OnEvent",function(self,event,arg1,_,_,_,arg5)
 		if event=="LOOT_CLOSED" then
 			wipe(self.listdata)
-		end
-		if IsInGroup() then
+		elseif IsInGroup() then
 			local lootmethod, masterlooterPartyID, masterlooterRaidID= GetLootMethod();
 			if lootmethod=="master" and masterlooterPartyID==0 then
 				local lootNum = GetNumLootItems()
@@ -164,15 +165,15 @@ function GDKPInfo.ADD_Options()
 						if link and lootQuantity and lootQuantity>0 then
 							for ci = 1, GetNumGroupMembers() do
 								local candidate = GetMasterLootCandidate(x, ci)
-								if candidate == Pig_OptionsUI.Name then
+								if candidate == PIG_OptionsUI.Name then
 									if CalculateTotalNumberOfFreeBagSlots() > 0 then
 										GiveMasterLoot(x, ci);
 										if PIGA["GDKP"]["Rsetting"]["autofenMsg"] then
 											if not self.listdata[x][2] then
 												if lootQuantity>1 then
-													PIGSendChatRaidParty("[!Pig]:拾取"..link.."×"..lootQuantity)
+													PIGSendChatRaidParty("拾取"..link.."×"..lootQuantity)
 												else
-													PIGSendChatRaidParty("[!Pig]:拾取"..link)
+													PIGSendChatRaidParty("拾取"..link)
 												end
 												self.listdata[x][2]=true
 											end
@@ -237,15 +238,14 @@ function GDKPInfo.ADD_Options()
 	end);
 
 	--交易记录==================================
-	local jiaoyijiluTS="开启后,交易拾取目录内的物品将会自动填入收入金额及成交人，交易多件物品收到金额将会被平分"
-	fuFrame.SetListF.jiaoyijilu = PIGCheckbutton_R(fuFrame.SetListF,{"自动录入成交人/成交金额",jiaoyijiluTS},true)
+	local jiaoyijiluTS="1.交易拾取目录内物品自动录入成交人/成交金额(交易多件物品收到金额将会被平分)\n2.对方交易欠款时自动清欠并显示明细\n3.你发放工资时自动扣除欠款并显示明细"
+	fuFrame.SetListF.jiaoyijilu = PIGCheckbutton_R(fuFrame.SetListF,{"交易智能记账清欠",jiaoyijiluTS},true)
 	fuFrame.SetListF.jiaoyijilu:SetScript("OnClick", function (self)
 		if self:GetChecked() then
 			PIGA["GDKP"]["Rsetting"]["jiaoyijilu"]=true;
 		else
 			PIGA["GDKP"]["Rsetting"]["jiaoyijilu"]=false;
 		end
-		fuFrame.SetListF.jiaoyijiluEvent()
 	end);
 	fuFrame.SetListF.tradetonggao = PIGCheckbutton_R(fuFrame.SetListF,{"通告交易详情","在团队频道通告交易详情"},true)
 	fuFrame.SetListF.tradetonggao:SetScript("OnClick", function (self)
@@ -255,225 +255,6 @@ function GDKPInfo.ADD_Options()
 			PIGA["GDKP"]["Rsetting"]["tradetonggao"]=false;
 		end
 	end);
-	-------
-	local PIGTradeFrame = PIGFrame(UIParent,{"TOP",UIParent,"TOP",0,-150},{400,360});
-	PIGTradeFrame:PIGSetBackdrop()
-	PIGTradeFrame:Hide()
-	PIGTradeFrame.cancel = PIGButton(PIGTradeFrame,{"TOPRIGHT",PIGTradeFrame,"TOPRIGHT",0,0},{60,22},"不清欠");
-	PIGTradeFrame.cancel:HookScript("OnClick",function (self)
-		PIGTradeFrame:Hide()
-	end)
-	PIGTradeFrame.save = PIGButton(PIGTradeFrame,{"BOTTOM",PIGTradeFrame,"BOTTOM",0,10},{80,24},"执行清欠");
-	PIGTradeFrame.save:HookScript("OnClick",function (self)
-		PIGTradeFrame.qiankuan_InfoSave()
-	end)
-	PIGTradeFrame.biaoti = PIGFontString(PIGTradeFrame,{"TOPLEFT", PIGTradeFrame, "TOPLEFT", 10,-4}," ");
-	PIGTradeFrame.biaoti:SetTextColor(1, 0, 1, 1);
-	PIGTradeFrame.biaoti_1 = PIGFontString(PIGTradeFrame,{"LEFT", PIGTradeFrame.biaoti, "RIGHT", 4,0},"欠款信息:");
-	--itemList
-	local topjianju,qingqian_Height,qingqian_NUM = 50,18,10
-	PIGTradeFrame.itemListF = PIGFrame(PIGTradeFrame,{"TOPLEFT",PIGTradeFrame,"TOPLEFT",0,-topjianju});
-	PIGTradeFrame.itemListF:SetHeight((qingqian_Height+2)*qingqian_NUM);  
-	PIGTradeFrame.itemListF:SetPoint("TOPRIGHT",PIGTradeFrame,"TOPRIGHT",0,-topjianju);
-	-- 
-	local qingqian_biaoti = {{"物品",16},{"欠款/G",220},{"还款/G",290},{"清账",360}}
-	for id = 1, #qingqian_biaoti, 1 do
-		local biaoti = PIGFontString(PIGTradeFrame.itemListF,{"BOTTOMLEFT", PIGTradeFrame.itemListF, "TOPLEFT", qingqian_biaoti[id][2],2},qingqian_biaoti[id][1],nil,nil,"qingqian_biaoti_"..id);
-		if id==2 then
-			biaoti:SetTextColor(1, 0, 0, 1);
-		elseif id==3 then
-			biaoti:SetTextColor(0, 1, 0, 1);
-		else
-			biaoti:SetTextColor(1, 1, 0, 1);
-		end
-	end
-	for id = 1, qingqian_NUM do
-		local hang = CreateFrame("Frame", "qingqian_hang_"..id, PIGTradeFrame.itemListF);
-		hang:SetSize(PIGTradeFrame.itemListF:GetWidth()-25, qingqian_Height);
-		if id==1 then
-			hang:SetPoint("TOP",PIGTradeFrame.itemListF,"TOP",0,0);
-		else
-			hang:SetPoint("TOP",_G["qingqian_hang_"..(id-1)],"BOTTOM",0,-2);
-		end
-		PIGLine(hang,"TOP",nil,nil,nil,{0.3,0.3,0.3,0.3})
-		hang.qianItem = PIGFontString(hang,{"LEFT", hang, "LEFT", 0,0});
-		--
-		hang.qianV = PIGFontString(hang,{"LEFT", hang, "LEFT", qingqian_biaoti[2][2]-8,0},0);
-		hang.qianV:SetTextColor(0.8, 0.2, 0, 1);
-		hang.qingV = CreateFrame("EditBox", nil, hang, "InputBoxInstructionsTemplate",id);
-		hang.qingV:SetSize(54,qingqian_Height);
-		hang.qingV:SetPoint("LEFT", hang, "LEFT", qingqian_biaoti[3][2]-8,0);
-		PIGSetFont(hang.qingV, 14, "OUTLINE");
-		hang.qingV:SetMaxLetters(6)
-		hang.qingV:SetNumeric(true)
-		hang.qingV:SetAutoFocus(false);
-		hang.qingV:SetScript("OnEditFocusGained", function(self) 
-			self:SetTextColor(1, 1, 1, 1);
-		end);
-		hang.qingV:SetScript("OnEditFocusLost", function(self)
-			self:SetTextColor(0.7, 0.7, 0.7, 1);
-			self:SetText(PIGTradeFrame.qiankuanInfo["itemL"][self:GetID()][2])
-		end);
-		hang.qingV:SetScript("OnEscapePressed", function(self) 
-			self:ClearFocus()
-		end);
-		hang.qingV:SetScript("OnEnterPressed", function(self)
-			PIGTradeFrame.qiankuanInfo["itemL"][self:GetID()][2]=self:GetNumber()
-			PIGTradeFrame.Update_Show()
-		end);
-		hang.wancheng = hang:CreateTexture();
-		hang.wancheng:SetTexture("interface/raidframe/readycheck-ready.blp");
-		hang.wancheng:SetSize(qingqian_Height,qingqian_Height-4);
-		hang.wancheng:SetPoint("LEFT", hang, "LEFT", qingqian_biaoti[4][2]-8,0);
-	end
-	PIGTradeFrame.itemListF.benci = PIGFontString(PIGTradeFrame.itemListF,{"TOPLEFT", PIGTradeFrame.itemListF, "BOTTOMLEFT", 10,-10},"本次交易收到/G: ");
-	PIGTradeFrame.itemListF.benciG = PIGFontString(PIGTradeFrame.itemListF,{"LEFT", PIGTradeFrame.itemListF.benci, "RIGHT", 2,0},"0");
-	PIGTradeFrame.itemListF.benciG:SetTextColor(1, 1, 1, 1);
-	PIGTradeFrame.itemListF.qingxianhou = PIGFontString(PIGTradeFrame.itemListF,{"TOPLEFT", PIGTradeFrame.itemListF.benci, "BOTTOMLEFT", 0,-6},"玩家总欠款/G: ");
-	PIGTradeFrame.itemListF.qingxianhouG = PIGFontString(PIGTradeFrame.itemListF,{"LEFT", PIGTradeFrame.itemListF.qingxianhou, "RIGHT", 2,0},"0");
-
-	function PIGTradeFrame.qiankuan_InfoSave()
-		local itemL=PIGTradeFrame.qiankuanInfo["itemL"]
-		for id = 1, #itemL do
-			local qiankwu = PIGA["GDKP"]["ItemList"][itemL[id][1]]
-			if qiankwu then
-				qiankwu[9]=qiankwu[9]+itemL[id][2]
-				qiankwu[14]=qiankwu[14]-itemL[id][2]
-			end
-		end
-		PIGTradeFrame:Hide()
-		_G[GnUI].Update_Item();
-	end
-	function PIGTradeFrame.Update_Show()
-		for id = 1, qingqian_NUM do
-			local hang=_G["qingqian_hang_"..id]
-			hang:Hide()
-			hang.wancheng:Hide()
-			hang.qingV:SetTextColor(0.6, 0.6, 0.6, 1);
-		end
-		PIGTradeFrame:Show()
-		local TName=PIGTradeFrame.qiankuanInfo["name"]
-		local TMoney=PIGTradeFrame.qiankuanInfo["Money"]
-		local itemL=PIGTradeFrame.qiankuanInfo["itemL"]
-		PIGTradeFrame.biaoti:SetText(TName)
-		PIGTradeFrame.itemListF.benciG:SetText(TMoney)
-		local itemLNum = #itemL
-		for id = 1, itemLNum do
-			local qiankwu = PIGA["GDKP"]["ItemList"][itemL[id][1]]
-			if qiankwu then
-				local hang=_G["qingqian_hang_"..id]
-				hang:Show();
-				hang.qianItem:SetText(qiankwu[2])
-				hang.qianV:SetText(qiankwu[14])
-				hang.qingV:SetText(itemL[id][2])
-			end
-		end
-		for id = 1, itemLNum do
-			local hang=_G["qingqian_hang_"..id]
-			local qianV=tonumber(hang.qianV:GetText())
-			local qingV=hang.qingV:GetNumber()
-			if qingV>=qianV then
-				hang.wancheng:Show()
-			end
-		end
-		PIGTradeFrame.itemListF.qingxianhouG:SetText(TMoney-PIGTradeFrame.qiankuanInfo["shengyu"].." (差额"..PIGTradeFrame.qiankuanInfo["shengyu"]..")")
-		if PIGTradeFrame.qiankuanInfo["shengyu"]>=0 then
-			PIGTradeFrame.itemListF.qingxianhouG:SetTextColor(0, 1, 0, 1);
-		else
-			PIGTradeFrame.itemListF.qingxianhouG:SetTextColor(1, 0, 0, 1);
-		end
-	end
-	function PIGTradeFrame.GetQiankuan_Info(TName,TMoney)
-		PIGTradeFrame.qiankuanInfo = {["name"]=TName,["Money"]=TMoney*0.0001,["itemL"]={},["shengyu"]=TMoney*0.0001}
-		local RRItemList = PIGA["GDKP"]["ItemList"]
-		for x=1,#RRItemList do
-			if RRItemList[x][8]==TName then
-				if RRItemList[x][14]>0 then
-					table.insert(PIGTradeFrame.qiankuanInfo["itemL"],{x,0})
-				end
-			end
-		end
-		local itemL = PIGTradeFrame.qiankuanInfo["itemL"]
-		local itemLNum = #itemL
-		if itemLNum>0 then
-			for id = 1, itemLNum do
-				local qiankwu = PIGA["GDKP"]["ItemList"][itemL[id][1]]
-				if qiankwu then
-					if PIGTradeFrame.qiankuanInfo["shengyu"]>0 then
-						if PIGTradeFrame.qiankuanInfo["shengyu"]>=qiankwu[14] then
-							itemL[id][2]=qiankwu[14]
-						else
-							itemL[id][2]=PIGTradeFrame.qiankuanInfo["shengyu"]
-						end
-					end
-					PIGTradeFrame.qiankuanInfo["shengyu"] = PIGTradeFrame.qiankuanInfo["shengyu"]-qiankwu[14]
-				end
-			end
-			PIGTradeFrame.Update_Show()
-		end
-	end
-	--屏蔽交易产生的拾取记录
-	local function PIGshiqulinshiStop()
-		_G[GnUI].shiqulinshiStop=true
-		C_Timer.After(0.2,function()
-			_G[GnUI].shiqulinshiStop=nil
-		end)
-	end
-	local function jiaoyi_InfoPD_1(TName,TMoney,ItemS)
-		local NewMoney=TMoney*0.0001
-		local RRItemList = PIGA["GDKP"]["ItemList"]
-		local wupinNum = #ItemS
-		local pingjunfenG = NewMoney/wupinNum
-		for p=1,wupinNum do
-			local itemLink_P = ItemS[p][1]
-			local itemID_P = GetItemInfoInstant(itemLink_P) 
-			for x=1,#RRItemList do
-				if itemID_P==RRItemList[x][11] then
-					if RRItemList[x][8]=="N/A" and RRItemList[x][9]==0 and RRItemList[x][14]==0 then
-						RRItemList[x][8]=TName;
-						RRItemList[x][9]=pingjunfenG;
-						RRItemList[x][10]=GetServerTime();
-						break
-					end
-				end
-			end
-		end
-		if wupinNum>1 then
-			C_Timer.After(0.4,function()
-				PIGTopMsg:add("多件物品收到金额会被平分");
-			end)
-		end
-		_G[GnUI].Update_Item();
-	end
-	function PIGTradeFrame.jiaoyi_infoPD(TargetName,TargetMoney,PlayerItemS)
-		local ItemS={}
-		for i=1,#PlayerItemS do
-			if PlayerItemS[i]~=NONE then
-				table.insert(ItemS,PlayerItemS[i])
-			end
-		end
-		if #ItemS>0 and TargetMoney>0 then--有物品交出和金币收入			
-			PIGshiqulinshiStop()
-			jiaoyi_InfoPD_1(TargetName,TargetMoney,ItemS)
-		elseif TargetMoney>0 then--只有金币收入
-			PIGTradeFrame.GetQiankuan_Info(TargetName,TargetMoney)
-		end
-	end
-	PIGTradeFrame:HookScript("OnEvent",function (self,event,arg1,arg2,arg3,arg4,arg5)
-		if event=="UI_INFO_MESSAGE" then
-			if arg2==ERR_TRADE_COMPLETE then
-				self.jiaoyi_infoPD(TradeFrame.PIG_Data.Name,TradeFrame.PIG_Data.MoneyT,TradeFrame.PIG_Data.ItemP)
-			end
-		end
-	end)
-	function fuFrame.SetListF.jiaoyijiluEvent()
-		if PIGA["GDKP"]["Open"] and PIGA["GDKP"]["Rsetting"]["jiaoyijilu"] then
-			PIGTradeFrame:RegisterEvent("UI_INFO_MESSAGE");
-		else
-			PIGTradeFrame:UnregisterEvent("UI_INFO_MESSAGE");
-		end
-	end
-	fuFrame.SetListF.jiaoyijiluEvent();
 	--================================================
 	fuFrame.SetListF.zidonghuifuYY = PIGCheckbutton_R(fuFrame.SetListF,{"自动回复语音工具\124cff00FF00(你必须是队长或团长)\124r","开启后,收到队伍或者团队人员咨询语音工具(例：TS,YY)频道ID会自动回复预设内容"},true)
 	fuFrame.SetListF.zidonghuifuYY:SetScript("OnClick", function (self)
@@ -539,7 +320,7 @@ function GDKPInfo.ADD_Options()
 	zidonghuifuFFF:SetScript("OnEvent",function(self, event,arg1,_,_,_,arg5)
 		local isLeader = UnitIsGroupLeader("player");
 		if isLeader then
-			if arg5==Pig_OptionsUI.Name then return end
+			if arg5==PIG_OptionsUI.Name then return end
 			if not arg1:match("[!Pig]") then
 				local YYguanjianzi=PIGA["GDKP"]["Rsetting"]["YYguanjianzi"];
 				for i=1,#YYguanjianzi do
@@ -588,7 +369,7 @@ function GDKPInfo.ADD_Options()
 	end
 	fuFrame.SetListF.zidonghuifuEvent()
 	--过滤排除物品============================================
-	local paichu_Height,paichu_NUM  = 28.4, 15;
+	local paichu_Height,paichu_NUM  = 23.6, 18;
 	-----------
 	fuFrame.SetListF.Paichu = PIGFrame(fuFrame.SetListF,{"TOPLEFT", fuFrame.SetListF, "TOPRIGHT", -260, -28})
 	fuFrame.SetListF.Paichu:SetPoint("BOTTOMRIGHT", fuFrame.SetListF, "BOTTOMRIGHT", -6, 6)
@@ -604,26 +385,29 @@ function GDKPInfo.ADD_Options()
 	PIGEnter(fuFrame.SetListF.Paichu.biaoti_tishi,"提示：","\124cff00ff00拾取记录页面"..KEY_BUTTON2.."点击物品名添加为不记录.\124r")
 	fuFrame.SetListF.Paichu.Scroll = CreateFrame("ScrollFrame",nil,fuFrame.SetListF.Paichu, "FauxScrollFrameTemplate");  
 	fuFrame.SetListF.Paichu.Scroll:SetPoint("TOPLEFT",fuFrame.SetListF.Paichu,"TOPLEFT",0,0);
-	fuFrame.SetListF.Paichu.Scroll:SetPoint("BOTTOMRIGHT",fuFrame.SetListF.Paichu,"BOTTOMRIGHT",-25,2);
+	fuFrame.SetListF.Paichu.Scroll:SetPoint("BOTTOMRIGHT",fuFrame.SetListF.Paichu,"BOTTOMRIGHT",-19,2);
+	fuFrame.SetListF.Paichu.Scroll.ScrollBar:SetScale(0.8);
 	fuFrame.SetListF.Paichu.Scroll:SetScript("OnVerticalScroll", function(self, offset)
-	    FauxScrollFrame_OnVerticalScroll(self, offset, Paichu_Height, fuFrame.SetListF.Paichu.gengxinpaichu)
+	    FauxScrollFrame_OnVerticalScroll(self, offset, paichu_Height, fuFrame.SetListF.Paichu.Update_hang)
 	end)
 	local Paichuww = fuFrame.SetListF.Paichu:GetWidth()
+	fuFrame.SetListF.Paichu.ButList = {}
 	for id = 1, paichu_NUM do
-		local Pcwupin = CreateFrame("Frame", "PaichuList"..id, fuFrame.SetListF.Paichu.Scroll:GetParent());
-		Pcwupin:SetSize(Paichuww-25, paichu_Height);
+		local Pcwupin = CreateFrame("Frame", nil, fuFrame.SetListF.Paichu);
+		fuFrame.SetListF.Paichu.ButList[id]=Pcwupin
+		Pcwupin:SetSize(Paichuww-19, paichu_Height);
 		if id==1 then
-			Pcwupin:SetPoint("TOP",fuFrame.SetListF.Paichu.Scroll,"TOP",0,0);
+			Pcwupin:SetPoint("TOPLEFT",fuFrame.SetListF.Paichu.Scroll,"TOPLEFT",0,0);
 		else
-			Pcwupin:SetPoint("TOP",_G["PaichuList"..(id-1)],"BOTTOM",0,-0);
+			Pcwupin:SetPoint("TOP",fuFrame.SetListF.Paichu.ButList[id-1],"BOTTOM",0,0);
 		end
 		if id~=paichu_NUM then
-			Pcwupin.line = PIGLine(Pcwupin,"BOT")
+			Pcwupin.line = PIGLine(Pcwupin,"BOT",nil,nil,nil,{0.3,0.3,0.3,0.3})
 		end
-		Pcwupin.del=PIGDiyBut(Pcwupin,{"LEFT", Pcwupin, "LEFT", 4,0},{paichu_Height-10})
+		Pcwupin.del=PIGDiyBut(Pcwupin,{"LEFT", Pcwupin, "LEFT", 4,0},{paichu_Height-6})
 		Pcwupin.del:SetScript("OnClick", function (self)
 			table.remove(PIGA["GDKP"]["Rsetting"]["PaichuList"], self:GetID());
-			fuFrame.SetListF.Paichu.gengxinpaichu(fuFrame.SetListF.Paichu.Scroll);
+			fuFrame.SetListF.Paichu.Update_hang(fuFrame.SetListF.Paichu.Scroll);
 		end);
 		Pcwupin.item = CreateFrame("Frame", nil, Pcwupin);
 		Pcwupin.item:SetSize(Paichuww-51,paichu_Height);
@@ -634,21 +418,21 @@ function GDKPInfo.ADD_Options()
 		Pcwupin.item.link = PIGFontString(Pcwupin.item,{"LEFT", Pcwupin.item.icon, "RIGHT", 1,0});
 	end
 	fuFrame.SetListF.Paichu:HookScript("OnShow", function (self)
-		fuFrame.SetListF.Paichu.gengxinpaichu(self.Scroll);
+		fuFrame.SetListF.Paichu.Update_hang(self.Scroll);
 	end)
-	function fuFrame.SetListF.Paichu.gengxinpaichu(self)
-		for k = 1, paichu_NUM do
-			_G["PaichuList"..k]:Hide();
+	function fuFrame.SetListF.Paichu.Update_hang(self)
+		for id = 1, paichu_NUM do
+			fuFrame.SetListF.Paichu.ButList[id]:Hide();
 	    end
 	    local paichumulu = PIGA["GDKP"]["Rsetting"]["PaichuList"]
 	    local ItemsNum = #paichumulu
 		if ItemsNum>0 then
 			FauxScrollFrame_Update(self, ItemsNum, paichu_NUM, paichu_Height);
 			local offset = FauxScrollFrame_GetOffset(self);
-			for k = 1, paichu_NUM do
-				local dangqianH = k+offset;
+			for id = 1, paichu_NUM do
+				local dangqianH = id+offset;
 				if paichumulu[dangqianH] then
-					local fujik=_G["PaichuList"..k]
+					local fujik=fuFrame.SetListF.Paichu.ButList[id]
 					fujik:Show();
 					fujik.del:SetID(dangqianH);
 					local itemName, itemLink, _, _, _, _, _, _,_, itemTexture=GetItemInfo(paichumulu[dangqianH]);
@@ -693,7 +477,7 @@ function GDKPInfo.ADD_Options()
 end
 ---======
 fuFrame:HookScript("OnShow", function (self)
-	if self.VersionID<PIGA["Ver"][addonName] then
+	if PIGA["Ver"][addonName] and PIG_OptionsUI:GetVer_NUM(addonName)<PIGA["Ver"][addonName] then
 		self.UpdateVer:Show()
 	end
 	self.Open:SetChecked(PIGA["GDKP"]["Open"])
@@ -705,26 +489,24 @@ fuFrame:HookScript("OnShow", function (self)
 	end
 end);
 --==================================
-local GetExtVer=Pig_OptionsUI.GetExtVer
-local SendMessage=Pig_OptionsUI.SendMessage
 fuFrame:RegisterEvent("ADDON_LOADED")   
 fuFrame:RegisterEvent("PLAYER_LOGIN");
 fuFrame:RegisterEvent("CHAT_MSG_ADDON"); 
 fuFrame:SetScript("OnEvent",function(self, event, arg1, arg2, arg3, arg4, arg5)
 	if event=="CHAT_MSG_ADDON" then
-		GetExtVer(self,addonName,self.VersionID, arg1, arg2, arg3, arg4, arg5)
+		PIG_OptionsUI.GetExtVerInfo(self,addonName,PIG_OptionsUI:GetVer_NUM(addonName), arg1, arg2, arg3, arg4, arg5)
 	elseif event=="PLAYER_LOGIN" then
 		PIGA["Ver"][addonName]=PIGA["Ver"][addonName] or 0
-		if PIGA["Ver"][addonName]>self.VersionID then
+		if PIGA["Ver"][addonName]>PIG_OptionsUI:GetVer_NUM(addonName) then
 			self.yiGenxing=true;
 		else
-			SendMessage(addonName.."#U#"..self.VersionID)
+			PIG_OptionsUI.SendExtVerInfo(addonName.."#U#"..PIG_OptionsUI:GetVer_NUM(addonName))
 		end
 	elseif event=="ADDON_LOADED" and arg1 == addonName then
 		self:UnregisterEvent("ADDON_LOADED")
 		addonTable.Load_Config()
-		Pig_OptionsUI:SetVer_EXT(arg1,self)
-		GDKPInfo.ADD_Options()
+		PIG_OptionsUI:SetVer_EXT(arg1)
+		ADD_Options()
 	end
 end)
 -------

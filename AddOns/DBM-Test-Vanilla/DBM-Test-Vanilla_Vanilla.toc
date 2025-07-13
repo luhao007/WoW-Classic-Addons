@@ -1,4 +1,4 @@
-## Interface: 30404
+## Interface: 30405
 
 ## Title: |cffffe00a<|r|cffff7d0aDBM Tests|r|cffffe00a>|r |cff69ccf0Tests for Vanilla and Season of Discovery mods|r
 ## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r |cFFFFFFFF副本助手|r |cFF69CCF0测试功能|r |cFF22B14C经典旧世|r
@@ -9,6 +9,18 @@
 
 ## X-DBM-Test: true
 ## X-Part-Of: DBM-Core
+
+# Scarlet Enclave
+Season of Discovery/ScarletEnclave/Balnazzar.lua
+Season of Discovery/ScarletEnclave/Beatrix.lua
+Season of Discovery/ScarletEnclave/Beatrix-Synthetic.lua
+Season of Discovery/ScarletEnclave/Solistrasza.lua
+Season of Discovery/ScarletEnclave/Beastmaster.lua
+Season of Discovery/ScarletEnclave/Mason.lua
+Season of Discovery/ScarletEnclave/RebornCouncil.lua
+Season of Discovery/ScarletEnclave/LillianVoss.lua
+Season of Discovery/ScarletEnclave/Caldoran.lua
+Season of Discovery/ScarletEnclave/Trash.lua
 
 # Nax
 Season of Discovery/Naxxramas/AnubRekhan.lua

@@ -5,6 +5,7 @@ local bencierrinfo={}
 --------------------------------
 local WWW,HHH = 600,380
 local biaotiW = 25
+local GNNameE="PIG_BugcollectUI"
 local Backdropinfo={bgFile = "interface/chatframe/chatframebackground.blp",
 	edgeFile = "Interface/AddOns/!Pig/libs/Pig_Border.blp", edgeSize = 6.6,}
 local function PIGSetBackdrop(self,but)
@@ -16,8 +17,8 @@ local function PIGSetBackdrop(self,but)
 	end
 	self:SetBackdropBorderColor(0, 0, 0, 1);
 end
-local function ADD_Button(Text,UIName,fuF,WH,Point)
-	local But = CreateFrame("Button", UIName, fuF,"BackdropTemplate");
+local function ADD_Button(Text,fuF,WH,Point)
+	local But = CreateFrame("Button", nil, fuF,"BackdropTemplate");
 	PIGSetBackdrop(But,true)
 	But:SetSize(WH[1],WH[2]);
 	But:SetPoint(Point[1],Point[2],Point[3],Point[4],Point[5]);
@@ -58,8 +59,8 @@ local function ADD_Button(Text,UIName,fuF,WH,Point)
 	return But
 end
 
-local function ADD_TabBut(Text,UIName,fuF,WH,Point,id)
-	local But = CreateFrame("Button", UIName, fuF,"BackdropTemplate",id);
+local function ADD_TabBut(Text,fuF,WH,Point,id)
+	local But = CreateFrame("Button", nil, fuF,"BackdropTemplate",id);
 	But.Show=false;
 	PIGSetBackdrop(But,true)
 	But:SetSize(WH[1],WH[2]);
@@ -105,7 +106,7 @@ local function ADD_TabBut(Text,UIName,fuF,WH,Point,id)
 	return But
 end
 ----
-local Bugcollect = CreateFrame("Frame", "Bugcollect_UI", UIParent,"BackdropTemplate");
+local Bugcollect = CreateFrame("Frame", GNNameE, UIParent,"BackdropTemplate");
 PIGSetBackdrop(Bugcollect)
 Bugcollect:SetSize(WWW,HHH);
 Bugcollect:SetPoint("CENTER",0,0);
@@ -114,7 +115,7 @@ Bugcollect:SetMovable(true)
 Bugcollect:SetClampedToScreen(true)
 Bugcollect:SetFrameStrata("HIGH")
 Bugcollect:Hide()
-tinsert(UISpecialFrames,"Bugcollect_UI");
+tinsert(UISpecialFrames,GNNameE);
 
 Bugcollect.Moving = CreateFrame("Frame", nil, Bugcollect);
 Bugcollect.Moving:SetSize(WWW,biaotiW);
@@ -152,7 +153,7 @@ Bugcollect.Moving.Close:SetScript("OnClick", function (self)
 	Bugcollect:Hide()
 end);
 
-Bugcollect.Moving.qingkong = ADD_Button(L["ERROR_CLEAR"],nil,Bugcollect.Moving,{60,20},{"TOPRIGHT",Bugcollect.Moving,"TOPRIGHT",-50,-2.8})
+Bugcollect.Moving.qingkong = ADD_Button(L["ERROR_CLEAR"],Bugcollect.Moving,{60,20},{"TOPRIGHT",Bugcollect.Moving,"TOPRIGHT",-50,-2.8})
 Bugcollect.Moving.qingkong:SetScript("OnClick", function (self)
 	PIGA["Error"]["ErrorDB"]={}
 	bencierrinfo={}
@@ -197,13 +198,13 @@ Bugcollect.NR.textArea:EnableMouse(true)
 Bugcollect.NR.textArea:SetScript("OnEscapePressed", Bugcollect.NR.textArea.ClearFocus)
 Bugcollect.NR.scroll:SetScrollChild(Bugcollect.NR.textArea)
 --------------
-Bugcollect.prevZ = ADD_Button("《 ",nil,Bugcollect,{30,20},{"BOTTOMLEFT",Bugcollect,"BOTTOMLEFT",10,3})
+Bugcollect.prevZ = ADD_Button("《 ",Bugcollect,{30,20},{"BOTTOMLEFT",Bugcollect,"BOTTOMLEFT",10,3})
 Bugcollect.prevZ:Disable()
-Bugcollect.prev = ADD_Button(L["ERROR_PREVIOUS"],nil,Bugcollect,{90,20},{"BOTTOM",Bugcollect,"BOTTOM",-130,3})
+Bugcollect.prev = ADD_Button(L["ERROR_PREVIOUS"],Bugcollect,{90,20},{"BOTTOM",Bugcollect,"BOTTOM",-130,3})
 Bugcollect.prev:Disable()
-Bugcollect.next = ADD_Button(L["ERROR_NEXT"],nil,Bugcollect,{90,20},{"BOTTOM",Bugcollect,"BOTTOM",130,3})
+Bugcollect.next = ADD_Button(L["ERROR_NEXT"],Bugcollect,{90,20},{"BOTTOM",Bugcollect,"BOTTOM",130,3})
 Bugcollect.next:Disable()
-Bugcollect.nextZ = ADD_Button(" 》",nil,Bugcollect,{30,20},{"BOTTOMRIGHT",Bugcollect,"BOTTOMRIGHT",-10,3})
+Bugcollect.nextZ = ADD_Button(" 》",Bugcollect,{30,20},{"BOTTOMRIGHT",Bugcollect,"BOTTOMRIGHT",-10,3})
 Bugcollect.nextZ:Disable()
 Bugcollect.biaoti = Bugcollect:CreateFontString();
 Bugcollect.biaoti:SetPoint("BOTTOM",Bugcollect,"BOTTOM",0,6);
@@ -221,13 +222,13 @@ function Bugcollect:qingkongERR()
 end
 ----------------------
 local function xianshixinxi(id)
-	if Bugcollect_UI:IsShown() then
+	if Bugcollect:IsShown() then
 		Bugcollect:qingkongERR()
 		local shujuyuan = {}
-		if BugcollectTAB_1.Show then
+		if Bugcollect.ButList[1].Show then
 			shujuyuan.ly=bencierrinfo
 			shujuyuan.num=#shujuyuan.ly
-		elseif BugcollectTAB_2.Show then
+		elseif Bugcollect.ButList[2].Show then
 			shujuyuan.ly=PIGA["Error"]["ErrorDB"]
 			shujuyuan.num=#shujuyuan.ly
 		end
@@ -239,6 +240,7 @@ local function xianshixinxi(id)
 		local logrizhi=shujuyuan.ly[id].logrizhi
 		Bugcollect.Moving.Time:SetText(date("%Y/%m/%d %H:%M:%S",time));
 		Bugcollect.biaoti:SetText(id.."/"..shujuyuan.num);
+		--print(msg)
 		if cuowushu>1 then
 			Bugcollect.NR.textArea:SetText(cuowushu.."× "..msg.."\r")
 		else
@@ -248,6 +250,7 @@ local function xianshixinxi(id)
 		Bugcollect.NR.textArea:Insert(logrizhi);
 		local NEWTXT = Bugcollect.NR.textArea:GetText()
 		if #NEWTXT<2 then
+			ChatFrame1:AddMessage("错误无法正常显示，改为聊天框输出:");
 			ChatFrame1:AddMessage(msg);
 		end
 		Bugcollect.prev.id=id
@@ -278,10 +281,10 @@ local function xianshixinxi(id)
 	end
 end
 local function kaishiShow()
-	if BugcollectTAB_1.Show then
+	if Bugcollect.ButList[1].Show then
 		local tablenum = #bencierrinfo
 		xianshixinxi(tablenum)
-	elseif BugcollectTAB_2.Show then
+	elseif Bugcollect.ButList[2].Show then
 		local tablenum = #PIGA["Error"]["ErrorDB"]
 		xianshixinxi(tablenum)
 	end
@@ -289,15 +292,17 @@ end
 -----
 local TabWidth,TabHeight = 110,24;
 local TabName = {L["ERROR_CURRENT"],L["ERROR_OLD"]};
+Bugcollect.ButList={}
 for id=1,#TabName do
 	local Point = {"TOPLEFT", Bugcollect, "BOTTOMLEFT", 30,0}
 	if id>1 then
-		Point = {"LEFT", _G["BugcollectTAB_"..(id-1)], "RIGHT", 20,0}
+		Point = {"LEFT", Bugcollect.ButList[id-1], "RIGHT", 20,0}
 	end
-	local Tablist = ADD_TabBut(TabName[id],"BugcollectTAB_"..id,Bugcollect,{TabWidth,TabHeight},Point,id)
+	local Tablist = ADD_TabBut(TabName[id],Bugcollect,{TabWidth,TabHeight},Point,id)
+	Bugcollect.ButList[id]=Tablist
 	Tablist:SetScript("OnClick", function (self)
 		for x=1,#TabName do
-			local fagg=_G["BugcollectTAB_"..x]
+			local fagg=Bugcollect.ButList[x]
 			fagg.Show=false;
 			fagg.Text:SetTextColor(1, 0.843, 0, 1);
 			fagg:SetBackdropColor(0.2, 0.2, 0.2, 1);
@@ -326,7 +331,7 @@ Bugcollect.next:SetScript("OnClick", function(self, button)
 end)
 Bugcollect.nextZ:SetScript("OnClick", function(self, button)
 	for x=1,#TabName do
-		if _G["BugcollectTAB_"..x].Show then
+		if Bugcollect.ButList[x].Show then
 			if x==1 then
 				xianshixinxi(#bencierrinfo)
 			elseif x==2 then
@@ -346,8 +351,8 @@ local linshicuowuxinxi = {}
 local function errottishi()
 	if PIGA and PIGA["Error"]["ErrorTishi"] then
 		if #linshicuowuxinxi>0 then	
-			if PigMinimapBut_UI then
-				PigMinimapBut_UI.error:Show();
+			if PIG_OptionsUI.MiniMapBut then
+				PIG_OptionsUI.MiniMapBut.error:Show();
 			end
 			for i=1,#linshicuowuxinxi do
 				print(linshicuowuxinxi[i])
@@ -490,5 +495,5 @@ SLASH_PER1 = "/per"
 SLASH_PER2 = "/Per"
 SLASH_PER3 = "/PER"
 SlashCmdList["PER"] = function()
-	Bugcollect_UI:Show();
+	Bugcollect:Show();
 end

@@ -53,12 +53,17 @@
                         </FontString>
                         <FontString parentKey="ModeLabel" inherits="GameFontNormalSmallLeft">
                             <Anchors>
-                                <Anchor point="TOPLEFT" relativeKey="$parent.ActivityLabel" x="200" y="0"/>
+                                <Anchor point="TOPLEFT" relativeKey="$parent.ActivityLabel" x="135" y="0"/>
+                            </Anchors>
+                        </FontString>
+                        <FontString parentKey="Sortord" inherits="GameFontNormalSmallLeft">
+                            <Anchors>
+                                <Anchor point="TOPLEFT" relativeKey="$parent.ModeLabel" x="105" y="0"/>
                             </Anchors>
                         </FontString>
                         <FontString parentKey="SearchLabel" inherits="GameFontNormalSmallLeft">
                             <Anchors>
-                                <Anchor point="TOPLEFT" relativeKey="$parent.ModeLabel" x="110" y="0"/>
+                                <Anchor point="TOPLEFT" relativeKey="$parent.Sortord" x="110" y="0"/>
                             </Anchors>
                         </FontString>
                         <Texture parentKey="Sorter" hidden="true" file="Interface\Buttons\ui-sortarrow">
@@ -177,7 +182,7 @@
                         </Anchors>
                     </Button>
                     <Button parentKey="Activity">
-                        <Size x="190" y="24"/>
+                        <Size x="130" y="24"/>
                         <Anchors>
                             <Anchor point="TOPLEFT" relativeKey="$parent.ActivityLabel" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
                         </Anchors>
@@ -188,8 +193,14 @@
                             <Anchor point="TOPLEFT" relativeKey="$parent.ModeLabel" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
                         </Anchors>
                     </Button>
+                    <Button parentKey="SortMode">
+                        <Size x="100" y="24"/>
+                        <Anchors>
+                            <Anchor point="TOPLEFT" relativeKey="$parent.Sortord" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
+                        </Anchors>
+                    </Button>
                     <EditBox parentKey="Input" inherits="SearchBoxTemplate">
-                        <Size x="180" y="22"/>
+                        <Size x="135" y="22"/>
                         <Anchors>
                             <Anchor point="TOPLEFT" relativeKey="$parent.SearchLabel" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
                         </Anchors>

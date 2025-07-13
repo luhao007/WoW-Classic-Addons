@@ -1,4 +1,4 @@
-## Interface: 30404
+## Interface: 30405
 ## Author: The WeakAuras Team
 ## Version: 5.12.9
 

@@ -1,6 +1,5 @@
 local addonName, addonTable = ...;
 local L=addonTable.locale
-local _, _, _, tocversion = GetBuildInfo()
 ----------
 local Create = addonTable.Create
 local PIGFrame=Create.PIGFrame
@@ -39,15 +38,14 @@ local GetContainerItemID=GetContainerItemID or C_Container and C_Container.GetCo
 local GetItemInfoInstant= GetItemInfoInstant or C_Item and C_Item.GetItemInfoInstant
 local GetItemInfo=GetItemInfo or C_Item and C_Item.GetItemInfo
 local GetItemCount=GetItemCount or C_Item and C_Item.GetItemCount
+local GetItemSpell=GetItemSpell or C_Item and C_Item.GetItemSpell
+local GetItemIcon=GetItemIcon or C_Item and C_Item.GetItemIconByID
 local IsUsableSpell=IsUsableSpell or C_Spell and C_Spell.IsSpellUsable
 local GetItemCooldown=C_Container.GetItemCooldown
-local PIGbookType
-if tocversion<50000 then
-	PIGbookType=BOOKTYPE_SPELL
-else
-	PIGbookType=Enum.SpellBookSpellBank.Player
-end
+local PIGbookType=PIG_GetSpellBookType()
 ---功能动作条===========
+local QuickButUIname=Data.QuickButUIname
+local QuickButUI=_G[QuickButUIname]
 local ActionBarfun=addonTable.ActionBarfun
 local fuFrame=ActionBarfun.fuFrame
 local fuFrameBut=ActionBarfun.fuFrameBut
@@ -62,7 +60,7 @@ QuickButF.Open:SetScript("OnClick", function (self)
 		QuickButUI:Add()
 	else
 		PIGA["QuickBut"]["Open"]=false;
-		Pig_Options_RLtishi_UI:Show()
+		PIG_OptionsUI.RLUI:Show()
 	end
 end)
 --
@@ -93,14 +91,10 @@ QuickButF.suofang.Slider:HookScript("OnValueChanged", function(self, arg1)
 	QuickButUI:SetScale(arg1);
 end)
 --
-local QuickButPoint = {"BOTTOM",UIParent,"BOTTOM",200,200}
 QuickButF.CZBUT = PIGButton(QuickButF,{"LEFT",QuickButF.suofang,"RIGHT",60,0},{80,24},"重置位置")
 QuickButF.CZBUT:SetScript("OnClick", function ()
-	if tocversion<100000 then
-		QuickButUI:PIGResPoint(QuickButPoint)
-	else
-		QuickButUI:PIGResPoint(QuickButPoint,-200,90)
-	end
+	Create.PIG_ResPoint(QuickButUIname)
+	Create.PIG_ResPoint(Data.QuickTrinketUIname)
 end)
 QuickButF:HookScript("OnShow", function(self)
 	self.Open:SetChecked(PIGA["QuickBut"]["Open"])
@@ -120,7 +114,7 @@ QuickButF.ModF.BGbroadcast:SetScript("OnClick", function (self)
 		QuickButUI.ButList[2]()
 	else
 		PIGA["QuickBut"]["BGbroadcast"]=false;
-		Pig_Options_RLtishi_UI:Show()
+		PIG_OptionsUI.RLUI:Show()
 	end
 end)
 --饰品
@@ -133,7 +127,7 @@ QuickButF.ModF.QKButTrinket:SetScript("OnClick", function (self)
 		QuickButUI.ButList[3]()
 	else
 		PIGA["QuickBut"]["Trinket"]=false
-		Pig_Options_RLtishi_UI:Show();
+		PIG_OptionsUI.RLUI:Show();
 	end
 end)
 QuickButF.ModF.QKButTrinket_1 = PIGCheckbutton_R(QuickButF.ModF,{nil,nil},true)
@@ -151,10 +145,10 @@ QuickButF.ModF.QKButTrinket.Fenli = PIGCheckbutton(QuickButF.ModF.QKButTrinket,{
 QuickButF.ModF.QKButTrinket.Fenli:SetScript("OnClick", function (self)
 	if self:GetChecked() then
 		PIGA["QuickBut"]["TrinketFenli"]=true
-		Pig_Options_RLtishi_UI:Show();
+		PIG_OptionsUI.RLUI:Show();
 	else
 		PIGA["QuickBut"]["TrinketFenli"]=false
-		Pig_Options_RLtishi_UI:Show();
+		PIG_OptionsUI.RLUI:Show();
 	end
 end)
 local pailieList = {"横","竖"}
@@ -171,7 +165,7 @@ end
 function QuickButF.ModF.QKButTrinket.Fenli.pailie:PIGDownMenu_SetValue(value,arg1,arg2)
 	self:PIGDownMenu_SetText(value)
 	PIGA["QuickBut"]["TrinketFenliPailie"]=arg1
-	if QuickTrinketUI then QuickTrinketUI.UpdataPailie() end
+	if _G[Data.QuickTrinketUIname] then _G[Data.QuickTrinketUIname].UpdataPailie() end
 	PIGCloseDropDownMenus()
 end
 QuickButF.ModF.QKButTrinket.Fenli.lock = PIGCheckbutton(QuickButF.ModF.QKButTrinket.Fenli,{"LEFT",QuickButF.ModF.QKButTrinket.Fenli.pailie,"RIGHT",20,0},{LOCK_FRAME,LOCK_FOCUS_FRAME})
@@ -181,11 +175,11 @@ QuickButF.ModF.QKButTrinket.Fenli.lock:SetScript("OnClick", function (self)
 	else
 		PIGA["QuickBut"]["TrinketFenlilock"]=false
 	end
-	if QuickTrinketUI then
+	if _G[Data.QuickTrinketUIname] then
 		if PIGA["QuickBut"]["TrinketFenlilock"] then
-			QuickTrinketUI.yidong:Hide()
+			_G[Data.QuickTrinketUIname].yidong:Hide()
 		else
-			QuickTrinketUI.yidong:Show();
+			_G[Data.QuickTrinketUIname].yidong:Show();
 		end
 	end
 end)
@@ -194,15 +188,16 @@ local xiayiinfo = {0.8,1.8,0.01,{["Right"]="%"}}
 QuickButF.ModF.QKButTrinket.Fenli.suofang = PIGSlider(QuickButF.ModF.QKButTrinket.Fenli,{"LEFT",QuickButF.ModF.QKButTrinket.Fenli.suofang_t,"RIGHT",10,0},xiayiinfo)
 QuickButF.ModF.QKButTrinket.Fenli.suofang.Slider:HookScript("OnValueChanged", function(self, arg1)
 	PIGA["QuickBut"]["TrinketScale"]=arg1;
-	if QuickTrinketUI then QuickTrinketUI:SetScale(arg1) end
+	if _G[Data.QuickTrinketUIname] then _G[Data.QuickTrinketUIname]:SetScale(arg1) end
 end)
 ----
 QuickButF.ModF.QKButTrinket.AutoMode = PIGButton(QuickButF.ModF.QKButTrinket,{"LEFT",QuickButF.ModF.QKButTrinket.Text,"RIGHT",30,0},{76,20},SWITCH..MODE);
-local TrinkeWW,TrinkeHH = 300,400
-local TrinketAutoMode=PIGFrame(UIParent,{"CENTER",UIParent,"CENTER",0,0},{TrinkeWW,TrinkeHH},"TrinketAutoModeUI",true)
+local UIname,TrinkeWW,TrinkeHH = "PIG_TrinketAutoModeUI",300,400
+QuickButUI.TrinketAutoMode=UIname
+local TrinketAutoMode=PIGFrame(UIParent,{"CENTER",UIParent,"CENTER",0,0},{TrinkeWW,TrinkeHH},UIname,true)
 TrinketAutoMode:PIGSetBackdrop()
+TrinketAutoMode:PIGSetMovableNoSave()
 TrinketAutoMode:PIGClose()
-TrinketAutoMode:PIGSetMovable()
 TrinketAutoMode:Hide()
 TrinketAutoMode.t = PIGFontString(TrinketAutoMode,{"TOP",TrinketAutoMode,"TOP",0,-3},INVTYPE_TRINKET..SWITCH..MODE)
 TrinketAutoMode.nr=PIGFrame(TrinketAutoMode,{"TOPLEFT",TrinketAutoMode,"TOPLEFT",3,-20})
@@ -294,10 +289,10 @@ local function GET_shipinxuanzhongL()
 		end
 	end
 	PIGA_Per["QuickBut"]["TrinketList"]=NewData[1]
-	TrinketAutoModeUI.NextList=NewData[1]
+	TrinketAutoMode.NextList=NewData[1]
 	return NewData[1],NewData[2],dangqianData
 end
-TrinketAutoModeUI.GET_shipinxuanzhongL=GET_shipinxuanzhongL
+TrinketAutoMode.GET_shipinxuanzhongL=GET_shipinxuanzhongL
 local function SET_xuelie_UPdwan(itemID,caozuo)
 	local jiluweizhi = {0,{}}
 	for i=1,#PIGA_Per["QuickBut"]["TrinketList"] do
@@ -314,13 +309,15 @@ local function SET_xuelie_UPdwan(itemID,caozuo)
 	end
 	TrinketAutoMode.nr.mode2.F.S.gengxinhang(TrinketAutoMode.nr.mode2.F.S.Scroll)
 end
+TrinketAutoMode.nr.mode2.F.S.ButList={}
 for id = 1, hang_NUM do
-	local hang = CreateFrame("Button", "TrinketAutohang_"..id, TrinketAutoMode.nr.mode2.F.S,nil,id);
+	local hang = CreateFrame("Button", nil, TrinketAutoMode.nr.mode2.F.S,nil,id);
+	TrinketAutoMode.nr.mode2.F.S.ButList[id]=hang
 	hang:SetSize(TrinkeWW-70, hang_Height);
 	if id==1 then
 		hang:SetPoint("TOPLEFT",TrinketAutoMode.nr.mode2.F.S.Scroll,"TOPLEFT",0,-1);
 	else
-		hang:SetPoint("TOP",_G["TrinketAutohang_"..(id-1)],"BOTTOM",0,0);
+		hang:SetPoint("TOP",TrinketAutoMode.nr.mode2.F.S.ButList[id-1],"BOTTOM",0,0);
 	end
 	if id~=hang_NUM then
 		PIGLine(hang,"BOT",nil,nil,{2,40},{0.3,0.3,0.3,0.5})
@@ -374,7 +371,7 @@ function TrinketAutoMode.nr.mode2.F.S.gengxinhang(self)
 	if not TrinketAutoMode.nr.mode2.F.S:IsVisible() then return end
 	local Scroll = self
 	for id = 1, hang_NUM do
-		_G["TrinketAutohang_"..id]:Hide();
+		TrinketAutoMode.nr.mode2.F.S.ButList[id]:Hide();
     end
 	local TrinketMode,yixuanzhong,baguodata =GET_shipinxuanzhongL()
 	local bagshujuy={}
@@ -391,7 +388,7 @@ function TrinketAutoMode.nr.mode2.F.S.gengxinhang(self)
     for id = 1, hang_NUM do
     	local dangqianH = id+offset;
     	if bagshujuy[dangqianH] then
-    		local hang = _G["TrinketAutohang_"..id]
+    		local hang = TrinketAutoMode.nr.mode2.F.S.ButList[id]
     		hang:Show();
 	    	hang.icon:SetTexture(bagshujuy[dangqianH][1]);
 			hang.link:SetText(bagshujuy[dangqianH][3]);
@@ -443,7 +440,7 @@ function TrinketAutoMode:SetCheckbut()
 	end
 	TrinketAutoMode.TrinketMode=PIGA_Per["QuickBut"]["TrinketMode"]
 	if PIGA["QuickBut"]["TrinketFenli"] then
-		TrinketAutoMode:SetyidongButText(QuickTrinketUI.yidong)
+		TrinketAutoMode:SetyidongButText(_G[Data.QuickTrinketUIname].yidong)
 	else
 		TrinketAutoMode:SetyidongButText(QuickButUI.yidong)
 	end
@@ -461,12 +458,12 @@ function TrinketAutoMode:yidongButClick(yidongUI,Button)
 	if Button=="LeftButton" then
 		if PIGA_Per["QuickBut"]["TrinketMode"]==1 then
 			PIGA_Per["QuickBut"]["TrinketMode"]=2
-			TrinketAutoModeUI.TrinketMode=2
-			PIGTopMsg:add(SELF_CAST_AUTO..MODE)
+			TrinketAutoMode.TrinketMode=2
+			PIG_OptionsUI:ErrorMsg(SELF_CAST_AUTO..MODE)
 		elseif PIGA_Per["QuickBut"]["TrinketMode"]==2 then
 			PIGA_Per["QuickBut"]["TrinketMode"]=1
 			TrinketAutoMode.TrinketMode=1
-			PIGTopMsg:add(TRACKER_SORT_MANUAL..MODE)
+			PIG_OptionsUI:ErrorMsg(TRACKER_SORT_MANUAL..MODE)
 		end
 		TrinketAutoMode:SetyidongButText(yidongUI)
 		TrinketAutoMode:SetCheckbut()
@@ -486,7 +483,7 @@ QuickButF.ModF.QKButTrinket.AutoMode:SetScript("OnClick", function (self)
 	if TrinketAutoMode:IsShown() then
 		TrinketAutoMode:Hide()
 	else
-		Pig_OptionsUI:Hide()
+		PIG_OptionsUI:Hide()
 		TrinketAutoMode:Show()
 	end
 end)
@@ -495,7 +492,7 @@ QuickButF.ModF.QKButTrinket.Bindings:SetScript("OnClick", function (self)
 	Settings.OpenToCategory(Settings.KEYBINDINGS_CATEGORY_ID, addonName);
 end)
 --
-if tocversion<20000 and C_Engraving and C_Engraving.IsEngravingEnabled() then
+if PIG_MaxTocversion(20000) and C_Engraving and C_Engraving.IsEngravingEnabled() then
 	QuickButF.ModF.QKButRune = PIGCheckbutton_R(QuickButF.ModF,{string.format(L["ACTION_ADDQUICKBUT"],RUNES..newText),string.format(L["ACTION_ADDQUICKBUTTIS"],RUNES..newText)},true)
 	QuickButF.ModF.QKButRune:SetScript("OnClick", function (self)
 		if self:GetChecked() then
@@ -503,7 +500,7 @@ if tocversion<20000 and C_Engraving and C_Engraving.IsEngravingEnabled() then
 			QuickButUI.ButList[4]()
 		else
 			PIGA["QuickBut"]["Rune"]=false
-			Pig_Options_RLtishi_UI:Show();
+			PIG_OptionsUI.RLUI:Show();
 		end
 	end)
 	QuickButF.ModF.QKButRune.RuneShow = PIGCheckbutton(QuickButF.ModF.QKButRune,{"LEFT",QuickButF.ModF.QKButRune.Text,"RIGHT",20,0},{SHOW.."当前使用的符文"})
@@ -528,7 +525,7 @@ QuickButF.ModF.QKButEquip:SetScript("OnClick", function (self)
 		QuickButUI.ButList[5]()
 	else
 		PIGA["QuickBut"]["Equip"]=false
-		Pig_Options_RLtishi_UI:Show();
+		PIG_OptionsUI.RLUI:Show();
 	end
 end)
 local Lushi_tooltip = {string.format(L["ACTION_ADDQUICKBUT"],TUTORIAL_TITLE31.."/"..TRADE_SKILLS),string.format(L["ACTION_ADDQUICKBUTTIS"],TUTORIAL_TITLE31.."/"..TRADE_SKILLS)}
@@ -539,7 +536,7 @@ QuickButF.ModF.Lushi:SetScript("OnClick", function (self)
 		QuickButUI.ButList[6]()
 	else
 		PIGA["QuickBut"]["Lushi"]=false;
-		Pig_Options_RLtishi_UI:Show()
+		PIG_OptionsUI.RLUI:Show()
 	end
 end)
 QuickButF.ModF.Spell=PIGCheckbutton_R(QuickButF.ModF,{string.format(L["ACTION_ADDQUICKBUT"],CLASS..BINDING_HEADER_ACTIONBAR),string.format(L["ACTION_ADDQUICKBUTTIS"],CLASS..BINDING_HEADER_ACTIONBAR)},true)
@@ -549,7 +546,7 @@ QuickButF.ModF.Spell:SetScript("OnClick", function (self)
 		QuickButUI.ButList[7]()
 	else
 		PIGA["QuickBut"]["Spell"]=false;
-		Pig_Options_RLtishi_UI:Show()
+		PIG_OptionsUI.RLUI:Show()
 	end
 end)
 QuickButF.ModF.Spell.Close = PIGCheckbutton(QuickButF.ModF.Spell,{"LEFT",QuickButF.ModF.Spell.Text,"RIGHT",30,0},{"使用后关闭界面"});
@@ -563,19 +560,19 @@ end)
 QuickButF.ModF.Spell.CZ = PIGButton(QuickButF.ModF.Spell,{"LEFT",QuickButF.ModF.Spell.Close.Text,"RIGHT",30,0},{76,20},"恢复默认");
 QuickButF.ModF.Spell.CZ:SetScript("OnClick", function (self)
 	PIGA_Per["QuickBut"]["ActionData"]={}
-	Pig_Options_RLtishi_UI:Show()
+	PIG_OptionsUI.RLUI:Show()
 end)
 QuickButF.ModF:HookScript("OnShow", function(self)
 	self.Lushi:SetChecked(PIGA["QuickBut"]["Lushi"])
-	self.Spell:SetChecked(PIGA["QuickBut"]["SpellClose"])
-	self.Spell.Close:SetChecked(PIGA["QuickBut"]["Spell"])
+	self.Spell:SetChecked(PIGA["QuickBut"]["Spell"])
+	self.Spell.Close:SetChecked(PIGA["QuickBut"]["SpellClose"])
 	self.BGbroadcast:SetChecked(PIGA["QuickBut"]["BGbroadcast"])
 	if self.QKButRune then
 		self.QKButRune:SetChecked(PIGA["QuickBut"]["Rune"])
 		self.QKButRune.RuneShow:SetChecked(PIGA["QuickBut"]["RuneShow"])
 	end
 	self.QKButEquip:SetChecked(PIGA["QuickBut"]["Equip"])
-	if tocversion<20000 then
+	if PIG_MaxTocversion(20000) then
 		self.QKButEquip:SetEnabled(PIGA["FramePlus"]["Character_Shuxing"])
 		self.QKButEquip.errt:SetShown(not PIGA["FramePlus"]["Character_Shuxing"])
 	end
@@ -597,7 +594,7 @@ StaticPopupDialogs["CHONGZHI_QUICKBUT"] = {
 	OnAccept = function()
 		PIGA["QuickBut"] = addonTable.Default["QuickBut"];
 		PIGA_Per["QuickBut"] = addonTable.Default_Per["QuickBut"];
-		Pig_Options_RLtishi_UI:Show()
+		PIG_OptionsUI.RLUI:Show()
 	end,
 	timeout = 0,
 	whileDead = true,
@@ -605,10 +602,8 @@ StaticPopupDialogs["CHONGZHI_QUICKBUT"] = {
 }
 ---
 QuickButUI.ButList[1]=function()
-	if not PIGA["QuickBut"]["Open"] or QuickButUI.yidong then
-		return
-	end
-	QuickButUI:SetPoint(unpack(QuickButPoint))
+	if not PIGA["QuickBut"]["Open"] or QuickButUI.yidong then return end
+	Create.PIG_SetPoint(QuickButUIname)
 	QuickButUI:SetScale(PIGA["QuickBut"]["bili"]);
 	QuickButUI.yidong=PIGFrame(QuickButUI,{"TOPLEFT",QuickButUI,"TOPLEFT",0,0})
 	QuickButUI.yidong:SetPoint("BOTTOMLEFT", QuickButUI, "BOTTOMLEFT", 0, 0);
@@ -617,19 +612,19 @@ QuickButUI.ButList[1]=function()
 		QuickButUI.yidong:Hide()
 	end
 	QuickButUI.yidong:PIGSetBackdrop()
-	QuickButUI.yidong:PIGSetMovable(QuickButUI)
+	QuickButUI.yidong:PIGSetMovable(QuickButUI,nil,nil,true)
 	function QuickButUI:yidongRightBut()
-		if Pig_OptionsUI:IsShown() then
-			Pig_OptionsUI:Hide()
+		if PIG_OptionsUI:IsShown() then
+			PIG_OptionsUI:Hide()
 		else
-			Pig_OptionsUI:Show()
+			PIG_OptionsUI:Show()
 			Create.Show_TabBut(fuFrame,fuFrameBut)
 			Create.Show_TabBut_R(RTabFrame,QuickButF,QuickButTabBut)
 		end
 	end
 	QuickButUI.yidong:SetScript("OnMouseUp", function (self,Button)
 		if PIGA["QuickBut"]["Trinket"] and not PIGA["QuickBut"]["TrinketFenli"] then
-			TrinketAutoModeUI:yidongButClick(self,Button)
+			TrinketAutoMode:yidongButClick(self,Button)
 		else
 			if Button=="RightButton" then QuickButUI:yidongRightBut() end
 		end
@@ -653,7 +648,7 @@ QuickButUI.ButList[1]=function()
 	QuickButUI.yidong.t = PIGFontString(QuickButUI.yidong,nil,"拖\n动",nil,9)
 	QuickButUI.yidong.t:SetAllPoints(QuickButUI.yidong)
 	QuickButUI.yidong.t:SetTextColor(0.8, 0.8, 0.8, 0.8)
-	if not PIGA["QuickBut"]["TrinketFenli"] then TrinketAutoModeUI:SetyidongButText(QuickButUI.yidong) end
+	if not PIGA["QuickBut"]["TrinketFenli"] then TrinketAutoMode:SetyidongButText(QuickButUI.yidong) end
 	QuickButUI.nr=PIGFrame(QuickButUI,{"TOPLEFT",QuickButUI.yidong,"TOPRIGHT",1,0})
 	QuickButUI.nr:PIGSetBackdrop()
 	QuickButUI.nr:SetPoint("BOTTOMRIGHT", QuickButUI, "BOTTOMRIGHT", 0, 0);
@@ -661,28 +656,29 @@ end
 --战场通告
 QuickButUI.ButList[2]=function()
 	if PIGA["QuickBut"]["Open"] and PIGA["QuickBut"]["BGbroadcast"] then
-		local GnUI = "BGbroadcast_UI"
-		if _G[GnUI] then return end
-		local GnIcon="interface/battlefieldframe/battleground-alliance.blp"
-		local englishFaction, _ = UnitFactionGroup("player")
-		--if englishFaction=="Alliance" then
+		if QuickButUI.BGbroadcastOpen then return end
+		QuickButUI.BGbroadcastOpen=true
+		local GnIcon=130704
+		local englishFaction = UnitFactionGroup("player")
 		if englishFaction=="Horde" then
-			GnIcon="interface/battlefieldframe/battleground-horde.blp"
-		end	
-		-- 
+			GnIcon=130705
+		end
 		local Tooltip = KEY_BUTTON1.."-|cff00FFFF通报当前位置来犯人,(来几人就点几次)\r|r"..KEY_BUTTON2.."-|cff00FFFF报告位置安全|r"
-		local BGanniu=PIGQuickBut(GnUI,Tooltip,GnIcon)
-		
+		local BGanniu=PIGQuickBut(nil,Tooltip,GnIcon)
+		local function Update_ShowFun()
+			local inInstance, instanceType =IsInInstance()
+			if instanceType=="pvp" then
+				BGanniu.yincang=nil
+			else
+				BGanniu.yincang=true
+			end
+			QuickButUI:UpdateWidth()
+		end
+		Update_ShowFun()
 		BGanniu:RegisterEvent("PLAYER_ENTERING_WORLD")
 		BGanniu:HookScript("OnEvent", function (self, event)
 			if event=="PLAYER_ENTERING_WORLD" then
-				local inInstance, instanceType =IsInInstance()
-				if instanceType=="pvp" then
-					BGanniu.yincang=nil
-				else
-					BGanniu.yincang=true
-				end
-				QuickButUI:GengxinWidth()
+				Update_ShowFun()
 			end
 		end)
 		BGanniu:SetScript("OnClick", function (self, event)
@@ -697,7 +693,7 @@ QuickButUI.ButList[2]=function()
 					hanhuaTimejiange=GetTime(); direnshuliangpig=direnshuliangpig+1; SendChatMessage(GetMinimapZoneText().."有"..direnshuliangpig.."个敌人来袭，请求支援！", "instance_chat"); 
 				end
 			else
-				PIGTopMsg:add("请在战场内使用")
+				PIG_OptionsUI:ErrorMsg("请在战场内使用")
 			end
 		end);
 	end
@@ -705,11 +701,11 @@ end
 --炉石专业按钮----
 QuickButUI.ButList[6]=function()
 	if PIGA["QuickBut"]["Open"] and PIGA["QuickBut"]["Lushi"] then
-		local GnUI = "General_UI"
-		if _G[GnUI] then return end
+		if QuickButUI.LushiOpen then return end
+		QuickButUI.LushiOpen=true
 		local Icon=134414
 		local Tooltip = KEY_BUTTON1.."-|cff00FFFF使用炉石|r\rShift+"..KEY_BUTTON1.."-|cff00FFFF选择炉石\r|r"..KEY_BUTTON2.."-|cff00FFFF专业技能|r"
-		local General=PIGQuickBut(GnUI,Tooltip,Icon,nil,nil,"SecureActionButtonTemplate")
+		local General=PIGQuickBut(nil,Tooltip,Icon,nil,nil,"SecureActionButtonTemplate")
 		PIGUseKeyDown(General)
 		General.Cooldown = CreateFrame("Frame", nil, General);
 		General.Cooldown:SetAllPoints()
@@ -726,7 +722,7 @@ QuickButUI.ButList[6]=function()
 		General.arrow:SetDrawLayer("ARTWORK", 7)
 		General.arrow.chushijiaodu=0
 		General.arrow.jieshujiaodu=180
-		if tocversion<50000 then
+		if PIG_MaxTocversion() then
 			General.arrow:SetAtlas("bag-arrow")
 			General.arrow:SetSize(11,16);
 			General.arrow:SetPoint("TOP",0,1);
@@ -780,11 +776,11 @@ QuickButUI.ButList[6]=function()
 			6948,--炉石
 			46874,--银色北伐军战袍
 		}
-		if tocversion>110000 then
+		if PIG_MaxTocversion(110000,true) then
 			for k,v in pairs(ToyList_Retail) do
 				table.insert(ToyList,v)
 			end
-		elseif tocversion>20000 then
+		elseif PIG_MaxTocversion(20000,true) then
 			table.insert(ToyList,184871)--黑暗之门
 			table.insert(BagList,28585)--红宝石靴子
 		else
@@ -846,6 +842,9 @@ QuickButUI.ButList[6]=function()
 				General:SetAttribute("spell", Skill_List.top[1][2]);
 			end
 		end
+		General.lushijisuqi=0
+		UpdateIconAttribute()
+		Skill_Button_Genxin()
 		General:RegisterEvent("PLAYER_ENTERING_WORLD")
 		General:RegisterUnitEvent("UNIT_SPELLCAST_START","player");
 		General:RegisterUnitEvent("UNIT_SPELLCAST_STOP","player");
@@ -872,33 +871,19 @@ QuickButUI.ButList[6]=function()
 		--内容页
 		local butW = ActionButton1:GetWidth()
 		local gaoNum,kuanNum = 5,6
-		local General_List = CreateFrame("Frame", "General_List_UI", UIParent,"BackdropTemplate");
-		General_List:SetBackdrop(Create.Backdropinfo)
-		General_List:SetBackdropColor(Create.BackdropColor[1], Create.BackdropColor[2], Create.BackdropColor[3], Create.BackdropColor[4]);
-		General_List:SetBackdropBorderColor(Create.BackdropBorderColor[1], Create.BackdropBorderColor[2], Create.BackdropBorderColor[3], Create.BackdropBorderColor[4]);
-		General_List:SetSize((butW+6)*kuanNum+6,(butW+6)*gaoNum+6);
+		local General_List = PIGFrame(General, nil, {(butW+6)*kuanNum+6,(butW+6)*gaoNum+6},"PIG_QuickBut_General",true);
+		General_List:PIGSetBackdrop()
 		General_List:SetScale(PIGA["QuickBut"]["bili"]);
-		General_List:Hide();
 		General_List:SetFrameLevel(33)
 		General_List:SetScale(0.8)
-		--
-		local WowHeight=GetScreenHeight();
-		local offset = QuickButUI:GetBottom();
-		General_List:ClearAllPoints()
-		if offset>(WowHeight*0.5) then
-			General_List:SetPoint("TOP", General, "BOTTOM", 0, -4);
-		else
-			General_List:SetPoint("BOTTOM", General, "TOP", 0, 4);
-		end
-		--
 		General_List:HookScript("OnShow",function(self)
 			PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
 			SetClampedTextureRotation(General.arrow,General.arrow.jieshujiaodu);
 			for i=1,#listall do
 				if listall[i][1]==PIGA_Per["QuickBut"]["LushiID"] then
-					_G["General_List_"..i].Select:Show();
+					General_List.ButList[i].Select:Show();
 				else
-					_G["General_List_"..i].Select:Hide();
+					General_List.ButList[i].Select:Hide();
 				end
 			end
 		end)
@@ -910,18 +895,28 @@ QuickButUI.ButList[6]=function()
 		General_List.Close:HookScript("OnClick",function(self)
 			General_List:Hide();
 		end)
+		local WowHeight=GetScreenHeight();
 		General:HookScript("OnClick",function(self,button)
 			if button == "LeftButton" and IsShiftKeyDown() then
 				if General_List:IsShown() then
 					General_List:Hide();
 				else
+					local offset = QuickButUI:GetBottom();
+					General_List:ClearAllPoints()
+					if offset>(WowHeight*0.5) then
+						General_List:SetPoint("TOP", General, "BOTTOM", 0, -4);
+					else
+						General_List:SetPoint("BOTTOM", General, "TOP", 0, 4);
+					end
 					General_List:Show();
 				end
 			end
 		end)
+		General_List.ButList={}
 		for i=1,gaoNum*kuanNum do
 			if listall[i] then
-				local butitem = CreateFrame("Button", "General_List_"..i, General_List)
+				local butitem = CreateFrame("Button", nil, General_List)
+				General_List.ButList[i]=butitem
 				butitem:SetHighlightTexture(130839)
 				butitem:SetSize(butW, butW)
 				if i==1 then
@@ -931,10 +926,10 @@ QuickButUI.ButList[6]=function()
 					if num2==0 then
 						butitem.huanhang=true
 					end
-					if _G["General_List_"..(i-1)].huanhang then
-						butitem:SetPoint("BOTTOMLEFT",_G["General_List_"..(i-kuanNum)],"TOPLEFT",0,6);
+					if General_List.ButList[i-1].huanhang then
+						butitem:SetPoint("BOTTOMLEFT",General_List.ButList[i-kuanNum],"TOPLEFT",0,6);
 					else
-						butitem:SetPoint("LEFT",_G["General_List_"..(i-1)],"RIGHT",6,0);
+						butitem:SetPoint("LEFT",General_List.ButList[i-1],"RIGHT",6,0);
 					end	
 				end
 				butitem.Select = butitem:CreateTexture(nil, "OVERLAY");
@@ -954,7 +949,7 @@ QuickButUI.ButList[6]=function()
 				butitem:HookScript("OnClick", function(self)
 					if listall[i][2] then
 						if InCombatLockdown() then
-							PIGTopMsg:add(ERR_NOT_IN_COMBAT)
+							PIG_OptionsUI:ErrorMsg(ERR_NOT_IN_COMBAT)
 						else
 							PIGA_Per["QuickBut"]["LushiID"]=listall[i][1]
 							UpdateIconAttribute(listall[i][1]) General_List:Hide();
@@ -977,12 +972,12 @@ QuickButUI.ButList[6]=function()
 end
 --职业技能----
 local Item_Spell_List ={{},{}}
-if tocversion<50000 then
+if PIG_MaxTocversion() then
 	Item_Spell_List[1] ={18984,18986,7148,18587,18232,18660};--空间撕裂器-永望镇/安全传送器-加基森/起搏器/起搏器XL
 	local _, classId = UnitClassBase("player");--1战士/2圣骑士/3猎人/4盗贼/5牧师/6死亡骑士/7萨满祭司/8法师/9术士/10武僧/11德鲁伊/12恶魔猎手
 	if classId==3 then --3猎人
 		Item_Spell_List[2] ={1002,6197,982,2641,1462,1515,883};
-		if tocversion>30000 then
+		if PIG_MaxTocversion(30000,true) then
 			table.insert(Item_Spell_List[2],62757);	
 		else
 			table.insert(Item_Spell_List[2],5149);
@@ -999,7 +994,7 @@ if tocversion<50000 then
 		elseif englishFaction=="Horde" then
 			Item_Spell_List[2] ={3567,11417,3566,11420,3563,11418};
 		end
-		if tocversion>20000 then
+		if PIG_MaxTocversion(20000,true) then
 			if englishFaction=="Alliance" then
 				local tbcchuansong = {32271,32266,49359,49360,33690,33691};	
 				for ik=1,#tbcchuansong do
@@ -1012,7 +1007,7 @@ if tocversion<50000 then
 				end
 			end
 		end
-		if tocversion>30000 then
+		if PIG_MaxTocversion(30000,true) then
 			local tbcchuansong ={53140,53142};
 			for ik=1,#tbcchuansong do
 				table.insert(Item_Spell_List[2],tbcchuansong[ik]);			
@@ -1033,8 +1028,8 @@ QuickButUI.ButList[7]=function()
 	local PigMacroDeleted_QK = false;
 	local PigMacroCount_QK=0
 	if PIGA["QuickBut"]["Open"] and PIGA["QuickBut"]["Spell"] then
-		local GnUI = "Zhushou_UI"
-		if _G[GnUI] then return end
+		if QuickButUI.SpellOpen then return end
+		QuickButUI.SpellOpen=true
 		local Icon,ActionID=131146, 400
 		local wupinlinrongqi = {}
 		local wupinlinrongqicishunum = 0
@@ -1072,15 +1067,15 @@ QuickButUI.ButList[7]=function()
 			end
 		end
 		local Tooltip = KEY_BUTTON1.."-|cff00FFFF随机使用坐骑|r\nShift+"..KEY_BUTTON1.."-|cff00FFFF打开Recount/Details插件记录面板|r\n"..KEY_BUTTON2.."-|cff00FFFF展开职业辅助技能栏|r"
-		local Zhushou=PIGQuickBut(GnUI,Tooltip,Icon,nil,nil,"SecureHandlerClickTemplate")
+		local Zhushou=PIGQuickBut(nil,Tooltip,Icon,nil,nil,"SecureHandlerClickTemplate")
 		local IconTEX=Zhushou:GetNormalTexture()
-		local IconCoord = CLASS_ICON_TCOORDS[Pig_OptionsUI.ClassData.classFile];
+		local IconCoord = CLASS_ICON_TCOORDS[PIG_OptionsUI.ClassData.classFile];
 		IconTEX:SetTexCoord(unpack(IconCoord));
 		Zhushou.arrow = Zhushou:CreateTexture(nil,"ARTWORK");
 		Zhushou.arrow:SetDrawLayer("ARTWORK", 7)
 		Zhushou.arrow.chushijiaodu=0
 		Zhushou.arrow.jieshujiaodu=180
-		if tocversion<50000 then
+		if PIG_MaxTocversion() then
 			Zhushou.arrow:SetAtlas("bag-arrow")
 			Zhushou.arrow:SetSize(11,16);
 			Zhushou.arrow:SetPoint("TOP",0,1);
@@ -1095,7 +1090,7 @@ QuickButUI.ButList[7]=function()
 		---内容页----
 		local butW = ActionButton1:GetWidth()
 		local gaoNum,kuanNum = 10,2
-		local Zhushou_List = CreateFrame("Frame", "Zhushou_List_UI", UIParent,"BackdropTemplate,SecureHandlerShowHideTemplate");
+		local Zhushou_List = CreateFrame("Frame", nil, Zhushou,"BackdropTemplate,SecureHandlerShowHideTemplate");
 		Zhushou_List:SetBackdrop(Create.Backdropinfo)
 		Zhushou_List:SetBackdropColor(Create.BackdropColor[1], Create.BackdropColor[2], Create.BackdropColor[3], Create.BackdropColor[4]);
 		Zhushou_List:SetBackdropBorderColor(Create.BackdropBorderColor[1], Create.BackdropBorderColor[2], Create.BackdropBorderColor[3], Create.BackdropBorderColor[4]);
@@ -1154,7 +1149,7 @@ QuickButUI.ButList[7]=function()
 							end
 						end
 					else
-						PIGTopMsg:add("未安装Recount/Details");
+						PIG_OptionsUI:ErrorMsg("未安装Recount/Details");
 					end
 				else
 					C_MountJournal.SummonByID(0)
@@ -1206,15 +1201,15 @@ QuickButUI.ButList[7]=function()
 			end
 		]=])
 		Zhushou_List.Close:SetFrameRef("frame1", Zhushou_List);
-
+		Zhushou_List.ButList={}
 		for i=1,gaoNum*kuanNum do
 			local zhushoubut
-			if tocversion<40000 then
-				zhushoubut = CreateFrame("CheckButton", "Zhushou_List_"..i, Zhushou_List, "SecureActionButtonTemplate,ActionButtonTemplate,SecureHandlerDragTemplate,SecureHandlerMouseUpDownTemplate")
+			if PIG_MaxTocversion(40000) then
+				zhushoubut = CreateFrame("CheckButton", nil, Zhushou_List, "SecureActionButtonTemplate,ActionButtonTemplate,SecureHandlerDragTemplate,SecureHandlerMouseUpDownTemplate")
 				zhushoubut.NormalTexture:SetAlpha(0.4);
 				zhushoubut.cooldown:SetSwipeColor(0, 0, 0, 0.8);
 			else
-				zhushoubut = CreateFrame("CheckButton", "Zhushou_List_"..i, Zhushou_List, "SecureActionButtonTemplate,SecureHandlerDragTemplate,SecureHandlerMouseUpDownTemplate")
+				zhushoubut = CreateFrame("CheckButton", nil, Zhushou_List, "SecureActionButtonTemplate,SecureHandlerDragTemplate,SecureHandlerMouseUpDownTemplate")
 				zhushoubut.Height = zhushoubut:CreateTexture(nil, "HIGHLIGHT");
 				zhushoubut.Height:SetAtlas("UI-HUD-ActionBar-IconFrame-Mouseover")
 				zhushoubut.Height:SetBlendMode("ADD");
@@ -1231,15 +1226,16 @@ QuickButUI.ButList[7]=function()
 				zhushoubut.Name = PIGFontString(zhushoubut,{"BOTTOM",zhushoubut,"BOTTOM",0,0})
 				zhushoubut.Count = PIGFontString(zhushoubut,{"BOTTOMRIGHT",zhushoubut,"BOTTOMRIGHT",0,0})
 			end
+			Zhushou_List.ButList[i]=zhushoubut
 			zhushoubut:SetSize(butW, butW)
 			if i==1 then
 				zhushoubut:SetPoint("BOTTOMLEFT",Zhushou_List,"BOTTOMLEFT",6,6);
 			else
 				local num1,num2=math.modf(i/kuanNum)
 				if num2~=0 then
-					zhushoubut:SetPoint("BOTTOMLEFT",_G["Zhushou_List_"..(i-kuanNum)],"TOPLEFT",0,6);
+					zhushoubut:SetPoint("BOTTOMLEFT",Zhushou_List.ButList[i-kuanNum],"TOPLEFT",0,6);
 				else
-					zhushoubut:SetPoint("LEFT",_G["Zhushou_List_"..(i-1)],"RIGHT",6,0);
+					zhushoubut:SetPoint("LEFT",Zhushou_List.ButList[i-1],"RIGHT",6,0);
 				end
 			end
 	 		local ActionID = ActionID+i
@@ -1311,8 +1307,7 @@ QuickButUI.ButList[7]=function()
 			end);
 			--
 			zhushoubut:RegisterEvent("TRADE_SKILL_CLOSE")
-			if tocversion>90000 then
-			else
+			if PIG_MaxTocversion() then
 				zhushoubut:RegisterEvent("CRAFT_CLOSE")
 			end
 			PIGUseKeyDown(zhushoubut)
@@ -1328,19 +1323,15 @@ QuickButUI.ButList[7]=function()
 					if event=="PLAYER_REGEN_ENABLED" then
 						PigMacroDeleted_QK,PigMacroCount_QK=Update_Macro(self,PigMacroDeleted_QK,PigMacroCount_QK,"QuickBut")
 						self:UnregisterEvent("PLAYER_REGEN_ENABLED");
-					end
-					if event=="BAG_UPDATE" then
+					elseif event=="BAG_UPDATE" then
 						Update_Count(self)
-					end
-					if event=="ACTIONBAR_UPDATE_COOLDOWN" then
+					elseif event=="ACTIONBAR_UPDATE_COOLDOWN" then
 						Update_Cooldown(self)
 						Update_bukeyong(self)
-					end
-					if event=="ACTIONBAR_UPDATE_STATE" or event=="TRADE_SKILL_CLOSE" or event=="CRAFT_CLOSE" or event=="UNIT_AURA" or event=="EXECUTE_CHAT_LINE" then
+					elseif event=="ACTIONBAR_UPDATE_STATE" or event=="TRADE_SKILL_CLOSE" or event=="CRAFT_CLOSE" or event=="UNIT_AURA" or event=="EXECUTE_CHAT_LINE" then
 						Update_State(self)
 						Update_Icon(self)
-					end
-					if event=="UPDATE_MACROS" or event=="PLAYER_REGEN_ENABLED" then
+					elseif event=="UPDATE_MACROS" or event=="PLAYER_REGEN_ENABLED" then
 						PigMacroEventCount_QK=PigMacroEventCount_QK+1;
 						if self.Type=="macro" then
 							if PigMacroEventCount_QK>5 then
@@ -1355,8 +1346,7 @@ QuickButUI.ButList[7]=function()
 						end
 						Update_Icon(self)
 						Update_Count(self)
-					end
-					if event=="PLAYER_UPDATE_RESTING" then
+					elseif event=="PLAYER_UPDATE_RESTING" then
 						Update_bukeyong(self)
 					end
 				end

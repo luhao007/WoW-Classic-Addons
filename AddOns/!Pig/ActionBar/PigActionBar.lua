@@ -1,19 +1,18 @@
 local addonName, addonTable = ...;
 local L=addonTable.locale
-local _, _, _, tocversion = GetBuildInfo()
 ---
 local Create = addonTable.Create
 local PIGFrame=Create.PIGFrame
 local PIGButton=Create.PIGButton
 local PIGDownMenu=Create.PIGDownMenu
 local PIGCheckbutton=Create.PIGCheckbutton
-local PIGQuickBut=Create.PIGQuickBut
 local PIGLine=Create.PIGLine
 local PIGSlider = Create.PIGSlider
 local PIGCheckbutton_R=Create.PIGCheckbutton_R
 local PIGOptionsList_R=Create.PIGOptionsList_R
 local PIGFontString=Create.PIGFontString
 local Backdropinfo=Create.Backdropinfo
+local Data=addonTable.Data
 --=======================================
 local ActionBarfun=addonTable.ActionBarfun
 local RTabFrame=ActionBarfun.RTabFrame
@@ -153,7 +152,7 @@ for index=1,zongshu do
 			ActionBarfun.Pig_Action()
 		else
 			PIGA_Per["PigAction"]["Open"][index]=false
-			Pig_Options_RLtishi_UI:Show()
+			PIG_OptionsUI.RLUI:Show()
 		end
 		Checkbut:ShowOpenFun()
 	end);
@@ -169,7 +168,7 @@ for index=1,zongshu do
 	end
 	function Checkbut.ShowHide:PIGDownMenu_SetValue(value,arg1,arg2)
 		if InCombatLockdown()  then 
-			PIGTopMsg:add(ERR_NOT_IN_COMBAT)
+			PIG_OptionsUI:ErrorMsg(ERR_NOT_IN_COMBAT)
 			return 
 		end
 		self:PIGDownMenu_SetText(value)
@@ -205,9 +204,7 @@ for index=1,zongshu do
 	end)
 	Checkbut.CZBUT = PIGButton(Checkbut,{"LEFT",Checkbut.Bindings,"RIGHT",40,0},{76,20},"重置位置");  
 	Checkbut.CZBUT:SetScript("OnClick", function (self)
-		local ckfame=_G[barName..index]
-		ckfame:ClearAllPoints();
-		ckfame:SetPoint("CENTER",UIParent,"CENTER",-200,-200+index*50)
+		Create.PIG_ResPoint(barName..index)
 	end);
 	Checkbut.PailieT = PIGFontString(Checkbut,{"TOPLEFT",Checkbut,"BOTTOMLEFT",20,-16},"排列方式")
 	Checkbut.Pailie=PIGDownMenu(Checkbut,{"LEFT",Checkbut.PailieT,"RIGHT",2,0},{80,24})
@@ -222,7 +219,7 @@ for index=1,zongshu do
 	end
 	function Checkbut.Pailie:PIGDownMenu_SetValue(value,arg1,arg2)
 		if InCombatLockdown()  then 
-			PIGTopMsg:add(ERR_NOT_IN_COMBAT)
+			PIG_OptionsUI:ErrorMsg(ERR_NOT_IN_COMBAT)
 			return 
 		end
 		self:PIGDownMenu_SetText(value)
@@ -245,7 +242,7 @@ for index=1,zongshu do
 	end
 	function Checkbut.AnniuNum:PIGDownMenu_SetValue(value,arg1,arg2)
 		if InCombatLockdown()  then 
-			PIGTopMsg:add(ERR_NOT_IN_COMBAT)
+			PIG_OptionsUI:ErrorMsg(ERR_NOT_IN_COMBAT)
 			return 
 		end
 		self:PIGDownMenu_SetText(value)
@@ -260,7 +257,7 @@ for index=1,zongshu do
 	Checkbut.suofang = PIGSlider(Checkbut,{"LEFT",Checkbut.suofang_t,"RIGHT",10,0},xiayiinfo)
 	Checkbut.suofang.Slider:HookScript("OnValueChanged", function(self, arg1)
 		if InCombatLockdown()  then 
-			PIGTopMsg:add(ERR_NOT_IN_COMBAT)
+			PIG_OptionsUI:ErrorMsg(ERR_NOT_IN_COMBAT)
 			return 
 		end
 		PIGA_Per["PigAction"]["Scale"][index]=arg1;
@@ -305,7 +302,7 @@ StaticPopupDialogs["CHONGZHI_EWAIDONGZUO"] = {
 	button2 = NO,
 	OnAccept = function()
 		PIGA_Per["PigAction"] = addonTable.Default_Per["PigAction"];
-		Pig_Options_RLtishi_UI:Show()
+		PIG_OptionsUI.RLUI:Show()
 	end,
 	timeout = 0,
 	whileDead = true,
@@ -340,9 +337,11 @@ local ActionW = ActionButton1:GetWidth()
 local function ADD_ActionBar(index)
 	if not PIGA_Per["PigAction"]["Open"][index] then return end
 	if _G[barName..index] then return end
-	local Pig_bar=PIGFrame(UIParent,{"CENTER",UIParent,"CENTER",-200,-200+index*50},{0.01,ActionW-4},barName..index)
+	Data.UILayout[barName..index]={"CENTER","CENTER",-200,-200+index*50}
+	local Pig_bar=PIGFrame(UIParent,nil,{0.01,ActionW-4},barName..index)
 	-- Pig_bar:SetAttribute("type", "actionbar");
 	-- Pig_bar:SetAttribute("actionbar", index+100);
+	Create.PIG_SetPoint(barName..index)
 	Pig_bar:SetScale(PIGA_Per["PigAction"]["Scale"][index]);
 	Pig_bar.yidong = PIGFrame(Pig_bar)
 	Pig_bar.yidong:PIGSetBackdrop()
@@ -351,7 +350,7 @@ local function ADD_ActionBar(index)
 	Pig_bar.yidong.title = PIGFontString(Pig_bar.yidong,nil,index,"OUTLINE",12)
 	Pig_bar.yidong.title:SetAllPoints(Pig_bar.yidong)
 	Pig_bar.yidong.title:SetTextColor(1, 1, 0.1, 1)
-	Pig_bar.yidong:PIGSetMovable(Pig_bar)
+	Pig_bar.yidong:PIGSetMovable(Pig_bar,nil,true)
 	Pig_bar.yidong:SetScript("OnEnter", function (self)
 		self:SetBackdropBorderColor(0,0.8,1, 0.9);
 		GameTooltip:ClearLines();
@@ -367,10 +366,10 @@ local function ADD_ActionBar(index)
 	if PIGA_Per["PigAction"]["Lock"][index] then Pig_bar.yidong:Hide() end
 	Pig_bar.yidong:SetScript("OnMouseUp", function (self,Button)
 		if Button=="RightButton" then
-			if Pig_OptionsUI:IsShown() then
-				Pig_OptionsUI:Hide()
+			if PIG_OptionsUI:IsShown() then
+				PIG_OptionsUI:Hide()
 			else
-				Pig_OptionsUI:Show()
+				PIG_OptionsUI:Show()
 				Create.Show_TabBut(fuFrame,fuFrameBut)
 				Create.Show_TabBut_R(RTabFrame,Action_plusF,Action_plusTabBut)
 			end
@@ -498,8 +497,7 @@ local function ADD_ActionBar(index)
 		piganniu:RegisterEvent("ACTIONBAR_SHOWGRID");
 		piganniu:RegisterEvent("ACTIONBAR_HIDEGRID");
 		piganniu:RegisterEvent("TRADE_SKILL_CLOSE")
-		if tocversion>90000 then
-		else
+		if PIG_MaxTocversion() then
 			piganniu:RegisterEvent("CRAFT_CLOSE")
 		end
 		piganniu:RegisterEvent("CVAR_UPDATE");

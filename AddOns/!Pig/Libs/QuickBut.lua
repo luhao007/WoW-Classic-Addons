@@ -1,12 +1,68 @@
 local addonName, addonTable = ...;
 local L=addonTable.locale
+local Data = addonTable.Data
 local Create = addonTable.Create
+local PIGFrame=Create.PIGFrame
 local PIGEnter=Create.PIGEnter
+
+--功能动作条
+local UIname="PIG_QuickButUI"
+Data.QuickButUIname=UIname
+local QuickPData = {ActionButton1:GetWidth(),200,200}
+if PIG_MaxTocversion() then
+	QuickPData[1]=QuickPData[1]-10
+else
+	QuickPData[1]=QuickPData[1]-16
+	QuickPData[2]=0
+	QuickPData[3]=290
+end
+Data.UILayout[UIname]={"BOTTOM","BOTTOM",QuickPData[2],QuickPData[3]}
+local QuickBut=PIGFrame(UIParent,nil,{QuickPData[1]+14,QuickPData[1]},UIname)
+QuickBut:PIGSetMovable()
+QuickBut:Hide()
+QuickBut.ButList={}
+function QuickBut:UpdateWidth()
+	if self.nr then
+		local butW = self.nr:GetHeight()
+		local Children1 = {self.nr:GetChildren()};
+		local yincangshunum=0
+		for i=1,#Children1 do
+			if Children1[i].yincang then
+				Children1[i]:SetWidth(0.0001)
+				yincangshunum=yincangshunum+1
+			else
+				local addW = Children1[i].addW or 0
+				Children1[i]:SetWidth(butW-2+addW)
+			end
+		end
+		local geshu1 = #Children1-yincangshunum
+		if geshu1>0 then 
+			self:Show()
+			local NewWidth = butW*geshu1+2
+			self:SetWidth(NewWidth+self.yidong:GetWidth())
+		end
+	end
+end
+function QuickBut:Add()
+	QuickBut.ButList[1]()
+	-- [1]总开关[2]战场通报[3]饰品管理[4]符文管理[5]装备管理
+	-- [6]炉石/专业[7]职业辅助技能[8]角色信息统计
+	-- [9]售卖助手丢弃[10]售卖助手开[11]售卖助手分[12]售卖助手选矿
+	-------
+	-- [13]时空之门[14]时空之门喊话[15]开团助手[16]带本助手
+	-- [17]带本助手-跟随,
+	-- [18],
+	-- [19],AFK
+	for i=2,19 do
+		local xfun = self.ButList[i] or function() end
+		xfun()
+	end
+	self:UpdateWidth()
+end
 --创建功能动作条按钮
 local WowHeight=GetScreenHeight();
-function Create.PIGQuickBut(QkButUI,Tooltip,Icon,GnUI,FrameLevel,Template)
-	local fuji = QuickButUI
-	local nr = fuji.nr
+function Create.PIGQuickBut(QkButUI,Tooltip,Icon,ShowGnUI,FrameLevel,Template)
+	local nr = QuickBut.nr
 	local butW = nr:GetHeight()
 	local Children = {nr:GetChildren()};
 	local geshu = #Children;
@@ -57,24 +113,24 @@ function Create.PIGQuickBut(QkButUI,Tooltip,Icon,GnUI,FrameLevel,Template)
 	But.Height:SetBlendMode("ADD");
 	But.Height:SetAllPoints(But)
 	But.Height:Hide()
-	if GnUI then
+	if ShowGnUI then
 		But:HookScript("OnClick", function(self,button)
 			if button=="LeftButton" then
-				if _G[GnUI]:IsShown() then
-					_G[GnUI]:Hide();
+				if _G[ShowGnUI]:IsShown() then
+					_G[ShowGnUI]:Hide();
 				else
-					_G[GnUI]:SetFrameLevel(FrameLevel)
-					_G[GnUI]:Show();
+					_G[ShowGnUI]:SetFrameLevel(FrameLevel)
+					_G[ShowGnUI]:Show();
 				end
 			end
 		end)
 	end
-	fuji:GengxinWidth()
+	QuickBut:UpdateWidth()
 	return But
 end
 --创建侧面功能按钮
 function Create.PIGModbutton(GnTooltip,GnIcon,GnUI,FrameLevel)
-	local nr = Pig_OptionsUI.ListFun
+	local nr = PIG_OptionsUI.ListFun
 	local butW = nr:GetWidth()
 	local But = CreateFrame("Button", nil, nr);
 	if type(GnIcon)=="number" then
@@ -112,7 +168,7 @@ function Create.PIGModbutton(GnTooltip,GnIcon,GnUI,FrameLevel)
 			if _G[GnUI]:IsShown() then
 				_G[GnUI]:Hide();
 			else
-				Pig_OptionsUI:Hide()
+				PIG_OptionsUI:Hide()
 				_G[GnUI]:SetFrameLevel(FrameLevel)
 				_G[GnUI]:Show();
 			end

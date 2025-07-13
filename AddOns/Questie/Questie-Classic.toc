@@ -1,8 +1,8 @@
-## Interface: 30404
+## Interface: 30405
 ## Author: Aero/Logon/Muehe/TheCrux(BreakBB)/Drejjmit/Dyaxler/Cheeq/TechnoHunter/Everyone else
-## Version: 10.19.0
+## Version: 11.2.0
 
-## Title: Questie|cFF00FF00 v10.19.0|r
+## Title: Questie|cFF00FF00 v11.2.0|r
 ## Notes: A standalone Classic QuestHelper
 ## Title-zhCN: |cFFFFE00A<|r|cFF00FF96任务|r|cFFFFE00A>|r |cFFFFFFFF任务助手|r |cFFFFE00AQuestie|r
 ## Notes-zhCN: 在地图和小地图上提供任务指引，在怪物身上提示任务进度
@@ -25,6 +25,7 @@ Modules\VersionCheck.lua
 
 # Loader module
 Modules\Libs\QuestieLoader.lua
+Modules\Expansions.lua
 
 Libs\LibUIDropDownMenu\LibUIDropDownMenu.xml
 Libs\HereBeDragons\HereBeDragons-2.0.lua
@@ -44,8 +45,12 @@ Database\QuestXP\DB\xpDB-classic.lua
 Modules\QuestieStream.lua
 
 # Zones
-Database\Zones\dungeons.lua
-Database\Zones\zoneTables.lua
+Database\Zones\data\areaIdToUiMapId.lua
+Database\Zones\data\dungeons.lua
+Database\Zones\data\subZoneToParentZone.lua
+Database\Zones\data\uiMapIdToAreaId.lua
+Database\Zones\data\zoneIds.lua
+Database\Zones\data\instanceIdToUiMapId.lua
 Database\Zones\zoneDB.lua
 
 # Databases
@@ -60,6 +65,7 @@ Database\npcDB.lua
 Database\itemDB.lua
 Database\Constants.lua
 Database\MeetingStones.lua
+Database\FactionTemplates\factionTemplateClassic.lua
 
 # Corrections
 Database\Corrections\AutoTableUpdates.lua
@@ -232,6 +238,7 @@ Modules\Tracker\LinePool\TrackerLinePool.lua
 
 # Tutorial
 Modules\Tutorial\ShowRunes.lua
+Modules\Tutorial\RejectInBattlegrounds.lua
 Modules\Tutorial\Tutorial.lua
 
 Modules\QuestieDBMIntegration.lua

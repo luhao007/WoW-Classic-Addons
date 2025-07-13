@@ -27,6 +27,7 @@ app.DefaultColors = {
 	Mount = "ffb19cd9",
 	Renown = "ff00bff3",
 	Unavailable = "ff808080",
+	SymLink = "ffccccff",
 	TimeUnder30Min = "ffff0000",
 	TimeUnder2Hr = "ffffff00",
 	Time = "ff008000",

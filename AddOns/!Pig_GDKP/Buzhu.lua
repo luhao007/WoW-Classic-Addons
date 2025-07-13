@@ -1,28 +1,23 @@
 local addonName, addonTable = ...;
-local _, _, _, tocversion = GetBuildInfo()
-local Create, Data, Fun, L, Default, Default_Per= unpack(PIG)
------
-local PIGFrame=Create.PIGFrame
-local PIGButton = Create.PIGButton
-local PIGDownMenu=Create.PIGDownMenu
-local PIGLine=Create.PIGLine
-local PIGEnter=Create.PIGEnter
-local PIGSlider = Create.PIGSlider
-local PIGDiyBut=Create.PIGDiyBut
-local PIGCheckbutton=Create.PIGCheckbutton
-local PIGOptionsList_RF=Create.PIGOptionsList_RF
-local PIGOptionsList_R=Create.PIGOptionsList_R
-local PIGQuickBut=Create.PIGQuickBut
-local Show_TabBut_R=Create.Show_TabBut_R
-local PIGFontString=Create.PIGFontString
-local PIGSetFont=Create.PIGSetFont
--- ----------
 local GDKPInfo=addonTable.GDKPInfo
-
 function GDKPInfo.ADD_Buzhu(RaidR)
+	local Create, Data, Fun, L, Default, Default_Per= unpack(PIG)
+	-----
+	local PIGFrame=Create.PIGFrame
+	local PIGButton = Create.PIGButton
+	local PIGDownMenu=Create.PIGDownMenu
+	local PIGLine=Create.PIGLine
+	local PIGEnter=Create.PIGEnter
+	local PIGSlider = Create.PIGSlider
+	local PIGDiyBut=Create.PIGDiyBut
+	local PIGCheckbutton=Create.PIGCheckbutton
+	local PIGOptionsList_R=Create.PIGOptionsList_R
+	local PIGQuickBut=Create.PIGQuickBut
+	local Show_TabBut_R=Create.Show_TabBut_R
+	local PIGFontString=Create.PIGFontString
+	local PIGSetFont=Create.PIGSetFont
 	local GnName,GnUI,GnIcon,FrameLevel = unpack(GDKPInfo.uidata)
 	local iconWH,hang_Height,hang_NUM,lineTOP  =  GDKPInfo.iconWH,GDKPInfo.hang_Height,GDKPInfo.hang_NUM,GDKPInfo.lineTOP
-	local RaidR=_G[GnUI]
 	local fujiF=PIGOptionsList_R(RaidR.F,"补助/奖励",80)
 	--------------
 	fujiF.line = PIGLine(fujiF,"C",-3,nil,{-4,4})
@@ -80,7 +75,7 @@ function GDKPInfo.ADD_Buzhu(RaidR)
 	--显示过滤----------
 	fujiF.buzhu_TND.ShowGuolv=PIGDownMenu(fujiF.buzhu_TND,{"RIGHT", buzhu_TND_biaoti_1, "LEFT", 0,0},{62,24})
 	fujiF.buzhu_TND.ShowGuolv.value = 1
-	function fujiF.buzhu_TND.ShowGuolv:PIGDownMenu_Update_But(self)
+	function fujiF.buzhu_TND.ShowGuolv:PIGDownMenu_Update_But()
 		local info = self:PIGDownMenu_CreateInfo()
 		info.func = self.PIGDownMenu_SetValue
 		for i=1,#guolvlist,1 do
@@ -114,15 +109,114 @@ function GDKPInfo.ADD_Buzhu(RaidR)
 	fujiF.buzhu_TND.TOPline = PIGLine(fujiF.buzhu_TND,"TOP",-lineTOP)
 	fujiF.buzhu_TND.Scroll = CreateFrame("ScrollFrame",nil,fujiF.buzhu_TND, "FauxScrollFrameTemplate");  
 	fujiF.buzhu_TND.Scroll:SetPoint("TOPLEFT",fujiF.buzhu_TND.TOPline,"BOTTOMLEFT",0,-1);
-	fujiF.buzhu_TND.Scroll:SetPoint("BOTTOMRIGHT",fujiF.buzhu_TND,"BOTTOMRIGHT",-24,lineTOP);
+	fujiF.buzhu_TND.Scroll:SetPoint("BOTTOMRIGHT",fujiF.buzhu_TND,"BOTTOMRIGHT",-19,lineTOP);
+	fujiF.buzhu_TND.Scroll.ScrollBar:SetScale(0.8);
 	fujiF.buzhu_TND.Scroll:SetScript("OnVerticalScroll", function(self, offset)
 	    FauxScrollFrame_OnVerticalScroll(self, offset, hang_Height, RaidR.Update_Buzhu_TND)
+	end)
+	fujiF.buzhu_TND.ButList={}
+	for id = 1, hang_NUM do
+		local hang = CreateFrame("Frame", nil, fujiF.buzhu_TND);
+		fujiF.buzhu_TND.ButList[id]=hang
+		hang:SetSize(fujiF.buzhu_TND:GetWidth()-25, hang_Height);
+		if id==1 then
+			hang:SetPoint("TOP",fujiF.buzhu_TND.Scroll,"TOP",0,0);
+		else
+			hang:SetPoint("TOP",fujiF.buzhu_TND.ButList[id-1],"BOTTOM",0,0);
+		end
+		if id~=hang_NUM then PIGLine(hang,"BOT",nil,nil,nil,{0.3,0.3,0.3,0.3}) end
+		hang.buzhuLX = hang:CreateTexture(nil, "BORDER");
+		hang.buzhuLX:SetTexture("interface/lfgframe/ui-lfg-icon-roles.blp");
+		hang.buzhuLX:SetPoint("LEFT", hang, "LEFT", 4,0);
+		hang.buzhuLX:SetSize(hang_Height-4,hang_Height-4);
+		hang.name = PIGFontString(hang,{"LEFT", hang.buzhuLX, "RIGHT", 0, 0},"","OUTLINE");
+		--
+		hang.fenGleixing = CreateFrame("Button",nil,hang, "TruncatedButtonTemplate");
+		hang.fenGleixing:SetHighlightTexture("interface/buttons/ui-common-mousehilight.blp");
+		hang.fenGleixing:SetSize(66,hang_Height-4);
+		hang.fenGleixing:SetPoint("LEFT", hang, "LEFT", biaotiList[2][2],0);
+		PIGSetFont(hang.fenGleixing.Text,14,"OUTLINE")
+		hang.fenGleixing:SetScript("OnClick", function (self)
+			local shangjiFF=self:GetParent()
+	 		local p,pp=RaidR.IsNameInRiad(shangjiFF.AllName)
+			if p then 
+				local dataX = PIGA["GDKP"]["Raidinfo"][p][pp]
+				dataX[6]=0
+				if dataX[5] then
+					dataX[5]=false
+				else
+					dataX[5]=true
+				end
+			end
+			RaidR.Update_Buzhu_TND()
+		end);
+		--
+		hang.G = CreateFrame("Frame", nil, hang);
+		hang.G:SetSize(58, hang_Height);
+		hang.G:SetPoint("RIGHT", hang, "RIGHT", -34,0);
+		hang.G.baifen = PIGFontString(hang.G,{"RIGHT", hang.G, "RIGHT", 0,0});
+		hang.G.baifen:SetTextColor(1, 1, 1, 1);
+		hang.G.V = PIGFontString(hang.G,{"RIGHT", hang.G.baifen, "LEFT", 0,0});
+		hang.G.V:SetTextColor(1, 1, 1, 1);
+		hang.G.E = CreateFrame("EditBox", nil, hang.G, "InputBoxInstructionsTemplate");
+		hang.G.E:SetSize(54,hang_Height);
+		hang.G.E:SetPoint("RIGHT", hang.G, "RIGHT", 0,0);
+		PIGSetFont(hang.G.E,14,"OUTLINE")
+		hang.G.E:SetMaxLetters(6)
+		hang.G.E:SetNumeric(true)
+		hang.G.E:SetScript("OnEscapePressed", function(self) 
+			shiqujiaodian(self:GetParent())
+		end);
+		hang.G.E:SetScript("OnEnterPressed", function(self)
+	 		hang.G:SavebuzhuValue()
+		end);
+		hang.G.B = CreateFrame("Button",nil,hang.G, "TruncatedButtonTemplate");
+		hang.G.B:SetHighlightTexture("interface/buttons/ui-common-mousehilight.blp");
+		hang.G.B:SetSize(hang_Height-7,hang_Height-7);
+		hang.G.B:SetPoint("LEFT", hang.G, "RIGHT", 0,0);
+		hang.G.B.Texture = hang.G.B:CreateTexture(nil, "BORDER");
+		hang.G.B.Texture:SetTexture("interface/buttons/ui-guildbutton-publicnote-up.blp");
+		hang.G.B.Texture:SetPoint("CENTER");
+		hang.G.B.Texture:SetSize(hang_Height-12,hang_Height-10);
+		hang.G.B:SetScript("OnMouseDown", function (self)
+			self.Texture:SetPoint("CENTER",-1.5,-1.5);
+		end);
+		hang.G.B:SetScript("OnMouseUp", function (self)
+			self.Texture:SetPoint("CENTER");
+		end);
+		hang.G.B:SetScript("OnClick", function (self)
+			for xx=1,hang_NUM do
+				shiqujiaodian(fujiF.buzhu_TND.ButList[xx].G)
+			end
+			local shangjiF=self:GetParent()
+			shiqujiaodian(shangjiF,true)
+			shangjiF.E:SetText(shangjiF.V:GetText());
+		end);
+		hang.G.Q = PIGButton(hang.G, {"LEFT", hang.G, "RIGHT", 1,0},{36,20},"确定");
+		hang.G.Q:SetScale(0.88)
+		hang.G.Q:Hide();
+		hang.G.Q:SetScript("OnClick", function (self)
+	 		hang.G:SavebuzhuValue()
+		end);
+		function hang.G:SavebuzhuValue()
+	 		local BuzhuNewV=self.E:GetNumber();
+	 		self.V:SetText(BuzhuNewV);
+	 		local p,pp=RaidR.IsNameInRiad(self:GetParent().AllName)
+			if p then
+				PIGA["GDKP"]["Raidinfo"][p][pp][6]=BuzhuNewV;
+			end
+			RaidR.Update_Buzhu_TND()
+		end
+	end
+	fujiF.buzhu_TND:SetScript("OnShow", function (self)
+		self.ShowGuolv:PIGDownMenu_SetText(guolvlist[self.ShowGuolv.value][1])
+		RaidR.Update_Buzhu_TND()
 	end)
 	function RaidR.Update_Buzhu_TND()
 		if not fujiF.buzhu_TND:IsShown() then return end
 		local Pself=fujiF.buzhu_TND.Scroll
-		for i = 1, hang_NUM do
-			_G["BZbuzhuhang_"..i]:Hide()
+		for id = 1, hang_NUM do
+			fujiF.buzhu_TND.ButList[id]:Hide()
 	    end
 	    local buzhutiquxinxi={};
 	    local dataX = PIGA["GDKP"]["Raidinfo"]
@@ -151,10 +245,10 @@ function GDKPInfo.ADD_Buzhu(RaidR)
 		fujiF.buzhu_TND.hejiV:SetText(ItemsNum)
 	    FauxScrollFrame_Update(Pself, ItemsNum, hang_NUM, hang_Height);
 		local offset = FauxScrollFrame_GetOffset(Pself);
-		for i = 1, hang_NUM do
-			local dangqian = i+offset;
+		for id = 1, hang_NUM do
+			local dangqian = id+offset;
 			if buzhutiquxinxi[dangqian] then
-				local fameX = _G["BZbuzhuhang_"..i]
+				local fameX = fujiF.buzhu_TND.ButList[id]
 				fameX:Show();
 				local zhiyecc = buzhutiquxinxi[dangqian][2]
 				local buzhuLEI = buzhutiquxinxi[dangqian][4]
@@ -171,7 +265,7 @@ function GDKPInfo.ADD_Buzhu(RaidR)
 				else
 					fameX.name:SetText(name);
 				end
-				local color = RAID_CLASS_COLORS[zhiyecc]
+				local color = PIG_CLASS_COLORS[zhiyecc]
 				fameX.name:SetTextColor(color.r, color.g, color.b,1);
 				if buzhutiquxinxi[dangqian][5] then
 					fameX.G.baifen:SetText("%")
@@ -188,124 +282,6 @@ function GDKPInfo.ADD_Buzhu(RaidR)
 		end
 		RaidR:UpdateGinfo()
 	end
-	for id = 1, hang_NUM do
-		local hang = CreateFrame("Frame", "BZbuzhuhang_"..id, fujiF.buzhu_TND);
-		hang:SetSize(fujiF.buzhu_TND:GetWidth()-25, hang_Height);
-		if id==1 then
-			hang:SetPoint("TOP",fujiF.buzhu_TND.Scroll,"TOP",0,0);
-		else
-			hang:SetPoint("TOP",_G["BZbuzhuhang_"..(id-1)],"BOTTOM",0,0);
-		end
-		if id~=hang_NUM then PIGLine(hang,"BOT",nil,nil,nil,{0.3,0.3,0.3,0.3}) end
-		hang.buzhuLX = hang:CreateTexture(nil, "BORDER");
-		hang.buzhuLX:SetTexture("interface/lfgframe/ui-lfg-icon-roles.blp");
-		hang.buzhuLX:SetPoint("LEFT", hang, "LEFT", 4,0);
-		hang.buzhuLX:SetSize(hang_Height-4,hang_Height-4);
-		hang.name = PIGFontString(hang,{"LEFT", hang.buzhuLX, "RIGHT", 0, 0},"","OUTLINE");
-		--
-		hang.fenGleixing = CreateFrame("Button",nil,hang, "TruncatedButtonTemplate");
-		hang.fenGleixing:SetHighlightTexture("interface/buttons/ui-common-mousehilight.blp");
-		hang.fenGleixing:SetSize(66,hang_Height-4);
-		hang.fenGleixing:SetPoint("LEFT", hang, "LEFT", biaotiList[2][2],0);
-		PIGSetFont(hang.fenGleixing.Text,14,"OUTLINE")
-		hang.fenGleixing:SetScript("OnClick", function (self)
-			local shangjiFF=self:GetParent()
-	 		local bianjiName=shangjiFF.AllName
-			local dataX = PIGA["GDKP"]["Raidinfo"]
-			for e=1,#dataX do
-				for ee=1,#dataX[e] do
-					if dataX[e][ee][1]==bianjiName then
-						dataX[e][ee][6]=0
-						if dataX[e][ee][5] then
-							dataX[e][ee][5]=false
-						else
-							dataX[e][ee][5]=true
-						end
-						break
-					end
-				end
-			end
-			RaidR.Update_Buzhu_TND()
-		end);
-		--
-		hang.G = CreateFrame("Frame", nil, hang);
-		hang.G:SetSize(58, hang_Height);
-		hang.G:SetPoint("RIGHT", hang, "RIGHT", -34,0);
-		hang.G.baifen = PIGFontString(hang.G,{"RIGHT", hang.G, "RIGHT", 0,0});
-		hang.G.baifen:SetTextColor(1, 1, 1, 1);
-		hang.G.V = PIGFontString(hang.G,{"RIGHT", hang.G.baifen, "LEFT", 0,0});
-		hang.G.V:SetTextColor(1, 1, 1, 1);
-		hang.G.E = CreateFrame("EditBox", nil, hang.G, "InputBoxInstructionsTemplate");
-		hang.G.E:SetSize(54,hang_Height);
-		hang.G.E:SetPoint("RIGHT", hang.G, "RIGHT", 0,0);
-		PIGSetFont(hang.G.E,14,"OUTLINE")
-		hang.G.E:SetMaxLetters(6)
-		hang.G.E:SetNumeric(true)
-		hang.G.E:SetScript("OnEscapePressed", function(self) 
-			shiqujiaodian(self:GetParent())
-		end);
-		hang.G.E:SetScript("OnEnterPressed", function(self)
-			local shangjiF=self:GetParent()
-	 		local BuzhuNewV=self:GetNumber();
-	 		shangjiF.V:SetText(BuzhuNewV);
-	 		local shangjiFF=shangjiF:GetParent()
-	 		local bianjiName=shangjiFF.AllName
-	 		local dataX = PIGA["GDKP"]["Raidinfo"]
-			for e=1,#dataX do
-				for ee=1,#dataX[e] do
-					if dataX[e][ee][1]==bianjiName then
-						dataX[e][ee][6]=BuzhuNewV;
-					end
-				end
-			end
-			RaidR.Update_Buzhu_TND()
-		end);
-		hang.G.B = CreateFrame("Button",nil,hang.G, "TruncatedButtonTemplate");
-		hang.G.B:SetHighlightTexture("interface/buttons/ui-common-mousehilight.blp");
-		hang.G.B:SetSize(hang_Height-7,hang_Height-7);
-		hang.G.B:SetPoint("LEFT", hang.G, "RIGHT", 0,0);
-		hang.G.B.Texture = hang.G.B:CreateTexture(nil, "BORDER");
-		hang.G.B.Texture:SetTexture("interface/buttons/ui-guildbutton-publicnote-up.blp");
-		hang.G.B.Texture:SetPoint("CENTER");
-		hang.G.B.Texture:SetSize(hang_Height-12,hang_Height-10);
-		hang.G.B:SetScript("OnMouseDown", function (self)
-			self.Texture:SetPoint("CENTER",-1.5,-1.5);
-		end);
-		hang.G.B:SetScript("OnMouseUp", function (self)
-			self.Texture:SetPoint("CENTER");
-		end);
-		hang.G.B:SetScript("OnClick", function (self)
-			for xx=1,hang_NUM do
-				shiqujiaodian(_G["BZbuzhuhang_"..xx].G)
-			end
-			local shangjiF=self:GetParent()
-			shiqujiaodian(shangjiF,true)
-			shangjiF.E:SetText(shangjiF.V:GetText());
-		end);
-		hang.G.Q = PIGButton(hang.G, {"LEFT", hang.G, "RIGHT", 1,0},{36,20},"确定");
-		hang.G.Q:SetScale(0.88)
-		hang.G.Q:Hide();
-		hang.G.Q:SetScript("OnClick", function (self)
-			local shangjiF=self:GetParent()
-	 		local BuzhuNewV=shangjiF.E:GetNumber();
-	 		shangjiF.V:SetText(BuzhuNewV);
-	 		local shangjiFF=shangjiF:GetParent()
-	 		local bianjiName=shangjiFF.AllName
-	 		local dataX = PIGA["GDKP"]["Raidinfo"]
-			for e=1,#dataX do
-				for ee=1,#dataX[e] do
-					if dataX[e][ee][1]==bianjiName then
-						dataX[e][ee][6]=BuzhuNewV;
-					end
-				end
-			end
-			RaidR.Update_Buzhu_TND()
-		end);
-	end
-	fujiF.buzhu_TND:SetScript("OnShow", function (self)
-		self.ShowGuolv:PIGDownMenu_SetText(guolvlist[self.ShowGuolv.value][1])
-		RaidR.Update_Buzhu_TND()
-	end)
 	---
 	fujiF.buzhu_TND.yedibuF = PIGLine(fujiF.buzhu_TND,"BOT",lineTOP)
 	fujiF.buzhu_TND.tishi = CreateFrame("Frame", nil, fujiF.buzhu_TND);
@@ -401,7 +377,6 @@ function GDKPInfo.ADD_Buzhu(RaidR)
 		self:SetTextColor(0.5, 0.5, 0.5, 0.8);
 	end)
 
-
 	---奖励补助==========
 	fujiF.buzhu_QITA = PIGFrame(fujiF,{"TOPRIGHT",fujiF,"TOPRIGHT",0,0});  
 	fujiF.buzhu_QITA:SetPoint("BOTTOMLEFT",fujiF.line,"BOTTOMRIGHT",0,0);
@@ -424,7 +399,7 @@ function GDKPInfo.ADD_Buzhu(RaidR)
 	fujiF.buzhu_QITA.guangbaoBut:SetScript("OnClick", function()
 		local dataX = PIGA["GDKP"]["jiangli"]
     	for p=1,#dataX do
-			if dataX[p][3]~="N/A" then
+			if dataX[p][3]~=NONE then
 				PIGSendChatRaidParty("["..dataX[p][1].."]支出"..dataX[p][2].."G<"..dataX[p][3]..">")
 			end
 		end
@@ -498,7 +473,7 @@ function GDKPInfo.ADD_Buzhu(RaidR)
 					return
 				end
 			end
-			local qitashouruinfo={huoquV,0,"N/A",false};
+			local qitashouruinfo={huoquV,0,NONE,false};
 			table.insert(PIGA["GDKP"]["jiangli"],qitashouruinfo);
 			fuji:Hide();
 			RaidR.Update_Buzhu_QITA()
@@ -513,66 +488,20 @@ function GDKPInfo.ADD_Buzhu(RaidR)
 	fujiF.buzhu_QITA.TOPline = PIGLine(fujiF.buzhu_QITA,"TOP",-lineTOP)
 	fujiF.buzhu_QITA.Scroll = CreateFrame("ScrollFrame",nil,fujiF.buzhu_QITA, "FauxScrollFrameTemplate");  
 	fujiF.buzhu_QITA.Scroll:SetPoint("TOPLEFT",fujiF.buzhu_QITA.TOPline,"BOTTOMLEFT",0,-1);
-	fujiF.buzhu_QITA.Scroll:SetPoint("BOTTOMRIGHT",fujiF.buzhu_QITA,"BOTTOMRIGHT",-24,lineTOP);
+	fujiF.buzhu_QITA.Scroll:SetPoint("BOTTOMRIGHT",fujiF.buzhu_QITA,"BOTTOMRIGHT",-19,lineTOP);
+	fujiF.buzhu_QITA.Scroll.ScrollBar:SetScale(0.8);
 	fujiF.buzhu_QITA.Scroll:SetScript("OnVerticalScroll", function(self, offset)
 	    FauxScrollFrame_OnVerticalScroll(self, offset, hang_Height, RaidR.Update_Buzhu_QITA)
 	end)
-	function RaidR.Update_Buzhu_QITA()
-		if not fujiF.buzhu_QITA:IsShown() then return end
-		local self = fujiF.buzhu_QITA.Scroll
-		for i = 1, hang_NUM do
-			_G["QTfakuanhang_"..i]:Hide()
-	    end
-		local dataX = PIGA["GDKP"]["jiangli"]
-		local ItemsNum=#dataX
-		FauxScrollFrame_Update(self, ItemsNum, hang_NUM, hang_Height);
-		local offset = FauxScrollFrame_GetOffset(self);
-		for i = 1, hang_NUM do
-			local dangqian = i+offset;
-			if dataX[dangqian] then
-				local fameX = _G["QTfakuanhang_"..i]
-				fameX:Show();
-				fameX.del:SetID(dangqian);
-				fameX.jianglixiang:SetText(dataX[dangqian][1])
-				fameX.fenGleixing:SetID(dangqian);
-				if dataX[dangqian][4] then
-					fameX.G.baifen:SetText("%")
-					fameX.fenGleixing:SetText("百分比")
-					fameX.fenGleixing.Text:SetTextColor(1, 0, 0, 1);
-				else
-					fameX.G.baifen:SetText("")
-					fameX.fenGleixing:SetText("固定值")
-					fameX.fenGleixing.Text:SetTextColor(0, 1, 0, 1);
-				end
-				shiqujiaodian(fameX.G)
-				fameX.G.E:SetID(dangqian);
-				fameX.G.Q:SetID(dangqian);
-				fameX.G.V:SetText(dataX[dangqian][2])
-				fameX.JiangliRen:SetID(dangqian);
-				local AllName = dataX[dangqian][3]
-				if AllName=="N/A" then
-					fameX.JiangliRen:SetText("\124cffff0000        "..NONE.."\124r");
-				else
-					local name,server = strsplit("-", AllName);
-					if server then
-						fameX.JiangliRen:SetText(name.."(*)")
-					else
-						fameX.JiangliRen:SetText(name);
-					end
-					-- local color = RAID_CLASS_COLORS[zhiyecc]
-					-- fameX.JiangliRen:SetTextColor(color.r, color.g, color.b,1);
-				end
-			end
-		end
-		RaidR:UpdateGinfo()
-	end
+	fujiF.buzhu_QITA.ButList={}
 	for id = 1, hang_NUM do
-		local hang = CreateFrame("Frame", "QTfakuanhang_"..id, fujiF.buzhu_QITA);
+		local hang = CreateFrame("Frame", nil, fujiF.buzhu_QITA);
+		fujiF.buzhu_QITA.ButList[id]=hang
 		hang:SetSize(fujiF.buzhu_QITA:GetWidth()-25, hang_Height);
 		if id==1 then
 			hang:SetPoint("TOP",fujiF.buzhu_QITA.Scroll,"TOP",0,0);
 		else
-			hang:SetPoint("TOP",_G["QTfakuanhang_"..(id-1)],"BOTTOM",0,0);
+			hang:SetPoint("TOP",fujiF.buzhu_QITA.ButList[id-1],"BOTTOM",0,0);
 		end
 		if id~=hang_NUM then PIGLine(hang,"BOT",nil,nil,nil,{0.3,0.3,0.3,0.3}) end
 		hang.del = PIGDiyBut(hang,{"LEFT", hang, "LEFT", 0,0},{hang_Height-12})
@@ -638,7 +567,7 @@ function GDKPInfo.ADD_Buzhu(RaidR)
 		end);
 		hang.G.B:SetScript("OnClick", function (self)
 			for xx=1,hang_NUM do
-				shiqujiaodian(_G["QTfakuanhang_"..xx].G)
+				shiqujiaodian(fujiF.buzhu_QITA.ButList[xx].G)
 			end
 			local shangjiF=self:GetParent()
 			shiqujiaodian(shangjiF,true)
@@ -670,7 +599,55 @@ function GDKPInfo.ADD_Buzhu(RaidR)
 	fujiF.buzhu_QITA:SetScript("OnShow", function (self)
 		RaidR.Update_Buzhu_QITA()
 	end)
-
+	function RaidR.Update_Buzhu_QITA()
+		if not fujiF.buzhu_QITA:IsShown() then return end
+		local self = fujiF.buzhu_QITA.Scroll
+		for id = 1, hang_NUM do
+			fujiF.buzhu_QITA.ButList[id]:Hide()
+	    end
+		local dataX = PIGA["GDKP"]["jiangli"]
+		local ItemsNum=#dataX
+		FauxScrollFrame_Update(self, ItemsNum, hang_NUM, hang_Height);
+		local offset = FauxScrollFrame_GetOffset(self);
+		for id = 1, hang_NUM do
+			local dangqian = id+offset;
+			if dataX[dangqian] then
+				local fameX = fujiF.buzhu_QITA.ButList[id]
+				fameX:Show();
+				fameX.del:SetID(dangqian);
+				fameX.jianglixiang:SetText(dataX[dangqian][1])
+				fameX.fenGleixing:SetID(dangqian);
+				if dataX[dangqian][4] then
+					fameX.G.baifen:SetText("%")
+					fameX.fenGleixing:SetText("百分比")
+					fameX.fenGleixing.Text:SetTextColor(1, 0, 0, 1);
+				else
+					fameX.G.baifen:SetText("")
+					fameX.fenGleixing:SetText("固定值")
+					fameX.fenGleixing.Text:SetTextColor(0, 1, 0, 1);
+				end
+				shiqujiaodian(fameX.G)
+				fameX.G.E:SetID(dangqian);
+				fameX.G.Q:SetID(dangqian);
+				fameX.G.V:SetText(dataX[dangqian][2])
+				fameX.JiangliRen:SetID(dangqian);
+				local AllName = dataX[dangqian][3]
+				if AllName==NONE then
+					fameX.JiangliRen:SetText("\124cffff0000        "..NONE.."\124r");
+				else
+					local name,server = strsplit("-", AllName);
+					if server then
+						fameX.JiangliRen:SetText(name.."(*)")
+					else
+						fameX.JiangliRen:SetText(name);
+					end
+					-- local color = PIG_CLASS_COLORS[zhiyecc]
+					-- fameX.JiangliRen:SetTextColor(color.r, color.g, color.b,1);
+				end
+			end
+		end
+		RaidR:UpdateGinfo()
+	end
 	local function huoqujiangliD(buzhuVleixing)
 		local dataX = PIGA["GDKP"]["jiangli"]
     	for p=1,#dataX do
@@ -696,7 +673,7 @@ function GDKPInfo.ADD_Buzhu(RaidR)
 	--导入奖励设置----------
 	fujiF.buzhu_QITA.daoruBut=PIGDownMenu(fujiF.buzhu_TND,{"TOPRIGHT",fujiF.buzhu_QITA.yedibuF,"BOTTOMRIGHT",-10,-4},{60,22})
 	fujiF.buzhu_QITA.daoruBut:PIGDownMenu_SetText("导入")
-	function fujiF.buzhu_QITA.daoruBut:PIGDownMenu_Update_But(self)
+	function fujiF.buzhu_QITA.daoruBut:PIGDownMenu_Update_But()
 		local info = self:PIGDownMenu_CreateInfo()
 		info.func = self.PIGDownMenu_SetValue
 		local ziding = PIGA["GDKP"]["jiangli_config"]
@@ -748,7 +725,7 @@ function GDKPInfo.ADD_Buzhu(RaidR)
 
 	fujiF.buzhu_QITA.SaveBut.F.oldName=PIGDownMenu(fujiF.buzhu_QITA.SaveBut.F,{"LEFT",fujiF.buzhu_QITA.SaveBut.F.shijianNameT,"RIGHT",10,0},{120,22})
 	fujiF.buzhu_QITA.SaveBut.F.oldName:PIGDownMenu_SetText("选择已有设置")
-	function fujiF.buzhu_QITA.SaveBut.F.oldName:PIGDownMenu_Update_But(self)
+	function fujiF.buzhu_QITA.SaveBut.F.oldName:PIGDownMenu_Update_But()
 		local info = self:PIGDownMenu_CreateInfo()
 		info.func = self.PIGDownMenu_SetValue
 		local ziding = PIGA["GDKP"]["jiangli_config"]

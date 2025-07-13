@@ -267,6 +267,17 @@ if BG.IsWLK then
         616,
         617,
     }
+    BG.Loot.encounterID.TAQ = {
+        709,
+        710,
+        711,
+        712,
+        713,
+        714,
+        715,
+        716,
+        717,
+    }
 elseif BG.IsCTM then
     BG.Loot.encounterID.NAXX = {
         1107,
@@ -332,7 +343,7 @@ elseif BG.IsCTM then
 end
 
 -- CTM
-if BG.IsCTM then
+if BG.IsCTM or BG.IsMOP then
     BG.Loot.encounterID.BOT = {
         1030,
         1032,
@@ -366,5 +377,61 @@ if BG.IsCTM then
         1298,
         1291,
         1299,
+    }
+end
+
+-- CTM
+if BG.IsMOP then
+    BG.Loot.encounterID.MSV = {
+        1395,
+        1390,
+        1434,
+        1436,
+        1500,
+        1407,
+        1507,
+        1504,
+        1463,
+        1498,
+        1499,
+        1501,
+        1409,
+        1505,
+        1506,
+        1431,
+    }
+end
+--[[
+
+        { name = L["石\n头\n守卫"], color = "87CEFA" },
+        { name = L["受\n诅\n者\n魔\n封"], color = "87CEFA" },
+        { name = L["缚\n灵\n者\n戈\n拉\n亚"], color = "87CEFA" },
+        { name = L["先\n王\n之\n魂"], color = "87CEFA" },
+        { name = L["伊\n拉\n贡"], color = "87CEFA" },
+        { name = L["皇\n帝\n的\n意\n志"], color = "87CEFA" },
+
+        { name = L["皇\n家\n宰\n相\n佐\n尔\n洛\n克"], color = "87CEFA" },
+        { name = L["刀\n锋\n领\n主\n塔\n亚\n克"], color = "87CEFA" },
+        { name = L["加\n拉\n隆"], color = "87CEFA" },
+        { name = L["风\n领\n主\n梅\n尔\n加\n拉\n克"], color = "87CEFA" },
+        { name = L["琥\n珀\n塑\n形\n者\n昂\n舒\n克"], color = "87CEFA" },
+        { name = L["大\n女\n皇\n夏\n柯\n希\n尔"], color = "87CEFA" },
+
+        { name = L["无\n尽\n守\n护\n者"], color = "87CEFA" },
+        { name = L["烛\n龙"], color = "87CEFA" },
+        { name = L["雷\n施"], color = "87CEFA" },
+        { name = L["惧\n之\n煞"], color = "87CEFA" },
+]]
+-- Retail
+if BG.IsRetail then
+    BG.Loot.encounterID.NP = {
+        2902,
+        2917,
+        2898,
+        2918,
+        2919,
+        2920,
+        2921,
+        2922,
     }
 end

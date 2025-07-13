@@ -1,4 +1,4 @@
-## Interface: 30404
+## Interface: 30405
 ## Author: Titan Panel Dev Team
 ## Version: 8.0.12
 

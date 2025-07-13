@@ -12,22 +12,18 @@ local RGB_16 = ns.RGB_16
 local GetClassRGB = ns.GetClassRGB
 local SetClassCFF = ns.SetClassCFF
 local GetText_T = ns.GetText_T
-local FrameHide = ns.FrameHide
 local AddTexture = ns.AddTexture
 local GetItemID = ns.GetItemID
 local BossNum = ns.BossNum
 
-local Width = ns.Width
-local Height = ns.Height
 local Maxb = ns.Maxb
-local Maxi = ns.Maxi
 local HopeMaxn = ns.HopeMaxn
 local HopeMaxb = ns.HopeMaxb
 local HopeMaxi = ns.HopeMaxi
 
 local pt = print
-local RealmId = GetRealmID()
-local player = UnitName("player")
+local RealmID = GetRealmID()
+local player = BG.playerName
 
 ------------------过滤装备------------------
 do
@@ -56,14 +52,14 @@ do
             end
             ii = ii + 1
         end
-        return table.concat(tbl)
+        return table.concat(tbl, "\n")
     end
 
     local function FilterArmor(typeID, EquipLoc, subclassID)
-        local num = BiaoGe.FilterClassItemDB[RealmId][player].chooseID
+        local num = BiaoGe.FilterClassItemDB[RealmID][player].chooseID
         if not num then return end
         if typeID == 4 and EquipLoc ~= "INVTYPE_CLOAK" then
-            for id, v in pairs(BiaoGe.FilterClassItemDB[RealmId][player][num].Armor) do
+            for id, v in pairs(BiaoGe.FilterClassItemDB[RealmID][player][num].Armor) do
                 if subclassID == tonumber(id) then
                     if subclassID == 0 then
                         if EquipLoc == "INVTYPE_HOLDABLE" then
@@ -77,10 +73,10 @@ do
         end
     end
     local function FilterWeapon(typeID, EquipLoc, subclassID)
-        local num = BiaoGe.FilterClassItemDB[RealmId][player].chooseID
+        local num = BiaoGe.FilterClassItemDB[RealmID][player].chooseID
         if not num then return end
         if typeID == 2 then
-            for id, v in pairs(BiaoGe.FilterClassItemDB[RealmId][player][num].Weapon) do
+            for id, v in pairs(BiaoGe.FilterClassItemDB[RealmID][player][num].Weapon) do
                 if subclassID == tonumber(id) then
                     return true
                 end
@@ -99,9 +95,9 @@ do
         end
     end
     local function FilterShuXing(TooltipText)
-        local num = BiaoGe.FilterClassItemDB[RealmId][player].chooseID
+        local num = BiaoGe.FilterClassItemDB[RealmID][player].chooseID
         if not num then return end
-        for name, _ in pairs(BiaoGe.FilterClassItemDB[RealmId][player][num].ShuXing) do
+        for name, _ in pairs(BiaoGe.FilterClassItemDB[RealmID][player][num].ShuXing) do
             local localTextTbl, nothave = GetDBShuXingInfo(name)
             if localTextTbl then
                 local yes
@@ -127,10 +123,10 @@ do
         end
     end
     local function FilterCLASS(TooltipText)
-        local num = BiaoGe.FilterClassItemDB[RealmId][player].chooseID
+        local num = BiaoGe.FilterClassItemDB[RealmID][player].chooseID
         if not num then return end
         if strfind(TooltipText, CLASS) then
-            for id, v in pairs(BiaoGe.FilterClassItemDB[RealmId][player][num].Class) do
+            for id, v in pairs(BiaoGe.FilterClassItemDB[RealmID][player][num].Class) do
                 if id == "过滤职业限定" then
                     local c = UnitClass("player")
                     if not strfind(TooltipText, c) then
@@ -141,10 +137,11 @@ do
         end
     end
     local function FilterTANK(TooltipText, typeID, EquipLoc)
-        local num = BiaoGe.FilterClassItemDB[RealmId][player].chooseID
+        if not BG.FilterClassItem_Default.TankKey then return end
+        local num = BiaoGe.FilterClassItemDB[RealmID][player].chooseID
         if not num then return end
         if typeID == 4 and EquipLoc ~= "INVTYPE_TRINKET" and EquipLoc ~= "INVTYPE_RELIC" then
-            for id, v in pairs(BiaoGe.FilterClassItemDB[RealmId][player][num].Tank) do
+            for id, v in pairs(BiaoGe.FilterClassItemDB[RealmID][player][num].Tank) do
                 if id == "过滤坦克" then
                     local tank
                     for key, value in pairs(BG.FilterClassItem_Default.TankKey) do
@@ -175,17 +172,15 @@ do
         if FilterCLASS(TooltipText) then
             return true
         end
-        if not BG.IsVanilla then
-            if FilterTANK(TooltipText, typeID, EquipLoc) then
-                return true
-            end
+        if FilterTANK(TooltipText, typeID, EquipLoc) then
+            return true
         end
     end
 
     function BG.FilterItem(bt, link)
         local text = link or bt:GetText()
         local itemID, _, _, EquipLoc, _, typeID, subclassID = GetItemInfoInstant(text)
-        local num = BiaoGe.FilterClassItemDB[RealmId][player].chooseID
+        local num = BiaoGe.FilterClassItemDB[RealmID][player].chooseID
 
         if itemID and num then
             if BG.FilterAll(itemID, typeID, EquipLoc, subclassID) then
@@ -197,10 +192,10 @@ do
     end
 
     function BG.UpdateFilter(bt, link)
-        local text = link or bt:GetText()
-        local itemID = GetItemID(text)
-        local num = BiaoGe.FilterClassItemDB[RealmId][player].chooseID
-        if not (text:find("item:") and itemID and num) then
+        local link = link or bt:GetText()
+        local itemID = GetItemID(link)
+        local num = BiaoGe.FilterClassItemDB[RealmID][player].chooseID
+        if not (link:find("item:") and itemID and num) then
             bt:SetAlpha(alpha2)
             return
         end
@@ -222,7 +217,7 @@ do
     function BG.UpdateAllFilter()
         local FB = BG.FB1
         for b = 1, Maxb[FB] do -- 当前表格
-            for i = 1, Maxi[FB] do
+            for i = 1, BG.GetMaxi(FB, b) do
                 local bt = BG.Frame[FB]["boss" .. b]["zhuangbei" .. i]
                 if bt then
                     BG.UpdateFilter(bt)
@@ -230,7 +225,7 @@ do
             end
         end
         for b = 1, Maxb[FB] do -- 历史表格
-            for i = 1, Maxi[FB] do
+            for i = 1, BG.GetMaxi(FB, b) do
                 local bt = BG.HistoryFrame[FB]["boss" .. b]["zhuangbei" .. i]
                 if bt then
                     BG.UpdateFilter(bt)
@@ -282,7 +277,7 @@ do
         if BGA.Frames then
             for _, f in ipairs(BGA.Frames) do
                 f.filter = nil
-                if f.player and f.player == UnitName("player") then
+                if f.player and f.player == BG.GN() then
                     f:SetBackdropColor(unpack(BGA.aura_env.backdropColor_IsMe))
                     f:SetBackdropBorderColor(unpack(BGA.aura_env.backdropBorderColor_IsMe))
                     f.autoFrame:SetBackdropColor(unpack(BGA.aura_env.backdropColor_IsMe))
@@ -298,12 +293,12 @@ do
                 f.autoTextButton:SetNormalFontObject(_G.BGA.FontGreen15)
                 f.logTextButton:SetNormalFontObject(_G.BGA.FontGreen15)
 
-                local num = BiaoGe.FilterClassItemDB[RealmId][player].chooseID
+                local num = BiaoGe.FilterClassItemDB[RealmID][player].chooseID
                 if num then
                     local name, link, quality, level, _, _, _, _, EquipLoc, Texture, _, typeID, subclassID, bindType = GetItemInfo(f.itemID)
                     if BG.FilterAll(f.itemID, typeID, EquipLoc, subclassID) then
                         f.filter = true
-                        if not (f.player and f.player == UnitName("player")) then
+                        if not (f.player and f.player == BG.GN()) then
                             f:SetBackdropColor(unpack(BGA.aura_env.backdropColor_filter))
                             f:SetBackdropBorderColor(unpack(BGA.aura_env.backdropBorderColor_filter))
                             f.autoFrame:SetBackdropColor(unpack(BGA.aura_env.backdropColor_filter))
@@ -321,10 +316,10 @@ do
 
     -- 拾取通知
     function BG.LootFilterClassItem(link)
-        local num = BiaoGe.FilterClassItemDB[RealmId][player].chooseID
+        local num = BiaoGe.FilterClassItemDB[RealmID][player].chooseID
         if not num then return "" end
 
-        local icon = AddTexture(BiaoGe.FilterClassItemDB[RealmId][player][num].Icon)
+        local icon = AddTexture(BiaoGe.FilterClassItemDB[RealmID][player][num].Icon)
         local itemID, _, _, EquipLoc, _, typeID, subclassID = GetItemInfoInstant(link)
 
         if itemID then
@@ -337,18 +332,21 @@ do
 end
 
 ------------------函数：按职业排序------------------
-function BG.PaiXuRaidRosterInfo(filter)
+function BG.SortRaidRosterInfo(filter)
     local tbl = filter or {
-        "DEATHKNIGHT", --     "死亡骑士",
-        "PALADIN",     --     "圣骑士",
-        "WARRIOR",     --     "战士",
-        "SHAMAN",      --     "萨满祭司",
-        "HUNTER",      --     "猎人",
-        "DRUID",       --     "德鲁伊",
-        "ROGUE",       --     "潜行者",
-        "MAGE",        --     "法师",
-        "WARLOCK",     --     "术士",
-        "PRIEST",      --     "牧师",
+        "DEATHKNIGHT", -- 死亡骑士,
+        "PALADIN",     -- 圣骑士,
+        "WARRIOR",     -- 战士,
+        "EVOKER",      -- 唤魔师
+        "SHAMAN",      -- 萨满祭司,
+        "HUNTER",      -- 猎人,
+        "DEMONHUNTER", -- 恶魔猎手
+        "MONK",        -- 武僧
+        "DRUID",       -- 德鲁伊,
+        "ROGUE",       -- 潜行者,
+        "MAGE",        -- 法师,
+        "WARLOCK",     -- 术士,
+        "PRIEST",      -- 牧师,
     }
 
     local newTbl = {}
@@ -364,16 +362,18 @@ function BG.PaiXuRaidRosterInfo(filter)
     return newTbl
 end
 
+BG.PaiXuRaidRosterInfo = BG.SortRaidRosterInfo
+
 ------------------获取玩家所在的团队框体位置（例如5-2）------------------
 function BG.GetRaidPoint()
     local team = {}
     for _, v in pairs(BG.raidRosterInfo) do
         if v.name then
-            local name = strsplit("-", v.name)
+            local name = v.name
             if not team[v.subgroup] then
                 team[v.subgroup] = {}
             end
-            table.insert(team[v.subgroup], name)
+            tinsert(team[v.subgroup], name)
         end
     end
 
@@ -384,20 +384,6 @@ function BG.GetRaidPoint()
         end
     end
     return point
-end
-
-------------------函数：装备缓存本地化------------------
-function BG.EditItemCache(self, func)
-    local _itemID = GetItemID(self:GetText())
-    if _itemID and not GetItemInfo(_itemID) then
-        self:RegisterEvent("GET_ITEM_INFO_RECEIVED")
-        self:SetScript("OnEvent", function(self, event, itemID, success)
-            if itemID == _itemID and success then
-                func(self)
-                self:UnregisterEvent("GET_ITEM_INFO_RECEIVED")
-            end
-        end)
-    end
 end
 
 ------------------函数：装备下拉列表------------------
@@ -478,90 +464,22 @@ do
             l:SetThickness(1)
         end
     end
-    local function GetNanDu(bossnum)
-        local FB = BG.FB1
-        if BG.IsWLKFB() then
-            local nandutable = {
-                NAXX = {
-                    [3] = "N10",
-                    [175] = "N10",
-                    [4] = "N25",
-                    [176] = "N25",
-                    [5] = "N10",
-                    [193] = "N10",
-                    [6] = "N25",
-                    [194] = "N25",
-                },
-                TOC = {
-                    [3] = "N10",
-                    [175] = "N10",
-                    [4] = "N25",
-                    [176] = "N25",
-                    [5] = "H10",
-                    [193] = "H10",
-                    [6] = "H25",
-                    [194] = "H25",
-                },
-            }
-            nandutable.ULD = nandutable.NAXX
-            nandutable.ICC = nandutable.TOC
-            return nandutable[FB][GetRaidDifficultyID()]
-        elseif BG.IsTBCFB() then
-            local nandutable = {
-                [3] = "N",
-                [175] = "N",
-                [4] = "N",
-                [176] = "N",
-                [5] = "N",
-                [193] = "N",
-                [6] = "N",
-                [194] = "N",
-            }
-            return nandutable[GetRaidDifficultyID()]
-        else
-            local nandutable = {
-                [3] = "N",
-                [175] = "N",
-                [4] = "N",
-                [176] = "N",
-                [5] = "H",
-                [193] = "H",
-                [6] = "H",
-                [194] = "H",
-            }
-            return nandutable[GetRaidDifficultyID()]
-        end
-    end
-    local function GetHopeNanDu(hopenandu)
-        if BG.IsWLKFB() then
-            local hopenandutable = {
-                [1] = "N10",
-                [2] = "N25",
-                [3] = "H10",
-                [4] = "H25",
-            }
-            return hopenandutable[hopenandu]
-        else
-            local hopenandutable = {
-                [1] = "N",
-                [2] = "H",
-            }
-            return hopenandutable[hopenandu]
-        end
-    end
     local function SetButtonText(self)
+        local itemID = self.itemID
+        if type(itemID) == "string" then
+            itemID = GetItemID(itemID)
+        end
         local name, link, quality, level, _, _, _, _, _, Texture, _, typeID, _, bindType = GetItemInfo(self.itemID)
         self.link = link
 
         local ICCH = "" -- 277套装徽记的H标记
         if BG.FB1 == "ICC" then
-            if self.itemID == 52030 or self.itemID == 52029 or self.itemID == 52028 then
+            if itemID == 52030 or itemID == 52029 or itemID == 52028 then
                 ICCH = "H"
             end
         end
         if typeID == 2 or typeID == 4 then
             self:SetText(link .. ICCH .. "|cff" .. "808080" .. "(" .. level .. ")")
-            -- self:SetText(link .. ICCH .. "|cff" .. "9370DB" .. "(" .. level .. ")")
         else
             self:SetText(link .. ICCH)
         end
@@ -573,7 +491,7 @@ do
         -- 已拥有图标
         BG.IsHave(self, true)
 
-        local num = BiaoGe.FilterClassItemDB[RealmId][player].chooseID -- 隐藏
+        local num = BiaoGe.FilterClassItemDB[RealmID][player].chooseID -- 隐藏
         if num ~= 0 then
             local _, class = UnitClass("player")
             BG.UpdateFilter(self)
@@ -582,13 +500,12 @@ do
     function BG.SetListzhuangbei(self)
         local FB = self.FB
         local bossnum = self.bossnum
-        local nandu = GetNanDu(bossnum)
+        local diffName = BG.diffIDTbl[FB][GetRaidDifficultyID()]
         if self.hopenandu then
-            nandu = GetHopeNanDu(self.hopenandu)
+            diffName = BG.difficultyTable[FB][self.hopenandu]
         end
-        if not nandu then nandu = "N" end
-        local loots = BG.Loot[FB][nandu] and BG.Loot[FB][nandu]["boss" .. bossnum]
-
+        if not diffName then diffName = "N" end
+        local loots = BG.Loot[FB][diffName] and BG.Loot[FB][diffName]["boss" .. bossnum]
         if bossnum > Maxb[FB] - 1 then return end
 
         -- 背景框
@@ -673,19 +590,14 @@ do
                 bt.ds:Hide()
 
                 if bt.itemID then
-                    bt:RegisterEvent("GET_ITEM_INFO_RECEIVED")
-                    bt:SetScript("OnEvent", function(self, event, _itemID, success)
-                        if self.itemID == _itemID and success then
-                            SetButtonText(bt)
-                            self:UnregisterEvent("GET_ITEM_INFO_RECEIVED")
-                        end
-                    end)
-
-                    if GetItemInfo(bt.itemID) then
-                        SetButtonText(bt)
-                        -- else
-                        --     pt(bt.itemID) -- 测试新添加的装备ID是否有错误
+                    local itemID = bt.itemID
+                    if type(itemID) == "string" then
+                        itemID = GetItemID(itemID)
                     end
+                    local item = Item:CreateFromItemID(itemID)
+                    item:ContinueOnItemLoad(function()
+                        SetButtonText(bt)
+                    end)
                 end
 
                 bt:SetScript("OnEnter", function(self)
@@ -696,8 +608,7 @@ do
                             GameTooltip:SetOwner(self, "ANCHOR_RIGHT", 0, 0)
                         end
                         GameTooltip:ClearLines()
-                        GameTooltip:SetItemByID(self.itemID)
-                        GameTooltip:Show()
+                        GameTooltip:SetHyperlink(self.link)
                         BG.SetHistoryMoney(self.itemID)
                         BG.DressUpLastButton = self
                         if IsControlKeyDown() then
@@ -848,8 +759,11 @@ function BG.LootedText(bt)
     local f = CreateFrame("Frame", nil, bt, "BackdropTemplate")
     f:SetBackdrop({
         bgFile = "Interface/ChatFrame/ChatFrameBackground",
+        edgeFile = "Interface/ChatFrame/ChatFrameBackground",
+        edgeSize = 1,
     })
     f:SetBackdropColor(0, 0, 0, 0.5)
+    f:SetBackdropBorderColor(0, 0, 0, 0)
     f:SetPoint("RIGHT", 0, 0)
     f:SetFrameLevel(bt:GetFrameLevel() + 10)
     f:Hide()
@@ -873,9 +787,12 @@ function BG.CreateGuanZhuButton(bt, _type)
     local f = CreateFrame("Frame", nil, bt, "BackdropTemplate")
     f:SetBackdrop({
         bgFile = "Interface/ChatFrame/ChatFrameBackground",
-        insets = { left = 0, right = 0, top = 3, bottom = 2 }
+        insets = { left = 0, right = 0, top = 3, bottom = 2 },
+        edgeFile = "Interface/ChatFrame/ChatFrameBackground",
+        edgeSize = 1,
     })
     f:SetBackdropColor(0, 0, 0, 0.5)
+    f:SetBackdropBorderColor(0, 0, 0, 0)
     f:SetSize(20, 20)
     f:SetPoint("RIGHT", bt, "RIGHT", 0, 0)
     f:SetFrameLevel(112)
@@ -897,7 +814,7 @@ function BG.CreateGuanZhuButton(bt, _type)
         GameTooltip:ClearLines()
         if _type == "biaoge" then
             GameTooltip:AddLine(BG.STC_b1(L["关注中，团长拍卖此装备会提醒"]))
-            GameTooltip:AddLine(L["右键取消关注"], 1, 0.82, 0)
+            GameTooltip:AddLine(AddTexture("RIGHT") .. L["取消关注"], 1, 0.82, 0)
         elseif _type == "history" then
             GameTooltip:AddLine(BG.STC_b1(L["关注中"]))
         end
@@ -908,7 +825,7 @@ function BG.CreateGuanZhuButton(bt, _type)
     f:SetScript("OnMouseDown", function(self, enter)
         if _type == "biaoge" then
             if enter == "RightButton" then
-                FrameHide(0)
+                BG.FrameHide(0)
                 BiaoGe[FB]["boss" .. BossNum(FB, b, t)]["guanzhu" .. i] = nil
                 self:Hide()
             end
@@ -951,7 +868,7 @@ function BG.CreateQiankuanButton(bt, _type)
         GameTooltip:ClearLines()
         if _type == "biaoge" then
             GameTooltip:AddLine(L["欠款："] .. BiaoGe[FB]["boss" .. BossNum(FB, b, t)]["qiankuan" .. i], 1, 0, 0)
-            GameTooltip:AddLine(L["右键清除欠款"], 1, 0.82, 0)
+            GameTooltip:AddLine(AddTexture("RIGHT") .. L["清除欠款"], 1, 0.82, 0)
         elseif _type == "history" then
             GameTooltip:AddLine(L["欠款："] .. f.qiankuan, 1, 0, 0)
         end
@@ -962,7 +879,7 @@ function BG.CreateQiankuanButton(bt, _type)
     f:SetScript("OnMouseDown", function(self, enter)
         if _type == "biaoge" then
             if enter == "RightButton" then
-                FrameHide(0)
+                BG.FrameHide(0)
                 BiaoGe[FB]["boss" .. BossNum(FB, b, t)]["qiankuan" .. i] = nil
                 self:Hide()
             end
@@ -995,7 +912,7 @@ function BG.SetListmaijia(maijia, clearFocus, filter, isAuctionLogFrame)
     -- 下拉列表
     local framedown
     local frameright = f
-    local raid = BG.PaiXuRaidRosterInfo(filter)
+    local raid = BG.SortRaidRosterInfo(filter)
     for t = 1, 4 do
         for i = 1, 10 do
             local bt = CreateFrame("EditBox", nil, f, "InputBoxTemplate")
@@ -1014,9 +931,9 @@ function BG.SetListmaijia(maijia, clearFocus, filter, isAuctionLogFrame)
                 bt:SetPoint("TOPLEFT", framedown, "BOTTOMLEFT", 0, -2)
             end
             if not filter and not IsInRaid(1) and t == 1 and i == 1 then -- 单人时
-                bt:SetText(UnitName("player"))
+                bt:SetText(BG.GN())
                 bt:SetCursorPosition(0)
-                bt:SetTextColor(GetClassRGB(UnitName("player")))
+                bt:SetTextColor(GetClassRGB(BG.GN()))
                 bt.hasName = true
                 for k, v in pairs(BG.playerClass) do
                     bt[k] = select(v.select, v.func("player"))
@@ -1276,8 +1193,7 @@ do
             GameTooltip:ClearLines()
             local itemID = GetItemInfoInstant(link)
             if itemID then
-                GameTooltip:SetItemByID(itemID)
-                GameTooltip:Show()
+                GameTooltip:SetHyperlink(BG.SetSpecIDToLink(link))
                 BG.HighlightBiaoGe(link)
             end
         end)
@@ -1356,8 +1272,11 @@ do
                 local f = CreateFrame("Frame", nil, BG.FrameJineList, "BackdropTemplate")
                 f:SetBackdrop({
                     bgFile = "Interface/ChatFrame/ChatFrameBackground",
+                    edgeFile = "Interface/ChatFrame/ChatFrameBackground",
+                    edgeSize = 1,
                 })
                 f:SetBackdropColor(0.5, 0.5, 0.5, 0)
+                f:SetBackdropBorderColor(0, 0, 0, 0)
                 if i == 1 then
                     f:SetPoint("TOP", tradeText, "BOTTOM", 0, -5)
                 else
@@ -1432,9 +1351,12 @@ do
 end
 
 ------------------函数：窗口切换动画------------------
-local function FrameDongHua(frame, h2, w2)
-    local h1 = frame:GetHeight()
-    local w1 = frame:GetWidth()
+function BG.FrameDongHua()
+    local FB = BG.FB1
+    local h1 = BG.MainFrame:GetHeight()
+    local w1 = BG.MainFrame:GetWidth()
+    local h2 = BG.FBHeight[FB]
+    local w2 = BG.FBWidth[FB]
     local Time = 0.5
     local T = 50
     local t1 = Time / T
@@ -1442,14 +1364,14 @@ local function FrameDongHua(frame, h2, w2)
     if w1 > w2 then
         for i = T, 1, -1 do
             C_Timer.After(t1, function()
-                frame:SetWidth(w2 + (w1 - w2) * ((i - 1) / T)) -- 窗口变小
+                BG.MainFrame:SetWidth(w2 + (w1 - w2) * ((i - 1) / T)) -- 窗口变小
             end)
             t1 = t1 + Time / T
         end
     elseif w2 > w1 then
         for i = 1, T, 1 do
             C_Timer.After(t1, function()
-                frame:SetWidth(w1 + (w2 - w1) * (i / T)) -- 窗口变大
+                BG.MainFrame:SetWidth(w1 + (w2 - w1) * (i / T)) -- 窗口变大
             end)
             t1 = t1 + Time / T
         end
@@ -1457,20 +1379,19 @@ local function FrameDongHua(frame, h2, w2)
     if h1 > h2 then
         for i = T, 1, -1 do
             C_Timer.After(t2, function()
-                frame:SetHeight(h2 + (h1 - h2) * ((i - 1) / T)) -- 窗口变小
+                BG.MainFrame:SetHeight(h2 + (h1 - h2) * ((i - 1) / T)) -- 窗口变小
             end)
             t2 = t2 + Time / T
         end
     elseif h2 > h1 then
         for i = 1, T, 1 do
             C_Timer.After(t2, function()
-                frame:SetHeight(h1 + (h2 - h1) * (i / T)) -- 窗口变大
+                BG.MainFrame:SetHeight(h1 + (h2 - h1) * (i / T)) -- 窗口变大
             end)
             t2 = t2 + Time / T
         end
     end
 end
-ns.FrameDongHua = FrameDongHua
 
 ------------------单元格内容交换------------------
 function BG.JiaoHuan(button, FB, b, i, t)
@@ -1506,6 +1427,9 @@ function BG.JiaoHuan(button, FB, b, i, t)
         bt:SetFrameLevel(BG.MainFrame:GetFrameLevel() + 15)
         bt:SetText(L["取消交换"])
         BG.copyButton = bt
+        bt:SetScript("OnHide", function(self)
+            self:Hide()
+        end)
         bt:SetScript("OnClick", function()
             if BG.copy1 then
                 BG.copy1 = nil
@@ -1732,10 +1656,10 @@ do
         if _G["NDui_BackpackSlot1"] then
             local i = 1
             while _G["NDui_BackpackSlot" .. i] do
-                local bag = _G["NDui_BackpackSlot" .. i]
-                local _link = C_Container.GetContainerItemLink(bag.bagId, bag.slotId)
+                local bt = _G["NDui_BackpackSlot" .. i]
+                local _link = C_Container.GetContainerItemLink(bt.bagId, bt.slotId)
                 if _link and GetItemID(_link) == GetItemID(link) then
-                    BG.CreateHighlightFrame(bag, true)
+                    BG.CreateHighlightFrame(bt, true)
                 end
                 i = i + 1
             end
@@ -1744,10 +1668,10 @@ do
             local i = 1
             while _G["ElvUI_ContainerFrameBag" .. b .. "Slot" .. i] do
                 while _G["ElvUI_ContainerFrameBag" .. b .. "Slot" .. i] do
-                    local bag = _G["ElvUI_ContainerFrameBag" .. b .. "Slot" .. i]
-                    local _link = C_Container.GetContainerItemLink(bag.BagID, bag.SlotID)
+                    local bt = _G["ElvUI_ContainerFrameBag" .. b .. "Slot" .. i]
+                    local _link = C_Container.GetContainerItemLink(bt.BagID, bt.SlotID)
                     if _link and GetItemID(_link) == GetItemID(link) then
-                        BG.CreateHighlightFrame(bag, true)
+                        BG.CreateHighlightFrame(bt, true)
                     end
                     i = i + 1
                 end
@@ -1757,32 +1681,43 @@ do
         elseif _G["CombuctorFrame1"] then
             local i = 1
             while _G["CombuctorItem" .. i] do
-                local bag = _G["CombuctorItem" .. i]
-                local _link = C_Container.GetContainerItemLink(bag:GetParent():GetID(), bag:GetID())
+                local bt = _G["CombuctorItem" .. i]
+                local _link = C_Container.GetContainerItemLink(bt:GetParent():GetID(), bt:GetID())
                 if _link and GetItemID(_link) == GetItemID(link) then
-                    BG.CreateHighlightFrame(bag, true)
+                    BG.CreateHighlightFrame(bt, true)
                 end
                 i = i + 1
             end
         elseif _G["BagnonContainerItem1"] then
             local i = 1
             while _G["BagnonContainerItem" .. i] do
-                local bag = _G["BagnonContainerItem" .. i]
-                local _link = C_Container.GetContainerItemLink(bag:GetParent():GetID(), bag:GetID())
+                local bt = _G["BagnonContainerItem" .. i]
+                local _link = C_Container.GetContainerItemLink(bt:GetParent():GetID(), bt:GetID())
                 if _link and GetItemID(_link) == GetItemID(link) then
-                    BG.CreateHighlightFrame(bag, true)
+                    BG.CreateHighlightFrame(bt, true)
                 end
                 i = i + 1
+            end
+        elseif ContainerFrameCombinedBags then
+            local f = ContainerFrameCombinedBags
+            if f.Items then
+                for i = 1, #f.Items do
+                    local bt = f.Items[i]
+                    local _link = C_Container.GetContainerItemLink(bt:GetBagID(), bt:GetID())
+                    if _link and GetItemID(_link) == GetItemID(link) then
+                        BG.CreateHighlightFrame(bt, true)
+                    end
+                end
             end
         else
             local b = 1
             local i = 1
             while _G["ContainerFrame" .. b .. "Item" .. i] do
                 while _G["ContainerFrame" .. b .. "Item" .. i] do
-                    local bag = _G["ContainerFrame" .. b .. "Item" .. i]
-                    local _link = C_Container.GetContainerItemLink(bag:GetParent():GetID(), bag:GetID())
+                    local bt = _G["ContainerFrame" .. b .. "Item" .. i]
+                    local _link = C_Container.GetContainerItemLink(bt:GetParent():GetID(), bt:GetID())
                     if _link and GetItemID(_link) == GetItemID(link) then
-                        BG.CreateHighlightFrame(bag, true)
+                        BG.CreateHighlightFrame(bt, true)
                     end
                     i = i + 1
                 end
@@ -1804,7 +1739,7 @@ do
         if not type then return end
         local FB = BG.FB1
         for b = 1, Maxb[FB] do
-            for i = 1, Maxi[FB] do
+            for i = 1, BG.GetMaxi(FB, b) do
                 local zb, jine
                 if type == "FB" then
                     zb = BG.Frame[FB]["boss" .. b]["zhuangbei" .. i]
@@ -2007,16 +1942,18 @@ function BG.GetAuctionPrice(itemID, mod)
     local realmName = GetRealmName()
     local faction = UnitFactionGroup("player")
     if AUCTIONATOR_PRICE_DATABASE and AUCTIONATOR_PRICE_DATABASE[realmName .. " " .. faction] and
-        AUCTIONATOR_PRICE_DATABASE[realmName .. " " .. faction][itemID] and
-        type(AUCTIONATOR_PRICE_DATABASE[realmName .. " " .. faction][itemID].m) == "number" then
-        local m = AUCTIONATOR_PRICE_DATABASE[realmName .. " " .. faction][itemID].m
-        if mod == "notsilver" then
-            m = m - (m % 10000)
-        elseif mod == "notcopper" then
-            m = m - (m % 100)
+        AUCTIONATOR_PRICE_DATABASE[realmName .. " " .. faction][itemID] then
+        local m = Auctionator.Database:GetFirstPrice({ itemID })
+        if m and type(m) == "number" then
+            if mod == "notsilver" then
+                m = m - (m % 10000)
+            elseif mod == "notcopper" then
+                m = m - (m % 100)
+            end
+            return GetMoneyString(m, true), m
+        else
+            return ""
         end
-
-        return GetMoneyString(m, true), m
     else
         return ""
     end
@@ -2043,12 +1980,13 @@ do
             insets = { left = 3, right = 3, top = 3, bottom = 3 }
         })
         f:SetBackdropColor(0, 0, 0, 0.8)
+        f:SetBackdropBorderColor(0, 0, 0, 0)
         if w and h then
             f:SetSize(w, h)
         end
         f:EnableMouse(true)
 
-        local scroll = CreateFrame("ScrollFrame", nil, f, "UIPanelScrollFrameTemplate") -- 滚动
+        local scroll = CreateFrame("ScrollFrame", nil, f, "UIPanelScrollFrameTemplate")
         scroll:SetWidth(f:GetWidth() - 31)
         scroll:SetHeight(f:GetHeight() - 9)
         scroll:SetPoint("TOPLEFT", f, "TOPLEFT", 5, -5)
@@ -2067,7 +2005,7 @@ do
             child:SetMultiLine(true)
             child:SetFontObject(GameFontNormal)
         else
-            child = CreateFrame("Frame", nil, scroll) -- 子框架
+            child = CreateFrame("Frame", nil, scroll)
             child:SetWidth(scroll:GetWidth())
             child:SetHeight(scroll:GetHeight())
         end
@@ -2105,7 +2043,7 @@ function BG.CancelGuanZhu(link)
     local yes
     for _, FB in pairs(BG.FBtable) do
         for b = 1, Maxb[FB] do
-            for i = 1, Maxi[FB] do
+            for i = 1, BG.GetMaxi(FB, b) do
                 local bt = BG.Frame[FB]["boss" .. b]["zhuangbei" .. i]
                 if bt then
                     if GetItemID(link) == GetItemID(bt:GetText()) then
@@ -2129,7 +2067,7 @@ function BG.AddGuanZhu(link)
     local yes
     for _, FB in pairs(BG.FBtable) do
         for b = 1, Maxb[FB] do
-            for i = 1, Maxi[FB] do
+            for i = 1, BG.GetMaxi(FB, b) do
                 local bt = BG.Frame[FB]["boss" .. b]["zhuangbei" .. i]
                 if bt then
                     if GetItemID(link) == GetItemID(bt:GetText()) then
@@ -2359,4 +2297,162 @@ function BG.GetAllFB(firstFB)
         end
     end
     return FBtable
+end
+
+function BG.CreateMainFrame()
+    local r, g, b = GetClassRGB(nil, "player")
+    local f = CreateFrame("Frame", nil, UIParent, "BackdropTemplate")
+    f:SetBackdrop({
+        edgeFile = "Interface/ChatFrame/ChatFrameBackground",
+        edgeSize = 1,
+    })
+    f:SetBackdropBorderColor(r, g, b, BG.borderAlpha)
+    f:SetPoint("CENTER")
+    f:SetMovable(true)
+    f:SetToplevel(true)
+    f:SetScript("OnMouseUp", function(self)
+        self:StopMovingOrSizing()
+    end)
+    f:SetScript("OnMouseDown", function(self)
+        self:StartMoving()
+    end)
+
+    local l = f:CreateLine()
+    l:SetColorTexture(r, g, b, BG.borderAlpha)
+    l:SetStartPoint("TOPLEFT", 1, -21)
+    l:SetEndPoint("TOPRIGHT", -1, -21)
+    l:SetThickness(1)
+
+    f.titleBg = f:CreateTexture(nil, "BACKGROUND", nil, 1)
+    f.titleBg:SetPoint("TOPLEFT")
+    f.titleBg:SetPoint("BOTTOMRIGHT", f, "TOPRIGHT", 0, -22)
+    f.titleBg:SetTexture("Interface\\Buttons\\WHITE8x8")
+    f.titleBg:SetGradient("VERTICAL", CreateColor(r, g, b, .2), CreateColor(r, g, b, .0))
+
+    f.Bg = f:CreateTexture(nil, "BACKGROUND", nil, 0)
+    f.Bg:SetAllPoints()
+    f.Bg:SetColorTexture(.01, .01, .01, .8)
+
+    f.CloseButton = CreateFrame("Button", nil, f, "UIPanelCloseButton")
+    f.CloseButton:SetPoint("TOPRIGHT", BG.IsRetail and 0 or 5, BG.IsRetail and 0 or 5)
+
+    f.titleText = f:CreateFontString()
+    f.titleText:SetPoint("TOP", 0, -4)
+    f.titleText:SetFont(STANDARD_TEXT_FONT, 15, "OUTLINE")
+    f.titleText:SetTextColor(RGB("00BFFF"))
+    return f
+end
+
+function BG.SetEditBaseClass(edit)
+    edit:SetScript("OnEscapePressed", function(self)
+        self:ClearFocus()
+    end)
+    edit:HookScript("OnEnterPressed", function(self)
+        self:ClearFocus()
+    end)
+    edit:HookScript("OnEditFocusGained", function(self)
+        BG.lastfocus = self
+    end)
+    edit:HookScript("OnMouseDown", function(self, button)
+        if button == "RightButton" then
+            self:SetEnabled(false)
+            self:SetText("")
+        end
+    end)
+    edit:HookScript("OnMouseUp", function(self, enter)
+        if enter == "RightButton" then
+            self:SetEnabled(true)
+        end
+    end)
+end
+
+function BG.PairFBItem(func, bossNum)
+    local FB = BG.FB1
+    for b = bossNum or 1, bossNum or Maxb[FB], 1 do
+        for i = 1, BG.GetMaxi(FB, b) do
+            local item = BG.Frame[FB]["boss" .. b]["zhuangbei" .. i]
+            local buyer = BG.Frame[FB]["boss" .. b]["maijia" .. i]
+            local money = BG.Frame[FB]["boss" .. b]["jine" .. i]
+            if func(item, buyer, money, b, i) then return end
+        end
+    end
+end
+
+function BG.CreateExportFrame(title, text)
+    if BG.exportFrame then
+        BG.exportFrame:SetShown(not BG.exportFrame:IsVisible())
+    else
+        local f = CreateFrame("Frame", nil, BG.MainFrame, "BackdropTemplate")
+        f:SetBackdrop({
+            bgFile = "Interface/ChatFrame/ChatFrameBackground",
+            edgeFile = "Interface/ChatFrame/ChatFrameBackground",
+            edgeSize = 1,
+        })
+        f:SetBackdropColor(0, 0, 0, 0.9)
+        f:SetBackdropBorderColor(1, 1, 1, BG.borderAlpha)
+        f:SetPoint("CENTER")
+        f:SetSize(350, 450)
+        f:EnableMouse(true)
+        f:SetMovable(true)
+        f:SetFrameStrata("HIGH")
+        f:SetScript("OnHide", function(self)
+            self:Hide()
+        end)
+        f:SetScript("OnMouseUp", function(self)
+            self:StopMovingOrSizing()
+        end)
+        f:SetScript("OnMouseDown", function(self)
+            self:StartMoving()
+        end)
+        BG.exportFrame = f
+
+        f.CloseButton = CreateFrame("Button", nil, f, "UIPanelCloseButton")
+        f.CloseButton:SetPoint("TOPRIGHT", f, "TOPRIGHT", 5, 5)
+
+        local l = f:CreateLine()
+        l:SetColorTexture(1, 1, 1, BG.borderAlpha)
+        l:SetStartPoint("TOPLEFT", 1, -21)
+        l:SetEndPoint("TOPRIGHT", -1, -21)
+        l:SetThickness(1)
+
+        f.titleText = f:CreateFontString()
+        f.titleText:SetPoint("TOP", 0, -2)
+        f.titleText:SetFont(STANDARD_TEXT_FONT, 15, "OUTLINE")
+
+        local scroll = CreateFrame("ScrollFrame", nil, f, "UIPanelScrollFrameTemplate") -- 滚动
+        scroll:SetWidth(f:GetWidth() - 30)
+        scroll:SetHeight(f:GetHeight() - 29)
+        scroll:SetPoint("TOPLEFT", f, "TOPLEFT", 5, -25)
+        scroll.ScrollBar.scrollStep = BG.scrollStep
+        f.scroll = scroll
+        BG.CreateSrollBarBackdrop(scroll.ScrollBar)
+
+        local edit = CreateFrame("EditBox", nil, f) -- 子框架
+        edit:SetFontObject(GameFontNormal)
+        edit:SetWidth(scroll:GetWidth())
+        edit:SetHeight(scroll:GetHeight())
+        edit:SetMultiLine(true)
+        scroll:SetScrollChild(edit)
+        f.edit = edit
+        edit:SetScript("OnEscapePressed", function(self)
+            f:Hide()
+        end)
+    end
+    BG.exportFrame.titleText:SetText(title)
+    BG.exportFrame.edit:SetText(text)
+    BG.exportFrame.edit:SetFocus()
+    BG.exportFrame.edit:HighlightText()
+    BG.After(0, function()
+        BG.SetScrollBottom(BG.exportFrame.scroll, BG.exportFrame.edit)
+    end)
+end
+
+function BG.ChatEditSetText(text)
+    ChatEdit_ActivateChat(ChatEdit_ChooseBoxForSend())
+    ChatEdit_ChooseBoxForSend():SetText(text)
+    ChatEdit_ChooseBoxForSend():HighlightText()
+end
+
+function BG.IsBigFB(FB)
+    return FB=="BOT" or FB=="MSV"
 end

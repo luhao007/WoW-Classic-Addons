@@ -210,7 +210,8 @@ end
 
 function Addon:GetEncouterDataByKey(key)
     if key == 'ENCOUNTER_BOSSES' or key == 'ENCOUNTER_INSTANCES' or key == 'ENCOUNTER_DATA' or key ==
-        'DEFAULT_ENCOUNTER_INSTANCE_ID' or key == 'ULDUAR_BOSSES' or key == 'THE_CRUSADES_TRIAL_ID' then
+        'DEFAULT_ENCOUNTER_INSTANCE_ID' or key == 'ULDUAR_BOSSES' or key == 'THE_CRUSADES_TRIAL_ID' or
+         key == 'ICECROWN_CITADEL_ID' then
         return ns[key]
     end
 end

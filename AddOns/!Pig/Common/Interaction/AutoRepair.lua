@@ -1,12 +1,11 @@
 local _, addonTable = ...;
-local _, _, _, tocversion = GetBuildInfo()
 --=======================
 MerchantFrame:HookScript("OnShow",function (self,event)
 	if PIGA["Interaction"]["AutoRepair"] then
 		if CanMerchantRepair() then --NPC是否可以修理
 			local cost = GetRepairAllCost()--修理金额
 			if cost > 0 then
-				if tocversion>19999 and PIGA["Interaction"]["AutoRepair_GUILD"] and IsInGuild() then
+				if PIG_MaxTocversion(20000,true) and PIGA["Interaction"]["AutoRepair_GUILD"] and IsInGuild() then
 					local PIGguildMoney = GetGuildBankWithdrawMoney()--玩家的公会提取额度
 					if PIGguildMoney > GetGuildBankMoney() then --公会金额小于提取金额
 						PIGguildMoney = GetGuildBankMoney()

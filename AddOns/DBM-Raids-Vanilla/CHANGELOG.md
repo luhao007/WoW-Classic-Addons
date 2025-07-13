@@ -1,8 +1,9 @@
 # DBM - Vanilla and Season of Discovery
 
-## [r786](https://github.com/DeadlyBossMods/DBM-Vanilla/tree/r786) (2025-03-22)
-[Full Changelog](https://github.com/DeadlyBossMods/DBM-Vanilla/compare/r785...r786) [Previous Releases](https://github.com/DeadlyBossMods/DBM-Vanilla/releases)
+## [r812](https://github.com/DeadlyBossMods/DBM-Vanilla/tree/r812) (2025-07-01)
+[Full Changelog](https://github.com/DeadlyBossMods/DBM-Vanilla/compare/r811...r812) [Previous Releases](https://github.com/DeadlyBossMods/DBM-Vanilla/releases)
 
-- CI: Don't run DBM-Offline twice on pushes  
-- Naxx/SoD: More aggressive scanning for Overcharged and more aggressive warnings  
-- bump wrath toc  
+- Add mists support  
+- remove old cata toc  
+- Add 11.2 TOC  
+- ZG/Thekal: Don't show phase 2 boss in health info frame  

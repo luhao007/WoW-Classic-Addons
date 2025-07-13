@@ -110,7 +110,11 @@ L:SetOptionLocalization({
 ---------------------------
 --  Stix Bunkjunker --
 ---------------------------
---L= DBM:GetModLocalization(2642)
+L= DBM:GetModLocalization(2642)
+
+L:SetMiscLocalization({
+	BombsLeft		= "남은 폭탄"
+})
 
 ---------------------------
 --  Sprocketmonger Lockenstock --
@@ -144,11 +148,42 @@ L:SetMiscLocalization({
 ---------------------------
 --L= DBM:GetModLocalization(2646)
 
--------------
---  Trash  --
--------------
-L = DBM:GetModLocalization("UndermineTrash")
+---------------------------
+--  Plexus Sentinel --
+---------------------------
+--L= DBM:GetModLocalization(2684)
 
-L:SetGeneralLocalization({
-	name =	"언더마인 일반몹"
-})
+---------------------------
+--  Loom'ithar --
+---------------------------
+--L= DBM:GetModLocalization(2686)
+
+---------------------------
+--  Soulbinder Naazindhri --
+---------------------------
+--L= DBM:GetModLocalization(2685)
+
+---------------------------
+--  Forgeweaver Araz --
+---------------------------
+--L= DBM:GetModLocalization(2687)
+
+---------------------------
+--  The Soul Hunters --
+---------------------------
+--L= DBM:GetModLocalization(2688)
+
+---------------------------
+--  Fractillus --
+---------------------------
+--L= DBM:GetModLocalization(2747)
+
+---------------------------
+--  Nexus-King Salhadaar --
+---------------------------
+--L= DBM:GetModLocalization(2690)
+
+---------------------------
+--  Dimensius, the All-Devouring --
+---------------------------
+--L= DBM:GetModLocalization(2691)

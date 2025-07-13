@@ -156,6 +156,9 @@ local function CacheAccountWideMiscQuests(accountWideData)
 		-- Account Unlocks
 		74576,	-- Restored Hakkari Bijou [Zul'Gurub]
 
+		-- No additional HQT on completion, and once per account
+		88947,	-- Undermined Delves
+
 	}) do
 		-- If this Character has the Quest completed and it is not marked as completed for Account or not for specific Character
 		if not oneTimeQuests[questID] and IsQuestFlaggedCompleted(questID) then
@@ -338,8 +341,10 @@ app.AddEventHandler("OnRefreshCollectionsDone", function()
 end)
 app.AddEventHandler("OnSavedVariablesAvailable", function(currentCharacter, accountWideData)
 	ATTAccountWideData = accountWideData
-	FixNonOneTimeQuests(accountWideData)
 	OneTimeFixes(accountWideData)
+end)
+app.AddEventHandler("OnAfterSavedVariablesAvailable", function()
+	FixNonOneTimeQuests(ATTAccountWideData)
 end)
 app.RefreshCollections = function()
 	if IsRefreshing then return end

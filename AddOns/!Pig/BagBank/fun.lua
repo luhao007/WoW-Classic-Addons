@@ -1,6 +1,5 @@
 local addonName, addonTable = ...;
 local L=addonTable.locale
-local _, _, _, tocversion = GetBuildInfo()
 local Create=addonTable.Create
 local PIGEnter=Create.PIGEnter
 local PIGFontString=Create.PIGFontString
@@ -8,14 +7,21 @@ local BagBankfun=addonTable.BagBankfun
 local GetContainerNumSlots =GetContainerNumSlots or C_Container and C_Container.GetContainerNumSlots
 local GetContainerItemLink=GetContainerItemLink or C_Container and C_Container.GetContainerItemLink
 local GetContainerItemID=GetContainerItemID or C_Container and C_Container.GetContainerItemID
-local bagData=addonTable.Data.bagData
+local GetItemInfoInstant=GetItemInfoInstant or C_Item and C_Item.GetItemInfoInstant
+local GetItemInfo=GetItemInfo or C_Item and C_Item.GetItemInfo
+----
+local find = _G.string.find
+local sub = _G.string.sub
 local gsub = _G.string.gsub
 local match = _G.string.match
+local Data = addonTable.Data
+local bagData=Data.bagData
+local bagIDMax= Data.bagData["bagIDMax"]
 --刷新背包LV
 local function Update_itemLV_(itemButton, id, slot)
 	if itemButton.ZLV then
 		if itemButton.ZLV then itemButton.ZLV:SetText("") end
-		if tocversion<100000 then
+		if PIG_MaxTocversion() then
 			local itemLink = GetContainerItemLink(id, slot)
 			if itemLink then
 				local _,_,itemQuality,_,_,_,_,_,_,_,_,classID = GetItemInfo(itemLink);
@@ -32,7 +38,7 @@ local function Update_itemLV_(itemButton, id, slot)
 			local bagID = itemButton:GetBagID();
 			local itemID, itemLink, icon, stackCount, quality=PIGGetContainerItemInfo(bagID, itemButton:GetID())
 			if itemLink then
-				local itemID, itemType, itemSubType, itemEquipLoc, icon, classID, subClassID = C_Item.GetItemInfoInstant(itemLink)
+				local itemID, itemType, itemSubType, itemEquipLoc, icon, classID, subClassID = GetItemInfoInstant(itemLink)
 				local quality=quality or 1
 				if quality>1 and classID==2 or classID==4 then
 					local actualItemLevel, previewLevel, sparseItemLevel = C_Item.GetDetailedItemLevelInfo(itemLink)
@@ -80,7 +86,7 @@ end
 function BagBankfun.Bag_Item_lv(frame, size, id)
 	if not PIGA["BagBank"]["wupinLV"] then return end
 	if id==-2 then return end
-	if tocversion<100000 then
+	if PIG_MaxTocversion() then
 		if frame and size then
 			local fujiFF=frame:GetName()
 			for slot =1, size do
@@ -117,7 +123,7 @@ end
 --刷新背包染色
 function BagBankfun.Bag_Item_Ranse(frame, size, id)
 	if not PIGA["BagBank"]["wupinRanse"] then return end
-	if tocversion<100000 then
+	if PIG_MaxTocversion() then
 		if id==-2 then return end
 		if frame and size then
 			local numFreeSlots, bagType = C_Container.GetContainerNumFreeSlots(id)
@@ -232,7 +238,7 @@ function BagBankfun.Update_BankFrame_Height(BagdangeW)
 	end
 	local hangShuALL=ceil(banbagzongshu/BankFrame.meihang)
 	local hangallgao=hangShuALL*BagdangeW
-	if tocversion<100000 then
+	if PIG_MaxTocversion() then
 		BankFrame:SetWidth(BagdangeW*BankFrame.meihang+36)
 		BankFrame:SetHeight(hangallgao+106);
 	else
@@ -286,7 +292,7 @@ function BagBankfun.addfenleibagbut(fujiui,uiname)
 			BankSlotsFrame.Bag5,
 			BankSlotsFrame.Bag6,
 		}
-		if tocversion>19999 then
+		if PIG_MaxTocversion(20000,true) then
 			table.insert(bankicon, BankSlotsFrame.Bag7);
 		end
 		baginfo.icon=bankicon
@@ -294,7 +300,7 @@ function BagBankfun.addfenleibagbut(fujiui,uiname)
 	function fujiui:Show_Hide_but(showV)
 		local numSlots,full = GetNumBankSlots();
 		for vb=1,#baginfo.id do
-			local fameXX = _G[uiname..vb]
+			local fameXX = fujiui.ButLsit[vb]
 			fameXX:SetShown(showV)
 			fameXX.xitongbagF=baginfo.icon[vb]
 			if showV then
@@ -305,26 +311,21 @@ function BagBankfun.addfenleibagbut(fujiui,uiname)
 					else
 						fameXX.Portrait:SetVertexColor(1.0,0.1,0.1);
 					end
-				else
-					local numFreeSlots= C_Container.GetContainerNumSlots(baginfo.id[vb])
-					if ( numFreeSlots>0 ) then
-						fameXX.Portrait:SetVertexColor(1.0,1.0,1.0);
-					else
-						fameXX.Portrait:SetVertexColor(1.0,0.1,0.1);
-					end
 				end
 			end
 			fameXX:UpdateFilterIcon();
 		end
 	end
 	local www,hhh,jiangeW = 26,26,3
+	fujiui.ButLsit={}
 	for vb=1,#baginfo.id do
 		--local fameXX = _G["ContainerFrame"..vb.."PortraitButton"]
-		local fameXX = CreateFrame("Frame",uiname..vb,fujiui);
+		local fameXX = CreateFrame("Frame",nil,fujiui);
+		fujiui.ButLsit[vb]=fameXX
 		local ContainerFrameMixin=ContainerFrameMixin or {}
 		local fameXX = Mixin(fameXX, ContainerFrameMixin)
 		fameXX:SetSize(www,hhh);
-		if fujiui==BAGheji_UI then
+		if fujiui==_G[BagBankfun.BagUIName] then
 			fameXX:SetPoint("TOPLEFT", fujiui.fenlei, "TOPRIGHT", 8, -((www+jiangeW)*(vb-1)));
 		else
 			fameXX:SetPoint("LEFT", fujiui.fenlei, "RIGHT", ((www+jiangeW)*(vb-1))+2, 0);
@@ -357,7 +358,7 @@ function BagBankfun.addfenleibagbut(fujiui,uiname)
 		local OLD_OnValueChanged=fameXX.PortraitButton:GetScript("OnEnter") or function() end
 		fameXX.PortraitButton:SetScript("OnEnter", function (self)
 			local BagID = self:GetParent():GetBagID()
-			if tocversion<100000 then
+			if PIG_MaxTocversion() then
 				local frameID = IsBagOpen(BagID)
 				if frameID then
 					OLD_OnValueChanged(self)
@@ -378,7 +379,7 @@ function BagBankfun.addfenleibagbut(fujiui,uiname)
 		end);
 		fameXX.PortraitButton:HookScript("OnLeave", function (self)
 			local BagID = self:GetParent():GetBagID()
-			if tocversion<100000 then
+			if PIG_MaxTocversion() then
 				local frameID = IsBagOpen(BagID)
 				if frameID then
 					for slot = 1, MAX_CONTAINER_ITEMS do
@@ -408,7 +409,7 @@ function BagBankfun.addfenleibagbut(fujiui,uiname)
 			end
 		end)
 		fameXX.UpdateFilterIcon=fameXX.UpdateFilterIcon or function() end
-		if fujiui==BAGheji_UI then	
+		if fujiui==_G[BagBankfun.BagUIName] then	
 			fameXX.PortraitButton:HookScript("OnDragStart", function (self, button)
 				BagSlotButton_OnDrag(self:GetParent().xitongbagF, button);
 			end);
@@ -480,19 +481,16 @@ function BagBankfun.addSetbut(fujiui,point,Rneirong,tabbut)
 	end);
 	setbut:SetScript("OnClick", function (self)
 		PlaySound(SOUNDKIT.IG_CHAT_EMOTE_BUTTON);
-		if Pig_OptionsUI:IsShown() then
-			Pig_OptionsUI:Hide()
+		if PIG_OptionsUI:IsShown() then
+			PIG_OptionsUI:Hide()
 		else
-			Pig_OptionsUI:Show()
+			PIG_OptionsUI:Show()
 			Create.Show_TabBut(Rneirong,tabbut)
 		end
 	end);
 	return shezhi
 end
 --装备管理显示
-local bagIDMax= addonTable.Data.bagData["bagIDMax"]
-local find = _G.string.find
-local sub = _G.string.sub
 local eizhiguanKEY = {["keyeqlist"]=EQUIPSET_EQUIP}
 local kaishi,jiehshu=EQUIPMENT_SETS:find(":")
 if kaishi then
@@ -509,20 +507,23 @@ else
 		end
 	end
 end
-local Plisttip = CreateFrame("GameTooltip", "Plisttip_UI", UIParent, "GameTooltipTemplate")
-Plisttip:SetOwner(UIParent, "ANCHOR_NONE")
 local function add_Eqicon(fujiui)
 	if fujiui.Eqicon then return end
 	local BagdangeW=fujiui:GetWidth()*0.5
 	fujiui.Eqicon = fujiui:CreateTexture();
 	fujiui.Eqicon:SetSize(BagdangeW,BagdangeW);
 	fujiui.Eqicon:SetPoint("BOTTOMLEFT", 0, -1);
+	fujiui.Eqicon:SetTexture("interface/timer/bigtimernumbers.blp");
 	fujiui.Eqicon1 = fujiui:CreateTexture();
+	fujiui.Eqicon1:SetTexture("interface/timer/bigtimernumbers.blp");
 	fujiui.Eqicon1:SetSize(BagdangeW,BagdangeW);
 	fujiui.Eqicon1:SetPoint("LEFT",fujiui.Eqicon,"RIGHT", 0, 0);
-	-- fujiui.Eqname = fujiui:CreateFontString();
-	-- fujiui.Eqname:SetPoint("LEFT", fujiui.Eqicon, "RIGHT", 0, 0);
-	-- fujiui.Eqname:SetFont(ChatFontNormal:GetFont(), 14, "OUTLINE")
+	fujiui.Eqname = fujiui:CreateFontString();
+	fujiui.Eqname:SetPoint("LEFT", fujiui.Eqicon, "RIGHT", 0, 0);
+	fujiui.Eqname:SetFont(ChatFontNormal:GetFont(), 14, "OUTLINE")
+	fujiui.Eqicon:Hide()
+	fujiui.Eqicon1:Hide()
+	fujiui.Eqname:Hide()
 	fujiui:HookScript("OnHide", function(self)
 		self.Eqicon:Hide()
 		self.Eqicon1:Hide()
@@ -562,11 +563,33 @@ local function IseizhiguanKEYFun(framef,text)
 				local name, iconFileID = C_EquipmentSet.GetEquipmentSetInfo(equipmentSetID)
 				framef.Eqicon1:Show()
 				framef.Eqicon1:SetTexture(iconFileID)
-			-- 	framef.Eqname:Show()
-			-- 	framef.Eqname:SetText(#namelist)
+				-- framef.Eqname:Show()
+				-- framef.Eqname:SetText(#namelist)
 			end
 		end
 		return true
+	end
+end
+local gsub = _G.string.gsub
+local anniushu=	MAX_EQUIPMENT_SETS_PER_PLAYER
+local QuickButUI=_G[Data.QuickButUIname]
+local function GetEqiconName(framef,ItemLink)
+	for i=1,anniushu do
+		if PIGA_Per["QuickBut"]["EquipList"][i] then
+			local wupinshujuinfo=PIGA_Per["QuickBut"]["EquipList"][i][2]
+			for k,v in pairs(wupinshujuinfo) do
+				--print(i,k,v[2])
+				if ItemLink==v[2] then
+					-- print("1",ItemLink:gsub("|","||"))
+					-- print("2",v[2][ix][1],v[2][ix][2],v[2][ix][2]:gsub("|","||"))
+					framef.Eqicon:Show()
+					framef.Eqicon:SetTexCoord(unpack(QuickButUI.EquipmentPIG.NumTexCoord[i]))
+					-- framef.Eqicon1:Show()
+					-- framef.Eqicon1:SetTexCoord(unpack(QuickButUI.EquipmentPIG.NumTexCoord[i]))
+					return true
+				end
+			end
+		end
 	end
 end
 local function update_iconname(framef)
@@ -576,13 +599,18 @@ local function update_iconname(framef)
 		local BagID,slotID = GetBagIDFun(framef),framef:GetID()
 		local itemID=GetContainerItemID(BagID,slotID)
 		if itemID then
-			local itemID, itemType, itemSubType, itemEquipLoc, icon, classID, subclassID = GetItemInfoInstant(itemID) 
+			local itemID, itemType, itemSubType, itemEquipLoc, icon, classID, subclassID = GetItemInfoInstant(itemID)
 			if classID==2 or classID==4 then
-				if tocversion<50000 then
-					Plisttip:ClearLines();
-					Plisttip:SetBagItem(BagID,slotID);
-				    local hangname = Plisttip:GetName()
-				    local txtNum = Plisttip:NumLines()
+				if PIG_MaxTocversion(30000) then
+					local ItemLink=GetContainerItemLink(BagID,slotID)
+					if ItemLink then
+						if GetEqiconName(framef,ItemLink) then return end
+					end
+				elseif PIG_MaxTocversion() then
+					PIG_TooltipUI:ClearLines();
+					PIG_TooltipUI:SetBagItem(BagID,slotID);
+				    local hangname = PIG_TooltipUI:GetName()
+				    local txtNum = PIG_TooltipUI:NumLines()
 				    if txtNum then
 				    	for g = 2, txtNum do
 					    	local text = _G[hangname.."TextLeft" .. g]:GetText() or ""
@@ -605,7 +633,7 @@ local function update_iconname(framef)
 end
 local function fun_bagitems(setfun)
 	if GetCVar("combinedBags")=="1" and ContainerFrameCombinedBags then
-		local butnum =#ContainerFrameCombinedBags.Items
+		local butnum =ContainerFrameCombinedBags.size or 0
 		for ff=1,butnum do
 			local framef = ContainerFrameCombinedBags.Items[ff]
 			setfun(framef)
@@ -634,38 +662,40 @@ local function fun_bagitems(setfun)
 end
 function BagBankfun.addEquipmentbut(fujiui,point)
 	local eqbut = CreateFrame("Button",nil,fujiui, "TruncatedButtonTemplate");
-	-- eqbut:SetHighlightTexture("Interface\\Buttons\\ButtonHilight-Square");
-	-- eqbut:SetSize(20,20);
-	-- eqbut:SetPoint(unpack(point));
-	-- eqbut.Tex = eqbut:CreateTexture();
-	-- eqbut.Tex:SetTexture(255350);
-	-- eqbut.Tex:SetPoint("TOPLEFT",eqbut,"TOPLEFT",-1.4,-2);
-	-- eqbut.Tex:SetPoint("BOTTOMRIGHT",eqbut,"BOTTOMRIGHT",1.4,0);
-	-- eqbut.Tex1 = eqbut:CreateTexture();
-	-- eqbut.Tex1:SetTexture(293755);
-	-- eqbut.Tex1:SetPoint("TOPLEFT",eqbut,"TOPLEFT",-1.4,-2);
-	-- eqbut.Tex1:SetPoint("BOTTOMRIGHT",eqbut,"BOTTOMRIGHT",1.4,0);
-	-- eqbut.Tex1:Hide();
-	-- eqbut:SetScript("OnMouseDown", function (self)
-	-- 	self.Tex:Hide();
-	-- 	self.Tex1:Show();
-	-- end);
-	-- eqbut:SetScript("OnMouseUp", function (self)
-	-- 	self.Tex:Show();
-	-- 	self.Tex1:Hide();
-	-- end);
-	-- fujiui:RegisterEvent("PLAYER_ENTERING_WORLD")
-	-- fujiui:HookScript("OnEvent", function(self,event)
-	-- 	if event=="BAG_UPDATE" then
-	-- 		if self:IsShown() then
-	-- 			fun_bagitems(HideEqiconEqname)
-	-- 		end
-	-- 	end
-	-- end);
-	-- eqbut:SetScript("OnClick",  function (self)
-	-- 	PlaySoundFile(567463, "Master")
-	-- 	fun_bagitems(add_Eqicon)
-	-- 	fun_bagitems(update_iconname)
-	-- end)
+	eqbut:SetHighlightTexture("Interface\\Buttons\\ButtonHilight-Square");
+	eqbut:SetSize(20,20);
+	eqbut:SetPoint(unpack(point));
+	eqbut.Tex = eqbut:CreateTexture();
+	eqbut.Tex:SetTexture(255350);
+	eqbut.Tex:SetPoint("TOPLEFT",eqbut,"TOPLEFT",-1.4,-2);
+	eqbut.Tex:SetPoint("BOTTOMRIGHT",eqbut,"BOTTOMRIGHT",1.4,0);
+	eqbut.Tex1 = eqbut:CreateTexture();
+	eqbut.Tex1:SetTexture(293755);
+	eqbut.Tex1:SetPoint("TOPLEFT",eqbut,"TOPLEFT",-1.4,-2);
+	eqbut.Tex1:SetPoint("BOTTOMRIGHT",eqbut,"BOTTOMRIGHT",1.4,0);
+	eqbut.Tex1:Hide();
+	eqbut:SetScript("OnMouseDown", function (self)
+		self.Tex:Hide();
+		self.Tex1:Show();
+	end);
+	eqbut:SetScript("OnMouseUp", function (self)
+		self.Tex:Show();
+		self.Tex1:Hide();
+	end);
+	fujiui:RegisterEvent("PLAYER_ENTERING_WORLD")
+	fujiui:HookScript("OnEvent", function(self,event)
+		if not eqbut.addok then return end
+		if event=="BAG_UPDATE" then
+			if self:IsShown() then
+				fun_bagitems(HideEqiconEqname)
+			end
+		end
+	end);
+	--
+	eqbut:SetScript("OnClick",  function (self)
+		PlaySoundFile(567463, "Master")
+		if not eqbut.addok then eqbut.addok=true fun_bagitems(add_Eqicon) end
+		fun_bagitems(update_iconname)
+	end)
 	return eqbut
 end

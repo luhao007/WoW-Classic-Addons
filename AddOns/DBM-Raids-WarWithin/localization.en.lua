@@ -18,7 +18,7 @@ local L
 --})
 
 ---------------------------
---  The Bloodbound Horror (2917) --
+--  The Bloodbound Horror --
 ---------------------------
 --L= DBM:GetModLocalization(2611)
 
@@ -109,7 +109,11 @@ L:SetOptionLocalization({
 ---------------------------
 --  Stix Bunkjunker --
 ---------------------------
---L= DBM:GetModLocalization(2642)
+L= DBM:GetModLocalization(2642)
+
+L:SetMiscLocalization({
+	BombsLeft		= "Bombs left"
+})
 
 ---------------------------
 --  Sprocketmonger Lockenstock --
@@ -117,7 +121,7 @@ L:SetOptionLocalization({
 L= DBM:GetModLocalization(2653)
 
 L:SetWarningLocalization{
-	specWarnPolGen	= "Changing to %s - 3 sec",
+	specWarnPolGen	= "Changing to %s - 3 sec"
 }
 
 L:SetOptionLocalization({
@@ -143,11 +147,42 @@ L:SetMiscLocalization({
 ---------------------------
 --L= DBM:GetModLocalization(2646)
 
--------------
---  Trash  --
--------------
-L = DBM:GetModLocalization("UndermineTrash")
+---------------------------
+--  Plexus Sentinel --
+---------------------------
+--L= DBM:GetModLocalization(2684)
 
-L:SetGeneralLocalization({
-	name =	"Undermine Trash"
-})
+---------------------------
+--  Loom'ithar --
+---------------------------
+--L= DBM:GetModLocalization(2686)
+
+---------------------------
+--  Soulbinder Naazindhri --
+---------------------------
+--L= DBM:GetModLocalization(2685)
+
+---------------------------
+--  Forgeweaver Araz --
+---------------------------
+--L= DBM:GetModLocalization(2687)
+
+---------------------------
+--  The Soul Hunters --
+---------------------------
+--L= DBM:GetModLocalization(2688)
+
+---------------------------
+--  Fractillus --
+---------------------------
+--L= DBM:GetModLocalization(2747)
+
+---------------------------
+--  Nexus-King Salhadaar --
+---------------------------
+--L= DBM:GetModLocalization(2690)
+
+---------------------------
+--  Dimensius, the All-Devouring --
+---------------------------
+--L= DBM:GetModLocalization(2691)

@@ -1,7 +1,7 @@
-<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8"?>
 <my:AddonConfig xmlns:my="https://www.github.com/luhao007"
-			    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-			    xsi:schemaLocation="https://www.github.com/luhao007 addon.xsd">
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="https://www.github.com/luhao007 addon.xsd">
 	<Addon name="!!Libs">
 		<Title>|cFF7FFF7FAce核心库|r |cFFFF0000必须加载|r</Title>
 		<Category>基础库</Category>
@@ -19,6 +19,18 @@
 			</SubAddon>
 			<SubAddon name="!Pig_GDKP">
 				<Title>金团助手</Title>
+			</SubAddon>
+			<SubAddon name="!Pig_BoboAudio">
+				<Title>语音包</Title>
+				<TitleExtra>饽饽</TitleExtra>
+			</SubAddon>
+			<SubAddon name="!Pig_RurutiaAudio">
+				<Title>语音包</Title>
+				<TitleExtra>露露提娅</TitleExtra>
+			</SubAddon>
+			<SubAddon name="!Pig_SakuraAudio">
+				<Title>语音包</Title>
+				<TitleExtra>樱雪</TitleExtra>
 			</SubAddon>
 		</SubAddons>
 	</Addon>
@@ -1196,6 +1208,11 @@
 			</SubAddon>
 		</SubAddons>
 	</Addon>
+	<Addon name="InstanceAchievementTracker">
+		<Title>副本成就助手</Title>
+		<Notes>查询副本成就完成情况并追踪部分成</Notes>
+		<Category>收藏</Category>
+	</Addon>
 	<Addon name="Krowi_AchievementFilter">
 		<Title>Krowi成就过滤器</Title>
 		<Category>收藏</Category>
@@ -1700,6 +1717,10 @@
 				<Title>位置</Title>
 				<Notes>泰坦面板的位置模块</Notes>
 			</SubAddon>
+			<SubAddon name="TitanLDB">
+				<Title>LDB示例</Title>
+				<Notes>泰坦面板的LDB示例模块</Notes>
+			</SubAddon>
 			<SubAddon name="TitanLootType">
 				<Title>分配方式</Title>
 				<Notes>泰坦面板的分配方式模块</Notes>
@@ -1711,6 +1732,10 @@
 			<SubAddon name="TitanPerformance">
 				<Title>性能</Title>
 				<Notes>泰坦面板的性能模块</Notes>
+			</SubAddon>
+			<SubAddon name="TitanPlugin">
+				<Title>示例</Title>
+				<Notes>泰坦面板的示例模块</Notes>
 			</SubAddon>
 			<SubAddon name="TitanRaidLockout">
 				<Title>团本锁定</Title>

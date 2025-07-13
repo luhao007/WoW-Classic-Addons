@@ -1,5 +1,4 @@
 local addonName, addonTable = ...;
-local _, _, _, tocversion = GetBuildInfo()
 local Create, Data, Fun, L= unpack(PIG)
 local match = _G.string.match
 ------------------------
@@ -106,7 +105,7 @@ local function Getfenleidata(tab1,tab2)
 		end
 		tab1_1.GroupDropDown =PIGDownMenu(tab1_1,{"LEFT",_G["Houche_guolv"..#tabheji].Text,"RIGHT",10,0},{160,nil})
 		tab1_1.GroupDropDown:Hide()
-		function tab1_1.GroupDropDown:PIGDownMenu_Update_But(self)
+		function tab1_1.GroupDropDown:PIGDownMenu_Update_But()
 			local info = {}
 			info.func = self.PIGDownMenu_SetValue
 			local ActivityGroups = C_LFGList.GetAvailableActivityGroups(tab1_1.selectedCategory)
@@ -128,7 +127,7 @@ local function Getfenleidata(tab1,tab2)
 		tab1_1.ActivityDropDown =PIGDownMenu(tab1_1,{"LEFT",_G["Houche_guolv"..#tabheji].Text,"RIGHT",180,0},{150,nil})
 		tab1_1.ActivityDropDown:PIGDownMenu_SetText("全部")
 		tab1_1.ActivityDropDown:Hide()
-		function tab1_1.ActivityDropDown:PIGDownMenu_Update_But(self)
+		function tab1_1.ActivityDropDown:PIGDownMenu_Update_But()
 			local info = {}
 			info.func = self.PIGDownMenu_SetValue
 			local Activities = C_LFGList.GetAvailableActivities(tab1_1.selectedCategory,tab1_1.selectedGroup)
@@ -156,7 +155,7 @@ local function Getfenleidata(tab1,tab2)
 			for i=1,#newActivities,1 do
 			    info.text, info.arg1, info.arg2 = newActivities[i][1], newActivities[i][2], "activity";
 			    info.checked = newActivities[i][2] == tab1_1.selectedActivity
-				tab1_1.ActivityDropDown:PIGDownMenu_AddButton(info)
+				self:PIGDownMenu_AddButton(info)
 			end 
 		end
 		function tab1_1.ActivityDropDown:PIGDownMenu_SetValue(value,arg1,arg2)
@@ -228,7 +227,7 @@ function TardisInfo.Houche(Activate)
 			self.err:SetText("请先加入"..pindao.."频道");
 			return
 		end
-		if tocversion<80000 then
+		if PIG_MaxTocversion() then
 			SendChatMessage(GetInfoMsg..TabF.selectedCategory..TabF.selectedGroup..TabF.selectedActivity,"CHANNEL",nil,self.PIGID)
 		else
 			PIGSendAddonMessage(Biaotou,GetInfoMsg..TabF.selectedCategory..TabF.selectedGroup..TabF.selectedActivity,"CHANNEL",self.PIGID)
@@ -266,13 +265,15 @@ function TardisInfo.Houche(Activate)
 	local hang_Width = TabF.F:GetWidth();
 	TabF.F.Scroll = CreateFrame("ScrollFrame",nil,TabF.F, "FauxScrollFrameTemplate");  
 	TabF.F.Scroll:SetPoint("TOPLEFT",TabF.F,"TOPLEFT",2,-24);
-	TabF.F.Scroll:SetPoint("BOTTOMRIGHT",TabF.F,"BOTTOMRIGHT",-20,2);
+	TabF.F.Scroll:SetPoint("BOTTOMRIGHT",TabF.F,"BOTTOMRIGHT",-19,2);
 	TabF.F.Scroll.ScrollBar:SetScale(0.8);
 	TabF.F.Scroll:SetScript("OnVerticalScroll", function(self, offset)
 	    FauxScrollFrame_OnVerticalScroll(self, offset, hang_Height, TabF.gengxinhang)
 	end)
+	TabF.F.ButList={}
 	for i=1, hang_NUM, 1 do
-		local hangL = CreateFrame("Button", "HoucheList_"..i, TabF.F,"BackdropTemplate");
+		local hangL = CreateFrame("Button", nil, TabF.F,"BackdropTemplate");
+		TabF.F.ButList[i]=hangL
 		hangL:SetBackdrop({bgFile = "interface/chatframe/chatframebackground.blp"});
 		hangL:SetSize(hang_Width-2,hang_Height);
 		hangL:SetBackdropColor(unpack(xuanzhongBG[1]));
@@ -280,7 +281,7 @@ function TardisInfo.Houche(Activate)
 		if i==1 then
 			hangL:SetPoint("TOPLEFT", TabF.F.Scroll, "TOPLEFT", 0, -1);
 		else
-			hangL:SetPoint("TOPLEFT", _G["HoucheList_"..(i-1)], "BOTTOMLEFT", 0, -1);
+			hangL:SetPoint("TOPLEFT", TabF.F.ButList[i-1], "BOTTOMLEFT", 0, -1);
 		end
 		hangL:HookScript("OnEnter", function (self)
 			self:SetBackdropColor(unpack(xuanzhongBG[2]));
@@ -461,7 +462,7 @@ function TardisInfo.Houche(Activate)
 		TabF:yanchiEnable()
 		TabF.GetBut.jindutishi:SetText("上次获取:刚刚");
 		for i = 1, hang_NUM do
-			_G["HoucheList_"..i]:Hide()	
+			TabF.F.ButList[i]:Hide()	
 		end
 		local ItemsNum = #TabF.JieshouInfoList;
 		if ItemsNum>0 then
@@ -471,7 +472,7 @@ function TardisInfo.Houche(Activate)
 			for i = 1, hang_NUM do
 				local dangqian = i+offset;
 				if TabF.JieshouInfoList[dangqian] then
-					local hangL = _G["HoucheList_"..i]	
+					local hangL = TabF.F.ButList[i]
 					hangL:Show()
 					local allname = TabF.JieshouInfoList[dangqian][2]
 					hangL.allname=allname
@@ -507,7 +508,7 @@ function TardisInfo.Houche(Activate)
 						hangL.caozuo:SetText(INVITE);
 						hangL.caozuo:SetBackdropColor(0.545, 0.137, 0.137,1)
 					end
-					if allname == Pig_OptionsUI.Name or allname == Pig_OptionsUI.AllName then
+					if allname == PIG_OptionsUI.Name or allname == PIG_OptionsUI.AllName then
 						hangL.caozuo:Disable()
 						hangL.caozuo:SetText(UNIT_YOU_DEST);
 						hangL.caozuo:SetBackdropColor(0.3, 0.3, 0.3,0.8)
@@ -532,7 +533,7 @@ function TardisInfo.Houche(Activate)
 	FCTabF.ADD.GroupDropDown =PIGDownMenu(FCTabF.ADD,{"TOPLEFT",FCTabF.ADD.Category_T,"TOPLEFT",0,-110},{FCTabF.ADD.Width-20,nil})
 	FCTabF.ADD.GroupDropDown:Hide()
 	FCTabF.ADD.GroupDropDown.t=PIGFontString(FCTabF.ADD.GroupDropDown,{"BOTTOMLEFT",FCTabF.ADD.GroupDropDown,"TOPLEFT",0,4},"目的地")
-	function FCTabF.ADD.GroupDropDown:PIGDownMenu_Update_But(self)
+	function FCTabF.ADD.GroupDropDown:PIGDownMenu_Update_But()
 		local info = {}
 		info.func = self.PIGDownMenu_SetValue
 		local ActivityGroups = C_LFGList.GetAvailableActivityGroups(FCTabF.selectedCategory)
@@ -554,7 +555,7 @@ function TardisInfo.Houche(Activate)
 	end
 	FCTabF.ADD.ActivityDropDown =PIGDownMenu(FCTabF.ADD,{"TOPLEFT",FCTabF.ADD.GroupDropDown,"BOTTOMLEFT",0,-20},{FCTabF.ADD.Width-20,nil})
 	FCTabF.ADD.ActivityDropDown:Hide()
-	function FCTabF.ADD.ActivityDropDown:PIGDownMenu_Update_But(self)
+	function FCTabF.ADD.ActivityDropDown:PIGDownMenu_Update_But()
 		local info = {}
 		info.func = self.PIGDownMenu_SetValue
 		local newActivities = {}
@@ -581,7 +582,7 @@ function TardisInfo.Houche(Activate)
 		for i=1,#newActivities,1 do
 		    info.text, info.arg1, info.arg2 = newActivities[i][1], newActivities[i][2], "activity";
 		    info.checked = newActivities[i][2] == FCTabF.selectedActivity
-			FCTabF.ADD.ActivityDropDown:PIGDownMenu_AddButton(info)
+			self:PIGDownMenu_AddButton(info)
 		end
 	end
 	function FCTabF.ADD.ActivityDropDown:PIGDownMenu_SetValue(value,arg1,arg2)
@@ -857,20 +858,18 @@ function TardisInfo.Houche(Activate)
 				end
 				FCTabF.ADD:SetEditMode()
 			end)
-		end
-		if event=="CHAT_MSG_CHANNEL" then
+		elseif event=="CHAT_MSG_CHANNEL" then
 			if FCTabF.invOpen then
 				if arg9~=pindao then return end
 				if arg1==GetInfoMsg..FCTabF.selectedCategory..FCTabF.selectedGroup..FCTabF.selectedActivity or arg1==GetInfoMsg..FCTabF.selectedCategory..FCTabF.selectedGroup.."0" then
 					local waname = arg2
-					if tocversion<40000 then
+					if PIG_MaxTocversion() then
 						waname = arg5
 					end
 					fasongBendiMsg(waname)
 				end
 			end
-		end
-		if event=="CHAT_MSG_ADDON" and arg1 == Biaotou then
+		elseif event=="CHAT_MSG_ADDON" and arg1 == Biaotou then
 			if arg3=="CHANNEL" then
 				if FCTabF.invOpen then
 					if arg8~=pindao then return end
@@ -882,7 +881,7 @@ function TardisInfo.Houche(Activate)
 				local qianzhui = arg2:sub(1,2)
 				if qianzhui=="!H" then
 					local waname = arg4
-					if tocversion<40000 then
+					if PIG_MaxTocversion() then
 						waname = arg5
 					end
 					local houzhui = arg2:sub(3,-1)

@@ -33,7 +33,7 @@ Interactionfun.AutoDown = function()
 	end
 end
 --=====================
-local zidongjieshouzuduiyaoqingFFF = CreateFrame("FRAME") 
+local zidongjieshouzuduiyaoqingFFF = CreateFrame("Frame") 
 zidongjieshouzuduiyaoqingFFF:SetScript("OnEvent", function(self, event)
 	if event=="PARTY_INVITE_REQUEST" then
 		AcceptGroup()

@@ -1,5 +1,4 @@
 local addonName, addonTable = ...;
-local _, _, _, tocversion = GetBuildInfo()
 local match = _G.string.match
 -------
 local GetItemCooldown=C_Container.GetItemCooldown
@@ -9,19 +8,18 @@ local IsCurrentSpell=IsCurrentSpell or C_Spell and C_Spell.IsCurrentSpell
 local GetSpellTexture=GetSpellTexture or C_Spell and C_Spell.GetSpellTexture
 local IsUsableSpell=IsUsableSpell or C_Spell and C_Spell.IsSpellUsable
 local GetSpellBookItemName=GetSpellBookItemName or C_SpellBook and C_SpellBook.GetSpellBookItemName
-local PIGbookType
-if tocversion<50000 then
-	PIGbookType=BOOKTYPE_SPELL
-else
-	PIGbookType=Enum.SpellBookSpellBank.Player
-end
+local GetItemInfoInstant=GetItemInfoInstant or C_Item and C_Item.GetItemInfoInstant
+local GetItemCount=GetItemCount or C_Item and C_Item.GetItemCount
+local IsCurrentItem=IsCurrentItem or C_Item and C_Item.IsCurrentItem
+---
+local PIGbookType=PIG_GetSpellBookType()
 -----
 _G.BINDING_HEADER_PIG = addonName
 local ActionFun={}
 ----------
 local suijizuoqi = [=[/run C_MountJournal.SummonByID(0)]=]
 local function UseKeyDownUP(fuji)
-	if tocversion<100000 then
+	if PIG_MaxTocversion() then
 		fuji:RegisterForClicks("AnyUp");
 	else
 		local UseKeyDown =GetCVar("ActionButtonUseKeyDown")
@@ -92,14 +90,7 @@ end
 local function Update_spell_Icon(SimID)
 	local isTrue = SpellIsSelfBuff(SimID)
 	if isTrue then
-		if tocversion>90000 then
-			local name, icon, count, dispelType, duration, expirationTime, source, isStealable, nameplateShowPersonal,spellId= C_UnitAuras.GetPlayerAuraBySpellID(SimID)
-			if spellId then
-				if duration==0 then
-					return 136116
-				end
-			end
-		else
+		if PIG_MaxTocversion() then
 			for x=1,BUFF_MAX_DISPLAY do--有此状态
 				local name, icon, count, dispelType, duration, expirationTime, source, isStealable, nameplateShowPersonal,spellId=UnitBuff("player",x,"PLAYER")
 				if spellId then
@@ -110,6 +101,13 @@ local function Update_spell_Icon(SimID)
 					end
 				else
 					break
+				end
+			end
+		else
+			local name, icon, count, dispelType, duration, expirationTime, source, isStealable, nameplateShowPersonal,spellId= C_UnitAuras.GetPlayerAuraBySpellID(SimID)
+			if spellId then
+				if duration==0 then
+					return 136116
 				end
 			end
 		end
@@ -468,7 +466,7 @@ end
 --鼠标悬浮
 local function OnEnter_Spell(Type,SimID)
 	if IsSpellKnown(SimID) then
-		if tocversion<50000 then
+		if PIG_MaxTocversion() then
 			for i = 1, GetNumSpellTabs() do
 				local _, _, offset, numSlots = PIGGetSpellTabInfo(i)
 				for j = offset+1, offset+numSlots do
@@ -484,6 +482,8 @@ local function OnEnter_Spell(Type,SimID)
 					end
 				end
 			end
+			GameTooltip:SetHyperlink(Type..":"..SimID)
+			GameTooltip:Show();
 		else
 			for skillLineIndex = 1, C_SpellBook.GetNumSpellBookSkillLines() do
 				local skillLineInfo = C_SpellBook.GetSpellBookSkillLineInfo(skillLineIndex);
@@ -543,6 +543,7 @@ local function OnEnter_Item(Type,SimID,ItemID)
 	end
 end
 local function OnEnter_Companion(Type,SimID,spellID)
+	--print(Type,SimID,spellID)
 	if C_MountJournal then
 		local numMounts = C_MountJournal.GetNumMounts()--GetNumCompanions("MOUNT")
 		for i=1,numMounts do
@@ -661,7 +662,7 @@ local function Cursor_FZ(self,NewType,canshu1,canshu2,canshu3,dataY)
 	if InCombatLockdown() then return end
 	self:Show()
 end
-if tocversion<40000 then
+if PIG_MaxTocversion() then
 	hooksecurefunc(C_MountJournal, "Pickup", function(index)
 		ActionFun.mountindex=index
 	end)
@@ -671,7 +672,7 @@ function ActionFun.Cursor_Fun(self,Script,dataY)
 	local NewType, canshu1, canshu2, canshu3= GetCursorInfo()
 	--print(NewType, canshu1, canshu2, canshu3)
 	if Script=="OnMouseUp" and not NewType then return end
-	if tocversion<40000 then
+	if PIG_MaxTocversion() then
 		if NewType=="companion" and canshu2=="MOUNT" then
 			local mountID = C_MountJournal.GetDisplayedMountID(ActionFun.mountindex)
 			canshu1=mountID

@@ -7,7 +7,7 @@ L.MainFrame							= "Deadly Boss Mods" -- OPTIONAL
 
 L.TranslationByPrefix				= "Translated by "
 L.TranslationBy 					= nil -- your name here, localizers!
-L.Website							= "Visit us on discord at |cFF73C2FBhttps://discord.gg/deadlybossmods|r. Follow on most socials @deadlybossmods or @mysticalos"
+L.Website							= "Please follow MysticalOS for news/updates |cFF73C2FBhttps://allmylinks.com/mysticalos|r. Thanks for years of support!"
 L.WebsiteButton						= "Website"
 
 L.OTabBosses						= "Boss Options"--Deprecated and will be deleted once tabs no longer use this
@@ -17,10 +17,13 @@ L.OTabWorld							= "World Bosses"--Since there are so many world mods, enough t
 L.OTabScenarios						= "Scenarios"--Future use, will be used for scenarios and delves, likely after there are more than 2 mods (so probably 12.x or later)
 L.OTabPlugins						= "Other"--Scenarios, PVP, Delves (11.x), Solo/Challenge content (torghast, mage tower, etc)
 L.OTabOptions						= "Core Options"
+L.OTabTools							= "Tools"--Such as break timer button, durability checks, latency checks, keystone checks (in future)
 L.OTabAbout							= "About"
 
-L.FOLLOWER							= "Follower"--i.e. the new dungeon type in 10.2.5. I haven't found a translated string yet
-L.STORY					    		= PLAYER_DIFFICULTY_STORY_RAID or "Story"--i.e. the new dungeon type in 11.0.0. I haven't found a translated string yet
+--Main Tab, Tools checks
+L.Tools_LatencyCheck				= "Latency Check"
+L.Tools_DurabilityCheck				= "Durability Check"
+L.Tools_KeystoneCheck				= "Keystone Check"
 
 L.TabCategory_CURRENT_SEASON		= "Current Season"
 
@@ -125,6 +128,8 @@ L.LogCurrentMPlus					= "Current level (or remix) M+ dungeons"--Retail Only
 L.LogCurrentMythicZero				= "Current level (or remix) Mythic 0 dungeons"--Retail Only
 L.LogTWDungeons						= "Timewalking or Chromie Time dungeons (does NOT include remix)"--Retail Only
 L.LogCurrentHeroic					= "Current level Heroic dungeons (Note: if you are doing heroic via queuing and want it logged, turn off LFG filter)"
+L.LogDelves							= "Current level Delves"--Retail Only
+L.LogChallenges						= "Current level special challenges (such as Torghast, Visions, and Mage Tower)"--Retail Only
 
 -- Panel: Extra Features
 L.Panel_ExtraFeatures				= "Extra Features"
@@ -154,6 +159,12 @@ L.AutoAcceptFriendInvite			= "Automatically accept group invites from friends"
 L.AutoAcceptGuildInvite				= "Automatically accept group invites from guild members"
 L.Area_Advanced						= "Advanced Options"
 L.FakeBW							= "Pretend to be BigWigs in version checks instead of DBM (Useful for guilds that force using BigWigs)"
+--
+L.Area_Tooltip						= "Tooltip integration"
+L.EnableTooltip						= "Add DBM stats to tooltips for bosses supported by DBM"
+L.EnableTooltipInCombat				= "Show tooltip information while in combat"
+L.EnableTooltipHeader				= "Include DBM header in tooltip"
+
 
 -- Panel: Profiles
 L.Panel_Profile						= "Profiles"
@@ -668,6 +679,7 @@ L.ExportTestFailedNonAnonString		= "WARNING: String %q looks non-anonymized."
 L.CreatedTest						= "Created test with %d events in %.1f seconds."
 L.NoLogsFound						= "Transcriptor import contains no log data."
 L.NoTestDataAvailable				= "No test data available"
+L.TestDataLoading					= "Loading tests..."
 L.NoLogSelected						= "Test creation failed: No log selected."
 L.LogAlreadyImported				= "Test creation failed: Test already imported."
 

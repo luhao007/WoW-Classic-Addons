@@ -8,6 +8,7 @@ local extDefault = {
 		["autofen"]=false,
 		["autofenMsg"] = true,
 		["bobaomingxi"] = true,
+		["bobaoTops"] = false,
 		["liupaibobao"] = true,
 		["liupaichuli"]="组织者自行处理",
 		["Pchujia"]="无效",
@@ -29,27 +30,28 @@ local extDefault = {
 	["Raidinfo"] = {{},{},{},{},{},{},{},{}},
 	["Dongjie"] = false,
 	["jiangli"]={
-		{RAID_LEADER,0,"N/A",false},
-		{HEALS.."第一",0,"N/A",false},
-		{HEALS.."第二",0,"N/A",false},
-		{HEALS.."第三",0,"N/A",false},
-		{DAMAGE.."第一",0,"N/A",false},
-		{DAMAGE.."第二",0,"N/A",false},
-		{DAMAGE.."第三",0,"N/A",false},
+		{RAID_LEADER,0,NONE,false},
+		{HEALS.."第一",0,NONE,false},
+		{HEALS.."第二",0,NONE,false},
+		{HEALS.."第三",0,NONE,false},
+		{DAMAGE.."第一",0,NONE,false},
+		{DAMAGE.."第二",0,NONE,false},
+		{DAMAGE.."第三",0,NONE,false},
 	},
 	["jiangli_config"]={},
 	["fakuan"]={
-		{"包地板出价",0,"N/A",0},
-		{"指挥失误罚款",0,"N/A",0},
-		{"跑位失误罚款1",0,"N/A",0},
-		{"跑位失误罚款2",0,"N/A",0},
-		{"跑位失误罚款3",0,"N/A",0},
-		{"ADD罚款1",0,"N/A",0},
-		{"ADD罚款2",0,"N/A",0},
-		{"ADD罚款3",0,"N/A",0},
+		{"包地板出价",0,NONE,0},
+		{"指挥失误罚款",0,NONE,0},
+		{"跑位失误罚款1",0,NONE,0},
+		{"跑位失误罚款2",0,NONE,0},
+		{"跑位失误罚款3",0,NONE,0},
+		{"ADD罚款1",0,NONE,0},
+		{"ADD罚款2",0,NONE,0},
+		{"ADD罚款3",0,NONE,0},
 	},
 	["fakuan_config"]={},
 	["History"]={},
+	["Tops"]={},
 }
 Default["GDKP"] =extDefault
 local extDefault_Per = {
@@ -57,10 +59,27 @@ local extDefault_Per = {
 };
 Default_Per["GDKP"]=extDefault_Per
 -----
-local Config_format=Fun.Config_format
+local function shezhiquxiaoFUN()
+	for i=1,#PIGA["GDKP"]["ItemList"] do
+		if PIGA["GDKP"]["ItemList"][i][8]=="N/A" then
+			PIGA["GDKP"]["ItemList"][i][8]=NONE
+		end
+	end
+	for i=1,#PIGA["GDKP"]["jiangli"] do
+		if PIGA["GDKP"]["jiangli"][i][3]=="N/A" then
+			PIGA["GDKP"]["jiangli"][i][3]=NONE
+		end
+	end
+	for i=1,#PIGA["GDKP"]["fakuan"] do
+		if PIGA["GDKP"]["fakuan"][i][3]=="N/A" then
+			PIGA["GDKP"]["fakuan"][i][3]=NONE
+		end
+	end
+end
 function addonTable.Load_Config()
 	PIGA["GDKP"] = PIGA["GDKP"] or extDefault
 	PIGA_Per["GDKP"] = PIGA_Per["GDKP"] or extDefault_Per
-	PIGA["GDKP"] = Config_format(PIGA["GDKP"],extDefault)
-	PIGA_Per["GDKP"] = Config_format(PIGA_Per["GDKP"],extDefault_Per)
+	Fun.Load_DefaultData(PIGA["GDKP"],extDefault, 0)
+	Fun.Load_DefaultData(PIGA_Per["GDKP"],extDefault_Per, 0, true)
+	shezhiquxiaoFUN()
 end

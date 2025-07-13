@@ -1,14 +1,15 @@
-## Interface: 30404
+## Interface: 30405
 ## Author: Vinny/Ennvina
-## Version: 1.3.2
+## Version: 2.5.6
 
-## Title: |TInterface/Icons/Spell_Frost_Stun:16:16:0:0:512:512:64:448:64:448|t SpellActivationOverlay |cffa2f3ff1.3.2|r
-## Notes: Mimic Spell Activation Overlays from Modern World of Warcraft
+## Title: |TInterface/Icons/Spell_Frost_Stun:16:16:0:0:512:512:64:448:64:448|t SpellActivationOverlay |cff40abff2.5.6|r |TInterface/Icons/achievement_boss_lichking:16:16:0:0:512:512:64:448:64:448|t
+## Notes: Display overlays and glow buttons to improve your gameplay!
 ## Title-zhCN: |cFFFFE00A<|r|cFFC79C6E战斗|r|cFFFFE00A>|r |cFFFFFFFF技能特效|r |cFFFFE00ASpellActivationOverlay|r
 ## Notes-zhCN: 为出发技能增加类似正式服的特效
 
 ## SavedVariables: SpellActivationOverlayDB
 
+## X-SAO-Build: wrath
 
 # SpellActivationOverlay.lua, SpellActivationOverlay.xml and all textures were created by Blizzard Entertainment, Inc.
 # World of Warcraft®: Cataclysm®
@@ -17,18 +18,37 @@
 # ©2012 Blizzard Entertainment, Inc. All rights reserved. Mists of Pandaria, World of Warcraft, Warcraft and Blizzard Entertainment are trademarks or registered trademarks of Blizzard Entertainment, Inc. in the U.S. and/or other countries.
 # World of Warcraft®: Warlords of Draenor™
 # ©2014 Blizzard Entertainment, Inc. All rights reserved. Warlords of Draenor is a trademark, and World of Warcraft, Warcraft and Blizzard Entertainment are trademarks or registered trademarks of Blizzard Entertainment, Inc. in the U.S. and/or other countries.
+#@no-lib-strip@
+libs\LibButtonGlow-1.0\LibButtonGlow-1.0.lua
+#@end-no-lib-strip@
+
+components\project.lua
+
 components\aura.lua
+components\bucket.lua
 components\counter.lua
+components\display.lua
 components\effect.lua
 components\events.lua
 components\glow.lua
+components\hash.lua
 components\item.lua
 components\overlay.lua
-components\project.lua
 components\rune.lua
+components\shutdown.lua
 components\sound.lua
 components\spell.lua
+components\tr.lua
+components\trigger.lua
 components\util.lua
+components\variable.lua
+
+variables\actionusable.lua
+variables\aurastacks.lua
+variables\execute.lua
+variables\itemset.lua
+variables\stance.lua
+variables\talent.lua
 
 textures\texname.lua
 

@@ -251,11 +251,9 @@ do
 		-- for each cached heirloom, push a copy of itself with respective upgrade level under the respective upgrade token
 		-- Kinda would rather us have the Heirloom as a cost/provider for the actual Unlock and list the raw Unlocks
 		-- under Character > Heirlooms... hmmmm
-		local heirloom, upgrades = nil, nil;
-		-- TODO: if Classic uses this Module there's not yet support to properly return a merged object based on multiple sources
-		local MergedObject = app.MergedObject or function(t) return t[1] or t end
+		local heirloom, upgrades = nil, nil
 		for itemID,_ in pairs(heirloomIDs) do
-			heirloom = MergedObject(SearchForObject("itemID", itemID, "field", true))
+			heirloom = SearchForObject("itemID", itemID, "field")
 			if heirloom then
 				upgrades = C_Heirloom_GetHeirloomMaxUpgradeLevel(itemID);
 				if upgrades and upgrades > 0 then
@@ -280,34 +278,36 @@ do
 		-- build groups for each upgrade token
 		-- and copy the set of upgrades into the cached versions of the upgrade tokens so they therefore exist in the main list
 		-- where the sources of the upgrade tokens exist
+		local token
 		for i,item in ipairs(armorTokens) do
-			for _,token in ipairs(SearchForField("itemID", item.itemID)) do
-				-- ensure the tokens do not have a modID attached
-				token.modID = nil;
-				token.modItemID = nil;
-				if not token.sym then
-					for _,heirloom in ipairs(item.g) do
-						NestObject(token, heirloom, true);
-					end
-					AssignChildren(token);
-				end
+			token = SearchForObject("headerID", item.itemID, "field")
+			for _,heirloom in ipairs(item.g) do
+				NestObject(token, heirloom, true)
+			end
+			AssignChildren(token)
+
+			-- ensure the tokens do not have a modID attached
+			for _,token in ipairs(SearchForObject("itemID", item.itemID, "field", true)) do
+				token.modID = nil
+				token.modItemID = nil
 			end
 		end
 		for i,item in ipairs(weaponTokens) do
-			for _,token in ipairs(SearchForField("itemID", item.itemID)) do
-				-- ensure the tokens do not have a modID attached
-				token.modID = nil;
-				token.modItemID = nil;
-				if not token.sym then
-					for _,heirloom in ipairs(item.g) do
-						NestObject(token, heirloom, true);
-					end
-					AssignChildren(token);
-				end
+			token = SearchForObject("headerID", item.itemID, "field")
+			for _,heirloom in ipairs(item.g) do
+				NestObject(token, heirloom, true)
+			end
+			AssignChildren(token)
+
+			-- ensure the tokens do not have a modID attached
+			for _,token in ipairs(SearchForObject("itemID", item.itemID, "field", true)) do
+				token.modID = nil
+				token.modItemID = nil
 			end
 		end
 
 		heirloomIDs = nil
+		app.CreateHeirloom = createHeirloom
 	end
 
 	if C_Heirloom_GetHeirloomMaxUpgradeLevel then

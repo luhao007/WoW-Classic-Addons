@@ -1,6 +1,6 @@
-## Interface: 30404
+## Interface: 30405
 ## Author: mitch0
-## Version: v6.1.4
+## Version: v6.1.7
 
 ## Title: RangeDisplay Options
 ## Notes: Configuration options for RangeDisplay

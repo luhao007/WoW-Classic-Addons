@@ -4,6 +4,6 @@
 	<Script file="QuickChat_Roll.lua" />
 	<Script file="QuickChat_Stats.lua" />
 	<Script file="QuickChat_Keyword.lua" />
-	<Script file="QuickChat_Jilu.lua" />
+	<Script file="QuickChat_Record.lua" />
 	<Script file="AddMessage.lua" />
 </Ui>

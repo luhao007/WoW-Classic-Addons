@@ -1,6 +1,5 @@
 local addonName, addonTable = ...;
 local L=addonTable.locale
-local _, _, _, tocversion = GetBuildInfo()
 local Data=addonTable.Data
 ---以下信息部分来自TinyInspect插件
 --Thanks to RRRRBUA(NGA) 七曜·星の痕(NGA) KibsItemLevel fang2hou
@@ -652,6 +651,8 @@ Data.EnchantItemID = {
 	[6265] = 183738,
 }
 Data.EnchantSpellID = {
+    [1594]=33996,--灰烬冰河符文
+    [3369]=53341,--灰烬冰河符文
     [65] = 7454, -- 44攻强
     [684] = 33995, -- 44攻强
     [3839] = 44645, -- 44攻强
@@ -1683,7 +1684,7 @@ Data.EnchantSlotID = {
     }
 }
 --附魔部位
-if tocversion<20000 then
+if PIG_MaxTocversion(20000) then
     Data.EnchantSlot = {
         [0]=false,--弹药
         [1]=false,--头
@@ -1728,7 +1729,7 @@ if tocversion<20000 then
         [18]=false,--远程插槽
         [19]=false,--战袍
     }
-elseif tocversion<30000 then
+elseif PIG_MaxTocversion(30000) then
     Data.EnchantSlot = {
         [0]=false,--弹药
         [1]=false,--头
@@ -1751,7 +1752,7 @@ elseif tocversion<30000 then
         [18]=false,--远程插槽
         [19]=false,--战袍
     }
-elseif tocversion<40000 then
+elseif PIG_MaxTocversion(40000) then
     Data.EnchantSlot = {
         [0]=false,--弹药
         [1]=true,--头
@@ -1774,7 +1775,7 @@ elseif tocversion<40000 then
         [18]=false,--远程插槽
         [19]=false,--战袍
     }
-elseif tocversion<50000 then
+elseif PIG_MaxTocversion(50000) then
     Data.EnchantSlot = {
         [0]=false,--弹药
         [1]=true,--头

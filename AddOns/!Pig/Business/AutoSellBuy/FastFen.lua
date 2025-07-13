@@ -1,54 +1,54 @@
 local _, addonTable = ...;
-local _, _, _, tocversion = GetBuildInfo()
-local L=addonTable.locale
-local Fun=addonTable.Fun
-local Create=addonTable.Create
-local PIGButton = Create.PIGButton
-local PIGOptionsList_R=Create.PIGOptionsList_R
-local PIGEnter=Create.PIGEnter
-local PIGQuickBut=Create.PIGQuickBut
-local Show_TabBut_R=Create.Show_TabBut_R
-local PIGCheckbutton=Create.PIGCheckbutton
---
-local GetContainerNumSlots = C_Container.GetContainerNumSlots
-local GetContainerItemID = C_Container.GetContainerItemID
-local GetContainerItemLink = C_Container.GetContainerItemLink
-local PickupContainerItem =C_Container.PickupContainerItem
-local IsCurrentSpell=IsCurrentSpell or C_Spell and C_Spell.IsCurrentSpell
--- 
-local bagIDMax= addonTable.Data.bagData["bagIDMax"]
 local BusinessInfo=addonTable.BusinessInfo
-local GnName,GnUI,GnIcon,FrameLevel = unpack(BusinessInfo.AutoSellBuyData)
-local OpenData = {"分解",132853,13262}
-if tocversion<20000 then OpenData[2]=135952 end
 function BusinessInfo.FastFen()
+	local L=addonTable.locale
+	local Data=addonTable.Data
+	local Fun=addonTable.Fun
 	local PIGUseKeyDown=Fun.PIGUseKeyDown
-	local gongnengNameE = "Fen"
-	local hongName = "PIG"..gongnengNameE
-	local fujiF,fujiTabBut=PIGOptionsList_R(AutoSellBuy_UI.F,"分",50,"Left")
-	BusinessInfo.ADDScroll(fujiF,OpenData[1],gongnengNameE,17,{false,"AutoSellBuy",gongnengNameE.."_List"})
+	local Create=addonTable.Create
+	local PIGButton = Create.PIGButton
+	local PIGOptionsList_R=Create.PIGOptionsList_R
+	local PIGEnter=Create.PIGEnter
+	local PIGQuickBut=Create.PIGQuickBut
+	local Show_TabBut_R=Create.Show_TabBut_R
+	local PIGCheckbutton=Create.PIGCheckbutton
+	--
+	local GetContainerNumSlots = C_Container.GetContainerNumSlots
+	local GetContainerItemID = C_Container.GetContainerItemID
+	local GetContainerItemLink = C_Container.GetContainerItemLink
+	local PickupContainerItem =C_Container.PickupContainerItem
+	local IsCurrentSpell=IsCurrentSpell or C_Spell and C_Spell.IsCurrentSpell
+	local bagIDMax= addonTable.Data.bagData["bagIDMax"]
+	---
+	local GnName,GnUI,GnIcon,FrameLevel = unpack(BusinessInfo.AutoSellBuyData)
+	local _GN,_GNE = "分解","Fen"
+	local BindingName = GnUI.."_".._GNE
+	local IconSpell = {132853,13262}
+	if PIG_MaxTocversion(20000) then IconSpell[1]=135952 end
+	local fujiF,fujiTabBut=PIGOptionsList_R(_G[GnUI].F,"分",50,"Left")
+	BusinessInfo.ADDScroll(fujiF,_GN,_GNE,17,{false,"AutoSellBuy",_GNE.."_List"})
 	------
 	fujiF.Bindings = PIGButton(fujiF,{"TOPLEFT",fujiF,"TOPLEFT",20,-10},{76,20},KEY_BINDING);
 	fujiF.Bindings:SetScript("OnClick", function (self)
 		Settings.OpenToCategory(Settings.KEYBINDINGS_CATEGORY_ID, addonName);
 	end)
-	local QkButAction=CreateFrame("Button","QkBut_AutoSellBuy_"..gongnengNameE,UIParent, "SecureActionButtonTemplate");
+	local QkButAction=CreateFrame("Button",BindingName,UIParent, "SecureActionButtonTemplate");
 	QkButAction:SetAttribute("type1", "macro")
 	PIGUseKeyDown(QkButAction)
-	_G["BINDING_NAME_CLICK QkBut_AutoSellBuy_"..gongnengNameE..":LeftButton"]= "PIG"..OpenData[1]
+	_G["BINDING_NAME_CLICK "..BindingName..":LeftButton"]= "PIG"..GnName.._GN
 	--local MassDestroyMacro = "/cast %1$s \n/run C_TradeSkillUI.CraftRecipe(%2$d, 1);\n/cast %1$s";
 	local DestroyMacro = "/cast %s\n/use %d %d"
 	local function zhixingClick(self,button)
 		if button=="LeftButton" then
-			if not IsPlayerSpell(OpenData[3]) then PIGTopMsg:add("你尚未学会"..OpenData[1].."技能") return end
+			if not IsPlayerSpell(IconSpell[2]) then PIG_OptionsUI:ErrorMsg("你尚未学会".._GN.."技能") return end
 			if InCombatLockdown() then
-				PIGTopMsg:add(ERR_NOT_IN_COMBAT)
+				PIG_OptionsUI:ErrorMsg(ERR_NOT_IN_COMBAT)
 			else
-				local fenspellname = PIGGetSpellInfo(OpenData[3])
+				local fenspellname = PIGGetSpellInfo(IconSpell[2])
 				self:SetAttribute("macrotext1", " ")
-				local isCurrentSpell = IsCurrentSpell(OpenData[3])
+				local isCurrentSpell = IsCurrentSpell(IconSpell[2])
 				if isCurrentSpell then return end
-				local shujuy =PIGA["AutoSellBuy"][gongnengNameE.."_List"]
+				local shujuy =PIGA["AutoSellBuy"][_GNE.."_List"]
 				if #shujuy>0 then
 					for bag=0,bagIDMax do			
 						local xx=GetContainerNumSlots(bag)
@@ -62,9 +62,9 @@ function BusinessInfo.FastFen()
 							end
 						end
 					end
-					PIGTopMsg:add("没有需"..OpenData[1].."物品")
+					PIG_OptionsUI:ErrorMsg("没有需".._GN.."物品")
 				else
-					PIGTopMsg:add(OpenData[1].."目录为空,"..KEY_BUTTON2.."设置")
+					PIG_OptionsUI:ErrorMsg(_GN.."目录为空,"..KEY_BUTTON2.."设置")
 				end	
 			end
 		end
@@ -72,20 +72,16 @@ function BusinessInfo.FastFen()
 	QkButAction:HookScript("PreClick", function (self,button)
 		zhixingClick(self,button)
 	end);
-	--宏-----
-	local macroSlot = GetMacroIndexByName(hongName)
-	if macroSlot>0 then
-		DeleteMacro(hongName)
-	end
 	---
-	fujiF.QkBut = PIGCheckbutton(fujiF,{"TOPLEFT",fujiF,"TOPLEFT",20,-44},{"添加"..OpenData[1].."到"..L["ACTION_TABNAME2"], "在"..L["ACTION_TABNAME2"].."增加一个快捷使用按钮"})
+	local QuickButUI=_G[Data.QuickButUIname]
+	fujiF.QkBut = PIGCheckbutton(fujiF,{"TOPLEFT",fujiF,"TOPLEFT",20,-44},{"添加".._GN.."到"..L["ACTION_TABNAME2"], "在"..L["ACTION_TABNAME2"].."增加一个快捷使用按钮"})
 	fujiF.QkBut:SetScript("OnClick", function (self)
 		if self:GetChecked() then
-			PIGA["AutoSellBuy"][gongnengNameE.."_QkBut"]=true;
+			PIGA["AutoSellBuy"][_GNE.."_QkBut"]=true;
 			QuickButUI.ButList[11]()
 			self.RL:Hide()
 		else
-			PIGA["AutoSellBuy"][gongnengNameE.."_QkBut"]=false;
+			PIGA["AutoSellBuy"][_GNE.."_QkBut"]=false;
 			self.RL:Show()
 		end
 	end);
@@ -95,14 +91,14 @@ function BusinessInfo.FastFen()
 		ReloadUI()
 	end)
 	fujiF:HookScript("OnShow", function (self)
-		self.QkBut:SetChecked(PIGA["AutoSellBuy"][gongnengNameE.."_QkBut"])
+		self.QkBut:SetChecked(PIGA["AutoSellBuy"][_GNE.."_QkBut"])
 	end);
 	QuickButUI.ButList[11]=function()
-		if PIGA["QuickBut"]["Open"] and PIGA["AutoSellBuy"]["Open"] and PIGA["AutoSellBuy"][gongnengNameE.."_QkBut"] then
-			local QkButUI = "QkBut_Fast"..gongnengNameE
-			if _G[QkButUI] then return end
-			local QuickTooltip = KEY_BUTTON1.."-|cff00FFFF"..OpenData[1].."指定物品|r\n"..KEY_BUTTON2.."-|cff00FFFF打开"..GnName.."|r"
-			local QkBut=PIGQuickBut(QkButUI,QuickTooltip,OpenData[2],nil,FrameLevel,"SecureActionButtonTemplate")
+		if PIGA["QuickBut"]["Open"] and PIGA["AutoSellBuy"]["Open"] and PIGA["AutoSellBuy"][_GNE.."_QkBut"] then
+			if QuickButUI[_GNE] then return end
+			QuickButUI[_GNE]=true
+			local QuickTooltip = KEY_BUTTON1.."-|cff00FFFF".._GN.."指定物品|r\n"..KEY_BUTTON2.."-|cff00FFFF打开"..GnName.."|r"
+			local QkBut=PIGQuickBut(nil,QuickTooltip,IconSpell[1],nil,FrameLevel,"SecureActionButtonTemplate")
 			QkBut:SetAttribute("type1", "macro")
 			PIGUseKeyDown(QkBut)
 			QkBut:HookScript("PreClick",  function (self,button,down)
@@ -110,11 +106,11 @@ function BusinessInfo.FastFen()
 			end);
 			QkBut:HookScript("OnClick", function(self,button)
 				if button=="RightButton" then
-					if AutoSellBuy_UI:IsShown() then
-						AutoSellBuy_UI:Hide();
+					if _G[GnUI]:IsShown() then
+						_G[GnUI]:Hide();
 					else
-						AutoSellBuy_UI:Show();
-						Show_TabBut_R(AutoSellBuy_UI.F,fujiF,fujiTabBut)
+						_G[GnUI]:Show();
+						Show_TabBut_R(_G[GnUI].F,fujiF,fujiTabBut)
 					end
 				end
 			end);

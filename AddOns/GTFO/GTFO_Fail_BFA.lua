@@ -560,6 +560,31 @@ GTFO.SpellID["285762"] = {
   sound = 3;
 };
 
+GTFO.SpellID["308408"] = {
+  --desc = "Entropic Leap (Forge-Guard Hurrul)";
+  sound = 1;
+};
+
+GTFO.SpellID["296492"] = {
+  --desc = "Void Eruption (Void Globule)";
+  sound = 3;
+};
+
+GTFO.SpellID["296718"] = {
+  --desc = "Dark Smash (Faceless Willbreaker)";
+  sound = 3;
+};
+
+GTFO.SpellID["305672"] = {
+  --desc = "Explosive Ordnance (Alleria Windrunner)";
+  sound = 3;
+};
+
+GTFO.SpellID["311456"] = {
+  --desc = "Roaring Blast (Armsmaster Terenson)";
+  sound = 3;
+};
+
 -- ***********************
 -- * Shrine of the Storm *
 -- ***********************
@@ -727,6 +752,16 @@ GTFO.SpellID["291338"] = {
 
 GTFO.SpellID["305369"] = {
   --desc = "Break Spirit (Voidbound Honor Guard)";
+  sound = 3;
+};
+
+GTFO.SpellID["264155"] = {
+  --desc = "Surging Rush (Aqu'sirr)";
+  sound = 3;
+};
+
+GTFO.SpellID["276292"] = {
+  --desc = "Whirling Slam (Ironhull Apprentice)";
   sound = 3;
 };
 
@@ -1195,9 +1230,6 @@ GTFO.SpellID["250022"] = {
 -- * King's Rest *
 -- ***************
 
--- TODO: Gale Slash (Dazar, The First King)
--- TODO: Impaling Spear (Dazar, The First King)
-
 GTFO.SpellID["270003"] = {
   --desc = "Suppression Slam (Animated Guardian)";
   sound = 3;
@@ -1226,6 +1258,18 @@ GTFO.SpellID["270289"] = {
 
 GTFO.SpellID["267105"] = {
   --desc = "Torrent (Torrent Totem)";
+  sound = 3;
+};
+
+GTFO.SpellID["268419"] = {
+  --desc = "Gale Slash (Dazar, The First King)";
+  applicationOnly = true;
+  sound = 3;
+};
+
+GTFO.SpellID["268796"] = {
+  --desc = "Impaling Spear (Dazar, The First King)";
+  applicationOnly = true;
   sound = 3;
 };
 

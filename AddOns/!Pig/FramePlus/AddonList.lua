@@ -1,5 +1,4 @@
 local _, addonTable = ...;
-local _, _, _, tocversion = GetBuildInfo()
 local Create=addonTable.Create
 local PIGFrame=Create.PIGFrame
 local PIGLine=Create.PIGLine
@@ -21,7 +20,8 @@ function FramePlusfun.AddonList()
 	local maxsize,butnum = 90,10 
 	local oldWww = AddonList:GetWidth()
 	if AddonList.ScrollBox then
-		AddonList.ForceLoad:SetPoint("TOP",AddonList,"TOP",0,-27);
+		AddonList.ForceLoad:SetPoint("TOP",AddonList,"TOP",20,-27);
+		AddonList.SearchBox:SetWidth(146)
 		hooksecurefunc("AddonList_InitAddon", function(button, elementData)
 			button.Title:SetWidth(320+maxsize)
 			-- button.Status:SetPoint("LEFT",button.Title,"RIGHT",10,0);
@@ -37,18 +37,18 @@ function FramePlusfun.AddonList()
 		end
 	end
 
-	local formattxt = "选中后当进入%s提示你切换配置\n"
+	local formattxt = "|cff00FF00选中后当进入%s提示你切换配置\n|r"
 	local ConditionName = {
 		["party"]=GUILD_INTEREST_DUNGEON,["raid"]=GUILD_INTEREST_RAID,["pvp"]=BATTLEFIELDS,["arena"]=ARENA,["all"]="账号通用",
 	}
 	local ConditionList = {
 		{"party","Dungeon",GUILD_INTEREST_DUNGEON,string.format(formattxt,GUILD_INTEREST_DUNGEON)..GUILD_INTEREST_DUNGEON_TOOLTIP},
 		{"raid","Raid",GUILD_INTEREST_RAID,string.format(formattxt,GUILD_INTEREST_RAID)..GUILD_INTEREST_RAID_TOOLTIP},
-		{"pvp","BattleMaster",BATTLEFIELDS,string.format(formattxt,BATTLEFIELDS)},
-		{"arena","CrossedFlags",ARENA,string.format(formattxt,ARENA)},
-		{"all","UI-ChatIcon-App","账号通用","选中后配置为账号所有角色启用\n未选中则配置针对单独角色启用"},
+		{"pvp","BattleMaster",BATTLEFIELDS,string.format(formattxt,BATTLEFIELDS)..BONUS_BUTTON_RANDOM_BG_DESC},
+		{"arena","CrossedFlags",ARENA,string.format(formattxt,ARENA)..ARENA_INFO},
+		{"all","UI-ChatIcon-App","账号通用","|cff00FF00选中后配置为账号所有角色启用|r\n默认未选中时则针对单独角色启用"},
 	}
-	AddonList.pigSavebut = PIGButton(AddonList,{"TOPLEFT", AddonList, "TOPLEFT", 160, -28},{120,24},"保存当前状态",nil,nil,nil,nil,0)
+	AddonList.pigSavebut = PIGButton(AddonList,{"TOPLEFT", AddonList, "TOPLEFT", 180, -28},{120,24},"保存启用状态",nil,nil,nil,nil,0)
 	AddonList.pigSavebut:HookScript("OnClick", function (self)
 		if self.F:IsShown() then
 			self.F:Hide()
@@ -70,25 +70,26 @@ function FramePlusfun.AddonList()
 		if allcharacter then
 			DisableAllAddOns()
 		else
-			DisableAllAddOns(Pig_OptionsUI.Name)
+			DisableAllAddOns(PIG_OptionsUI.Name)
 		end			
 		for k,v in pairs(addondata[2]) do
 			if v then
 				if allcharacter then
 					EnableAddOn(k)
 				else
-					EnableAddOn(k,Pig_OptionsUI.Name)
+					EnableAddOn(k,PIG_OptionsUI.Name)
 				end
 			else
 				if allcharacter then
 					DisableAddOn(k)
 				else
-					DisableAddOn(k,Pig_OptionsUI.Name)
+					DisableAddOn(k,PIG_OptionsUI.Name)
 				end
 			end
 		end
 		ReloadUI();
 	end
+	AddonList.PIG_loadAddon_=PIG_loadAddon_
 	AddonList.pigSavebut.F=PIGFrame(AddonList.pigSavebut,{"TOP",AddonList,"TOP",-10,-58},{240,280})
 	AddonList.pigSavebut.F:PIGSetBackdrop(nil,nil,nil,nil,0)
 	AddonList.pigSavebut.F:Hide()
@@ -151,7 +152,7 @@ function FramePlusfun.AddonList()
 		local AddonStatus = {}
 		for id=1,GetNumAddOns() do
 			local name, title, notes, loadable=PIGGetAddOnInfo(id)
-			local loadablex = PIGGetAddOnEnableState(id, Pig_OptionsUI.Name)
+			local loadablex = PIGGetAddOnEnableState(id, PIG_OptionsUI.Name)
 			if loadablex>0 then
 				AddonStatus[name]=true
 			end
@@ -227,35 +228,35 @@ function FramePlusfun.AddonList()
 		AddonList.L_List.Updata_List()
 	end);
 
-	local PIG_AddonListUI=PIGFrame(UIParent,{"TOP",UIParent,"TOP",0,-100},{320,200},"PIG_AddonList_UI",true)
-	PIG_AddonListUI:PIGSetBackdrop(nil,nil,nil,nil,0)
-	PIG_AddonListUI:Hide()
-	PIG_AddonListUI:PIGClose()
-	PIG_AddonListUI.title = PIGFontString(PIG_AddonListUI,{"TOP", PIG_AddonListUI, "TOP", 0, -10},"","OUTLINE")
-	PIG_AddonListUI.butList={}
+	local TispUI=PIGFrame(UIParent,{"TOP",UIParent,"TOP",0,-100},{320,200},"PIG_AddonConfigUI",true)
+	TispUI:PIGSetBackdrop(nil,nil,nil,nil,0)
+	TispUI:Hide()
+	TispUI:PIGClose()
+	TispUI.title = PIGFontString(TispUI,{"TOP", TispUI, "TOP", 0, -10},"","OUTLINE")
+	TispUI.butList={}
 	for i=1,butnum do
-		local cgbut = PIGButton(PIG_AddonListUI,nil,{130,24},"",nil,nil,nil,nil,0)
-		PIG_AddonListUI.butList[i]=cgbut
+		local cgbut = PIGButton(TispUI,nil,{130,24},"",nil,nil,nil,nil,0)
+		TispUI.butList[i]=cgbut
 		if i==1 then
-			cgbut:SetPoint("TOP",PIG_AddonListUI,"TOP",0,-30);
+			cgbut:SetPoint("TOP",TispUI,"TOP",0,-30);
 		else
-			cgbut:SetPoint("TOP",PIG_AddonListUI.butList[i-1],"BOTTOM",0,-6);
+			cgbut:SetPoint("TOP",TispUI.butList[i-1],"BOTTOM",0,-6);
 		end
 		cgbut:HookScript("OnClick", function (self)
 			PIG_loadAddon_(self:GetID())
 		end);
 	end
-	function PIG_AddonListUI:UpdataList(instanceType,datax)
+	function TispUI:UpdataList(instanceType,datax)
 		for i=1,butnum do
-			PIG_AddonListUI.butList[i]:Hide()
+			TispUI.butList[i]:Hide()
 		end
 		self.title:SetText("检测到<\124cffff0000"..ConditionName[instanceType].."\124r>配置，点击可启用")
 		for i=1,#datax do
-			PIG_AddonListUI.butList[i]:SetID(datax[i])
-			PIG_AddonListUI.butList[i]:Show()
-			PIG_AddonListUI.butList[i]:SetText(PIGA["FramePlus"]["AddonStatus"][datax[i]][1])
+			TispUI.butList[i]:SetID(datax[i])
+			TispUI.butList[i]:Show()
+			TispUI.butList[i]:SetText(PIGA["FramePlus"]["AddonStatus"][datax[i]][1])
 		end
-		PIG_AddonListUI:SetHeight(#datax*30+50)
+		TispUI:SetHeight(#datax*30+50)
 		self.daojishi=0
 	 	self:Show()
 	end 
@@ -276,16 +277,16 @@ function FramePlusfun.AddonList()
 		end
 		return true
 	end
-	PIG_AddonListUI.daojiT = PIGFontString(PIG_AddonListUI,{"BOTTOM", PIG_AddonListUI, "BOTTOM", 4, 8},"秒后关闭","OUTLINE")
-	PIG_AddonListUI.daojiV = PIGFontString(PIG_AddonListUI,{"RIGHT", PIG_AddonListUI.daojiT, "LEFT", 0, 0},10,"OUTLINE")
-	PIG_AddonListUI.daojiV:SetTextColor(1, 0, 0, 1);
-	PIG_AddonListUI:SetScript("OnUpdate",function (self,sss)
+	TispUI.daojiT = PIGFontString(TispUI,{"BOTTOM", TispUI, "BOTTOM", 4, 8},"秒后关闭","OUTLINE")
+	TispUI.daojiV = PIGFontString(TispUI,{"RIGHT", TispUI.daojiT, "LEFT", 0, 0},10,"OUTLINE")
+	TispUI.daojiV:SetTextColor(1, 0, 0, 1);
+	TispUI:SetScript("OnUpdate",function (self,sss)
 		self.daojishi=self.daojishi+sss
-		PIG_AddonListUI.daojiV:SetText(10-floor(self.daojishi+0.5))
+		TispUI.daojiV:SetText(10-floor(self.daojishi+0.5))
 		if self.daojishi>=10 then self:Hide() end
 	end)
-	PIG_AddonListUI:RegisterEvent("PLAYER_ENTERING_WORLD");
-	PIG_AddonListUI:SetScript("OnEvent",function (self,event,arg1,arg2,arg3,arg4,arg5)		
+	TispUI:RegisterEvent("PLAYER_ENTERING_WORLD");
+	TispUI:SetScript("OnEvent",function (self,event,arg1,arg2,arg3,arg4,arg5)		
 		local inInstance, instanceType =IsInInstance()
 		if instanceType=="raid" or instanceType=="party" or instanceType=="pvp" or instanceType=="arena" then
 			local cunzaipeizhi = {}
@@ -308,7 +309,7 @@ function FramePlusfun.AddonList()
 						return
 					end
 				end
-				PIG_AddonListUI:UpdataList(instanceType,cunzaipeizhi)
+				TispUI:UpdataList(instanceType,cunzaipeizhi)
 			end
 		end
 	end);

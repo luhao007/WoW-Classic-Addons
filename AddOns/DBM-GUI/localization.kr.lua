@@ -5,7 +5,7 @@ local L = DBM_GUI_L
 
 L.TranslationByPrefix		= "번역: "
 L.TranslationBy 			= "Elnarfim"
-L.Website					= "디스코드 |cFF73C2FBhttps://discord.gg/deadlybossmods|r를 방문해 보세요. SNS에서 @deadlybossmods 또는 @MysticalOS를 팔로우하세요"
+L.Website							= "최신 소식/업데이트 정보는 MysticalOS를 팔로우하면 볼 수 있습니다. |cFF73C2FBhttps://allmylinks.com/mysticalos|r 보내주신 성원에 감사드립니다!"
 L.WebsiteButton				= "웹사이트"
 
 L.OTabBosses					= "보스 설정"--Deprecated and will be deleted once tabs no longer use this
@@ -16,9 +16,6 @@ L.OTabScenarios						= "시나리오"--Future use, will be used for scenarios an
 L.OTabPlugins						= "기타"--Scenarios, PVP, Delves (11.x), Solo/Challenge content (torghast, mage tower, etc)
 L.OTabOptions					= "핵심 설정"
 L.OTabAbout						= "소개"
-
-L.FOLLOWER						= "추종자"--i.e. the new dungeon type in 10.2.5. I haven't found a translated string yet
-L.STORY					    		= "이야기"--i.e. the new dungeon type in 11.0.0. I haven't found a translated string yet
 
 L.TabCategory_CURRENT_SEASON		= "현재 시즌"
 
@@ -124,6 +121,8 @@ L.LogCurrentMPlus			= "현재 확장팩 (또는 리믹스) 신화+ 던전"--Reta
 L.LogCurrentMythicZero		= "현재 확장팩 (또는 리믹스) 신화 0단 던전"--Retail Only
 L.LogTWDungeons				= "시간여행 또는 크로미의 시간 던전 (리믹스 제외)"--Retail Only
 L.LogCurrentHeroic			= "현재 확장팩 영웅 던전 (알림: 던전 찾기를 통해 영던을 돌면서 로그를 기록하고 싶다면 던전 찾기 기록 안함 옵션을 끄세요)"
+L.LogDelves					= "현재 레벨 구렁"--Retail Only
+L.LogChallenges					= "현재 레벨 특수한 도전 (토르가스트, 환영, 마법사 탑 등)"--Retail Only
 
 -- Panel: Extra Features
 L.Panel_ExtraFeatures		= "기타 기능"
@@ -153,6 +152,12 @@ L.AutoAcceptFriendInvite	= "친구의 파티/공격대 초대 자동 수락"
 L.AutoAcceptGuildInvite		= "길드원의 파티/공격대 초대 자동 수락"
 L.Area_Advanced				= "고급 설정"
 L.FakeBW					= "DBM 대신 BigWigs 사용자로 위장하기 (BigWigs 사용을 강제하는 공격대에서 유용)"
+--
+L.Area_Tooltip						= "툴팁 통합"
+L.EnableTooltip						= "DBM이 지원하는 보스의 툴팁에 DBM 통계 추가"
+L.EnableTooltipInCombat				= "전투 중에 툴탑 정보를 표시"
+L.EnableTooltipHeader				= "툴팁에 DBM 헤더 포함"
+
 
 -- Panel: Profiles
 L.Panel_Profile				= "프로필"
@@ -661,6 +666,7 @@ L.ExportTestFailedNonAnonString		= "경고: 문자열 %q 익명화되지 않은 
 L.CreatedTest						= "%d개의 이벤트로 테스트를 %.1f초에 걸쳐 작성했습니다."
 L.NoLogsFound						= "Transcriptor 가져오기에 로그 데이터가 들어있지 않습니다."
 L.NoTestDataAvailable				= "사용 가능한 테스트 데이터 없음"
+L.TestDataLoading					= "테스트 로딩 중..."
 L.NoLogSelected						= "테스트 작성 실패: 선택한 로그가 없습니다."
 L.LogAlreadyImported				= "테스트 작성 실패: 이미 가져온 것입니다."
 

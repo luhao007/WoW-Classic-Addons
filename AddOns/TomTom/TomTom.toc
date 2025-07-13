@@ -1,6 +1,6 @@
-## Interface: 30404
+## Interface: 30405
 ## Author: Cladhaire, Ludovicus
-## Version: v4.0.8-release
+## Version: v4.0.12-release
 
 ## Title: TomTom
 ## Notes: Acts as your portable navigation assistant
@@ -33,6 +33,7 @@ Localization.koKR.lua
 Localization.ptBR.lua
 
 TomTom.lua
+
 TomTom_Waypoints.lua
 TomTom_CrazyArrow.lua
 TomTom_Corpse.lua

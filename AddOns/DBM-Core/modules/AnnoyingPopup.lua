@@ -156,7 +156,7 @@ local popupData = {
 		wagoUrl = "https://addons.wago.io/addons/deadly-boss-mods-dbm-old-dungeon-mods",
 		curseUrl = "https://www.curseforge.com/wow/addons/deadly-boss-mods-dbm-dungeons",
 		useFriendlyMessage = true
-	}
+	},
 }
 
 --Basically no naxx
@@ -220,16 +220,48 @@ local annoyingPopupZonesCata = {
 	[754]  = {addon = "DBM-Raids-Cata", package = "Cata"},  -- ???
 }
 
+local annoyingPopupZonesMoP = {
+	--Raids
+	[1009]  = {addon = "DBM-Raids-MoP", package = "MoP"},  -- ???
+	[1008]  = {addon = "DBM-Raids-MoP", package = "MoP"},  -- ???
+	[1136]  = {addon = "DBM-Raids-MoP", package = "MoP"},  -- ???
+	[996]   = {addon = "DBM-Raids-MoP", package = "MoP"},  -- ???
+	[1098]  = {addon = "DBM-Raids-MoP", package = "MoP"},  -- ???
+	--Dungeons
+	[960]  = {addon = "DBM-Raids-MoP", package = "Dungeons"},  -- ???
+	[961]  = {addon = "DBM-Raids-MoP", package = "Dungeons"},  -- ???
+	[959]  = {addon = "DBM-Raids-MoP", package = "Dungeons"},  -- ???
+	[962]  = {addon = "DBM-Raids-MoP", package = "Dungeons"},  -- ???
+	[994]  = {addon = "DBM-Raids-MoP", package = "Dungeons"},  -- ???
+	[1011]  = {addon = "DBM-Raids-MoP", package = "Dungeons"},  -- ???
+	[1007]  = {addon = "DBM-Raids-MoP", package = "Dungeons"},  -- ???
+	[1001]  = {addon = "DBM-Raids-MoP", package = "Dungeons"},  -- ???
+	[1004]  = {addon = "DBM-Raids-MoP", package = "Dungeons"},  -- ???
+}
+
 local annoyingPopupZonesRetail = {
-	--TWW Season 1 M+ Dungeons
-	[2652]  = {addon = "DBM-Party-Dragonflight", package = "Dungeons"},  -- ???
-	[2662]  = {addon = "DBM-Party-Dragonflight", package = "Dungeons"},  -- ???
-	[2660]  = {addon = "DBM-Party-Dragonflight", package = "Dungeons"},  -- ???
-	[2669]  = {addon = "DBM-Party-Dragonflight", package = "Dungeons"},  -- ???
-	[670]   = {addon = "DBM-Party-Dragonflight", package = "Dungeons"},  -- ???
-	[1822]  = {addon = "DBM-Party-Dragonflight", package = "Dungeons"},  -- ???
-	[2286]  = {addon = "DBM-Party-Dragonflight", package = "Dungeons"},  -- ???
-	[2290]  = {addon = "DBM-Party-Dragonflight", package = "Dungeons"},  -- ???
+	--TWW Season 3 M+ Dungeons
+	[2662]  = {addon = "DBM-Party-WarWithin", package = "Dungeons"},  -- DawnBreaker
+	[2660]  = {addon = "DBM-Party-WarWithin", package = "Dungeons"},  -- Ara-Kara City of Echoes
+--	[2773]  = {addon = "DBM-Party-WarWithin", package = "Dungeons"},  -- Operation: Floodgate
+--	[2649]  = {addon = "DBM-Party-WarWithin", package = "Dungeons"},  -- Priory of the Sacred Flame
+	[2830]  = {addon = "DBM-Party-WarWithin", package = "Dungeons"},  -- Echo-Dome
+	[2287]  = {addon = "DBM-Party-WarWithin", package = "Dungeons"},  -- Halls of Atonement
+	[2441]  = {addon = "DBM-Party-WarWithin", package = "Dungeons"},  -- Tazavesh, the Veiled Market
+	--TWW Season 2 M+ Dungeons
+	[2651]  = {addon = "DBM-Party-WarWithin", package = "Dungeons"},  -- Darkflame Cleft
+	[2649]  = {addon = "DBM-Party-WarWithin", package = "Dungeons"},  -- Priory of the Sacred Flame
+	[2648]  = {addon = "DBM-Party-WarWithin", package = "Dungeons"},  -- The Rookery
+	[2661]  = {addon = "DBM-Party-WarWithin", package = "Dungeons"},  -- Cinderbrew Meadery
+	[1594]  = {addon = "DBM-Party-WarWithin", package = "Dungeons"},  -- MOTHERLOAD
+	[2097]  = {addon = "DBM-Party-WarWithin", package = "Dungeons"},  -- Mechagon
+	[2293]  = {addon = "DBM-Party-WarWithin", package = "Dungeons"},  -- Theater of Pain
+	[2773]  = {addon = "DBM-Party-WarWithin", package = "Dungeons"},  -- Floodgate
+	--Visions Revisited (TWW)
+	[2828]  = {addon = "DBM-Challenges", package = "Dungeons"},  -- Vision of Orgrimmar Revisited
+	[2827]  = {addon = "DBM-Challenges", package = "Dungeons"},  -- Vision of Stormwind Revisited
+	--Mage Tower
+
 }
 
 function DBM:ShowAnnoyingPopup(zoneInfo, zone)
@@ -273,6 +305,8 @@ function DBM:AnnoyingPopupCheckZone(mapId, zoneLookup)
 		zoneInfo = annoyingPopupZonesWrath[mapId]
 	elseif zoneLookup == "Cata" then
 		zoneInfo = annoyingPopupZonesCata[mapId]
+	elseif zoneLookup == "MoP" then
+		zoneInfo = annoyingPopupZonesMoP[mapId]
 	elseif zoneLookup == "Retail" then
 		zoneInfo = annoyingPopupZonesRetail[mapId]
 	end

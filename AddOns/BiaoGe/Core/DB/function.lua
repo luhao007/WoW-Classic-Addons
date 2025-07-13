@@ -12,7 +12,6 @@ local RN = "|r\n"
 ns.RN = RN
 
 BG = {}
-BG.ns = ns
 
 ----------tbl元素个数----------
 local function Size(t)
@@ -26,9 +25,9 @@ ns.Size = Size
 
 ----------把16进制颜色转换成0-1RGB----------
 local function RGB(hex, Alpha)
-    local red = string.sub(hex, 1, 2)
-    local green = string.sub(hex, 3, 4)
-    local blue = string.sub(hex, 5, 6)
+    local red = hex:sub(1, 2)
+    local green = hex:sub(3, 4)
+    local blue = hex:sub(5, 6)
 
     red = tonumber(red, 16) / 255
     green = tonumber(green, 16) / 255
@@ -64,8 +63,7 @@ end
 function BG.Init2(func)
     local f = CreateFrame("Frame")
     f:RegisterEvent("PLAYER_ENTERING_WORLD")
-    f:SetScript("OnEvent", function(self, event, isLogin, isReload)
-        if not (isLogin or isReload) then return end
+    f:SetScript("OnEvent", function(self, event)
         self:UnregisterEvent("PLAYER_ENTERING_WORLD")
         self:Hide()
         func()
@@ -95,6 +93,14 @@ if ver >= 40000 and ver < 50000 then
     BG.IsCTM = true
 end
 
+if ver >= 50000 and ver < 60000 then
+    BG.IsMOP = true
+end
+
+if ver >= 110000 then
+    BG.IsRetail = true
+end
+
 BG.IsNewUI = true
 
 function BG.IsWLKFB(FB)
@@ -104,7 +110,7 @@ function BG.IsWLKFB(FB)
     end
 end
 
-local tbl = { "SW", "BT", "HS", "TK", "SSC", "ZA", "KZ", "BWL" }
+local tbl = { "SW", "BT", "HS", "TK", "SSC", "ZA", "KZ", "BWL" ,"TAQ",}
 function BG.IsTBCFB(FB)
     if not BG.IsWLK then return false end
     local FB = FB or BG.FB1
@@ -122,4 +128,36 @@ end
 
 if UnitFactionGroup("player") == "Horde" then
     BG.IsHorde = true
+end
+
+function BG.GN(unit)
+    unit = unit or "player"
+    if unit == "t" then
+        unit = "target"
+    end
+    return GetUnitName(unit, true)
+end
+
+BG.playerName = BG.GN()
+
+function BG.GFN(name)
+    if not name then return end
+    local name, realm = strsplit("-", name)
+    realm = realm or GetRealmName()
+    return name .. "-" .. realm
+end
+
+function BG.GSN(name)
+    if not name then return end
+    local name, realm = strsplit("-", name)
+    if not realm or realm == "" or realm == GetRealmName() then
+        return name
+    else
+        return name .. "-" .. realm
+    end
+end
+
+function BG.SPN(name)
+    if not name then return end
+    return strsplit("-", name)
 end

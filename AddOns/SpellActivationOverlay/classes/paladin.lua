@@ -1,138 +1,358 @@
 local AddonName, SAO = ...
 
-local function registerClass(self)
-    local flashOfLight = GetSpellInfo(19750);
-    local exorcism = GetSpellInfo(879);
-    local holyLight = GetSpellInfo(635);
+local avengersShield = 31935;
+local divineLight = 82326;
+local divineStorm = SAO.IsSoD() and 407778 or 53385;
+local eternalFlame = 114163;
+local exorcism = 879;
+local flashOfLight = 19750;
+local holyLight = 635;
+local holyRadiance = 82327;
+local holyShock = 20473;
+local how = 24275;
+local inquisition = 84963;
+local lightOfDawn = 85222;
+local shieldOfTheRighteous = 53600;
+local templarsVerdict = 85256;
+local wordOfGlory = 85673;
+local zealotry = 85696;
 
-    local how = 24275;
-    local holyShock = 20473;
-    local divineStorm = self.IsSoD() and 407778 or 53385;
+local handlerTruncateTo3HolyPower = {
+    [SAO.MOP_AND_ONWARD] = {
+        onAboutToApplyHash = function(hashCalculator)
+            local holyPower = hashCalculator:getHolyPower();
+            if type(holyPower) == 'number' and holyPower > 3 then
+                -- Virtually cap holy power at 3
+                hashCalculator:setHolyPower(3);
+            end
+        end
+    },
+}
 
-    -- Hammer of Wrath, Execute-like ability for targets at 20% hp or less
-    self:RegisterAura("how", 0, how, nil, "", 0, 0, 0, 0, false, { (GetSpellInfo(how)) });
-    self:RegisterCounter("how");
+local function useHolyPowerTracker()
+    local holyPower = 85247; -- Not a real aura or action, but the game client has it
 
-    -- Holy Shock, as combat-only counter
-    self:RegisterAura("holy_shock", 0, holyShock, nil, "", 0, 0, 0, 0, false, { (GetSpellInfo(holyShock)) }, true);
-    self:RegisterCounter("holy_shock");
-
-    -- Exorcism, as combat-only counter
-    self:RegisterAura("exorcism", 0, 879, nil, "", 0, 0, 0, 0, false, { exorcism }, true);
-    self:RegisterCounter("exorcism");
-
-    if self.IsSoD() or self.IsWrath() or self.IsCata() then
-        self:RegisterAura("divine_storm", 0, divineStorm, nil, "", 0, 0, 0, 0, false, { (GetSpellInfo(divineStorm)) }, true);
-        self:RegisterCounter("divine_storm");
+    local overlays = {}
+    for hp=1,3 do
+        local texture = "surge_of_light";
+        local scale = 0.4 + 0.1*hp; -- 50%, 60%, 70%
+        local pulse = hp == 3;
+        tinsert(overlays, { holyPower = hp, texture = texture, position = "Left (vFlipped)", level = 4, scale = scale, pulse = pulse });
+        tinsert(overlays, { holyPower = hp, texture = texture, position = "Right (180)",     level = 4, scale = scale, pulse = pulse, option = false });
     end
 
-    if self.IsWrath() then
-        local infusionOfLightBuff1 = 53672;
-        local infusionOfLightBuff2 = 54149;
-        local artOfWarBuff1 = 53489;
-        local artOfWarBuff2 = 59578;
+    SAO:CreateEffect(
+        "holy_power_tracker",
+        SAO.CATA_AND_ONWARD,
+        holyPower,
+        "generic",
+        {
+            useHolyPower = true,
+            overlays = overlays,
 
-        -- Add option links during registerClass(), not because loadOptions() which would be loaded only when the options panel is opened
-        -- Add option links before RegisterAura() calls, so that options they are used by initial triggers, if any
-        self:AddOverlayLink(infusionOfLightBuff2, infusionOfLightBuff1);
-        self:AddOverlayLink(artOfWarBuff2, artOfWarBuff1);
-        self:AddGlowingLink(infusionOfLightBuff2, infusionOfLightBuff1);
-        self:AddGlowingLink(artOfWarBuff2, artOfWarBuff1);
+            handlers = handlerTruncateTo3HolyPower,
+        }
+    );
+end
 
-        -- Art of War, 1/2 talent points
-        self:RegisterAura("art_of_war_low", 0, artOfWarBuff1, "art_of_war", "Left + Right (Flipped)", 0.6, 255, 255, 255, false, { flashOfLight, exorcism }); -- Smaller, does not pulse
+local function useHammerOfWrath()
+    SAO:CreateEffect(
+        "how",
+        SAO.ALL_PROJECTS,
+        how,
+        "counter"
+    );
+end
 
-        -- Art of War, 2/2 talent points
-        self:RegisterAura("art_of_war_high", 0, artOfWarBuff2, "art_of_war", "Left + Right (Flipped)", 1, 255, 255, 255, true, { flashOfLight, exorcism });
+local function useHolyShock()
+    SAO:CreateEffect(
+        "holy_shock",
+        SAO.ALL_PROJECTS,
+        holyShock,
+        "counter",
+        { combatOnly = true }
+    );
+end
 
-        -- Infusion of Light, 1/2 talent points
-        self:RegisterAura("infusion_of_light_low", 0, infusionOfLightBuff1, "daybreak", "Left + Right (Flipped)", 1, 255, 255, 255, true, { flashOfLight, holyLight });
+local function useExorcism()
+    SAO:CreateEffect(
+        "exorcism",
+        SAO.ALL_PROJECTS,
+        exorcism,
+        "counter",
+        { combatOnly = true }
+    );
+end
 
-        -- Infusion of Light, 2/2 talent points
-        self:RegisterAura("infusion_of_light_high", 0, infusionOfLightBuff2, "daybreak", "Left + Right (Flipped)", 1, 255, 255, 255, true, { flashOfLight, holyLight });
+local function useHolySpender(name, spellID, project)
+    SAO:CreateEffect(
+        name,
+        project or SAO.CATA_AND_ONWARD,
+        spellID,
+        "counter",
+        {
+            useHolyPower = true,
+            holyPower = 3,
 
-        -- Healing Trance / Soul Preserver
-        self:RegisterAuraSoulPreserver("soul_preserver_paladin", 60513); -- 60513 = Paladin buff
-    elseif self.IsCata() then
-        local infusionOfLightBuff1 = 53672;
-        local infusionOfLightBuff2 = 54149;
-        local artOfWarBuff = 59578;
+            handlers = handlerTruncateTo3HolyPower,
+        }
+    );
+end
 
-        local divineLight = 82326;
-        local holyRadiance = 82327;
-        local infusionOfLightButtons = { flashOfLight, holyLight, divineLight, holyRadiance };
-
-        -- Add option links during registerClass(), not because loadOptions() which would be loaded only when the options panel is opened
-        -- Add option links before RegisterAura() calls, so that options they are used by initial triggers, if any
-        self:AddOverlayLink(infusionOfLightBuff2, infusionOfLightBuff1);
-        self:AddGlowingLink(infusionOfLightBuff2, infusionOfLightBuff1);
-
-        -- Art of War
-        self:RegisterAura("art_of_war", 0, artOfWarBuff, "art_of_war", "Left + Right (Flipped)", 1, 255, 255, 255, true, { exorcism });
-
-        -- Infusion of Light, 1/2 talent points
-        self:RegisterAura("infusion_of_light_low", 0, infusionOfLightBuff1, "surge_of_light", "Top (CW)", 1, 255, 255, 255, true, infusionOfLightButtons);
-
-        -- Infusion of Light, 2/2 talent points
-        self:RegisterAura("infusion_of_light_high", 0, infusionOfLightBuff2, "surge_of_light", "Top (CW)", 1, 255, 255, 255, true, infusionOfLightButtons);
+local function useDivineStorm()
+    if SAO.IsProject(SAO.MOP_AND_ONWARD) then
+        useHolySpender("divine_storm", divineStorm);
+    else
+        SAO:CreateEffect(
+            "divine_storm",
+            SAO.SOD + SAO.WRATH + SAO.CATA,
+            divineStorm,
+            "counter",
+            { combatOnly = true }
+        );
     end
 end
 
-local function loadOptions(self)
-    local how = 24275;
-    local holyShock = 20473;
-    local exorcism = 879;
-    local divineStorm = self.IsSoD() and 407778 or 53385;
+local function useJudgementsOfThePure()
+    local judgementOfLight, judgementOfWisdom, judgementOfJustice = 20271, 53408, 53407; -- Spells for Wrath
+    local judgement = 20271; -- Unique spell for Cataclysm
+    local judgementsOfThePureBuff = 53657;
+    local judgementsOfThePureTalent = 53671;
 
-    self:AddGlowingOption(nil, how, how);
-    self:AddGlowingOption(nil, holyShock, holyShock);
-    self:AddGlowingOption(nil, exorcism, exorcism);
-    if self.IsSoD() or self.IsWrath() or self.IsCata() then
-        self:AddGlowingOption(nil, divineStorm, divineStorm);
-    end
+    SAO:CreateEffect(
+        "jotp",
+        SAO.WRATH + SAO.CATA,
+        judgementsOfThePureBuff,
+        "aura",
+        {
+            talent = judgementsOfThePureTalent,
+            requireTalent = true,
+            combatOnly = true,
+            buttons = {
+                default = { stacks = -1 },
+                [SAO.WRATH] = { judgementOfLight, judgementOfWisdom, judgementOfJustice },
+                [SAO.CATA] = judgement,
+            }
+        }
+    );
+end
 
-    if self.IsWrath() then
-        local flashOfLight = 19750;
-        local holyLight = 635;
+local function useInfusionOfLight()
+    if SAO.IsProject(SAO.MOP_AND_ONWARD) then
+        local infusionOfLightBuff = 54149;
+        local infusionOfLightTalent = 53576;
 
---        local infusionOfLightBuff1 = 53672;
+        SAO:CreateEffect(
+            "infusion_of_light",
+            SAO.MOP_AND_ONWARD,
+            infusionOfLightBuff,
+            "aura",
+            {
+                talent = infusionOfLightTalent,
+                overlay = { texture = "denounce", position = "Top" },
+                buttons = { holyLight, divineLight, holyRadiance },
+            }
+        );
+    else
+        local infusionOfLightBuff1 = 53672;
         local infusionOfLightBuff2 = 54149;
         local infusionOfLightTalent = 53569;
 
---        local artOfWarBuff1 = 53489;
+        SAO:CreateLinkedEffects(
+            "infusion_of_light",
+            SAO.WRATH_AND_ONWARD,
+            { infusionOfLightBuff1, infusionOfLightBuff2 },
+            "aura",
+            {
+                talent = infusionOfLightTalent,
+                overlays = {
+                    [SAO.WRATH] = { texture = "daybreak", position = "Left + Right (Flipped)" },
+                    [SAO.CATA]  = { texture = "denounce", position = "Top" },
+                },
+                buttons = {
+                    [SAO.WRATH] = { flashOfLight, holyLight },
+                    [SAO.CATA]  = { flashOfLight, holyLight, divineLight, holyRadiance },
+                },
+            }
+        );
+    end
+end
+
+local function useDaybreak()
+    SAO:CreateEffect(
+        "daybreak",
+        SAO.CATA_AND_ONWARD,
+        88819, -- Daybreak (buff)
+        "aura",
+        {
+            talent = { -- Daybreak (talent)
+                [SAO.CATA] = 88820,
+                [SAO.MOP_AND_ONWARD] = 88821,
+            },
+            action = holyShock,
+            actionUsable = true,
+            overlay = { texture = "daybreak", position ="Left + Right (Flipped)" },
+            button = holyShock,
+        }
+    );
+end
+
+local function useGrandCrusader()
+    SAO:CreateEffect(
+        "grand_crusader",
+        SAO.CATA_AND_ONWARD,
+        85416, -- Grand Crusader (buff)
+        "aura",
+        {
+            talent = { -- Grand Crusader (talent)
+                [SAO.CATA] = 75806,
+                [SAO.MOP_AND_ONWARD] = 85043,
+            },
+            overlay = { texture = "grand_crusader", position = "Left + Right (Flipped)" },
+            button = avengersShield,
+        }
+    );
+end
+
+local function useCrusade()
+    SAO:CreateEffect(
+        "crusade",
+        SAO.CATA,
+        94686, -- Crusader (buff)
+        "aura",
+        {
+            talent = 31866, -- Crusade (talent),
+            button = holyLight
+        }
+    );
+end
+
+local function useDivinePurpose()
+    SAO:CreateEffect(
+        "divine_purpose",
+        SAO.CATA_AND_ONWARD,
+        90174, -- Divine Purpose (buff)
+        "aura",
+        {
+            talent = {
+                [SAO.CATA] = 85117, -- Divine Purpose (talent)
+                [SAO.MOP_AND_ONWARD] = 86172, -- Divine Purpose (passive)
+            },
+            overlay = { texture = "hand_of_light", position = "Top" },
+            buttons = {
+                [SAO.CATA]           = { wordOfGlory, templarsVerdict, inquisition, zealotry },
+                [SAO.MOP_AND_ONWARD] = { wordOfGlory, templarsVerdict, inquisition,           lightOfDawn, shieldOfTheRighteous, divineStorm, eternalFlame },
+            },
+        }
+    );
+end
+
+local function registerArtOfWar(name, project, buff, glowingButtons, defaultOverlay, defaultButton)
+    SAO:CreateEffect(
+        name,
+        project,
+        buff,
+        "aura",
+        {
+            talent = 53486, -- The Art of War (talent)
+            overlays = {
+                default = defaultOverlay,
+                [project] = { texture = "art_of_war", position = "Left + Right (Flipped)" },
+            },
+            buttons = {
+                default = defaultButton,
+                [project] = glowingButtons,
+            },
+        }
+    );
+end
+
+local function useArtOfWar()
+    if SAO.IsWrath() then
+        local artOfWarBuff1 = 53489;
         local artOfWarBuff2 = 59578;
-        local artOfWarTalent = 53486;
 
-        self:AddOverlayOption(infusionOfLightTalent, infusionOfLightBuff2);
-        self:AddOverlayOption(artOfWarTalent, artOfWarBuff2);
-        self:AddSoulPreserverOverlayOption(60513); -- 60513 = Paladin buff
+        SAO:AddOverlayLink(artOfWarBuff2, artOfWarBuff1);
+        SAO:AddGlowingLink(artOfWarBuff2, artOfWarBuff1);
 
-        self:AddGlowingOption(infusionOfLightTalent, infusionOfLightBuff2, flashOfLight);
-        self:AddGlowingOption(infusionOfLightTalent, infusionOfLightBuff2, holyLight);
-        self:AddGlowingOption(artOfWarTalent, artOfWarBuff2, exorcism);
-        self:AddGlowingOption(artOfWarTalent, artOfWarBuff2, flashOfLight);
-    elseif self.IsCata() then
-        local flashOfLight = 19750;
-        local holyLight = 635;
-        local divineLight = 82326;
-        local holyRadiance = 82327;
+        -- 1/2 talent point: smaller, does not pulse, no options (because linked to higher rank)
+        registerArtOfWar("art_of_war_low", SAO.WRATH, artOfWarBuff1, { flashOfLight, exorcism }, { scale = 0.6, pulse = false, option = false }, { option = false });
 
---        local infusionOfLightBuff1 = 53672;
-        local infusionOfLightBuff2 = 54149;
-        local infusionOfLightTalent = 53569;
-
-        local artOfWarBuff = 59578;
-        local artOfWarTalent = 53486;
-
-        self:AddOverlayOption(infusionOfLightTalent, infusionOfLightBuff2, 0, self:RecentlyUpdated()); -- Updated 2024-04-30
-        self:AddOverlayOption(artOfWarTalent, artOfWarBuff);
-
-        self:AddGlowingOption(infusionOfLightTalent, infusionOfLightBuff2, flashOfLight);
-        self:AddGlowingOption(infusionOfLightTalent, infusionOfLightBuff2, holyLight);
-        self:AddGlowingOption(infusionOfLightTalent, infusionOfLightBuff2, divineLight);
-        self:AddGlowingOption(infusionOfLightTalent, infusionOfLightBuff2, holyRadiance);
-        self:AddGlowingOption(artOfWarTalent, artOfWarBuff, exorcism);
+        -- 2/2 talent points
+        registerArtOfWar("art_of_war_high", SAO.WRATH, artOfWarBuff2, { flashOfLight, exorcism });
+    elseif SAO.IsProject(SAO.CATA_AND_ONWARD) then
+        SAO:CreateEffect(
+            "art_of_war",
+            SAO.CATA_AND_ONWARD,
+            59578, -- The Art of War (buff)
+            "aura",
+            {
+                talent = {
+                    [SAO.CATA] = 53486, -- The Art of War (talent)
+                    [SAO.MOP_AND_ONWARD] = 87138, -- The Art of War (passive)
+                },
+                overlay = { texture = "art_of_war", position = "Left + Right (Flipped)" },
+                buttons = {
+                    [SAO.CATA] = exorcism,
+                    -- [SAO.MOP_AND_ONWARD] = exorcism, -- Button already glowing natively by the game client
+                },
+            }
+        );
     end
+end
+
+local function useSupplication()
+    SAO:CreateEffect(
+        "supplication",
+        SAO.MOP,
+        94686, -- Supplication (buff)
+        "aura",
+        {
+            button = flashOfLight,
+        }
+    );
+end
+
+local function registerClass(self)
+    -- Holy Power tracking
+    useHolyPowerTracker();
+
+    -- Counters
+    useHammerOfWrath();
+    useHolyShock();
+    useExorcism();
+    useDivineStorm(); -- Holy Power spender in Mists of Pandaria
+
+    -- Holy Power spenders
+    useHolySpender("word_of_glory", wordOfGlory);
+    useHolySpender("light_of_dawn", lightOfDawn); -- Holy only
+    useHolySpender("shield_of_the_righteous", shieldOfTheRighteous); -- Protection only
+    useHolySpender("templars_verdict", templarsVerdict); -- Retribution only
+    useHolySpender("inquisition", inquisition);
+    useHolySpender("eternal_flame", eternalFlame, SAO.MOP_AND_ONWARD);
+
+    -- Items
+    self:RegisterAuraSoulPreserver("soul_preserver_paladin", 60513); -- 60513 = Paladin buff
+
+    -- Holy
+    useJudgementsOfThePure();
+    useInfusionOfLight();
+    useDaybreak();
+
+    -- Protection
+    useGrandCrusader();
+
+    -- Retribution
+    useCrusade();
+    useArtOfWar();
+    useDivinePurpose();
+
+    -- Passive abilities
+    useSupplication();
+end
+
+local function loadOptions(self)
+    self:AddSoulPreserverOverlayOption(60513); -- 60513 = Paladin buff
 end
 
 SAO.Class["PALADIN"] = {

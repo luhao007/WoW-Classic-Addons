@@ -44,12 +44,12 @@ ns.SEARCH_ALIAS = { --
 }
 
 local keyCombinations = {
-    "SHIFT-.", "SHIFT-[", "SHIFT-;",
     "CTRL-.", "CTRL-[", "CTRL-;",
-    "ALT-.", "ALT-[", "ALT-;",
-    "SHIFT-,", "SHIFT-]", "SHIFT-'",
     "CTRL-,", "CTRL-]", "CTRL-'",
-    "ALT-,", "ALT-]", "ALT-'"
+    "ALT-,", "ALT-]", "ALT-'",
+    "ALT-.", "ALT-[", "ALT-;",
+    "SHIFT-.", "SHIFT-[", "SHIFT-;",
+    "SHIFT-,", "SHIFT-]", "SHIFT-'",
 }
 
 
@@ -423,26 +423,29 @@ local CLASS_ROLES = { --
 }
 
 local function GetCurrentRoles()
-    local class = UnitClassBase('player')
-
+    local class = UnitClassBase("player")
     local roles = CLASS_ROLES[class]
+    if not roles or #roles == 0 then
+        return "DAMAGER" -- 默认返回输出
+    end
     if #roles == 1 then
-        return roles[1]
+        return roles[1]  -- 如果职业只有一个职责（如猎人）
     end
 
+    -- 查找点数最多的天赋页
     local maxTalentTabIndex
-    do
-        local maxPoints = -1
-        for i = 1, GetNumTalentTabs() do
-            local name, _, points = GetTalentTabInfo(i)
-            if points > maxPoints then
-                maxTalentTabIndex = i
-                maxPoints = points
-            end
+    local maxPoints = -1
+    for i = 1, GetNumTalentTabs() do
+        local _, _, pointsSpent = GetTalentTabInfo(i)
+        pointsSpent = tonumber(pointsSpent) or 0
+        if pointsSpent > maxPoints then
+            maxTalentTabIndex = i
+            maxPoints = pointsSpent
         end
     end
 
-    return roles[maxTalentTabIndex]
+    -- 返回对应的职责
+    return roles[maxTalentTabIndex] or "DAMAGER"
 end
 
 function ns.PlayerIsRole(role)

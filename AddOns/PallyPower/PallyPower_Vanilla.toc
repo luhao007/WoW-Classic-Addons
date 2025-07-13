@@ -1,6 +1,6 @@
-## Interface: 30404
+## Interface: 30405
 ## Author: Aznamir, Dyaxler, Es, gallantron
-## Version: v1.5.13-classic
+## Version: v1.5.14-classic
 
 ## Title: PallyPower Classic
 ## Notes: Raid/Party Paladin buffs

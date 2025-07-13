@@ -21,6 +21,11 @@ ns.ACTIVITY_MENU = {}
 ns.ACTIVITY_FILTER_MENU = {{text = ALL}}
 ns.MODE_MENU = {}
 ns.MODE_FILTER_MENU = {{text = ALL}}
+ns.SORT_MODE_MENU = {
+    {text = "推荐排序", value = 1},
+    {text = "星团长优先", value = 2},
+    {text = "最新发布", value = 3},
+}
 
 local BASE_INTERVAL = 50
 local BASE_TIMEOUT = 90

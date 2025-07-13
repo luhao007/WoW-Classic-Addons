@@ -1,7 +1,6 @@
 local addonName, addonTable = ...;
 local L=addonTable.locale
 local match = _G.string.match
-local _, _, _, tocversion = GetBuildInfo()
 local Create = addonTable.Create
 local PIGFontString=Create.PIGFontString
 -----------
@@ -53,7 +52,7 @@ local paichulist = {
 	"QuestieFrame",
 	"Guidelime",
 	"MiniMapBattlefieldFrame",
-	"PigMinimapBut_UI",
+	"PIG_OptionsUI.MiniMapBut",
 	"MinimapLayerFrame",
 	"NWBNaxxMarkerMini",
 	"NWBMini",
@@ -76,48 +75,48 @@ end
 for i=1,10 do
 	table.insert(paichulist,"Spy_MapNoteList_mini"..i)
 end
-PigMinimapBut_UI.ShouNaButList={};
-PigMinimapBut_UI.MiniList={};
+PIG_OptionsUI.MiniMapBut.ShouNaButList={};
+PIG_OptionsUI.MiniMapBut.MiniList={};
 local function gengxinMBweizhi(newValue)
 	local meipaishu=newValue or PIGA["Map"]["MiniButShouNa_hang"];--每排按钮数
-	local hangshuV = math.ceil(#PigMinimapBut_UI.ShouNaButList/meipaishu)
-	PigMinimapBut_UI.Snf:SetSize(meipaishu*35+30, hangshuV*35+30)
-	for i=1, #PigMinimapBut_UI.ShouNaButList,1 do
-		_G[PigMinimapBut_UI.ShouNaButList[i]]:Show()
-		_G[PigMinimapBut_UI.ShouNaButList[i]]:SetParent(PigMinimapBut_UI.Snf)
-		_G[PigMinimapBut_UI.ShouNaButList[i]]:HookScript("OnEnter", function()
-			PigMinimapBut_UI.Snf.zhengzaixianshi = nil;
+	local hangshuV = math.ceil(#PIG_OptionsUI.MiniMapBut.ShouNaButList/meipaishu)
+	PIG_OptionsUI.MiniMapBut.Snf:SetSize(meipaishu*35+30, hangshuV*35+30)
+	for i=1, #PIG_OptionsUI.MiniMapBut.ShouNaButList,1 do
+		_G[PIG_OptionsUI.MiniMapBut.ShouNaButList[i]]:Show()
+		_G[PIG_OptionsUI.MiniMapBut.ShouNaButList[i]]:SetParent(PIG_OptionsUI.MiniMapBut.Snf)
+		_G[PIG_OptionsUI.MiniMapBut.ShouNaButList[i]]:HookScript("OnEnter", function()
+			PIG_OptionsUI.MiniMapBut.Snf.zhengzaixianshi = nil;
 		end)
-		_G[PigMinimapBut_UI.ShouNaButList[i]]:HookScript("OnLeave", function()
-			PigMinimapBut_UI.Snf.xiaoshidaojishi = 1.5;
-			PigMinimapBut_UI.Snf.zhengzaixianshi = true;
+		_G[PIG_OptionsUI.MiniMapBut.ShouNaButList[i]]:HookScript("OnLeave", function()
+			PIG_OptionsUI.MiniMapBut.Snf.xiaoshidaojishi = 1.5;
+			PIG_OptionsUI.MiniMapBut.Snf.zhengzaixianshi = true;
 		end)
-		-- _G[PigMinimapBut_UI.ShouNaButList[i]]:HookScript("PostClick", function ()
-		-- 	PigMinimapBut_UI.Snf:Hide();
+		-- _G[PIG_OptionsUI.MiniMapBut.ShouNaButList[i]]:HookScript("PostClick", function ()
+		-- 	PIG_OptionsUI.MiniMapBut.Snf:Hide();
 		-- end);
 	end	
 	for iiii=1, hangshuV,1 do
 		if iiii==1 then
 			for xxxx=1, iiii*meipaishu, 1 do
 				if xxxx==1 then
-					_G[PigMinimapBut_UI.ShouNaButList[xxxx]]:ClearAllPoints();
-					_G[PigMinimapBut_UI.ShouNaButList[xxxx]]:SetPoint("TOPLEFT", PigMinimapBut_UI.Snf, "TOPLEFT", 15, -15)
+					_G[PIG_OptionsUI.MiniMapBut.ShouNaButList[xxxx]]:ClearAllPoints();
+					_G[PIG_OptionsUI.MiniMapBut.ShouNaButList[xxxx]]:SetPoint("TOPLEFT", PIG_OptionsUI.MiniMapBut.Snf, "TOPLEFT", 15, -15)
 				else
-					if _G[PigMinimapBut_UI.ShouNaButList[xxxx]] then
-						_G[PigMinimapBut_UI.ShouNaButList[xxxx]]:ClearAllPoints();
-						_G[PigMinimapBut_UI.ShouNaButList[xxxx]]:SetPoint("TOPLEFT", PigMinimapBut_UI.Snf, "TOPLEFT", 35*(xxxx-1)+15, -15)
+					if _G[PIG_OptionsUI.MiniMapBut.ShouNaButList[xxxx]] then
+						_G[PIG_OptionsUI.MiniMapBut.ShouNaButList[xxxx]]:ClearAllPoints();
+						_G[PIG_OptionsUI.MiniMapBut.ShouNaButList[xxxx]]:SetPoint("TOPLEFT", PIG_OptionsUI.MiniMapBut.Snf, "TOPLEFT", 35*(xxxx-1)+15, -15)
 					end
 				end
 			end
 		else
 			for xxxx=(iiii-1)*meipaishu+1, iiii*meipaishu, 1 do
 				if xxxx-(iiii-1)*meipaishu==1 then
-					_G[PigMinimapBut_UI.ShouNaButList[xxxx]]:ClearAllPoints();
-					_G[PigMinimapBut_UI.ShouNaButList[xxxx]]:SetPoint("TOPLEFT", PigMinimapBut_UI.Snf, "TOPLEFT", 15, -35*(iiii-1)-15)
+					_G[PIG_OptionsUI.MiniMapBut.ShouNaButList[xxxx]]:ClearAllPoints();
+					_G[PIG_OptionsUI.MiniMapBut.ShouNaButList[xxxx]]:SetPoint("TOPLEFT", PIG_OptionsUI.MiniMapBut.Snf, "TOPLEFT", 15, -35*(iiii-1)-15)
 				else
-					if _G[PigMinimapBut_UI.ShouNaButList[xxxx]] then
-						_G[PigMinimapBut_UI.ShouNaButList[xxxx]]:ClearAllPoints();
-						_G[PigMinimapBut_UI.ShouNaButList[xxxx]]:SetPoint("TOPLEFT", PigMinimapBut_UI.Snf, "TOPLEFT", 35*(xxxx-(iiii-1)*meipaishu-1)+15, -35*(iiii-1)-15)
+					if _G[PIG_OptionsUI.MiniMapBut.ShouNaButList[xxxx]] then
+						_G[PIG_OptionsUI.MiniMapBut.ShouNaButList[xxxx]]:ClearAllPoints();
+						_G[PIG_OptionsUI.MiniMapBut.ShouNaButList[xxxx]]:SetPoint("TOPLEFT", PIG_OptionsUI.MiniMapBut.Snf, "TOPLEFT", 35*(xxxx-(iiii-1)*meipaishu-1)+15, -35*(iiii-1)-15)
 					end
 				end
 				
@@ -149,16 +148,16 @@ local function SN_MiniMapBut()
 		local uiname = children[i]:GetName()
 		if uiname then
 			if IsNopaichu(uiname) then
-				insertminiBut(PigMinimapBut_UI.MiniList,uiname)
+				insertminiBut(PIG_OptionsUI.MiniMapBut.MiniList,uiname)
 				if not IsNoDIYpaichu(uiname) then
-					insertminiBut(PigMinimapBut_UI.ShouNaButList,uiname)
+					insertminiBut(PIG_OptionsUI.MiniMapBut.ShouNaButList,uiname)
 				end
 			end
 		end
 	end
 	gengxinMBweizhi(newValue)
 end
-function PigMinimapBut_UI.SN_MiniMapBut()
+function PIG_OptionsUI.MiniMapBut.SN_MiniMapBut()
 	if PIGA["Map"]["MiniButShouNa_YN"]==1 then	
 		C_Timer.After(0.1, SN_MiniMapBut);
 		C_Timer.After(1, SN_MiniMapBut);
@@ -167,19 +166,19 @@ function PigMinimapBut_UI.SN_MiniMapBut()
 	end
 end
 --==============================
-function PigMinimapBut_UI.MinimapBut()
+function PIG_OptionsUI.MiniMapBut.MinimapBut()
 	if PIGA["Map"]["MinimapBut"] then
-		PigMinimapBut_UI:Show()
+		PIG_OptionsUI.MiniMapBut:Show()
 		if PIGA["Map"]["MiniButShouNa_YN"]==2 then
-			PigMinimapBut_UI:SetParent(Minimap)
-			PigMinimapBut_UI:SetFrameStrata("MEDIUM")
+			PIG_OptionsUI.MiniMapBut:SetParent(Minimap)
+			PIG_OptionsUI.MiniMapBut:SetFrameStrata("MEDIUM")
 		elseif PIGA["Map"]["MiniButShouNa_YN"]==1 then
-			PigMinimapBut_UI:SetParent(UIParent)		
+			PIG_OptionsUI.MiniMapBut:SetParent(UIParent)		
 		end
 		if PIGA["Error"]["ErrorTishi"] then
 			table.insert(paichulist,"LibDBIcon10_BugSack")
 		end
 	else
-		PigMinimapBut_UI:Hide()
+		PIG_OptionsUI.MiniMapBut:Hide()
 	end
 end

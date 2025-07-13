@@ -1,4 +1,4 @@
-## Interface: 30404
+## Interface: 30405
 
 ## Title: |cffffe00a<|r|cffff7d0aDBM Tests|r|cffffe00a>|r |cff69ccf0Tests for The War Within mods|r
 ## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r |cFFFFFFFF副本助手|r |cFF69CCF0测试功能|r |cFF22B14C地心之战|r
@@ -42,3 +42,15 @@ NerubarPalace/Ovinax-Mythic-Kill.lua
 NerubarPalace/Kyveza-Mythic-Kill.lua
 NerubarPalace/SilkenCourt-Mythic-Kill.lua
 NerubarPalace/QueenAnsurek-Mythic-Wipe.lua
+
+ManaforgeOmega/PlexusSentinel-Normal-Kill.lua
+ManaforgeOmega/Loomithar-Normal-Kill.lua
+ManaforgeOmega/SoulbinderNaazindhri-Normal-Kill.lua
+ManaforgeOmega/ForgeweaverAraz-Normal-Kill.lua
+ManaforgeOmega/ForgeweaverAraz-Heroic-Wipe.lua
+ManaforgeOmega/SoulHunters-Normal-Wipe.lua
+ManaforgeOmega/SoulHunters-Heroic-Wipe.lua
+ManaforgeOmega/Fractillus-Heroic-Wipe.lua
+ManaforgeOmega/Fractillus-Normal-Kill.lua
+ManaforgeOmega/Nexus-KingSalhadaar-Normal-Wipe.lua
+ManaforgeOmega/Nexus-KingSalhadaar-Heroic-Wipe.lua

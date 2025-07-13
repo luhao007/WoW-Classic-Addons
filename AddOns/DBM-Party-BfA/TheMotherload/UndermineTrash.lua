@@ -1,7 +1,7 @@
 local mod	= DBM:NewMod("MotherloadTrash", "DBM-Party-BfA", 7)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20250317030415")
+mod:SetRevision("20250519110737")
 mod:SetZone(1594)
 mod:RegisterZoneCombat(1594)
 --mod:SetModelID(47785)
@@ -10,8 +10,8 @@ mod.isTrashMod = true
 mod.isTrashModBossFightAllowed = true
 
 mod:RegisterEvents(
-	"SPELL_CAST_START 268865 268797 262092 263202 267354 280604 268702 263215 269302 263628 473168 473304 269429 1214754",--262554, 263275, 268709 268129 263103 263066 262540 267433
-	"SPELL_CAST_SUCCESS 280604 268702 263215 268797 269090 269302 1213893 473168 1214751 1213139",--262515
+	"SPELL_CAST_START 268865 268797 262092 263202 267354 280604 268702 263215 269302 263628 473168 473304 269429 1214754 1217279",--262554, 263275, 268709 268129 263103 263066 262540 267433
+	"SPELL_CAST_SUCCESS 280604 268702 263215 268797 269090 269302 1213893 473168 1214751 1213139 1217279",--262515
 	"SPELL_INTERRUPT",
 	"SPELL_AURA_APPLIED 262092 263215 262377",--262540 262947
 	"UNIT_DIED"
@@ -38,6 +38,8 @@ local specWarnArtilleryBarrage				= mod:NewSpecialWarningDodge(269090, nil, nil,
 local specWarnBrainstorm					= mod:NewSpecialWarningDodge(473304, nil, nil, nil, 2, 2)
 local specWarnMassiveSlam					= mod:NewSpecialWarningDodge(1214754, nil, nil, nil, 2, 2)
 local specWarnSeekandDestroy				= mod:NewSpecialWarningRun(262377, nil, nil, nil, 4, 2)
+local specWarnUppercut						= mod:NewSpecialWarningYou(1217280, nil, nil, nil, 1, 2)
+local yellUppercut							= mod:NewShortYell(1217280)
 local specWarnRockLance						= mod:NewSpecialWarningInterrupt(263202, false, nil, nil, 1, 2)--No cooldown, just spell lock. spammed ability
 local specWarnIcedSpritzer					= mod:NewSpecialWarningInterrupt(280604, "HasInterrupt", nil, nil, 1, 2)--High Prio
 local specWarnFuriousQuake					= mod:NewSpecialWarningInterrupt(268702, "HasInterrupt", nil, nil, 1, 2)--High Prio
@@ -47,19 +49,20 @@ local specWarnTectonicBarrierDispel			= mod:NewSpecialWarningDispel(263215, "Mag
 local specWarnEnemyToGoo					= mod:NewSpecialWarningInterrupt(268797, "HasInterrupt", nil, nil, 1, 2)--High Prio
 
 local timerFanOfKnivesCD					= mod:NewCDNPTimer(20.6, 267354, nil, nil, nil, 3)
-local timerIcedSpritzerCD					= mod:NewCDPNPTimer(24.4, 280604, nil, nil, nil, 4, nil, DBM_COMMON_L.INTERRUPT_ICON)
+local timerIcedSpritzerCD					= mod:NewCDPNPTimer(24.0, 280604, nil, nil, nil, 4, nil, DBM_COMMON_L.INTERRUPT_ICON)
 local timerFuriousQuakeCD					= mod:NewCDNPTimer(24.6, 268702, nil, nil, nil, 4, nil, DBM_COMMON_L.INTERRUPT_ICON)--Small sample, need more data
 local timerTectonicBarrierCD				= mod:NewCDNPTimer(20.9, 263215, nil, nil, nil, 4, nil, DBM_COMMON_L.INTERRUPT_ICON)--19.3-21.3?
 local timerEnemyToGoosCD					= mod:NewCDPNPTimer(24.2, 268797, nil, nil, nil, 4, nil, DBM_COMMON_L.INTERRUPT_ICON)
 local timerArtilleryBarrageCD				= mod:NewCDNPTimer(12.1, 269090, nil, nil, nil, 3)
 local timerInhaleVaporsCD					= mod:NewCDNPTimer(21.9, 262092, nil, nil, nil, 5, nil, DBM_COMMON_L.ENRAGE_ICON)
-local timerToxicBladesCD					= mod:NewCDNPTimer(27.8, 269302, nil, nil, nil, 4, nil, DBM_COMMON_L.INTERRUPT_ICON)
+local timerToxicBladesCD					= mod:NewCDNPTimer(25.6, 269302, nil, nil, nil, 4, nil, DBM_COMMON_L.INTERRUPT_ICON)
 local timerChargedShieldCD					= mod:NewCDNPTimer(20.9, 263628, nil, "Tank|Healer", nil, 5, nil, DBM_COMMON_L.TANK_ICON)
 local timerRapidExtractionCD				= mod:NewCDNPTimer(24.2, 473168, nil, nil, nil, 3)
 local timerBrainstormCD						= mod:NewCDNPTimer(17, 473304, nil, nil, nil, 3)--17-18.2
 local timerChargedShotCD					= mod:NewCDNPTimer(17, 269429, nil, nil, nil, 3)
 local timerBrutalChargeCD					= mod:NewCDNPTimer(12.2, 1214751, nil, nil, nil, 3)--Massive SLam used immediate after, so no need for slam NP timer
 local timerOvertimeCD						= mod:NewCDNPTimer(10.4, 1213139, nil, "Tank|Healer|RemoveEnrage", nil, 5, nil, DBM_COMMON_L.ENRAGE_ICON)
+local timerUppercutCD						= mod:NewCDNPTimer(20.3, 1217280, nil, nil, nil, 3)
 
 --Abilities removed in 11.1
 --local warnRepair							= mod:NewCastAnnounce(262554, 4)--Removed in 11.1?
@@ -75,6 +78,19 @@ local timerOvertimeCD						= mod:NewCDNPTimer(10.4, 1213139, nil, "Tank|Healer|R
 --local specWarnOverchargeDispel			= mod:NewSpecialWarningDispel(262540, "MagicDispeller", nil, nil, 1, 2)
 
 --Antispam IDs for this mod: 1 run away, 2 dodge, 3 dispel, 4 incoming damage, 5 you/role, 6 misc, 7 GTFO
+
+local annoyingCasts = {}
+
+function mod:UppercutTarget(targetname)
+	if not targetname then return end
+	if self:AntiSpam(3, targetname) then
+		if targetname == UnitName("player") then
+			specWarnUppercut:Show()
+			specWarnUppercut:Play("carefly")
+			yellUppercut:Yell()
+		end
+	end
+end
 
 function mod:SPELL_CAST_START(args)
 	if not self.Options.Enabled then return end
@@ -135,6 +151,8 @@ function mod:SPELL_CAST_START(args)
 			specWarnMassiveSlam:Show()
 			specWarnMassiveSlam:Play("watchstep")
 		end
+	elseif spellId == 1217279 then
+		self:ScheduleMethod(0.1, "BossTargetScanner", args.sourceGUID, "UppercutTarget", 0.1, 6)
 	--elseif spellId == 267433 and self:AntiSpam(4, 1) then--IsValidWarning removed because it caused most activate mechs not to announce. re-add if it becomes problem
 	--	warnActivateMech:Show()
 	--elseif spellId == 263275 and self:IsValidWarning(args.sourceGUID) then
@@ -164,9 +182,12 @@ function mod:SPELL_CAST_SUCCESS(args)
 	if not self.Options.Enabled then return end
 	local spellId = args.spellId
 	if spellId == 280604 then
-		timerIcedSpritzerCD:Start(24.4, args.sourceGUID)
+		if not annoyingCasts[args.sourceGUID] then
+			annoyingCasts[args.sourceGUID] = true
+			timerIcedSpritzerCD:Start(21.5, args.sourceGUID)
+		end
 	elseif spellId == 268702 then
-		timerFuriousQuakeCD:Start(24.6, args.sourceGUID)
+		timerFuriousQuakeCD:Start(22.7, args.sourceGUID)
 	elseif spellId == 263215 then
 		timerTectonicBarrierCD:Start(20.9, args.sourceGUID)
 	elseif spellId == 268797 then
@@ -178,7 +199,7 @@ function mod:SPELL_CAST_SUCCESS(args)
 			specWarnArtilleryBarrage:Play("watchstep")
 		end
 	elseif spellId == 269302 then
-		timerToxicBladesCD:Start(27.8, args.sourceGUID)
+		timerToxicBladesCD:Start(25.7, args.sourceGUID)
 	elseif spellId == 1213893 then
 		warnActivateMech:Show()
 	elseif spellId == 473168 then
@@ -187,10 +208,12 @@ function mod:SPELL_CAST_SUCCESS(args)
 		timerBrutalChargeCD:Start(12.2, args.sourceGUID)
 		warnBrutalCharge:Show(args.destName)
 	elseif spellId == 1213139 then
-		timerOvertimeCD:Start(14.4, args.sourceGUID)
+		timerOvertimeCD:Start(10.9, args.sourceGUID)
 		warnOvertime:Show()
 	--elseif spellId == 262515 and self:AntiSpam(2.5, args.destName) then
 	--	warnAzeriteHeartseeker:CombinedShow(0.5, args.destName)
+	elseif spellId == 1217279 then
+		timerUppercutCD:Start(nil, args.sourceGUID)
 	end
 end
 
@@ -198,15 +221,18 @@ function mod:SPELL_INTERRUPT(args)
 	if not self.Options.Enabled then return end
 	if type(args.extraSpellId) ~= "number" then return end
 	if args.extraSpellId == 280604 then
-		timerIcedSpritzerCD:Start(24.4, args.destGUID)
+		if not annoyingCasts[args.destGUID] then
+			annoyingCasts[args.destGUID] = true
+			timerIcedSpritzerCD:Start(21.5, args.destGUID)
+		end
 	elseif args.extraSpellId == 268702 then
-		timerFuriousQuakeCD:Start(24.6, args.destGUID)
+		timerFuriousQuakeCD:Start(22.7, args.destGUID)
 	elseif args.extraSpellId == 263215 then
 		timerTectonicBarrierCD:Start(20.9, args.destGUID)
 	elseif args.extraSpellId == 268797 then
 		timerEnemyToGoosCD:Start(24.2, args.destGUID)
 	elseif args.extraSpellId == 269302 then
-		timerToxicBladesCD:Start(27.8, args.destGUID)
+		timerToxicBladesCD:Start(25.7, args.destGUID)
 	end
 end
 
@@ -237,6 +263,7 @@ function mod:UNIT_DIED(args)
 		timerToxicBladesCD:Stop(args.destGUID)
 	elseif cid == 136470 then--Refreshment Vendor
 		timerIcedSpritzerCD:Stop(args.destGUID)
+		annoyingCasts[args.destGUID] = nil
 	elseif cid == 130635 then--Stonefury
 		timerFuriousQuakeCD:Stop(args.destGUID)
 		timerTectonicBarrierCD:Stop(args.destGUID)
@@ -246,6 +273,7 @@ function mod:UNIT_DIED(args)
 		timerArtilleryBarrageCD:Stop(args.destGUID)
 	elseif cid == 130435 then--Addled Thug
 		timerInhaleVaporsCD:Stop(args.destGUID)
+		timerUppercutCD:Stop(args.destGUID)
 	elseif cid == 136139 then--Mechanized Peacekeeper
 		timerChargedShieldCD:Stop(args.destGUID)
 	elseif cid == 136643 then--Azerite Extractor
@@ -263,30 +291,31 @@ end
 --All timers subject to a ~0.5 second clipping due to ScanEngagedUnits
 function mod:StartEngageTimers(guid, cid, delay)
 	if cid == 134232 then--Hired Assassin
-		timerToxicBladesCD:Start(10.8-delay, guid)--Might be shorter
+		timerToxicBladesCD:Start(9.6-delay, guid)
 		timerFanOfKnivesCD:Start(13.3-delay, guid)
 	elseif cid == 136470 then--Refreshment Vendor
 		timerIcedSpritzerCD:Start(10.9-delay, guid)
 	elseif cid == 130635 then--Stonefury
 		timerTectonicBarrierCD:Start(5-delay, guid)
-		timerFuriousQuakeCD:Start(11.8-delay, guid)
+		timerFuriousQuakeCD:Start(11.3-delay, guid)
 	elseif cid == 133432 then--Venture Co. Alchemist
-		timerEnemyToGoosCD:Start(8.5-delay, guid)--8-15
-	elseif cid == 137029 then--Ordnance Specialist
-		timerArtilleryBarrageCD:Start(2-delay, guid)--Possibly even sooner
+		timerEnemyToGoosCD:Start(7.9-delay, guid)--7.9-15
+--	elseif cid == 137029 then--Ordnance Specialist
+--		timerArtilleryBarrageCD:Start(1.5-delay, guid)--Used pretty much instantly on pull
 	elseif cid == 130435 then--Addled Thug
-		timerInhaleVaporsCD:Start(9.9-delay, guid)
+		timerInhaleVaporsCD:Start(9.9-delay, guid)--3.6 (sus, it might have been caused by late detection)
+		timerUppercutCD:Start(16.5-delay, guid)--Iffy 9.5, these mobs fire affecting combat before they're actually affecting combat so initial timers can be glitchy
 	elseif cid == 136139 then--Mechanized Peacekeeper
-		timerChargedShieldCD:Start(17-delay, guid)
+		timerChargedShieldCD:Start(16.7-delay, guid)
 	elseif cid == 136643 then--Azerite Extractor
 		timerRapidExtractionCD:Start(15.7-delay, guid)
 	elseif cid == 133430 then--Venture Co. Mastermind
 		timerBrainstormCD:Start(5.4-delay, guid)
 	elseif cid == 133463 then--Venture Co. War Machine
-		timerChargedShotCD:Start(8.5-delay, guid)
+		timerChargedShotCD:Start(6.9-delay, guid)
 	elseif cid == 134012 then--Taskmaster Askari
-		timerOvertimeCD:Start(10-delay, guid)
-		timerBrutalChargeCD:Start(11-delay, guid)
+		timerOvertimeCD:Start(6.9-delay, guid)
+		timerBrutalChargeCD:Start(10-delay, guid)
 	end
 end
 

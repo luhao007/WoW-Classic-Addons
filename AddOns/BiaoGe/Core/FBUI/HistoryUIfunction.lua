@@ -11,10 +11,9 @@ local RGB = ns.RGB
 local GetClassRGB = ns.GetClassRGB
 local SetClassCFF = ns.SetClassCFF
 local Maxb = ns.Maxb
-local Maxi = ns.Maxi
 local BossNum = ns.BossNum
-local FrameHide = ns.FrameHide
 local AddTexture = ns.AddTexture
+local GetItemID = ns.GetItemID
 
 local pt = print
 
@@ -35,8 +34,8 @@ local function ShowTardeHighLightItem(self)
     local tradeInfo = BG.GetGeZiTardeInfo(FB, b, i, true)
     if tradeInfo then
         for _, v in ipairs(tradeInfo) do
-            for b = 1, Maxb[FB] do
-                for i = 1, Maxi[FB] do
+for b = 1, Maxb[FB] do
+ for i = 1, BG.GetMaxi(FB, b) do
                     local zb = BG.HistoryFrame[FB]["boss" .. b]["zhuangbei" .. i]
                     local jine = BG.HistoryFrame[FB]["boss" .. b]["jine" .. i]
                     if zb and FB == v.FB and b == v.b and i == v.i then
@@ -57,7 +56,7 @@ local function ShowTardeHighLightItem(self)
 end
 
 ------------------标题------------------
-function BG.HistoryBiaoTiUI(FB, t)
+function BG.HistoryTitleUI(FB, t)
     local fontsize = 15
     local version = BG["HistoryFrame" .. FB]:CreateFontString()
     if t == 1 then
@@ -119,7 +118,7 @@ function BG.HistoryZhuangBeiUI(FB, t, b, bb, i, ii, scrollFrame)
             if BG.zaxiang[FB] and BossNum(FB, b, t) == Maxb[FB] and i == 1 then
                 bt:SetPoint("TOPLEFT", framedown, "BOTTOMLEFT", 0, -20)
             else
-                bt:SetPoint("TOPLEFT", p["preWidget" .. i - 1], "BOTTOMLEFT", 0, -3)
+                bt:SetPoint("TOPLEFT", p["preWidget" .. i - 1], "BOTTOMLEFT", 0, BG.IsBigFB(FB) and 0 or -3)
             end
         end
     end
@@ -137,29 +136,26 @@ function BG.HistoryZhuangBeiUI(FB, t, b, bb, i, ii, scrollFrame)
     BG.HistoryFrame[FB]["boss" .. BossNum(FB, b, t)]["guanzhu" .. i] = BG.CreateGuanZhuButton(bt, "history")
 
     -- 内容改变时
-    local _, class = UnitClass("player")
-    local RealmId = GetRealmID()
-    local player = UnitName("player")
     bt:SetScript("OnTextChanged", function(self)
         local itemText = bt:GetText()
-        local itemID = GetItemInfoInstant(itemText)
-        local name, link, quality, level, _, _, _, _, _, Texture, _, typeID, _, bindType = GetItemInfo(itemText)
-
-        BG.UpdateFilter(self)
-
-        if link and itemText:find("item:") then
-            -- 装备图标
-            icon:SetTexture(Texture)
+        local itemID = GetItemID(itemText)
+        if itemID then
+            local item = Item:CreateFromItemID(itemID)
+            item:ContinueOnItemLoad(function()
+                local name, link, quality, level, _, _, _, _, _, Texture,
+                _, typeID, _, bindType = GetItemInfo(itemText)
+                icon:SetTexture(Texture)
+                BG.BindOnEquip(self, bindType)
+                BG.LevelText(self, level, typeID)
+                BG.IsHave(self)
+            end)
         else
             icon:SetTexture(nil)
+            BG.BindOnEquip(self)
+            BG.LevelText(self)
+            BG.IsHave(self)
         end
-
-        -- 装绑图标
-        BG.BindOnEquip(self, bindType)
-        -- 在按钮右边增加装等显示
-        BG.LevelText(self, level, typeID)
-        -- 已拥有图标
-        BG.IsHave(self)
+        BG.UpdateFilter(self)
     end)
     -- 发送装备到聊天输入框
     bt:SetScript("OnMouseDown", function(self, enter)
@@ -171,8 +167,8 @@ function BG.HistoryZhuangBeiUI(FB, t, b, bb, i, ii, scrollFrame)
     bt:SetScript("OnEnter", function(self)
         BG.HistoryFrameDs[FB .. 1]["boss" .. BossNum(FB, b, t)]["ds" .. i]:Show()
         if not tonumber(self:GetText()) then
-            local itemLink = bt:GetText()
-            local itemID = select(1, GetItemInfoInstant(itemLink))
+            local link = bt:GetText()
+            local itemID = GetItemID(link)
             if itemID then
                 if BG.ButtonIsInRight(self) then
                     GameTooltip:SetOwner(self, "ANCHOR_LEFT", 0, 0)
@@ -180,8 +176,7 @@ function BG.HistoryZhuangBeiUI(FB, t, b, bb, i, ii, scrollFrame)
                     GameTooltip:SetOwner(self, "ANCHOR_RIGHT", 0, 0)
                 end
                 GameTooltip:ClearLines()
-                GameTooltip:SetItemByID(itemID);
-                GameTooltip:Show()
+                GameTooltip:SetHyperlink(BG.SetSpecIDToLink(link))
                 BG.SetHistoryMoney(itemID)
             end
         end
@@ -276,8 +271,7 @@ end
 function BG.HistoryJiShaUI(FB, t, b, bb, i, ii)
     local text = BG["HistoryFrame" .. FB]:CreateFontString();
     local num
-    local color
-    for i = 1, Maxi[FB] do
+    for i = 1, BG.GetMaxi(FB, BossNum(FB, b, t)) do
         if not BG.HistoryFrame[FB]["boss" .. BossNum(FB, b, t)]["zhuangbei" .. i + 1] then
             num = i
             break
@@ -303,7 +297,7 @@ end
 ------------------支出、总览、工资------------------
 function BG.HistoryZhiChuZongLanGongZiUI(FB)
     -- 设置支出颜色：绿
-    for i = 1, Maxi[FB], 1 do
+    for i = 1, BG.GetMaxi(FB, Maxb[FB] + 1), 1 do
         if BG.HistoryFrame[FB]["boss" .. Maxb[FB] + 1]["zhuangbei" .. i] then
             BG.HistoryFrame[FB]["boss" .. Maxb[FB] + 1]["zhuangbei" .. i]:SetTextColor(RGB("00FF00"))
             BG.HistoryFrame[FB]["boss" .. Maxb[FB] + 1]["jine" .. i]:SetTextColor(RGB("00FF00"))

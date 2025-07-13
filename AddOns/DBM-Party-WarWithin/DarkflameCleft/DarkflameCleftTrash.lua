@@ -1,7 +1,7 @@
 local mod	= DBM:NewMod("DarkflameCleftTrash", "DBM-Party-WarWithin", 1)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20250224005305")
+mod:SetRevision("20250513082122")
 --mod:SetModelID(47785)
 mod.isTrashMod = true
 mod.isTrashModBossFightAllowed = true
@@ -9,7 +9,7 @@ mod:SetZone(2651)
 mod:RegisterZoneCombat(2651)
 
 mod:RegisterEvents(
-	"SPELL_CAST_START 425536 423501 430171 426883 426261 426295 426619 440652 424322 428066 423479 428563 1218117 422541",--422414
+	"SPELL_CAST_START 425536 423501 430171 426883 426261 426295 426619 440652 424322 428066 423479 428563 1218117 422541 426260",--422414
 	"SPELL_CAST_SUCCESS 422541 424322 428019 425536 426883 426295 1218131",--426295 422414
 	"SPELL_INTERRUPT",
 	"SPELL_AURA_APPLIED 425555 428019 424650",
@@ -47,6 +47,7 @@ local yellCeaselessFlame					= mod:NewYell(426261)
 --local specWarnShadowSmash					= mod:NewSpecialWarningDodge(422414, nil, nil, nil, 2, 15)
 local specWarnSurgingFlame					= mod:NewSpecialWarningDodge(440652, nil, nil, nil, 2, 2)
 local specWarnBurningCandles				= mod:NewSpecialWarningDodge(1218131, nil, nil, nil, 2, 2)
+local specWarnPyroPummel					= mod:NewSpecialWarningDodge(426260, nil, nil, nil, 2, 15)--Not CD based, conditional based, so no NP timer
 local specWarnOHHeadlock					= mod:NewSpecialWarningYou(426619, nil, nil, nil, 1, 2)
 --local specWarnStormshield					= mod:NewSpecialWarningDispel(386223, "MagicDispeller", nil, nil, 1, 2)
 local specWarnMoleFrenzy					= mod:NewSpecialWarningInterrupt(425536, "HasInterrupt", nil, nil, 1, 2)--High Prio Interrupt
@@ -60,8 +61,8 @@ local specwarnPanicked						= mod:NewSpecialWarningDispel(424650, "RemoveEnrage"
 
 local timerWildWallopCD						= mod:NewCDNPTimer(21, 423501, nil, nil, nil, 3)--S2 value
 local timerOverpoweringRoarCD				= mod:NewCDNPTimer(23, 428066, nil, nil, nil, 2)--S2 value
-local timerQuenchingBlastCD					= mod:NewCDNPTimer(17.8, 430171, nil, nil, nil, 2)--17.8-18.3 usually 18.2
-local timerSurgingFlameCD					= mod:NewCDNPTimer(26.7, 440652, nil, nil, nil, 3)
+local timerQuenchingBlastCD					= mod:NewCDNPTimer(15.5, 430171, nil, nil, nil, 2)--15.5-18.3 usually 18.2
+local timerSurgingFlameCD					= mod:NewCDNPTimer(24.4, 440652, nil, nil, nil, 3)
 local timerMoleFrenzyCD						= mod:NewCDPNPTimer(25.8, 425536, nil, "HasInterrupt", nil, 4, nil, DBM_COMMON_L.INTERRUPT_ICON)
 local timerBonkCD							= mod:NewCDNPTimer(17, 426883, nil, nil, nil, 5, nil, DBM_COMMON_L.TANK_ICON)--15-24
 local timerCeaselessFlameCD					= mod:NewCDPNPTimer(36.2, 426261, nil, nil, nil, 3)
@@ -71,7 +72,7 @@ local timerMassiveStompCD					= mod:NewCDNPTimer(18.2, 1218117, nil, nil, nil, 2
 local timerDrainLightCD						= mod:NewCDPNPTimer(16.2, 422541, nil, nil, nil, 4, nil, DBM_COMMON_L.INTERRUPT_ICON)
 --local timerShadowSmashCD					= mod:NewCDPNPTimer(12, 422414, nil, nil, nil, 3)
 local timerExplosiveFlameCD					= mod:NewCDPNPTimer(22.8, 424322, nil, nil, nil, 4, nil, DBM_COMMON_L.INTERRUPT_ICON)--Possibly even higher CD
-local timerFlashPointCD						= mod:NewCDNPTimer(14.1, 428019, nil, nil, nil, 5)
+local timerFlashPointCD						= mod:NewCDNPTimer(13.6, 428019, nil, nil, nil, 5)
 local timerBurningCandlesCD					= mod:NewCDNPTimer(17, 1218131, nil, nil, nil, 3)
 
 --local playerName = UnitName("player")
@@ -182,6 +183,11 @@ function mod:SPELL_CAST_START(args)
 		elseif self:AntiSpam(3, 7) then
 			warnDrainLight:Show()
 		end
+	elseif spellId == 426260 then
+		if self:AntiSpam(3, 2) then
+			specWarnPyroPummel:Show()
+			specWarnPyroPummel:Play("frontal")
+		end
 	end
 end
 
@@ -200,7 +206,7 @@ function mod:SPELL_CAST_SUCCESS(args)
 	elseif spellId == 425536 then
 		timerMoleFrenzyCD:Start(23.8, args.sourceGUID)--25.8-2
 	elseif spellId == 426883 then
-		timerBonkCD:Start(15, args.sourceGUID)--17-2
+		timerBonkCD:Start(14.6, args.sourceGUID)--17-2
 	elseif spellId == 426295 then
 		timerFlamingTetherCD:Start(36.7, args.sourceGUID)
 	elseif spellId == 1218131 and self:AntiSpam(3, 9) then
@@ -276,29 +282,29 @@ end
 --All timers subject to a ~0.5 second clipping due to ScanEngagedUnits
 function mod:StartEngageTimers(guid, cid, delay)
 	if cid == 210818 then--Lowly Moleherd
-		timerMoleFrenzyCD:Start(6.4-delay, guid)
+		timerMoleFrenzyCD:Start(5.9-delay, guid)
 	elseif cid == 211121 then--Rank Overseeer
-		timerWildWallopCD:Start(10.8-delay, guid)--9.5-14.5???
-		timerOverpoweringRoarCD:Start(14.5-delay, guid)--10.2-14.5
+		timerWildWallopCD:Start(8.4-delay, guid)--8.8-14.5
+		timerOverpoweringRoarCD:Start(10.2-delay, guid)--10.2-14.5
 	elseif cid == 208450 then--Wandering Candle
-		timerQuenchingBlastCD:Start(8-delay, guid)
-		timerSurgingFlameCD:Start(12.9-delay, guid)
+		timerQuenchingBlastCD:Start(4.7-delay, guid)
+		timerSurgingFlameCD:Start(10.7-delay, guid)
 	elseif cid == 212383 then--Kobold Taskworker
-		timerBonkCD:Start(5.7-delay, guid)
+		timerBonkCD:Start(4.2-delay, guid)
 	elseif cid == 212412 then--Sootsnout
-		timerCeaselessFlameCD:Start(7.4-delay, guid)
-		timerBurningCandlesCD:Start(15.5-delay, guid)
-		timerFlamingTetherCD:Start(24-delay, guid)
+		timerCeaselessFlameCD:Start(6.2-delay, guid)
+		timerBurningCandlesCD:Start(9.9-delay, guid)
+		timerFlamingTetherCD:Start(21.5-delay, guid)
 	elseif cid == 212411 then--Torchsnarl
-		timerOHHeadlockCD:Start(2-delay, guid)
-		timerMassiveStompCD:Start(12.8-delay, guid)
+--		timerOHHeadlockCD:Start(2-delay, guid)--Used near instantly
+		timerMassiveStompCD:Start(5.0-delay, guid)
 	elseif cid == 208456 then--Shuffling Horror
 	--	timerShadowSmashCD:Start(12-delay, guid)
 		timerDrainLightCD:Start(2.2-delay, guid)
 	--elseif cid == 211228 or cid == 220815 or cid == 223770 or cid == 223772 or cid == 223773 or cid == 223774 or cid == 223775 or cid == 223776 or cid == 223777 then--Blazing Fiend
 	--	timerExplosiveFlameCD:Start(20.4-delay, guid)--Used instantly on engage, no initial CD
 	elseif cid == 210812 then--Royal Wicklighter
-		timerFlashPointCD:Start(7-delay, guid)
+		timerFlashPointCD:Start(3.7-delay, guid)
 	end
 end
 

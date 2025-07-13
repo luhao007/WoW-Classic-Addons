@@ -104,7 +104,6 @@ function(self)
 end,
 function(self)
 	settings:SetTooltipSetting("UseMoreColors", self:GetChecked())
-	app.CallbackEvent("OnRenderDirty")
 end)
 checkboxUseMoreColors:SetATTTooltip(L.MORE_COLORS_CHECKBOX_TOOLTIP)
 checkboxUseMoreColors:SetPoint("TOPLEFT", textHeader, "BOTTOMLEFT", 0, -5)

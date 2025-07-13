@@ -2090,7 +2090,7 @@ function D:SetCureCheckBoxNum (Type, checkBox)
 end
 
 function D:GetCureOrderTable ()
-    local activeSpec = GetSpecialization();
+    local activeSpec = nil; -- GetSpecialization();
     local generalCureOrder = D.classprofile.CureOrder;
 
     if not activeSpec or activeSpec == 5 then

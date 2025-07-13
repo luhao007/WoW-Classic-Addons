@@ -1,5 +1,4 @@
 local addonName, addonTable = ...;
-local _, _, _, tocversion = GetBuildInfo()
 local Create=addonTable.Create
 local PIGCheckbutton=Create.PIGCheckbutton
 local PIGFontString=Create.PIGFontString
@@ -14,7 +13,7 @@ local UIdataWHXY={
 	allwww = 715,
 	previewT = "previewTalentsOption"--"previewTalents"
 }
-if tocversion>20000 then
+if PIG_MaxTocversion(20000,true) then
 	UIdataWHXY.gundongHH=636
 	UIdataWHXY.ScrollPY=-90
 	UIdataWHXY.allwww = 920
@@ -23,7 +22,7 @@ TALENT_TOOLTIP_LEARNTALENTGROUP = TALENT_TOOLTIP_LEARNTALENTGROUP or "学习你�
 TALENT_TOOLTIP_RESETTALENTGROUP = TALENT_TOOLTIP_RESETTALENTGROUP or "重置你的模拟结果。";
 ----
 local function ADD_BGtex(self,texname)
-	if Pig_OptionsUI.IsOpen_ElvUI() and PlayerTalentFrame.backdrop or Pig_OptionsUI.IsOpen_NDui() then return end
+	if PIG_OptionsUI.IsOpen_ElvUI() and PlayerTalentFrame.backdrop or PIG_OptionsUI.IsOpen_NDui() then return end
 	self.Bg = self:CreateTexture(nil, "BACKGROUND");
 	self.Bg:SetTexture("interface/framegeneral/ui-background-rock.blp");
 	self.Bg:SetPoint("TOPLEFT", self, "TOPLEFT",14, -15);
@@ -382,10 +381,10 @@ local function Uptate_FrameX()
 		local activeTalentGroup, numTalentGroups = GetActiveTalentGroup(false, PlayerTalentFrame.pet), GetNumTalentGroups(false, PlayerTalentFrame.pet);
         PlayerTalentFrame_UpdateControls(activeTalentGroup, numTalentGroups)
 	end)
-	if tocversion>20000 then
+	if PIG_MaxTocversion(20000,true) then
 		hooksecurefunc("PlayerTalentFrame_ShowGlyphFrame", function()
 			if not GlyphFrame.big then
-				if Pig_OptionsUI.IsOpen_ElvUI() then
+				if PIG_OptionsUI.IsOpen_ElvUI() then
 					GlyphFrame:HookScript('OnShow', function()
 						PlayerTalentFrameTitleText:Show()
 						PlayerTalentFrameScrollFrame:Show()
@@ -429,7 +428,7 @@ local function Uptate_FrameX()
 	local old_TalentFrame_Update=TalentFrame_Update
 	TalentFrame_Update=function(self)
 		if self==PlayerTalentFrame then
-			if tocversion>20000 then PlayerTalentFrame_ShowGlyphFrame();end
+			if PIG_MaxTocversion(20000,true) then PlayerTalentFrame_ShowGlyphFrame();end
 			PanelTemplates_SetTab(self, 1);--pig
 		end
 		old_TalentFrame_Update(self)
@@ -454,7 +453,7 @@ local function Uptate_FrameX()
 			PlayerTalentFrameCloseButton:SetPoint("CENTER",PlayerTalentFrame,"TOPRIGHT",-44,-25);
 			PlayerTalentFrameStatusFrame:SetPoint("TOPLEFT",PlayerTalentFrame,"TOPLEFT",73,-40);
 			PlayerTalentFrameActivateButton:SetPoint("TOP",PlayerTalentFrame,"TOP",-273,-40);
-			if Pig_OptionsUI.IsOpen_ElvUI() and PlayerTalentFrame.backdrop then
+			if PIG_OptionsUI.IsOpen_ElvUI() and PlayerTalentFrame.backdrop then
 				PlayerTalentFrame.backdrop:SetPoint("TOPLEFT",PlayerTalentFrame,"TOPLEFT",0,0);
 				PlayerTalentFrame.backdrop:SetPoint("BOTTOMRIGHT",PlayerTalentFrame,"BOTTOMRIGHT",0,0);
 				if PlayerTalentFrameRoleButton then
@@ -464,10 +463,10 @@ local function Uptate_FrameX()
 			end
 		end
 	end
-	if Pig_OptionsUI.IsOpen_NDui() then
+	if PIG_OptionsUI.IsOpen_NDui() then
 		PlayerTalentFrame:SetSize(UIdataWHXY.allwww,UIdataWHXY.gundongHH);
 	else
-		if tocversion<20000 then
+		if PIG_MaxTocversion(20000) then
 			PlayerTalentFrame:SetSize(UIdataWHXY.allwww,UIdataWHXY.gundongHH-20);
 		else
 			PlayerTalentFrame:SetSize(UIdataWHXY.allwww,UIdataWHXY.gundongHH-76);
@@ -478,7 +477,7 @@ local function Uptate_FrameX()
 	PlayerTalentFrameScrollFrameBackgroundTop:Hide()
 	PlayerTalentFrameScrollFrameBackgroundBottom:Hide()
 	PlayerTalentFrameScrollFrame:ClearAllPoints();
-	if Pig_OptionsUI.IsOpen_NDui() then
+	if PIG_OptionsUI.IsOpen_NDui() then
 		PlayerTalentFrameScrollFrame:SetPoint("TOPLEFT",PlayerTalentFrame,"TOPLEFT",32,UIdataWHXY.ScrollPY);
 	else
 		PlayerTalentFrameScrollFrame:SetPoint("TOPLEFT",PlayerTalentFrame,"TOPLEFT",22,UIdataWHXY.ScrollPY);
@@ -615,12 +614,12 @@ local function Uptate_FrameX()
     end);
 end
 function FramePlusfun.Talent()
-	if tocversion<40000 then
+	if PIG_MaxTocversion(40000) then
 		if not PIGA["FramePlus"]["Talent"] then return end
 		if IsAddOnLoaded("Blizzard_TalentUI") then
 			Uptate_FrameX()
 		else
-			local tianfuFrame = CreateFrame("FRAME")
+			local tianfuFrame = CreateFrame("Frame")
 			tianfuFrame:RegisterEvent("ADDON_LOADED")
 			tianfuFrame:SetScript("OnEvent", function(self, event, arg1)
 			    if arg1 == "Blizzard_TalentUI" then

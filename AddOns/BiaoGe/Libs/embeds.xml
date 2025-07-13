@@ -6,6 +6,4 @@
     <Script file="Libs\LibRecipes-3.0.lua"/>
     <Script file="Libs\LibBase64\LibBase64.lua"/>
 
-    <!--@no-lib-strip@-->
-    <!--@end-no-lib-strip@-->
 </Ui>

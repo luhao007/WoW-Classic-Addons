@@ -1,9 +1,7 @@
 local addonName, addonTable = ...;
 local L=addonTable.locale
-local _, _, _, tocversion = GetBuildInfo()
 ---
 local Create=addonTable.Create
-local PIGFrame=Create.PIGFrame
 local PIGLine=Create.PIGLine
 local PIGSlider = Create.PIGSlider
 local PIGDownMenu=Create.PIGDownMenu
@@ -102,7 +100,7 @@ fujiF.AutoRepair:SetScript("OnClick", function (self)
 		PIGA["Interaction"]["AutoRepair"]=false;
 	end
 end);
-if tocversion>19999 then
+if PIG_MaxTocversion(20000,true) then
 	fujiF.GonghuiRepair = PIGCheckbutton(fujiF,{"LEFT",fujiF.AutoRepair,"RIGHT",200,0},{"优先使用公会资金", "修理时优先使用公会资金"})
 	fujiF.GonghuiRepair:SetScript("OnClick", function (self)
 		if self:GetChecked() then
@@ -114,7 +112,7 @@ if tocversion>19999 then
 end
 ---------------
 local RightPlusline = PIGLine(fujiF,"TOP",-400)
-fujiF.RightPlus = PIGCheckbutton(fujiF,{"TOPLEFT",RightPlusline,"TOPLEFT",20,-18},{KEY_BUTTON2.."增强","增强交互时"..KEY_BUTTON2.."功能，例如点击聊天栏玩家名/查询页玩家名"})
+fujiF.RightPlus = PIGCheckbutton(fujiF,{"TOPLEFT",RightPlusline,"TOPLEFT",20,-18},{KEY_BUTTON2.."增强","增强交互时"..KEY_BUTTON2.."功能，例如点击聊天栏玩家名/查询页玩家名\n注意不要用此功能复制的姓名作为/tar目标"})
 fujiF.RightPlus:SetScript("OnClick", function (self)
     if self:GetChecked() then
         PIGA["Interaction"]["RightPlus"]=true;
@@ -122,7 +120,7 @@ fujiF.RightPlus:SetScript("OnClick", function (self)
         fujiF.xiayiSlider:SetValue(PIGA["Interaction"]["xiayijuli"]);
     else
         PIGA["Interaction"]["RightPlus"]=false;
-        Pig_Options_RLtishi_UI:Show()
+        PIG_OptionsUI.RLUI:Show()
     end
 end);
 if not Menu or not Menu.ModifyMenu then

@@ -503,7 +503,7 @@ local function SupportedNPModIcons()
 end
 local function SupportedNPModBars()
 	if not DBM.Options.UseNameplateHandoff then return false end
-	if _G["Plater"] then return true end--Plater support disabled for time being due to bugs in plater that prevent using glow types correctly
+	if _G["Plater"]  or _G["TidyPlatesThreatDBM"] then return true end--Plater support disabled for time being due to bugs in plater that prevent using glow types correctly
 	return false
 end
 
@@ -920,7 +920,7 @@ do
 
 		if not id then return end
 		local guid = nameplateTimerBars[id] and nameplateTimerBars[id].guid
-		if guid then
+		if guid and units[guid] then
 			for _,aura_tbl in ipairs(units[guid]) do
 				if aura_tbl.id == id then
 					NameplateIcon_Hide(true, guid, aura_tbl.index, false)

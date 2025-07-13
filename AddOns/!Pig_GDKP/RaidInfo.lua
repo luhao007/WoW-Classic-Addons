@@ -1,30 +1,36 @@
 local addonName, addonTable = ...;
-local _, _, _, tocversion = GetBuildInfo()
-local Create, Data, Fun, L, Default, Default_Per= unpack(PIG)
------
-local PIGFrame=Create.PIGFrame
-local PIGButton = Create.PIGButton
-local PIGDownMenu=Create.PIGDownMenu
-local PIGLine=Create.PIGLine
-local PIGEnter=Create.PIGEnter
-local PIGSlider = Create.PIGSlider
-local PIGCheckbutton=Create.PIGCheckbutton
-local PIGOptionsList_RF=Create.PIGOptionsList_RF
-local PIGOptionsList_R=Create.PIGOptionsList_R
-local PIGQuickBut=Create.PIGQuickBut
-local Show_TabBut_R=Create.Show_TabBut_R
-local PIGFontString=Create.PIGFontString
-local PIGSetFont=Create.PIGSetFont
-----------
 local GDKPInfo=addonTable.GDKPInfo
 function GDKPInfo.ADD_RaidInfo(RaidR)
+	local Create, Data, Fun, L, Default, Default_Per= unpack(PIG)
+	-----
+	local PIGFrame=Create.PIGFrame
+	local PIGButton = Create.PIGButton
+	local PIGLine=Create.PIGLine
+	local PIGEnter=Create.PIGEnter
+	local PIGSlider = Create.PIGSlider
+	local PIGCheckbutton=Create.PIGCheckbutton
+	local PIGOptionsList_R=Create.PIGOptionsList_R
+	local PIGQuickBut=Create.PIGQuickBut
+	local Show_TabBut_R=Create.Show_TabBut_R
+	local PIGFontString=Create.PIGFontString
+	local PIGSetFont=Create.PIGSetFont
 	local GnName,GnUI,GnIcon,FrameLevel = unpack(GDKPInfo.uidata)
-	local RaidR=_G[GnUI]
+	-----
 	local fujiF=PIGOptionsList_R(RaidR.F,"人员信息",80)
-	local cl_iconH=24;
-	local cl_Name=Data.cl_Name
-	--点击提示
-	local iconWH = 22
+	function RaidR.IsNameInRiad(seekname)
+		local RplayerData = PIGA["GDKP"]["Raidinfo"]
+		for p=1,#RplayerData do
+			for pp=1,#RplayerData[p] do
+				if seekname==RplayerData[p][pp][1] then
+					return p,pp
+				end
+			end
+		end
+		return nil
+	end
+	----
+	local iconWH,cl_iconH,cl_Name=22,24,Data.cl_Name
+	--底部提示
 	fujiF.yedibuF = PIGLine(fujiF,"BOT",31)
 	fujiF.tishi = CreateFrame("Frame", nil, fujiF);
 	fujiF.tishi:SetSize(iconWH,iconWH);
@@ -38,7 +44,7 @@ function GDKPInfo.ADD_RaidInfo(RaidR)
 	--全部
 	fujiF.All = CreateFrame("Frame", nil, fujiF);
 	fujiF.All:SetSize(cl_iconH*2, cl_iconH);
-	fujiF.All:SetPoint("TOPLEFT",fujiF,"TOPLEFT",16,-13);
+	fujiF.All:SetPoint("TOPLEFT",fujiF,"TOPLEFT",10,-13);
 	fujiF.All.Tex = fujiF.All:CreateTexture(nil, "BORDER");
 	fujiF.All.Tex:SetTexture("interface/glues/charactercreate/ui-charactercreate-factions.blp");
 	fujiF.All.Tex:SetPoint("LEFT", fujiF.All, "LEFT", 0,0);
@@ -53,13 +59,15 @@ function GDKPInfo.ADD_RaidInfo(RaidR)
 	fujiF.All.Num:SetTextColor(1, 1, 1, 1);
 
 	--分职业
+	fujiF.classButList={}
 	for id=1,#cl_Name do
-		local classes = CreateFrame("Frame", "RRclasses_"..id, fujiF);
+		local classes = CreateFrame("Frame", nil, fujiF);
+		fujiF.classButList[id]=classes
 		classes:SetSize(cl_iconH*2-5, cl_iconH);
 		if id==1 then
 			classes:SetPoint("LEFT",fujiF.All,"RIGHT",2,0);
 		else
-			classes:SetPoint("LEFT",_G["RRclasses_"..(id-1)],"RIGHT",0,0);
+			classes:SetPoint("LEFT",fujiF.classButList[id-1],"RIGHT",0,0);
 		end
 		classes.Tex = classes:CreateTexture(nil, "BORDER");
 		classes.Tex:SetTexture("Interface/TargetingFrame/UI-Classes-Circles");
@@ -73,17 +81,19 @@ function GDKPInfo.ADD_RaidInfo(RaidR)
 	local zhizeIcon=Data.zhizeIcon
 	local LeftmenuName={"设为<|cff00FF00"..TANK.."|r>补助","设为<|cff00FF00"..HEALS.."|r>补助","设为<|cff00FF00"..DAMAGE.."|r>补助","撤销补助"}
 	local LeftmenuV=GDKPInfo.LeftmenuV
+	fujiF.RRButList={}
 	for id=1,#zhizeIcon do
-		local zhize = CreateFrame("Frame", "RRzhize_"..id, fujiF); 
+		local zhize = CreateFrame("Frame", nil, fujiF); 
+		fujiF.RRButList[id]=zhize
 		zhize:SetSize(cl_iconH*2-4, cl_iconH);
 		if id==1 then
-			if tocversion<100000 then
-				zhize:SetPoint("LEFT",_G["RRclasses_"..#cl_Name],"RIGHT",20,0);
+			if PIG_MaxTocversion() then
+				zhize:SetPoint("LEFT",fujiF.classButList[#cl_Name],"RIGHT",10,0);
 			else
 				zhize:SetPoint("TOPLEFT",fujiF.yedibuF,"BOTTOMLEFT",460,-2);
 			end
 		else
-			zhize:SetPoint("LEFT",_G["RRzhize_"..(id-1)],"RIGHT",0,0);
+			zhize:SetPoint("LEFT",fujiF.RRButList[id-1],"RIGHT",0,0);
 		end
 		zhize.Tex = zhize:CreateTexture(nil, "BORDER");
 		zhize.Tex:SetTexture("interface/lfgframe/ui-lfg-icon-roles.blp");
@@ -98,13 +108,15 @@ function GDKPInfo.ADD_RaidInfo(RaidR)
 	local RightmenuV=GDKPInfo.RightmenuV
 	local fenGbiliIcon=GDKPInfo.fenGbiliIcon
 	local fenGbiliIconCaiqie = {{0,1,0,1},{0,1,0,1},{0,1,0,1}}
+	fujiF.RRfenGButList={}
 	for id=1,(#RightmenuV-1) do
-		local fenG = CreateFrame("Frame", "RRfenG_"..id, fujiF); 
+		local fenG = CreateFrame("Frame", nil, fujiF); 
+		fujiF.RRfenGButList[id]=fenG
 		fenG:SetSize(cl_iconH*2-4, cl_iconH);
 		if id==1 then
-			fenG:SetPoint("LEFT",_G["RRzhize_"..#zhizeIcon],"RIGHT",20,0);
+			fenG:SetPoint("LEFT",fujiF.RRButList[#zhizeIcon],"RIGHT",10,0);
 		else
-			fenG:SetPoint("LEFT",_G["RRfenG_"..(id-1)],"RIGHT",0,0);
+			fenG:SetPoint("LEFT",fujiF.RRfenGButList[id-1],"RIGHT",0,0);
 		end
 		fenG.Tex = fenG:CreateTexture(nil, "BORDER");
 		fenG.Tex:SetTexture(fenGbiliIcon[id]);
@@ -154,7 +166,7 @@ function GDKPInfo.ADD_RaidInfo(RaidR)
 		if fujiF:IsShown() then
 			for p=1, 8 do
 				for pp=1, 5 do
-					_G["RRRaidInfoList_"..p.."_"..pp]:Hide();
+					fujiF.RRRaidButList[p].ButList[pp]:Hide();
 				end
 			end
 			----
@@ -167,7 +179,7 @@ function GDKPInfo.ADD_RaidInfo(RaidR)
 				for pp=1, #infoData[p] do
 					if infoData[p][pp] then
 						classes_zongShu=classes_zongShu+1;
-						local fujibut = _G["RRRaidInfoList_"..p.."_"..pp]
+						local fujibut = fujiF.RRRaidButList[p].ButList[pp]
 						fujibut:Show();
 						local zhiye = infoData[p][pp][2]
 						for mm=1,#cl_Name do
@@ -184,7 +196,7 @@ function GDKPInfo.ADD_RaidInfo(RaidR)
 						else
 							fujibut.Text:SetText(name)
 						end
-						local color = RAID_CLASS_COLORS[zhiye]
+						local color = PIG_CLASS_COLORS[zhiye]
 						fujibut.color=color
 						fujibut.Text:SetTextColor(color.r, color.g, color.b,1);
 						local buzhuLEI = infoData[p][pp][4]
@@ -215,13 +227,13 @@ function GDKPInfo.ADD_RaidInfo(RaidR)
 				end
 			end
 			for j=1,#cl_Name do
-				_G["RRclasses_"..j].Num:SetText(classes_Shu[j]);
+				fujiF.classButList[j].Num:SetText(classes_Shu[j]);
 			end
 			for j=1,#zhizeIcon do
-				_G["RRzhize_"..j].Num:SetText(buzhurenshu[j]);
+				fujiF.RRButList[j].Num:SetText(buzhurenshu[j]);
 			end
 			for j=1,(#RightmenuV-1) do
-				_G["RRfenG_"..j].Num:SetText(fenGbilishu[j])
+				fujiF.RRfenGButList[j].Num:SetText(fenGbilishu[j])
 			end
 			fujiF.All.Num:SetText(classes_zongShu);
 		end
@@ -230,27 +242,31 @@ function GDKPInfo.ADD_RaidInfo(RaidR)
 	--创建队伍角色框架=============================
 	local duiwu_Width,duiwu_Height=180,28;
 	local jiangeW,jiangeH=20,0;
+	fujiF.RRRaidButList={}
 	for p=1,8 do
-		local DuiwuF = CreateFrame("Frame", "RRRaidInfoList_"..p, fujiF);
+		local DuiwuF = CreateFrame("Frame", nil, fujiF);
+		fujiF.RRRaidButList[p]=DuiwuF
 		DuiwuF:SetSize(duiwu_Width,duiwu_Height*5+24);
 		if p==1 then
 			DuiwuF:SetPoint("TOPLEFT",fujiF,"TOPLEFT",14,-60);
 		end
 		if p>1 and p<5 then
-			DuiwuF:SetPoint("LEFT",_G["RRRaidInfoList_"..(p-1)],"RIGHT",jiangeW,jiangeH);
+			DuiwuF:SetPoint("LEFT",fujiF.RRRaidButList[p-1],"RIGHT",jiangeW,jiangeH);
 		end
 		if p==5 then
-			DuiwuF:SetPoint("TOP",_G["RRRaidInfoList_1"],"BOTTOM",0,-20);
+			DuiwuF:SetPoint("TOP",fujiF.RRRaidButList[1],"BOTTOM",0,-20);
 		end
 		if p>5 then
-			DuiwuF:SetPoint("LEFT",_G["RRRaidInfoList_"..(p-1)],"RIGHT",jiangeW,jiangeH);
+			DuiwuF:SetPoint("LEFT",fujiF.RRRaidButList[p-1],"RIGHT",jiangeW,jiangeH);
 		end
+		DuiwuF.ButList={}
 		for pp=1,5 do
-			local DuiwuF_P = PIGButton(DuiwuF,nil,{duiwu_Width,duiwu_Height},nil,"RRRaidInfoList_"..p.."_"..pp);
+			local DuiwuF_P = PIGButton(DuiwuF,nil,{duiwu_Width,duiwu_Height});
+			DuiwuF.ButList[pp]=DuiwuF_P
 			if pp==1 then
 				DuiwuF_P:SetPoint("TOP",DuiwuF,"TOP",0,0);
 			else
-				DuiwuF_P:SetPoint("TOP",_G["RRRaidInfoList_"..p.."_"..(pp-1)],"BOTTOM",0,-6);
+				DuiwuF_P:SetPoint("TOP",DuiwuF.ButList[pp-1],"BOTTOM",0,-6);
 			end
 			PIGSetFont(DuiwuF_P.Text,14,"OUTLINE")
 			DuiwuF_P.BG = DuiwuF_P:CreateTexture(nil, "BORDER");
@@ -368,27 +384,13 @@ function GDKPInfo.ADD_RaidInfo(RaidR)
 	end
 	--菜单函数
 	function fujiF.playerClick.ClickMenuFun(pbut)
-		local AllName = fujiF.playerClick.AllName
-		local MenuName = pbut:GetText()
-		local MenuID = pbut:GetID()
-		local infoData = PIGA["GDKP"]["Raidinfo"]	
-		if fujiF.playerClick.button=="LeftButton" then
-			for p=1,#infoData do
-				for pp=1,#infoData[p] do
-					if AllName==infoData[p][pp][1] then
-						infoData[p][pp][4]=LeftmenuV[MenuID]
-						break
-					end
-				end
-			end
-		else
-			for p=1,#infoData do
-				for pp=1,#infoData[p] do
-					if AllName==infoData[p][pp][1] then
-						infoData[p][pp][3]=RightmenuV[MenuID]
-						break
-					end
-				end
+		local p,pp=RaidR.IsNameInRiad(fujiF.playerClick.AllName)
+		if p then 
+			local MenuID = pbut:GetID()
+			if fujiF.playerClick.button=="LeftButton" then
+				PIGA["GDKP"]["Raidinfo"][p][pp][4]=LeftmenuV[MenuID]
+			else
+				PIGA["GDKP"]["Raidinfo"][p][pp][3]=RightmenuV[MenuID]
 			end
 		end
 		fujiF.playerClick:Hide()

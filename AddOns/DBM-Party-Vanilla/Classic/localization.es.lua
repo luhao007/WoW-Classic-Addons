@@ -60,7 +60,7 @@ L:SetGeneralLocalization{
 L = DBM:GetModLocalization(369)
 
 L:SetGeneralLocalization{
-	name 		= "Alto Interrogador Gerstahn"
+	name 		= "Alta Interrogadora Gerstahn"
 }
 -----------------
 -- Lord Roccor --
@@ -1201,7 +1201,7 @@ L:SetGeneralLocalization{
 L = DBM:GetModLocalization(450)
 
 L:SetGeneralLocalization{
-	name 		= "El Imperdonable"
+	name 		= "El imperdonable"
 }
 
 -----------------------------

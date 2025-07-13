@@ -1,5 +1,4 @@
 local _, addonTable = ...;
-local _, _, _, tocversion = GetBuildInfo()
 -------------
 local FramePlusfun=addonTable.FramePlusfun
 function FramePlusfun.Merchant()
@@ -26,7 +25,7 @@ function FramePlusfun.Merchant()
 		if ElvUI then
 			local button = _G['MerchantItem'..i..'ItemButton']
 			local slot = _G['MerchantItem'..i..'SlotTexture']
-			if tocversion<50000 then
+			if PIG_MaxTocversion() then
 				local icon = _G['MerchantItem'..i..'ItemButtonIconTexture']
 				local money = _G['MerchantItem'..i..'MoneyFrame']
 				local nameFrame = _G['MerchantItem'..i..'NameFrame']
@@ -126,7 +125,7 @@ function FramePlusfun.Merchant()
 		MerchantNextPageButton:SetPoint("BOTTOMLEFT",MerchantFrame,"BOTTOMLEFT",www+280,38);
 		MerchantPageText:ClearAllPoints();
 		MerchantPageText:SetPoint("BOTTOMLEFT",MerchantFrame,"BOTTOMLEFT",www+110,47);
-		if tocversion<50000 then
+		if PIG_MaxTocversion() then
 			MerchantBuyBackItem:ClearAllPoints();
 			MerchantBuyBackItem:SetPoint("BOTTOMLEFT",MerchantFrame,"BOTTOMLEFT",174,33);
 			if ElvUI then
@@ -170,7 +169,7 @@ function FramePlusfun.Merchant()
 		for i=13,20 do
 			_G["MerchantItem"..i]:Show()
 		end
-		if tocversion<50000 then
+		if PIG_MaxTocversion() then
 			if ElvUI then
 				for i=13,20 do
 					local button = _G['MerchantItem'..i..'ItemButton']

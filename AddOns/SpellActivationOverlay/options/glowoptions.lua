@@ -1,7 +1,26 @@
 local AddonName, SAO = ...
 
-function SAO.AddGlowingOption(self, talentID, spellID, glowID, talentSubText, spellSubText, variants)
-    if (talentID and not GetSpellInfo(talentID)) or (not self:IsFakeSpell(glowID) and not GetSpellInfo(glowID)) then
+local Module = "option"
+
+-- Add a checkbox for a glowing button
+-- talentID is the spell ID of the associated talent; can be nil, meaning the button does not glow depending on a talent; can be negative for specs instead of talents
+-- spellID is the spell ID of the buff or action that triggers the button; if the button is a counter, spellID should match glowID
+-- glowID is the spell ID of the button(s) that will glow
+-- talentSubText is a string describing the specificity of this option, appended to talent text
+-- spellSubText is a string describing the specificity of this option, appended to spell text
+-- variants optional variant object that tells which are sub-options and how to use them
+-- hash optional hash, used to describe what the display is expected to depend on
+-- @note Options must be linked asap, not during loadOptions() which would be loaded only when the options panel is opened
+-- By linking options as soon as possible, before their respective RegisterAura() calls, options can be used by initial triggers, if any
+function SAO.AddGlowingOption(self, talentID, spellID, glowID, talentSubText, spellSubText, variants, hash) -- @todo use hash and testHash like overlay options
+    local talentText = talentID and self:GetTalentText(talentID);
+    if (talentID and not talentText) or (not self:IsFakeSpell(glowID) and not GetSpellInfo(glowID)) then
+        if talentID and not talentText then
+            self:Debug(Module, "Skipping glowing option of talentID "..tostring(talentID).." because the spell does not exist");
+        end
+        if not self:IsFakeSpell(glowID) and not GetSpellInfo(glowID) then
+            self:Debug(Module, "Skipping glowing option of glowID "..tostring(glowID).." because the spell does not exist (and is not a fake spell)");
+        end
         return;
     end
 
@@ -12,24 +31,27 @@ function SAO.AddGlowingOption(self, talentID, spellID, glowID, talentSubText, sp
         local enabled = self:IsEnabled();
 
         -- Class text
-        local classColor;
-        if (enabled) then
-            classColor = select(4,GetClassColor(classFile));
-        else
-            local dimmedClassColor = CreateColor(0.5*RAID_CLASS_COLORS[classFile].r, 0.5*RAID_CLASS_COLORS[classFile].g, 0.5*RAID_CLASS_COLORS[classFile].b);
-            classColor = dimmedClassColor:GenerateHexColor();
-        end
-        local text = WrapTextInColorCode(className, classColor);
+        local text = "";
+        -- No longer display the class name for each glowing button
+        -- local classColor;
+        -- if (enabled) then
+        --     classColor = select(4,GetClassColor(classFile));
+        -- else
+        --     local dimmedClassColor = CreateColor(0.5*RAID_CLASS_COLORS[classFile].r, 0.5*RAID_CLASS_COLORS[classFile].g, 0.5*RAID_CLASS_COLORS[classFile].b);
+        --     classColor = dimmedClassColor:GenerateHexColor();
+        -- end
+        -- text = WrapTextInColorCode(className, classColor);
 
         -- Talent text
         local spellName, spellIcon;
-        if (talentID) then
-            spellName, _, spellIcon = GetSpellInfo(talentID);
-            text = text.." |T"..spellIcon..":0|t "..spellName;
+        if (talentID and talentID ~= glowID) then
+            text = text.." "..talentText;
             if (talentSubText) then
                 text = text.." ("..talentSubText..")";
             end
-            text = text.." +"
+            text = text.." +";
+        elseif (talentID and talentID == glowID and talentSubText) then
+            self:Debug(Module, "Glowing option of glowID "..tostring(glowID).." has talent sub-text '"..talentSubText.."' but the text will be discarded because talentID matches glowID");
         end
 
         -- Spell text
@@ -37,6 +59,16 @@ function SAO.AddGlowingOption(self, talentID, spellID, glowID, talentSubText, sp
         text = text.." |T"..spellIcon..":0|t "..spellName;
         if (spellSubText) then
             text = text.." ("..spellSubText..")";
+        end
+
+        -- Hash text
+        if type(hash) == 'string' then
+            local hashCalculator = SAO.Hash:new();
+            hashCalculator:fromString(hash);
+            local humanReadableHash = hashCalculator:toHumanReadableString();
+            if humanReadableHash then
+                text = text .. " ("..humanReadableHash..")";
+            end
         end
 
         -- Set final text to checkbox

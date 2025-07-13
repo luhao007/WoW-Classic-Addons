@@ -14,18 +14,16 @@ local RGB_16 = ns.RGB_16
 local GetClassRGB = ns.GetClassRGB
 local SetClassCFF = ns.SetClassCFF
 local GetText_T = ns.GetText_T
-local FrameDongHua = ns.FrameDongHua
-local FrameHide = ns.FrameHide
 local AddTexture = ns.AddTexture
 local GetItemID = ns.GetItemID
 
 local Maxb = ns.Maxb
-local Maxi = ns.Maxi
 
 local pt = print
 local realmID = GetRealmID()
-local player = UnitName("player")
+local player = BG.playerName
 local realmName = GetRealmName()
+local IsAddOnLoaded = IsAddOnLoaded or C_AddOns.IsAddOnLoaded
 
 BG.Init(function()
     -- 时光徽章价格
@@ -37,13 +35,17 @@ BG.Init(function()
                 GameTooltip:ClearLines()
                 GameTooltip:AddLine(L["当前时光徽章"], 1, 1, 1, true)
                 GameTooltip:AddLine(GetMoneyString(currentPrice, false), 1, 0.82, 0, true)
-                if BG.IsWLK then
+                if BG.IsWLK or BG.IsRetail then
                     GameTooltip:AddLine(" ", 1, 1, 1, true)
                     local m1 = currentPrice / 90 / 10000
                     m1 = floor(m1) * 10000
                     GameTooltip:AddLine("￥1 = " .. GetMoneyString(m1, false), 1, 0.82, 0, true)
                     local m2 = 90 / (currentPrice / 10000)
-                    m2 = format("%.4f", m2)
+                    if BG.IsRetail then
+                        m2 = format("%.6f", m2)
+                    else
+                        m2 = format("%.4f", m2)
+                    end
                     GameTooltip:AddLine(GetMoneyString(10000, false) .. " = " .. m2 .. "￥", 1, 0.82, 0, true)
                 end
                 GameTooltip:Show()
@@ -90,7 +92,7 @@ BG.Init(function()
     end
 
     -- 在线玩家数
-    if BG.IsVanilla_Sod or BG.IsCTM then
+    if BG.IsVanilla_Sod or BG.IsMOP then
         BG.Init2(function()
             if not IsAddOnLoaded("Blizzard_Communities") then
                 UIParentLoadAddOn("Blizzard_Communities")

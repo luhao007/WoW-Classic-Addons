@@ -85,6 +85,7 @@ local GeneralSettingsBase = {
 		["Show:CollectedThings"] = false,
 		["Show:OnlyActiveEvents"] = true,
 		["Show:PetBattles"] = true,
+		["Show:Skyriding"] = true,
 		["Show:UnavailablePersonalLoot"] = true,
 		["Hide:PvP"] = false,
 		["Dynamic:Style"] = 1,
@@ -97,13 +98,15 @@ local GeneralSettingsBase = {
 		["Window:BorderColor"] = { r = 1, g = 1, b = 1, a = 1 },
 		["Window:UseClassForBorder"] = false,
 		["Window:CustomColors"] = {},	-- CRIEVE NOTE: Look into what this does, I'm not sure.
+		["PresetRestore"] = {},
 	},
 };
 local FilterSettingsBase = {
 	__index = app.Presets[app.Class] or app.Presets.ALL,
 };
+local TransmogPresets = app.PresetTransmogs or app.Presets;
 local TransmogFilterSettingsBase = {
-	__index = app.PresetTransmogs[app.Class] or app.PresetTransmogs.ALL,
+	__index = TransmogPresets[app.Class] or TransmogPresets.ALL,
 };
 local TooltipSettingsBase = {
 	__index = {
@@ -174,6 +177,7 @@ local TooltipSettingsBase = {
 		["playerCoord"] = true,
 		["requireEvent"] = true,
 		["requireSkill"] = true,
+		["petBattleLvl"] = true,
 		["providers"] = true,
 		["nextEvent"] = true,
 		["spellName"] = true,
@@ -279,18 +283,30 @@ settings.Initialize = function(self)
 	end
 	self.sliderMinimapButtonSize:SetValue(self:GetTooltipSetting("MinimapSize"))
 
-	app.SetWorldMapButtonSettings(self:GetTooltipSetting("WorldMapButton"));
+	-- TODO: need to properly use other libraries to create minimap button if delayed...
+	-- but other addons only handle pre-existing minimap buttons when they load, so for now move back to the order it was
 	app.SetMinimapButtonSettings(
 		self:GetTooltipSetting("MinimapButton"),
 		self:GetTooltipSetting("MinimapSize"));
+
+	app.AddEventHandler("OnStartup", function()
+		app.SetWorldMapButtonSettings(self:GetTooltipSetting("WorldMapButton"));
+	end)
 
 	self:UpdateMode();
 end
 settings.Get = function(self, setting)
 	return AllTheThingsSettings.General[setting];
 end
+settings.ResetFilters = function(self)
+	wipe(AllTheThingsSettingsPerCharacter.Filters)
+	settings:UpdateMode(1)
+end
 settings.GetFilter = function(self, filterID)
 	return AllTheThingsSettingsPerCharacter.Filters[filterID];
+end
+settings.GetDefaultFilter = function(self, filterID)
+	return FilterSettingsBase.__index[filterID]
 end
 settings.GetFilterForTransmogBase = function(self, filterID)
 	return app.PresetTransmogs.ALL[filterID];
@@ -335,6 +351,8 @@ settings.GetModeString = function(self)
 		local solo = true
 		local keyPrefix, thingName, thingActive
 		local insaneTotalCount, insaneCount = 0, 0;
+		local rankedTotalCount, rankedCount = 0, 0;
+		local coreTotalCount, coreCount = 0, 0;
 		local totalThingCount, thingCount, things = 0, 0, {};
 		for key,_ in pairs(GeneralSettingsBase.__index) do
 			keyPrefix = key:sub(1, 6);
@@ -353,8 +371,24 @@ settings.GetModeString = function(self)
 						insaneTotalCount = insaneTotalCount + 1;
 						insaneCount = insaneCount + 1;
 					end
-				elseif self.RequiredForInsaneMode[thingName] then
-					insaneTotalCount = insaneTotalCount + 1;
+					if self.RequiredForRankedMode[thingName] then
+						rankedTotalCount = rankedTotalCount + 1;
+						rankedCount = rankedCount + 1;
+					end
+					if self.RequiredForCoreMode[thingName] then
+						coreTotalCount = coreTotalCount + 1;
+						coreCount = coreCount + 1;
+					end
+				else
+					if self.RequiredForInsaneMode[thingName] then
+						insaneTotalCount = insaneTotalCount + 1;
+					end
+					if self.RequiredForRankedMode[thingName] then
+						rankedTotalCount = rankedTotalCount + 1;
+					end
+					if self.RequiredForCoreMode[thingName] then
+						coreTotalCount = coreTotalCount + 1;
+					end
 				end
 			elseif solo and keyPrefix == "Accoun" and settings:Get(key) then
 				-- TODO: a bit wonky that a disabled Thing with AccountWide checked can make it non-solo...
@@ -368,11 +402,25 @@ settings.GetModeString = function(self)
 		elseif thingCount == 2 then
 			mode = things[1] .. " + " .. things[2] .. " Only " .. mode;
 		elseif insaneCount == insaneTotalCount then
-			-- only insane if not hiding anything!
-			if settings:NonInsane() then
-				-- don't add insane :)
+			-- only Insane if not hiding anything!
+			if settings:NonMode() then
+				-- don't add Insane :)
 			else
 				mode = "Insane " .. mode
+			end
+		elseif rankedCount == rankedTotalCount then
+			-- only Ranked if not hiding anything!
+			if settings:NonMode() then
+				-- don't add Ranked :)
+			else
+				mode = "Ranked " .. mode
+			end
+		elseif coreCount == coreTotalCount then
+			-- only Core if not hiding anything!
+			if settings:NonMode() then
+				-- don't add Core :)
+			else
+				mode = "Core " .. mode
 			end
 		elseif not settings:Get("Thing:Transmog") and self.RequiredForInsaneMode["Transmog"] then
 			mode = "Some of the Things " .. mode
@@ -433,7 +481,18 @@ settings.GetUnobtainableFilter = function(self, u)
 end
 settings.Set = function(self, setting, value)
 	AllTheThingsSettings.General[setting] = value;
+	app.HandleEvent("Settings.OnSet","General",setting,value)
 	self:Refresh();
+end
+settings.SetValue = function(self, container, setting, value)
+	local settingscontainer = RawSettings[container]
+	if not settingscontainer then
+		settingscontainer = {}
+		RawSettings[container] = settingscontainer
+	end
+	settingscontainer[setting] = value
+	app.HandleEvent("Settings.OnSet",container,setting,value)
+	self:Refresh()
 end
 settings.SetFilter = function(self, filterID, value)
 	AllTheThingsSettingsPerCharacter.Filters[filterID] = value;
@@ -441,11 +500,12 @@ settings.SetFilter = function(self, filterID, value)
 end
 settings.SetTooltipSetting = function(self, setting, value)
 	AllTheThingsSettings.Tooltips[setting] = value;
+	app.HandleEvent("Settings.OnSet","Tooltips",setting,value)
 	app.WipeSearchCache();
 	self:Refresh();
 end
 settings.SetUnobtainableFilter = function(self, u, value)
-	AllTheThingsSettings.Unobtainable[u] = value;
+	self:SetValue("Unobtainable", u, value)
 	self:UpdateMode(1);
 end
 settings.SetPersonal = function(self, setting, value)

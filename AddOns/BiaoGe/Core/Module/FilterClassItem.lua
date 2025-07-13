@@ -13,15 +13,10 @@ local RGB_16 = ns.RGB_16
 local GetClassRGB = ns.GetClassRGB
 local SetClassCFF = ns.SetClassCFF
 local GetText_T = ns.GetText_T
-local FrameDongHua = ns.FrameDongHua
-local FrameHide = ns.FrameHide
 local AddTexture = ns.AddTexture
 local GetItemID = ns.GetItemID
 
-local Width = ns.Width
-local Height = ns.Height
 local Maxb = ns.Maxb
-local Maxi = ns.Maxi
 local HopeMaxn = ns.HopeMaxn
 local HopeMaxb = ns.HopeMaxb
 local HopeMaxi = ns.HopeMaxi
@@ -30,7 +25,7 @@ local pt = print
 
 local F = {}
 local RealmId = GetRealmID()
-local player = UnitName("player")
+local player = BG.playerName
 local _, class = UnitClass("player")
 
 -- Font
@@ -281,8 +276,8 @@ function BG.FilterClassItemUI()
                     end
                     GameTooltip:AddLine(BiaoGe.FilterClassItemDB[RealmId][player][bt.num].Name, 1, 1, 1, true)
                     if bts == Buttons then
-                        GameTooltip:AddLine(L["左键使用方案"], 1, .82, 0, true)
-                        GameTooltip:AddLine(L["右键修改方案"], 1, .82, 0, true)
+                        GameTooltip:AddLine(AddTexture("LEFT") .. L["使用方案"], 1, .82, 0, true)
+                        GameTooltip:AddLine(AddTexture("RIGHT") ..L["修改方案"], 1, .82, 0, true)
                     end
                     GameTooltip:Show()
                 end)
@@ -428,6 +423,9 @@ function BG.FilterClassItemUI()
         f:SetScript("OnShow", function(self)
             BG.FilterClassItemMainFrame.AddFrame:Hide()
         end)
+        f:SetScript("OnHide", function(self)
+            self:Hide()
+        end)
         BG.FilterClassItemMainFrame = f
 
         local t = f:CreateFontString()
@@ -501,6 +499,9 @@ function BG.FilterClassItemUI()
             BG.ClearFocus()
             self:GetParent():StartMoving()
         end)
+        f:SetScript("OnHide", function(self)
+            self:Hide()
+        end)
         BG.FilterClassItemMainFrame.AddFrame = f
 
         local t = f:CreateFontString()
@@ -564,7 +565,11 @@ function BG.FilterClassItemUI()
         for i, iconpath in ipairs(BG.FilterClassItemDB.NewIcon) do
             local bt = CreateFrame("Button", nil, f)
             if i > othericon then
-                isOther = true
+                -- if BG.IsRetail then
+                --     break
+                -- else
+                    isOther = true
+                -- end
             end
             if not isOther then
                 if i == 1 then
@@ -926,7 +931,7 @@ function BG.FilterClassItemUI()
         local type = "Class"
         local tilte_onenter = L["像套装兑换物这种有职业限定的装备，不适合你的会被过滤"]
         F.buttons[type], F.frames[type] = CreateFilterButton(BG.FilterClassItemDB[type], BG.STC_g1(L["职业限定过滤"]), tilte_onenter, type, "pailie")
-        if not BG.IsVanilla then
+        if BG.FilterClassItem_Default.TankKey then
             local type = "Tank"
             local tilte_onenter = format(L["没有%s任一属性的装备会被过滤（武器、饰品、圣物除外）"], STAT_CATEGORY_DEFENSE .. "/" .. STAT_PARRY .. "/" .. STAT_DODGE .. "/" .. STAT_BLOCK)
             F.buttons[type], F.frames[type] = CreateFilterButton(BG.FilterClassItemDB[type], BG.STC_b1(L["坦克专属过滤"]), tilte_onenter, type, "pailie")

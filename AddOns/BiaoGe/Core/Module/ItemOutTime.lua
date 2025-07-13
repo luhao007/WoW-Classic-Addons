@@ -13,26 +13,19 @@ local RGB_16 = ns.RGB_16
 local GetClassRGB = ns.GetClassRGB
 local SetClassCFF = ns.SetClassCFF
 local GetText_T = ns.GetText_T
-local FrameDongHua = ns.FrameDongHua
-local FrameHide = ns.FrameHide
 local AddTexture = ns.AddTexture
 local GetItemID = ns.GetItemID
 
-local Maxb = ns.Maxb
-local Maxi = ns.Maxi
-local Width = ns.Width
-local Height = ns.Height
-
 local pt = print
 local RealmID = GetRealmID()
-local player = UnitName("player")
+local player = BG.playerName
 
 BG.Init(function()
     BiaoGe.options.showGuoQiFrame = BiaoGe.options.showGuoQiFrame or 0
     BiaoGe.lastGuoQiTime = BiaoGe.lastGuoQiTime or 0
 
     local function GetMaxButton()
-        return floor((Height[BG.FB1]-35)/20-1)
+        return floor((BG.FBHeight[BG.FB1] - 35) / 20 - 1)
     end
     local maxButton = GetMaxButton()
     local notItem
@@ -77,11 +70,11 @@ BG.Init(function()
         })
         f:SetBackdropColor(0, 0, 0, 0.8)
         f:SetBackdropBorderColor(GetClassRGB(nil, "player", BG.borderAlpha))
-        f:SetSize(200, Height[BG.FB1])
+        f:SetSize(200, BG.FBHeight[BG.FB1])
         f:SetPoint("TOPLEFT", BG.MainFrame, "TOPRIGHT", -1, 0)
         f:EnableMouse(true)
         BG.itemGuoQiFrame = f
-        BG.itemGuoQiFrame.maxButton=maxButton
+        BG.itemGuoQiFrame.maxButton = maxButton
         if BiaoGe.options.showGuoQiFrame ~= 1 then
             f:Hide()
         else
@@ -107,7 +100,7 @@ BG.Init(function()
         end)
 
         f.CloseButton = CreateFrame("Button", nil, f, "UIPanelCloseButton")
-        f.CloseButton:SetPoint("TOPRIGHT", f, "TOPRIGHT", 4, 4)
+        f.CloseButton:SetPoint("TOPRIGHT", f, "TOPRIGHT", BG.IsRetail and 0 or 4, BG.IsRetail and 0 or 4)
         f.CloseButton:HookScript("OnClick", function(self)
             BiaoGe.options.showGuoQiFrame = 0
         end)
@@ -122,7 +115,7 @@ BG.Init(function()
     BG.itemGuoQiFrame.buttons = {}
 
     local function UpdateFrameSize()
-        BG.itemGuoQiFrame:SetHeight(Height[BG.FB1])
+        BG.itemGuoQiFrame:SetHeight(BG.FBHeight[BG.FB1])
         maxButton = GetMaxButton()
     end
 
@@ -173,7 +166,7 @@ BG.Init(function()
             end
         end
         -- test
---[[        BG.itemGuoQiFrame.tbl = {
+        --[[        BG.itemGuoQiFrame.tbl = {
             { time = 120, link = "|cffa335ee|Hitem:45485::::::::80:::::::::|h[生命火花面甲]|h|r", itemID = 45485, b = 0, i = 1 },
             { time = 90, link = "|cffa335ee|Hitem:45289::::::::80:::::::::|h[生命火花面甲]|h|r", itemID = 45289, b = 0, i = 1 },
             { time = 28, link = "|cffa335ee|Hitem:45289::::::::80:::::::::|h[生命火花面甲]|h|r", itemID = 45289, b = 0, i = 1 },
@@ -245,7 +238,7 @@ BG.Init(function()
             local link, itemID, time, b, i = vv.link, vv.itemID, vv.time, vv.b, vv.i
 
             local f = CreateFrame("Frame", nil, BG.itemGuoQiFrame, "BackdropTemplate")
-            f:SetSize(BG.itemGuoQiFrame:GetWidth()-4, 20)
+            f:SetSize(BG.itemGuoQiFrame:GetWidth() - 4, 20)
             if ii == 1 then
                 f:SetPoint("TOPRIGHT", BG.itemGuoQiFrame, "TOPRIGHT", -2, -30)
             else
@@ -304,12 +297,12 @@ BG.Init(function()
             t:SetFont(STANDARD_TEXT_FONT, 15, "OUTLINE")
             t:SetPoint("LEFT", 18, 0)
             t:SetJustifyH("LEFT")
-            t:SetText(link:gsub("%[",""):gsub("%]",""))
+            t:SetText(link:gsub("%[", ""):gsub("%]", ""))
             t:SetWidth(90)
             t:SetWordWrap(false)
 
             local sb = CreateFrame("StatusBar", nil, f)
-            sb:SetPoint("LEFT",t,"RIGHT", 2, 0)
+            sb:SetPoint("LEFT", t, "RIGHT", 2, 0)
             sb:SetSize(55, 15)
             sb:SetMinMaxValues(0, 120)
             sb:SetValue(time)
@@ -357,7 +350,7 @@ BG.Init(function()
                             "|h[" .. L["设置为1小时内不再提醒"] .. "]|h|r"
                         local msg = BG.STC_r1(format(L["你有装备快过期了。%s %s"], link, link2))
                         BG.FrameLootMsg:AddMessage(msg)
-                        PlaySoundFile(BG["sound_guoqi" .. BiaoGe.options.Sound], "Master")
+                        BG.PlaySound("guoqi")
                         return
                     end
                 end

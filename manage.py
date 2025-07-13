@@ -1,32 +1,33 @@
+from collections.abc import Callable
 import functools
 import logging
 import os
-import shutil
 from pathlib import Path
-
-from defusedxml import ElementTree
+import shutil
+from xml.etree import ElementTree
 
 import utils
+from utils import PLATFORM
 from toc import TOC
 
 logger = logging.getLogger('manager')
 
 CLASSIC_ERA_VER = '11401'
-CLASSIC_VER = '30404'
-RETAIL_VER = '110100'
+CLASSIC_VER = '30405'
+RETAIL_VER = '110107'
 
 
-def available_on(platforms):
-    def decorator(func):
-        def wrapper(*args):
+def available_on(platforms: list[PLATFORM]) -> Callable:
+    def decorator(func: Callable[..., None]) -> Callable[..., None]:
+        def wrapper(*args, **kwargs) -> None:
             platform = utils.get_platform()
             if platform in platforms:
-                func(*args)
+                func(*args, **kwargs)
         return wrapper
     return decorator
 
 
-def lib_babble_to_toc():
+def lib_babble_to_toc() -> list[str]:
     ret = []
     root = Path('Addons/!!Libs')
     if os.path.exists(root / 'LibBabble'):
@@ -74,14 +75,14 @@ class Manager:
         self.process_lib_tocs()
 
     @functools.lru_cache
-    def get_addon_config(self, addon):
+    def get_addon_config(self, addon: str) -> ElementTree:
         return self.config.find(f'.//*[@name="{addon}"]')
 
     @functools.lru_cache
-    def get_addon_parent_config(self, addon):
+    def get_addon_parent_config(self, addon: str) -> ElementTree.Element:
         return self.config.find(f'.//*[@name="{addon}"]../..')
 
-    def get_title(self, addon):
+    def get_title(self, addon: str) -> str:
         parts = []
 
         config = self.get_addon_config(addon)
@@ -144,7 +145,9 @@ class Manager:
                         break
                 continue
 
-            def process(config, addon, lines):
+            def process(config: ElementTree,
+                        addon: str,
+                        lines: list[str]) -> list[str]:
                 toc = TOC(lines)
 
                 toc.tags['Interface'] = self.interface
@@ -332,7 +335,7 @@ class Manager:
                 shutil.rmtree(root/addon)
 
     @staticmethod
-    def _handle_lib_in_libs(root):
+    def _handle_lib_in_libs(root: Path):
         for lib in os.listdir(root):
             if not os.path.isdir(root/lib) or lib == 'Ace3':
                 continue
@@ -623,7 +626,7 @@ class Manager:
                 '			ShowCursorOnMap = false,']
         )
         utils.rm_tree('Addons/Titan/Libs')
-        utils.remove_libs_in_file('Addons/Titan/Titan_Mainline.toc',
+        utils.remove_libs_in_file('Addons/Titan/Titan.toc' if utils.get_platform() == 'retail' else 'Addons/Titan/Titan_Mainline.toc',
                                     ['Libs'])
 
         for f in ['Cata', 'Vanilla', 'Wrath', 'Classic']:

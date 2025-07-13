@@ -13,22 +13,12 @@ local RGB_16 = ns.RGB_16
 local GetClassRGB = ns.GetClassRGB
 local SetClassCFF = ns.SetClassCFF
 local GetText_T = ns.GetText_T
-local FrameDongHua = ns.FrameDongHua
-local FrameHide = ns.FrameHide
 local AddTexture = ns.AddTexture
 local GetItemID = ns.GetItemID
 
-local Width = ns.Width
-local Height = ns.Height
-local Maxb = ns.Maxb
-local Maxi = ns.Maxi
-local HopeMaxn = ns.HopeMaxn
-local HopeMaxb = ns.HopeMaxb
-local HopeMaxi = ns.HopeMaxi
-
 local pt = print
 local RealmId = GetRealmID()
-local player = UnitName("player")
+local player = BG.playerName
 
 BG.Init(function()
     BG.ButtonAd = BG.ButtonOnLineCount or BG.ButtonToken

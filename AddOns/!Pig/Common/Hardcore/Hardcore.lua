@@ -1,6 +1,5 @@
 local addonName, addonTable = ...;
-local _, _, _, tocversion = GetBuildInfo()
-if tocversion>20000 then return end
+if PIG_MaxTocversion(20000,true) then return end
 local active = C_GameRules.IsHardcoreActive()
 if not active then return end
 ---
@@ -13,7 +12,6 @@ local PIGFrame=Create.PIGFrame
 local PIGEnter=Create.PIGEnter
 local PIGSlider=Create.PIGSlider
 local PIGFontString=Create.PIGFontString
-local PIGLine=Create.PIGLine
 local PIGButton=Create.PIGButton
 local PIGDiyBut=Create.PIGDiyBut
 local PIGCheckbutton=Create.PIGCheckbutton
@@ -21,12 +19,16 @@ local PIGSetFont=Create.PIGSetFont
 local PIGDownMenu=Create.PIGDownMenu
 local PIGOptionsList_R=Create.PIGOptionsList_R
 --
+local Data=addonTable.Data
 local Fun=addonTable.Fun
 local PIGGetRaceAtlas=Fun.PIGGetRaceAtlas
 local FasongYCqingqiu=Fun.FasongYCqingqiu
 ----
+local AudioData=addonTable.AudioList.Data
 local CommonInfo=addonTable.CommonInfo
 ----
+local UIname,Tooltip = "PIG_HardcoreUI",KEY_BUTTON1.."-|cff00FFFF"..UNWRAP..HARDCORE_DEATHS.."|r\r|r"..KEY_BUTTON2.."-|cff00FFFF"..SETTINGS.."|r"
+---
 local fujiF,fujiFBut =PIGOptionsList_R(CommonInfo.NR,"专家模式",80)
 local HardcoreModeF=CreateFrame("Frame")
 local Tooltip={"专家模式优化","|cffFFFF00启用后效果:|r\n|cff00FF001.休息区只显示任务NPC并恢复默认姓名大小\n2.非休息区显示所有姓名/增大姓名尺寸|r"}
@@ -242,23 +244,13 @@ fujiF.Deaths.BigTgminlevel.Slider:HookScript("OnValueChanged", function(self, ar
 	PIGA["Hardcore"]["Deaths"]["BigTgminlevel"]=arg1;
 	fujiF.Deaths.Set_config()
 end)
-
-local AudioList = {
-	{NONE,},
-	{"吃大席(AI)","吃大席"},
-	{"吃大席喽(露露)","Interface/AddOns/"..addonName.."/Common/Hardcore/ogg/HardcoreDeaths_1.ogg"},
-	{"吃席咯(露露)","Interface/AddOns/"..addonName.."/Common/Hardcore/ogg/HardcoreDeaths_2.ogg"},
-	{"吃席啦1(露露)","Interface/AddOns/"..addonName.."/Common/Hardcore/ogg/HardcoreDeaths_3.ogg"},
-	{"吃席啦2(露露)","Interface/AddOns/"..addonName.."/Common/Hardcore/ogg/HardcoreDeaths_4.ogg"},
-	{"开席(露露)","Interface/AddOns/"..addonName.."/Common/Hardcore/ogg/HardcoreDeaths_5.ogg"},
-}
 fujiF.Deaths.xiala=PIGDownMenu(fujiF.Deaths,{"LEFT",fujiF.Deaths.BigTgminlevel,"RIGHT",100,0},{150,24})
 fujiF.Deaths.xiala.T = PIGFontString(fujiF.Deaths.xiala,{"BOTTOMLEFT",fujiF.Deaths.xiala,"TOPLEFT",10,4},"大席语音")
 function fujiF.Deaths.xiala:PIGDownMenu_Update_But()
 	local info = {}
 	info.func = self.PIGDownMenu_SetValue
-	for i=1,#AudioList,1 do
-	    info.text, info.arg1 = AudioList[i][1], i
+	for i=1,#AudioData.HardcoreDeaths,1 do
+	    info.text, info.arg1 = AudioData.HardcoreDeaths[i][1], i
 	    info.checked = i==PIGA["Hardcore"]["Deaths"]["VoiceID"]
 		self:PIGDownMenu_AddButton(info)
 	end 
@@ -269,15 +261,9 @@ function fujiF.Deaths.xiala:PIGDownMenu_SetValue(value,arg1)
 	fujiF.Deaths.Set_config()
 	PIGCloseDropDownMenus()
 end
-local voiceID = C_TTSSettings.GetVoiceOptionID(0)
 fujiF.Deaths.PlayBut =PIGDiyBut(fujiF.Deaths,{"LEFT",fujiF.Deaths.xiala,"RIGHT",8,0},{24,24,nil,nil,"chatframe-button-icon-speaker-on",130757});
 fujiF.Deaths.PlayBut:HookScript("OnClick", function()
-	if Hardcore_UI.AudioID==1 then return end
-	if Hardcore_UI.AudioID==2 then
-		C_VoiceChat.SpeakText(voiceID, AudioList[Hardcore_UI.AudioID][2], Enum.VoiceTtsDestination.LocalPlayback, 2, 100)
-	else
-		PlaySoundFile(AudioList[Hardcore_UI.AudioID][2], "Master")
-	end
+	PIG_PlaySoundFile(AudioData.HardcoreDeaths[_G[UIname].AudioID])
 end)
 
 local savedaysinfo = {1,7,1,{["Right"]="%s天"}}
@@ -305,7 +291,7 @@ fujiF:HookScript("OnShow", function(self)
 	self.Deaths.UIScale:PIGSetValue(PIGA["Hardcore"]["Deaths"]["UIScale"])
 	self.Deaths.BigTgminlevel:PIGSetValue(PIGA["Hardcore"]["Deaths"]["BigTgminlevel"])
 	self.Deaths.savedays:PIGSetValue(PIGA["Hardcore"]["Deaths"]["savedays"])
-	self.Deaths.xiala:PIGDownMenu_SetText(AudioList[PIGA["Hardcore"]["Deaths"]["VoiceID"]][1])
+	self.Deaths.xiala:PIGDownMenu_SetText(AudioData.HardcoreDeaths[PIGA["Hardcore"]["Deaths"]["VoiceID"]][1])
 end)
 local Quality = addonTable.Data.Quality
 local minmaxlist = {{1,9},{10,19},{20,29},{30,39},{40,49},{50,59}}
@@ -343,7 +329,7 @@ local function IslevelOK(value)
 	end
 	return false
 end
-function Pig_OptionsUI.Join_hardcoredeaths()
+function PIG_OptionsUI.Join_hardcoredeaths()
 	if PIGA["Hardcore"]["Deaths"]["Open"] then
 		JoinTemporaryChannel("hardcoredeaths", nil, DEFAULT_CHAT_FRAME:GetID(), 1);
 		ChatFrame_RemoveChannel(DEFAULT_CHAT_FRAME, "hardcoredeaths");
@@ -354,23 +340,24 @@ function Pig_OptionsUI.Join_hardcoredeaths()
 end
 function fujiF.Deaths.SetONOFF(ly)
 	if PIGA["Hardcore"]["Deaths"]["Open"] then
-		if ly then Pig_OptionsUI.Join_hardcoredeaths() end
+		if ly then PIG_OptionsUI.Join_hardcoredeaths() end
 		SetCVar("hardcoreDeathAlertType","2")
-		Hardcore_UI:RegisterEvent("HARDCORE_DEATHS");
+		_G[UIname]:RegisterEvent("HARDCORE_DEATHS");
 		RaidWarningFrame:UnregisterEvent("HARDCORE_DEATHS");
-		Hardcore_UI:Show()
+		_G[UIname]:Show()
 	else
-		Hardcore_UI:UnregisterEvent("HARDCORE_DEATHS");
+		_G[UIname]:UnregisterEvent("HARDCORE_DEATHS");
 		RaidWarningFrame:RegisterEvent("HARDCORE_DEATHS");
-		Hardcore_UI:Hide()
+		_G[UIname]:Hide()
 	end
 end
 function fujiF.Deaths.Set_config(ly)
-	if Hardcore_UI then Hardcore_UI:Initial_config(ly) end
+	if _G[UIname] then _G[UIname]:Initial_config(ly) end
 end
 function CommonInfo.Commonfun.HardcoreDeaths()
 	if not PIGA["Hardcore"]["Deaths"]["Open"] then end
-	if Hardcore_UI then return end
+	if _G[UIname] then return end
+	table.insert(AudioData.HardcoreDeaths,{NONE,""})
 	----
 	local maxtime = PIGA["Hardcore"]["Deaths"]["savedays"]*3600*24
 	local datax = PIGA["Hardcore"]["Deaths"]["List"]
@@ -381,8 +368,9 @@ function CommonInfo.Commonfun.HardcoreDeaths()
 		end
 	end
 	----------
-	local Tooltip = KEY_BUTTON1.."-|cff00FFFF"..UNWRAP..HARDCORE_DEATHS.."|r\r|r"..KEY_BUTTON2.."-|cff00FFFF"..SETTINGS.."|r"
-	local ButUI=PIGDiyBut(UIParent,{"TOPRIGHT",UIParent,"TOPRIGHT",-350,-174},{30,31,nil,nil,"BossBanner-SkullCircle"},"Hardcore_UI")
+	Data.UILayout[UIname]={"TOPRIGHT","TOPRIGHT",-350,-174}
+	local ButUI=PIGDiyBut(UIParent,nil,{30,31,nil,nil,"BossBanner-SkullCircle"},"PIG_HardcoreUI")
+	Create.PIG_SetPoint(UIname)
 	Create.PIGSetMovable(ButUI)
 	ButUI:SetFrameStrata("LOW")
 	ButUI:SetHighlightAtlas("ChallengeMode-Runes-CircleGlow")
@@ -475,7 +463,9 @@ function CommonInfo.Commonfun.HardcoreDeaths()
 		ButUI.BigTgminlevel=PIGA["Hardcore"]["Deaths"]["BigTgminlevel"]
 		if ly then ButUI:SetScale(PIGA["Hardcore"]["Deaths"]["UIScale"]); end
 	end
-	ButUI:Initial_config()
+	ButUI:Initial_config()		
+	PIGA["Hardcore"]["Deaths"]["VoiceID"]=Fun.IsAudioNumMaxV(ButUI.AudioID,AudioData.HardcoreDeaths)
+	ButUI.AudioID=PIGA["Hardcore"]["Deaths"]["VoiceID"]
 	ButUI.texbg = ButUI:CreateTexture(nil, "BORDER");
 	ButUI.texbg:SetPoint("TOPLEFT", ButUI.msg, "TOPLEFT", -14,6);
 	ButUI.texbg:SetPoint("BOTTOMRIGHT", ButUI.msg, "BOTTOMRIGHT", 14,-3);
@@ -520,10 +510,10 @@ function CommonInfo.Commonfun.HardcoreDeaths()
 				HardcoreDeaths_UI:Show()
 			end
 		else
-			if Pig_OptionsUI:IsShown() then
-				Pig_OptionsUI:Hide()
+			if PIG_OptionsUI:IsShown() then
+				PIG_OptionsUI:Hide()
 			else
-				Pig_OptionsUI:Show()
+				PIG_OptionsUI:Show()
 				Create.Show_TabBut(CommonInfo.Llist,CommonInfo.LlistTabBut)
 				Create.Show_TabBut_R(CommonInfo.NR,fujiF,fujiFBut)
 			end
@@ -581,21 +571,16 @@ function CommonInfo.Commonfun.HardcoreDeaths()
 		end);
 	end
 	local function Play_tex(level,wanjiaName,maptxt)
-		if level>=Hardcore_UI.Tgminlevel then
-			if Hardcore_UI.tipsmap then
+		if level>=_G[UIname].Tgminlevel then
+			if _G[UIname].tipsmap then
 				ButUI.msg:AddMessage("[|c"..getColor(level)..level.."|r]"..wanjiaName.."|cff00FF00+|r"..maptxt)
 			else
 				ButUI.msg:AddMessage("[|c"..getColor(level)..level.."|r]"..wanjiaName)
 			end
-			if level>=Hardcore_UI.BigTgminlevel then--大席
+			if level>=_G[UIname].BigTgminlevel then--大席
 				ButUI.icon.animationGroup:Stop()
 				ButUI.icon.animationGroup:Play()
-				if Hardcore_UI.AudioID==1 then return end
-				if Hardcore_UI.AudioID==2 then
-					C_VoiceChat.SpeakText(voiceID, AudioList[Hardcore_UI.AudioID][2], Enum.VoiceTtsDestination.LocalPlayback, 2, 100)
-				else
-					PlaySoundFile(AudioList[Hardcore_UI.AudioID][2], "Master")
-				end
+				PIG_PlaySoundFile(AudioData.HardcoreDeaths[_G[UIname].AudioID])
 			end
 		end
 	end
@@ -645,6 +630,7 @@ function CommonInfo.Commonfun.HardcoreDeaths()
 	end)
 	for id = 1, hangnum do
 		local hang = CreateFrame("Button", nil, HardcoreDeaths.NR,"BackdropTemplate");
+		HardcoreDeaths.butList[id]=hang
 		hang:SetBackdrop({bgFile = "interface/chatframe/chatframebackground.blp"});
 		hang:SetBackdropColor(0.2, 0.2, 0.2, 0.2);
 		hang:SetSize(itemhangW-26, hang_Height);
@@ -659,7 +645,6 @@ function CommonInfo.Commonfun.HardcoreDeaths()
 		else
 			hang:SetPoint("TOP",HardcoreDeaths.butList[id-1],"BOTTOM",0,-2);
 		end
-		HardcoreDeaths.butList[id]=hang
 		hang.indexID = PIGFontString(hang,{"LEFT", hang, "LEFT", biaotiLsit[1][2]-2,0})
 		hang.indexID:Hide()
 		hang.indexID:SetTextColor(0.8, 0.8, 0.8, 1);

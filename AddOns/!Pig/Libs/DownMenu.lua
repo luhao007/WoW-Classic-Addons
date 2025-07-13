@@ -2,15 +2,16 @@ local addonName, addonTable = ...;
 local Create = addonTable.Create
 local FontUrl=Create.FontUrl
 -----------------------
-local ListName,List1Width,ButHeight="PIGDownList",300,16
+local ListName,List1Width,ButHeight="PIG_DropDownList",300,16
 local listshumu = 300
+PIG_DropDown={}
 ---
 function PIGCloseDropDownMenus(level)
 	if ( not level ) then
 		level = 1;
 	end
 	for i=level, UIDROPDOWNMENU_MAXLEVELS do
-		_G[ListName..i]:Hide();
+		PIG_DropDown[i]:Hide();
 	end
 end
 local function PIGDownMenu_StartCounting(frame)
@@ -41,7 +42,7 @@ local function PIGDownMenu_OnUpdate(self, elapsed)
 end
 local function panduandianjichu()
 	for i=1, UIDROPDOWNMENU_MAXLEVELS do
-		if _G[ListName..i]:IsMouseOver() then
+		if PIG_DropDown[i]:IsMouseOver() then
 			return true
 		end
 	end
@@ -49,7 +50,8 @@ local function panduandianjichu()
 end
 ----
 for i=1,UIDROPDOWNMENU_MAXLEVELS do
-	local PIGDownList = CreateFrame("Frame", ListName..i, UIParent,"BackdropTemplate",i);
+	local PIGDownList = CreateFrame("Frame", nil, UIParent,"BackdropTemplate",i);
+	PIG_DropDown[i]=PIGDownList
 	PIGDownList:SetBackdrop(Create.Backdropinfo)
 	PIGDownList:SetBackdropColor(0.1, 0.1, 0.1, 1);
 	PIGDownList:SetBackdropBorderColor(0, 0, 0, 1);
@@ -68,7 +70,7 @@ for i=1,UIDROPDOWNMENU_MAXLEVELS do
 	if i == 1 then
 		PIGDownList:HookScript("OnHide", function(self)
 			for i=2,UIDROPDOWNMENU_MAXLEVELS do
-				_G["PIGDownList"..i]:Hide()
+				PIG_DropDown[i]:Hide()
 			end
 		end)
 	else
@@ -91,15 +93,17 @@ for i=1,UIDROPDOWNMENU_MAXLEVELS do
 			PIGDownList.extFlist[ix]=erjiF
 		end
 	end
+	PIGDownList.ButList={}
 	for ii=1,listshumu do
-		local CheckBut = CreateFrame("CheckButton", "PIGDownList"..i.."But"..ii, PIGDownList);
+		local CheckBut = CreateFrame("CheckButton", nil, PIGDownList);
+		PIGDownList.ButList[ii]=CheckBut
 		CheckBut:SetHeight(ButHeight);
 		if ii==1 then
-			CheckBut:SetPoint("TOPLEFT","PIGDownList"..i,"TOPLEFT",4,-4);
-			CheckBut:SetPoint("TOPRIGHT","PIGDownList"..i,"TOPRIGHT",-4,-4);
+			CheckBut:SetPoint("TOPLEFT",PIGDownList,"TOPLEFT",4,-4);
+			CheckBut:SetPoint("TOPRIGHT",PIGDownList,"TOPRIGHT",-4,-4);
 		else
-			CheckBut:SetPoint("TOPLEFT","PIGDownList"..i.."But"..(ii-1),"BOTTOMLEFT",0,0);
-			CheckBut:SetPoint("TOPRIGHT","PIGDownList"..i.."But"..(ii-1),"BOTTOMRIGHT",0,0);
+			CheckBut:SetPoint("TOPLEFT",PIGDownList.ButList[ii-1],"BOTTOMLEFT",0,0);
+			CheckBut:SetPoint("TOPRIGHT",PIGDownList.ButList[ii-1],"BOTTOMRIGHT",0,0);
 		end
 		CheckBut:Hide()
 		CheckBut:SetFrameStrata("FULLSCREEN_DIALOG")
@@ -150,12 +154,12 @@ for i=1,UIDROPDOWNMENU_MAXLEVELS do
 			PIGDownMenu_StopCounting(fujilist)
 			if self.hasArrow then
 				local newi = i+1
-				local ListFff = _G["PIGDownList"..newi]
+				local ListFff = PIG_DropDown[newi]
 				ListFff.maxWidth = 0;
 				ListFff.numButtons = 0;
 				ListFff:SetPoint("TOPLEFT",self, "TOPRIGHT", 2,6);
 				for ii=1,listshumu do
-					_G["PIGDownList"..newi.."But"..ii]:Hide()
+					PIG_DropDown[newi].ButList[ii]:Hide()
 				end
 				if i==1 then
 					for igh=1,5 do
@@ -177,12 +181,12 @@ for i=1,UIDROPDOWNMENU_MAXLEVELS do
 				self.checked = xchecked
 			else
 				for v=1,listshumu do
-					local FrameX = _G["PIGDownList"..i.."But"..v]
+					local FrameX = PIG_DropDown[i].ButList[v]
 					FrameX:SetChecked(false)
 				end
 				self:SetChecked(true);
 			end
-			self.func(PIGDownList1.dropdown,self.value,self.arg1,self.arg2,self.checked)
+			self.func(PIG_DropDown[1].dropdown,self.value,self.arg1,self.arg2,self.checked)
 		end);
 	end
 end
@@ -232,28 +236,28 @@ function Create.PIGDownMenu(fuF,Point,SizeWH,EasyMenu,UIname)
 	end
 	DownMenu.Button:RegisterForClicks("LeftButtonUp","RightButtonUp");
 	local function zhixing_Show(fujiFrame)
-		local xialaMenu = PIGDownList1.dropdown
-		if PIGDownList1:IsShown() and xialaMenu==fujiFrame then
-			PIGDownList1:Hide()
+		local xialaMenu = PIG_DropDown[1].dropdown
+		if PIG_DropDown[1]:IsShown() and xialaMenu==fujiFrame then
+			PIG_DropDown[1]:Hide()
 		else
 			for g=1,UIDROPDOWNMENU_MAXLEVELS do
-				_G["PIGDownList"..g]:Hide()
+				PIG_DropDown[g]:Hide()
 				for gg=1,listshumu do
-					_G["PIGDownList"..g.."But"..gg]:Hide()
+					PIG_DropDown[g].ButList[gg]:Hide()
 				end
 			end
-			PIGDownList1.showTimer = UIDROPDOWNMENU_SHOW_TIME;
-			PIGDownList1.isCounting = 1;
-			PIGDownList1.maxWidth = 0;
-			PIGDownList1.numButtons = 0;
-			PIGDownList1:ClearAllPoints();
+			PIG_DropDown[1].showTimer = UIDROPDOWNMENU_SHOW_TIME;
+			PIG_DropDown[1].isCounting = 1;
+			PIG_DropDown[1].maxWidth = 0;
+			PIG_DropDown[1].numButtons = 0;
+			PIG_DropDown[1]:ClearAllPoints();
 			if fujiFrame.EasyMenu=="EasyMenu" or fujiFrame.EasyMenu=="DJEasyMenu" then
-				PIGDownList1:SetPoint(Point[1],Point[2],Point[3],Point[4],Point[5]);
+				PIG_DropDown[1]:SetPoint(Point[1],Point[2],Point[3],Point[4],Point[5]);
 			else
-				PIGDownList1:SetPoint("TOPLEFT",fujiFrame, "BOTTOMLEFT", 0,0);
+				PIG_DropDown[1]:SetPoint("TOPLEFT",fujiFrame, "BOTTOMLEFT", 0,0);
 			end
 			fujiFrame:PIGDownMenu_Update_But()
-			PIGDownList1:Show()
+			PIG_DropDown[1]:Show()
 		end
 	end
 	DownMenu.Button:HookScript("OnClick", function(self, button)
@@ -281,18 +285,18 @@ function Create.PIGDownMenu(fuF,Point,SizeWH,EasyMenu,UIname)
 		if ( not level ) then
 			level = 1;
 		end
-		local listFrame = _G["PIGDownList"..level];
+		local listFrame = PIG_DropDown[level];
 		if info=="null" then 
 			listFrame:SetHeight(1)
 			return 
 		end
 		listFrame.dropdown = self;
 		if level > 1 then
-			listFrame.parent = _G["PIGDownList"..level-1]
+			listFrame.parent = PIG_DropDown[level-1]
 		end
 		local index = listFrame and (listFrame.numButtons + 1) or 1;
 		listFrame.numButtons = index;
-		local CheckBut=_G["PIGDownList"..level.."But"..index];
+		local CheckBut=PIG_DropDown[level].ButList[index]
 		CheckBut:Show()
 		CheckBut.Text:SetText(info.text)
 		CheckBut.value=info.text

@@ -8,11 +8,10 @@ local pairs, select, rawget
 	= pairs, select, rawget
 
 -- App locals
-local IsQuestFlaggedCompleted, SearchForFieldContainer, GetFixedItemSpecInfo, SearchForField
-	= app.IsQuestFlaggedCompleted, app.SearchForFieldContainer, app.GetFixedItemSpecInfo, app.SearchForField
+local IsQuestFlaggedCompleted, SearchForFieldContainer, SearchForField
+	= app.IsQuestFlaggedCompleted, app.SearchForFieldContainer, app.SearchForField
 
 -- WoW API Cache
-local GetItemInfo = app.WOWAPI.GetItemInfo;
 local GetSpellLink = app.WOWAPI.GetSpellLink;
 
 local IsSpellKnown, IsPlayerSpell, GetNumSpellTabs, GetSpellTabInfo, IsSpellKnownOrOverridesKnown
@@ -125,31 +124,21 @@ local function default_costCollectibles(t)
 	return app.EmptyTable
 end
 local function CacheInfo(t, field)
+	app.DirectGroupRefresh(t, true)
 	local _t, id = cache.GetCached(t);
-	if t.itemID then
-		local name, link, _, _, _, _, _, _, _, icon = GetItemInfo(t.itemID);
-		if link then
-			_t.name = name;
-			_t.link = link;
-			_t.icon = icon;
-		end
-	else
-		local name, icon = GetSpellName(id), GetSpellIcon(id);
-		_t.name = name;
-		-- typically, the profession's spell icon will be a better representation of the spell if the spell is tied to a skill
-		_t.icon = SkillIcons[t.skillID] or icon;
-		local link = GetSpellLink(id);
-		_t.link = link;
-	end
+	local name, icon = GetSpellName(id), GetSpellIcon(id);
+	_t.name = name;
+	-- typically, the profession's spell icon will be a better representation of the spell if the spell is tied to a skill
+	_t.icon = SkillIcons[t.skillID] or icon;
+	local link = GetSpellLink(id);
+	_t.link = link;
 	-- track number of attempts to cache data for fallback to default values
-	local retries = (_t.retries or 0) + 1;
-	if retries > app.MaximumItemInfoRetries then
-		_t.name = t.itemID and "Item #"..t.itemID or "Spell #"..t.spellID;
+	if not _t.link and not t.CanRetry then
+		_t.name = "Spell #"..t.spellID;
 		-- fallback to skill icon if possible
 		_t.icon = SkillIcons[t.skillID] or 136243;	-- Trade_engineering
 		_t.link = _t.name;
 	end
-	_t.retries = retries;
 	if field then return _t[field]; end
 end
 
@@ -187,15 +176,8 @@ do
 		end,
 	},
 	"WithItem", {
-		_cachekey = function(t)
-			return t[KEY] + (t.itemID / 1000000)
-		end,
-		specs = function(t)
-			return GetFixedItemSpecInfo(t.itemID)
-		end,
-		tsm = function(t)
-			return ("i:%d"):format(t.itemID)
-		end,
+		ImportFrom = "Item",
+		ImportFields = { "name", "link", "icon", "specs", "tsm", "costCollectibles" },
 	},
 	function(t) return t.itemID end)
 
@@ -263,9 +245,6 @@ do
 		spellID = function(t)
 			return t[KEY]
 		end,
-		f = function(t)
-			return 200;
-		end,
 		collectible = function(t)
 			return app.Settings.Collectibles[SETTING];
 			-- TODO: revise? this prevents showing a BoP, wrong-profession Recipe under a BoE used to obtain it, when within a Popout and NOT tracking Account-Wide Recipes
@@ -286,20 +265,11 @@ do
 		end,
 	},
 	"WithItem", {
+		ImportFrom = "Item",
+		ImportFields = { "name", "link", "icon", "specs", "tsm", "costCollectibles" },
 		b = function(t)
 			-- If not tracking Recipes Account-Wide, then pretend that every Recipe is BoP
 			return app.Settings.AccountWide[SETTING] and 2 or 1;
-		end,
-		-- Extended Classes don't inherit Variant versions of their Base Class automatically
-		-- i.e. RecipeWithItem doesn't extend SpellWithItem, it extends Spell
-		_cachekey = function(t)
-			return t[KEY] + (t.itemID / 1000000)
-		end,
-		specs = function(t)
-			return GetFixedItemSpecInfo(t.itemID)
-		end,
-		tsm = function(t)
-			return ("i:%d"):format(t.itemID)
 		end,
 	},
 	function(t) return t.itemID end);

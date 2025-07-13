@@ -270,7 +270,9 @@ SlashCmdList.ALLTHETHINGSYOU = function(cmd)
 			local guid = UnitGUID("target");
 			if guid then
 				local cmd = "creatureid:" .. select(6, ("-"):split(guid));
-				local group = app.GetCachedSearchResults(app.SearchForLink, cmd);
+				app.SetSkipLevel(2);
+				local group = app.GetCachedSearchResults(app.SearchForLink, cmd, nil, {SkipFill=true,IgnoreCache=true});
+				app.SetSkipLevel(0);
 				if group then app:CreateMiniListForGroup(group); end
 			end
 		end

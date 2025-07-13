@@ -152,6 +152,29 @@ function OptionsPrivate.CreateFrame()
 
     OptionsPrivate.Private.ClearFakeStates()
 
+    -- 隐藏准备安装面板和所有子按钮
+    if frame.pendingInstallButton then
+      frame.pendingInstallButton.frame:Hide()
+    end
+    if OptionsPrivate.pendingInstallButtons then
+      for _, button in pairs(OptionsPrivate.pendingInstallButtons) do
+        if button.frame then
+          button.frame:Hide()
+        end
+      end
+    end
+    
+    -- 隐藏准备更新面板和所有子按钮
+    if frame.pendingUpdateButton then
+      frame.pendingUpdateButton.frame:Hide()
+    end
+    if OptionsPrivate.pendingUpdateButtons then
+      for _, button in pairs(OptionsPrivate.pendingUpdateButtons) do
+        if button.frame then
+          button.frame:Hide()
+        end
+      end
+    end
 
     for id, data in pairs(OptionsPrivate.Private.regions) do
       if data.region then

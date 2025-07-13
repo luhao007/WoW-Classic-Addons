@@ -24,8 +24,10 @@ BINDING_NAME_RoleOverview = L["打开/关闭角色总览"]
 
 
 local realmID = GetRealmID()
-local player = UnitName("player")
+local player = BG.playerName
 local realmName = GetRealmName()
+local GetAddOnMetadata = GetAddOnMetadata or C_AddOns.GetAddOnMetadata
+local IsAddOnLoaded = IsAddOnLoaded or C_AddOns.IsAddOnLoaded
 
 -- 全局变量
 do
@@ -34,6 +36,7 @@ do
     BG.FBIDtable = {}
     BG.lootQuality = {}
     BG.difficultyTable = {}
+    BG.diffIDTbl = {}
     BG.phaseFBtable = {}
     BG.bossPositionStartEnd = {}
     BG.FBfromBossPosition = {}
@@ -47,12 +50,16 @@ do
     BG.otherEditAlpha = 0.3
     BG.scrollStep = 80
     BG.borderAlpha = .5
-    BG.ver = ns.ver
-    BG.instructionsText = ns.instructionsText
-    BG.updateText = ns.updateText
+    BG.ver = "v" .. GetAddOnMetadata(AddonName, "Version")
     BG.BG = "|cff00BFFF<BiaoGe>|r "
     BG.rareIcon = "|A:nameplates-icon-elite-silver:0:0|a"
-    BG.iconTexCoord = { .03, .97, .03, .97 }
+    BG.iconTexCoord = { .06, .94, .06, .94 }
+    BG.zaxiang = {} -- 杂项如果太多，则需要换列
+    if BG.IsRetail then
+        BG.CloseButtonOffset = 0
+    else
+        BG.CloseButtonOffset = 2
+    end
 
     BG.blackListPlayer = {}
     if BG.IsWLK then
@@ -74,66 +81,160 @@ do
                 -- [""] = true,
                 -- [""] = true,
                 -- [""] = true,
-                -- ["苍刃"] = true,
             },
         }
     end
 
-
-    if BG.blackListPlayer[realmName] and BG.blackListPlayer[realmName][UnitName("player")] then
+    if BG.blackListPlayer[realmName] and BG.blackListPlayer[realmName][BG.GN()] then
         BG.IsBlackListPlayer = true
     end
 end
 -- 初始化
 do
-    BG.Maxi                                                               = 30
-    local mainFrameWidth                                                  = 1295
-    local Width, Height, Maxt, Maxb, Maxi, BossNumtbl, HopeMaxb, HopeMaxn = {}, {}, {}, {}, {}, {}, {}, {}
+    BG.Maxi                                    = 40
+    BG.FBWidth                                 = {}
+    BG.FBHeight                                = {}
+    BG.BossNumtbl                              = {}
+    local mainFrameWidth                       = 1295
+    local Maxt, Maxb, Maxi, HopeMaxb, HopeMaxn = {}, {}, {}, {}, {}
     do
-        local function AddDB(FB, width, height, maxt, maxb, bossNumtbl, hopemaxn)
-            Width[FB] = width
-            Height[FB] = height
+        local function AddDB(FB, width, height, maxt, maxb, bossNumTbl, diffTbl, diffIDTbl, maxiTbl, zaxiangI)
+            BG.FBWidth[FB] = width
+            BG.FBHeight[FB] = height
             Maxt[FB] = maxt
             Maxb[FB] = maxb
-            Maxi[FB] = BG.Maxi
-            BossNumtbl[FB] = bossNumtbl
+            BG.BossNumtbl[FB] = bossNumTbl
             HopeMaxb[FB] = maxb - 1
-            HopeMaxn[FB] = hopemaxn or 1
+            BG.difficultyTable[FB] = diffTbl or { "N" }
+            HopeMaxn[FB] = #BG.difficultyTable[FB]
+            BG.diffIDTbl[FB] = diffIDTbl or {
+                [3] = "N",
+                [175] = "N",
+                [4] = "N",
+                [176] = "N",
+                [5] = "H",
+                [193] = "H",
+                [6] = "H",
+                [194] = "H",
+                [14] = "N",
+                [15] = "H",
+                [16] = "M",
+            }
+            Maxi[FB] = maxiTbl
+            -- 设置支出格子为x个
+            if FB == "ULD" or FB == "ICC" then
+                tinsert(Maxi[FB], 5)
+            elseif FB == "MC" then
+                tinsert(Maxi[FB], 6)
+            else
+                tinsert(Maxi[FB], 8)
+            end
+            -- 设置总览工资格子为x个
+            tinsert(Maxi[FB], 5)
+            if zaxiangI then
+                BG.zaxiang[FB] = { i = zaxiangI }
+            end
         end
+
         if BG.IsVanilla_Sod then
-            AddDB("BD", mainFrameWidth, 810, 3, 9, { 0, 5, 9 })
-            AddDB("Gno", mainFrameWidth, 810, 3, 8, { 0, 5, 8 })
-            AddDB("Temple", mainFrameWidth, 885, 3, 10, { 0, 6, 9, })
-            AddDB("MCsod", mainFrameWidth, 940, 3, 13, { 0, 6, 11 })
-            AddDB("ZUGsod", mainFrameWidth, 810, 3, 12, { 0, 6, 11 })
-            AddDB("BWLsod", mainFrameWidth, 810, 3, 9, { 0, 5, 7 })
-            AddDB("Worldsod", mainFrameWidth, 810, 3, 10, { 0, 4, 9 })
+            AddDB("BD", mainFrameWidth, 810, 3, 9, { 0, 5, 9 }, nil, nil,
+                { 5, 5, 5, 5, 5, 5, 5, 5, 10, })
+            AddDB("Gno", mainFrameWidth, 810, 3, 8, { 0, 5, 8 }, nil, nil,
+                { 5, 5, 5, 5, 5, 10, 8, 8, })
+            AddDB("Temple", mainFrameWidth, 885, 3, 10, { 0, 6, 9, }, nil, nil,
+                { 5, 5, 5, 4, 4, 4, 4, 6, 25, 9, }, 20)
+            AddDB("MCsod", mainFrameWidth, 940, 3, 13, { 0, 6, 11 }, nil, nil,
+                { 5, 5, 5, 5, 5, 5, 5, 5, 6, 8, 6, 11, 6, })
+            AddDB("ZUGsod", mainFrameWidth, 810, 3, 12, { 0, 6, 11 }, nil, nil,
+                { 4, 4, 4, 4, 4, 4, 4, 4, 4, 9, 10, 6, }, 5)
+            AddDB("BWLsod", mainFrameWidth, 810, 3, 9, { 0, 5, 7 }, nil, nil,
+                { 4, 4, 4, 4, 8, 5, 21, 7, 5, })
+            AddDB("Worldsod", mainFrameWidth, 810, 3, 10, { 0, 4, 9 }, nil, nil,
+                { 10, 5, 5, 5, 5, 5, 5, 5, 4, 5 })
         elseif BG.IsVanilla_60 then
-            AddDB("MC", mainFrameWidth, 810, 3, 13, { 0, 7, 12 })
-            AddDB("BWL", mainFrameWidth, 810, 3, 10, { 0, 5, 9 })
-            AddDB("ZUG", mainFrameWidth, 810, 3, 12, { 0, 6, 11 })
-            AddDB("AQL", mainFrameWidth, 810, 3, 8, { 0, 5, 7 })
-            AddDB("TAQ", mainFrameWidth, 810, 3, 11, { 0, 6, 10 })
-            AddDB("NAXX", 1715, 810, 4, 17, { 0, 6, 12, 16 })
+            AddDB("MC", mainFrameWidth, 810, 3, 13, { 0, 7, 12 }, nil, nil,
+                { 3, 3, 3, 4, 3, 3, 4, 3, 4, 5, 8, 15, 4, }, 6)
+            AddDB("BWL", mainFrameWidth, 810, 3, 10, { 0, 5, 9 }, nil, nil,
+                { 5, 5, 5, 5, 5, 5, 5, 6, 9, 12, })
+            AddDB("ZUG", mainFrameWidth, 810, 3, 12, { 0, 6, 11 }, nil, nil,
+                { 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 9, 10, })
+            AddDB("AQL", mainFrameWidth, 810, 3, 8, { 0, 5, 7 }, nil, nil,
+                { 5, 5, 5, 5, 5, 5, 28, 5, }, 23)
+            AddDB("TAQ", mainFrameWidth, 810, 3, 11, { 0, 6, 10 }, nil, nil,
+                { 4, 4, 4, 4, 4, 4, 4, 4, 5, 20, 5, }, 14)
+            AddDB("NAXX", 1715, 810, 4, 17, { 0, 6, 12, 16 }, nil, nil,
+                { 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 5, 12, 12, })
         elseif BG.IsWLK then
-            AddDB("ICC", mainFrameWidth, 875, 3, 15, { 0, 7, 13 }, 4)
-            AddDB("TOC", mainFrameWidth, 835, 3, 9, { 0, 5, 8 }, 4)
-            AddDB("ULD", mainFrameWidth, 875, 3, 16, { 0, 7, 13 }, 2)
-            AddDB("NAXX", 1715, 945, 4, 19, { 0, 6, 12, 16 }, 2)
+            local difTbl1 = {
+                [3] = "N10",
+                [175] = "N10",
+                [4] = "N25",
+                [176] = "N25",
+                [5] = "N10",
+                [193] = "N10",
+                [6] = "N25",
+                [194] = "N25",
+            }
+            local difTbl2 = {
+                [3] = "N10",
+                [175] = "N10",
+                [4] = "N25",
+                [176] = "N25",
+                [5] = "H10",
+                [193] = "H10",
+                [6] = "H25",
+                [194] = "H25",
+            }
+            local difTbl3 = {
+                [3] = "N",
+                [175] = "N",
+                [4] = "N",
+                [176] = "N",
+                [5] = "N",
+                [193] = "N",
+                [6] = "N",
+                [194] = "N",
+            }
+            AddDB("ICC", mainFrameWidth, 875, 3, 15, { 0, 7, 13 }, { "N10", "N25", "H10", "H25", }, difTbl2,
+                { 3, 3, 3, 5, 3, 3, 5, 3, 5, 3, 5, 8, 3, 12, 6, })
+            AddDB("TOC", mainFrameWidth, 835, 3, 9, { 0, 5, 8 }, { "N10", "N25", "H10", "H25", }, difTbl2,
+                { 5, 5, 5, 5, 5, 3, 8, 22, 5, }, 16)
+            AddDB("ULD", mainFrameWidth, 875, 3, 16, { 0, 7, 13 }, { "N10", "N25" }, difTbl1,
+                { 4, 3, 3, 4, 5, 3, 3, 4, 4, 4, 4, 4, 6, 4, 8, 5, })
+            AddDB("NAXX", 1715, 945, 4, 19, { 0, 6, 12, 16 }, { "N10", "N25" }, difTbl1,
+                { 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 6, 6, 14, 6, 6, 5, })
             -- TBC
-            AddDB("SW", mainFrameWidth, 835, 3, 8, { 0, 5, 8 })
-            AddDB("BT", mainFrameWidth, 835, 3, 11, { 0, 5, 9 })
-            AddDB("HS", mainFrameWidth, 835, 2, 7, { 0, 5, })
-            AddDB("SSC", mainFrameWidth, 835, 3, 12, { 0, 6, 10 })
-            AddDB("BWL", mainFrameWidth, 810, 3, 10, { 0, 5, 9 })
-        elseif BG.IsCTM then
-            AddDB("BOT", 1715, 930, 4, 15, { 0, 5, 10, 14 }, 2)
+            AddDB("SW", mainFrameWidth, 835, 3, 8, { 0, 5, 8 }, nil, difTbl3,
+                { 5, 5, 5, 6, 5, 6, 10, 11, })
+            AddDB("BT", mainFrameWidth, 835, 3, 11, { 0, 5, 9 }, nil, difTbl3,
+                { 5, 5, 5, 5, 5, 5, 5, 5, 10, 8, 5, })
+            AddDB("HS", mainFrameWidth, 835, 2, 7, { 0, 5, }, nil, difTbl3,
+                { 5, 5, 5, 5, 5, 7, 5 })
+            AddDB("SSC", mainFrameWidth, 835, 3, 12, { 0, 6, 10 }, nil, difTbl3,
+                { 4, 4, 4, 4, 4, 5, 5, 5, 5, 10, 8, 5, })
+            AddDB("BWL", mainFrameWidth, 810, 3, 10, { 0, 5, 9 }, nil, difTbl3,
+                { 5, 5, 5, 5, 5, 5, 5, 6, 9, 12, })
+            AddDB("TAQ", mainFrameWidth, 810, 3, 11, { 0, 6, 10 }, nil, difTbl3,
+                { 4, 4, 4, 4, 4, 4, 4, 4, 5, 20, 5, }, 14)
+        elseif BG.IsCTM or BG.IsMOP then
+            AddDB("BOT", 1715, 850, 4, 15, { 0, 5, 10, 14 }, { "N", "H" }, nil,
+                { 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 8, 24, 4, }, 12)
+            AddDB("FL", mainFrameWidth, 800, 3, 9, { 0, 4, 8 }, { "N", "H" }, nil,
+                { 6, 6, 6, 6, 6, 6, 6, 6, 10, })
+            AddDB("DS", mainFrameWidth, 800, 3, 10, { 0, 4, 8 }, { "N", "H" }, nil,
+                { 6, 6, 6, 6, 6, 6, 6, 6, 6, 4, })
+            AddDB("MSV", 1715, 980, 4, 18, { 0, 6, 12, 17 }, { "N", "H" }, nil,
+                { 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 27, 10, },14)
+        elseif BG.IsRetail then
+            local n = 8
+            AddDB("NP", mainFrameWidth, 950, 3, 10, { 0, 4, 8 }, { "R", "N", "H", "M" }, nil,
+                { n, n, n, n, n, n, n, n, 5, 5, }, 12)
         end
     end
 
     do
         local function AddDB(FB, instanceID, phase, maxplayers, lootQuality,
-                             difficultyTable, phaseTable, bossPositionTbl, shortName)
+                             phaseTable, bossPositionTbl, shortName)
             tinsert(BG.FBtable, FB)
             tinsert(BG.FBtable2,
                 {
@@ -146,7 +247,6 @@ do
                 })
             BG.FBIDtable[instanceID] = FB
             BG.lootQuality[FB] = lootQuality or 4
-            BG.difficultyTable[FB] = difficultyTable or { "N", "H" }
             BG.phaseFBtable[FB] = phaseTable or { FB }
             BG.bossPositionStartEnd[instanceID] = bossPositionTbl or { 1, Maxb[FB] - 2 }
             BG.FBfromBossPosition[FB] = {}
@@ -188,7 +288,7 @@ do
             BG.FB1 = "MC"
             BG.fullLevel = 60
             BG.theEndBossID = { 672, 617, 793, 723, 717, 1114 } --MC BWL ZUG AQL TAQ NAXX
-            AddDB("MC", 409, "P1-P2", 40, nil, nil, nil, { 1, 10 })
+            AddDB("MC", 409, "P1-P2", 40, nil, nil, { 1, 10 })
             AddDB("BWL", 469, "P3", 40)
             AddDB("ZUG", 309, "P4", 20, 3)
             AddDB("AQL", 509, "P5", 20, 3)
@@ -203,10 +303,11 @@ do
             BG.FB1 = "NAXX"
             BG.fullLevel = 80
             BG.theEndBossID = { 1114, 756, 645, 856, }
-            AddDB("NAXX", 533, "P1", nil, nil, { "H25", "N25", "H10", "N10" }, nil, { 1, 15 })
-            AddDB("ULD", 603, "P2", nil, nil, { "H25", "N25", "H10", "N10" })
-            AddDB("TOC", 649, "P3", nil, nil, { "H25", "N25", "H10", "N10" }, nil, { 1, 6 })
-            AddDB("ICC", 631, "P4", nil, nil, { "H25", "N25", "H10", "N10" }, nil, { 1, 12 })
+
+            AddDB("NAXX", 533, "P1", nil, nil, nil, { 1, 15 })
+            AddDB("ULD", 603, "P2")
+            AddDB("TOC", 649, "P3", nil, nil, nil, { 1, 6 })
+            AddDB("ICC", 631, "P4", nil, nil, nil, { 1, 12 })
 
             BG.FBIDtable[615] = "NAXX" -- 黑曜石圣殿
             BG.bossPositionStartEnd[615] = { 16, 16 }
@@ -230,11 +331,12 @@ do
 
             -- TBC
             do
-                AddDB("BWL", 469, "", nil, nil, nil, nil, nil, L["黑翼之巢"])
-                AddDB("SSC", 548, "", nil, nil, nil, nil, nil, L["毒蛇风暴"])
-                AddDB("HS", 534, "", nil, nil, nil, nil, nil, L["海加尔山"])
-                AddDB("BT", 564, "", nil, nil, nil, nil, nil, L["黑暗神殿"])
-                AddDB("SW", 580, "", nil, nil, nil, nil, nil, L["太阳井"])
+                AddDB("TAQ", 531, "", nil, nil, nil, nil, L["安其拉"])
+                AddDB("BWL", 469, "", nil, nil, nil, nil, L["黑翼"])
+                AddDB("SSC", 548, "", nil, nil, nil, nil, L["毒蛇风暴"])
+                AddDB("HS", 534, "", nil, nil, nil, nil, L["海加尔山"])
+                AddDB("BT", 564, "", nil, nil, nil, nil, L["黑暗神殿"])
+                AddDB("SW", 580, "", nil, nil, nil, nil, L["太阳井"])
 
                 BG.FBIDtable[550] = "SSC" -- 风暴要塞
                 BG.bossPositionStartEnd[550] = { 7, 10 }
@@ -243,19 +345,17 @@ do
                     BG.instanceIDfromBossPosition["SSC"][i] = 550
                 end
             end
-        elseif BG.IsCTM then
+        elseif BG.IsCTM or BG.IsMOP then
             BG.FB1 = "BOT"
             BG.fullLevel = 85
-            BG.theEndBossID = { 1082, 1026, 1034, 1203, 1299, }   -- BOT BWD TOF FL DS
-            AddDB("BOT", 671, "P1", nil, nil, nil, nil, { 1, 5 }) -- 暮光堡垒
-
-            BG.FBIDtable[669] = "BOT"                             -- 黑翼血环
+            BG.theEndBossID = { 1082, 1026, 1034, 1203, 1299, } -- BOT BWD TOF FL DS
+            AddDB("BOT", 671, "P1", nil, nil, nil, { 1, 5 })    -- 暮光堡垒
+            BG.FBIDtable[669] = "BOT"                           -- 黑翼血环
             BG.bossPositionStartEnd[669] = { 6, 11 }
             for i = 6, 11 do
                 BG.FBfromBossPosition["BOT"][i] = { name = "BWD", localName = GetRealZoneText(669) }
                 BG.instanceIDfromBossPosition["BOT"][i] = 669
             end
-
             BG.FBIDtable[754] = "BOT" -- 风神王座
             BG.bossPositionStartEnd[754] = { 12, 13 }
             for i = 12, 13 do
@@ -263,8 +363,34 @@ do
                 BG.instanceIDfromBossPosition["BOT"][i] = 754
             end
 
-            -- AddDB("FL", 720, "P2") -- 火焰之地
-            -- AddDB("DS", 967, "P3") -- 巨龙之魂
+            AddDB("FL", 720, "P2") -- 火焰之地
+            AddDB("DS", 967, "P3") -- 巨龙之魂
+
+            if BG.IsMOP then
+                -- BG.FB1 = "MSV"
+                -- BG.fullLevel = 85
+                BG.theEndBossID = {}                              --
+                AddDB("MSV", 1008, "P1", nil, nil, nil, { 1, 6 }) -- 魔古山
+                -- 恐惧之心
+                BG.FBIDtable[1009] = "MSV"
+                BG.bossPositionStartEnd[1009] = { 7, 12 }
+                for i = 7, 12 do
+                    BG.FBfromBossPosition["MSV"][i] = { name = "HOF", localName = GetRealZoneText(1009) }
+                    BG.instanceIDfromBossPosition["MSV"][i] = 1009
+                end
+                -- 永春台
+                BG.FBIDtable[996] = "MSV"
+                BG.bossPositionStartEnd[996] = { 13, 16 }
+                for i = 13, 16 do
+                    BG.FBfromBossPosition["MSV"][i] = { name = "TES", localName = GetRealZoneText(996) }
+                    BG.instanceIDfromBossPosition["MSV"][i] = 996
+                end
+            end
+        elseif BG.IsRetail then
+            BG.FB1 = "NP"
+            BG.fullLevel = 80
+            BG.theEndBossID = { 2922, }
+            AddDB("NP", 2657, "P1", 20)
         end
     end
 
@@ -275,16 +401,28 @@ do
         HopeMaxi = 3
     end
     do
-        ns.Width      = Width
-        ns.Height     = Height
-        ns.Maxt       = Maxt
-        ns.Maxb       = Maxb
-        ns.Maxi       = Maxi
-        ns.HopeMaxi   = HopeMaxi
-        ns.HopeMaxb   = HopeMaxb
-        ns.HopeMaxn   = HopeMaxn
-        ns.BossNumtbl = BossNumtbl
-        BG.Maxb       = Maxb
+        ns.Maxt     = Maxt
+        ns.Maxb     = Maxb
+        ns.Maxi     = Maxi
+        ns.HopeMaxi = HopeMaxi
+        ns.HopeMaxb = HopeMaxb
+        ns.HopeMaxn = HopeMaxn
+        BG.Maxb     = Maxb
+
+        function BG.GetMaxi(FB, b, isScrollFrame)
+            if not b then return BG.Maxi end
+            FB = FB or BG.FB1
+            if not isScrollFrame then
+                if b == Maxb[FB] then
+                    return BG.Maxi
+                elseif b == Maxb[FB] + 1 then
+                    return 20
+                elseif b == Maxb[FB] + 2 then
+                    return 5
+                end
+            end
+            return Maxi[FB][b] or 0
+        end
     end
 
     local function UnitRealm(unit)
@@ -425,10 +563,12 @@ do
     -- 掉落
     do
         BG.Loot = {}
-        for key, FB in pairs(BG.FBtable) do
+        for _, FB in pairs(BG.FBtable) do
             BG.Loot[FB] = {
                 N = { Quest = {}, },
                 H = { Quest = {}, },
+                M = { Quest = {}, },
+
                 N10 = { Quest = {}, },
                 N25 = { Quest = {}, },
                 H10 = { Quest = {}, },
@@ -444,6 +584,9 @@ do
                 MAGE = {},
                 WARLOCK = {},
                 PRIEST = {},
+                EVOKER = {},
+                DEMONHUNTER = {},
+                MONK = {},
 
                 Team = {},         -- 5人本
                 World = {},        -- 世界掉落
@@ -620,34 +763,69 @@ do
         BG.sound3 = SOUNDKIT.IG_MAINMENU_CLOSE  -- 菜单打开音效
 
         local Interface = "Interface\\AddOns\\BiaoGe\\Media\\sound\\"
-        BG.soundTbl = {
-            { ID = "AI", name = L["AI语音"] },
-            { ID = "YingXue", name = L["樱雪"] },
-            { ID = "BeiXi", name = L["匕首岭-<TIMEs>贝西"] },
-            { ID = "SiKaQi", name = L["司卡奇"] },
+        BG.soundAuthor = {
+            { ID = "AI", addonName = AddonName, isBiaoGe = true },
         }
+        BG.soundTbl = BG.soundAuthor
         BG.soundTbl2 = {
-            { ID = "paimai", name = "拍卖啦.mp3" },
-            { ID = "hope", name = "心愿达成.mp3" },
-            { ID = "qingkong", name = "已清空表格.mp3" },
-            { ID = "cehuiqingkong", name = "已撤回清空.mp3" },
-            { ID = "alchemyReady", name = "炼金转化已就绪.mp3" },
-            { ID = "tailorReady", name = "裁缝洗布已就绪.mp3" },
-            { ID = "leatherworkingReady", name = "制皮筛盐已就绪.mp3" },
-            { ID = "pingjia", name = "给个评价吧.mp3" },
-            { ID = "biaogefull", name = "表格满了.mp3" },
-            { ID = "guoqi", name = "装备快过期了.mp3" },
-            { ID = "uploading", name = "账单正在上传.mp3" },
-            { ID = "uploaded", name = "账单上传成功.mp3" },
-            { ID = "countDownStop", name = "倒数暂停.mp3" },
-            { ID = "HusbandComeOn", name = "老公加油.mp3" },
+            { ID = "paimai", name = "拍卖啦" },
+            { ID = "hope", name = "心愿达成" },
+            { ID = "qingkong", name = "已清空表格" },
+            { ID = "cehuiqingkong", name = "已撤回清空" },
+            { ID = "alchemyReady", name = "炼金转化已就绪" },
+            { ID = "tailorReady", name = "裁缝洗布已就绪" },
+            { ID = "leatherworkingReady", name = "制皮筛盐已就绪" },
+            { ID = "pingjia", name = "给个评价吧" },
+            { ID = "biaogefull", name = "表格满了" },
+            { ID = "guoqi", name = "装备快过期了" },
+            { ID = "uploading", name = "账单正在上传" },
+            { ID = "uploaded", name = "账单上传成功" },
+            { ID = "countDownStop", name = "倒数暂停" },
+            { ID = "HusbandComeOn", name = "老公加油" },
+            { ID = "qiankuan", name = "你有未收欠款" },
+            { ID = "autoAuctionAutoEndTips", name = "自动出价结束" },
+            { ID = "tradeSuccess", name = "交易成功" },
+            { ID = "tradeFalse", name = "交易失败" },
         }
-        for _, vv in ipairs(BG.soundTbl) do
-            local name = vv.ID
-            for _, v in ipairs(BG.soundTbl2) do
-                BG["sound_" .. v.ID .. name] = Interface .. name .. "\\" .. v.name
+
+        local function DefaultSound()
+            for i = 1, C_AddOns.GetNumAddOns() do
+                local addonName = C_AddOns.GetAddOnInfo(i)
+                local enabled = C_AddOns.GetAddOnEnableState(i, player)
+                if C_AddOns.GetAddOnMetadata(i, "X-BiaoGe-Voice") and enabled ~= 0 then
+                    local author = C_AddOns.GetAddOnMetadata(i, "Author")
+                    tinsert(BG.soundAuthor, { ID = author, addonName = addonName })
+                end
+            end
+            for _, value in ipairs(BG.soundAuthor) do
+                local author = value.ID
+                local addonName = value.addonName
+                local isBiaoGe = value.isBiaoGe
+                for _, v in ipairs(BG.soundTbl2) do
+                    local soundID = v.ID
+                    local soundName = v.name
+                    if isBiaoGe then
+                        BG["sound_" .. soundID .. author] = Interface .. author .. "\\" .. soundName
+                    else
+                        BG["sound_" .. soundID .. author] = format("Interface\\AddOns\\%s\\sound\\%s", addonName, soundName)
+                    end
+                end
+            end
+
+            local yes
+            for i, v in ipairs(BG.soundAuthor) do
+                if BiaoGe.options.Sound == v.ID then
+                    yes = true
+                end
+            end
+            if not yes then
+                BiaoGe.options.Sound = "AI"
             end
         end
+
+        BG.Init2(function()
+            DefaultSound()
+        end)
     end
 
     hooksecurefunc(LibBG, "ToggleDropDownMenu", function(_, _, _, dropDown)
@@ -758,9 +936,6 @@ BG.Init(function()
     BG.options[name .. "reset"] = 1
     BiaoGe.options[name] = BiaoGe.options[name] or BG.options[name .. "reset"]
 
-    -- 声音方案
-    BiaoGe.options.Sound = BiaoGe.options.Sound or BG.soundTbl[random(#BG.soundTbl)]
-
     -- 高亮天赋装备
     if not BiaoGe.filterClassNum then
         BiaoGe.filterClassNum = {}
@@ -814,7 +989,7 @@ BG.Init(function()
         BiaoGe.realmName = BiaoGe.realmName or {}
         BiaoGe.realmName[realmID] = realmName
     end
-    -- 记录每个角色的职业等级
+    -- 记录每个角色的职业、等级、天赋
     do
         BiaoGe.playerInfo = BiaoGe.playerInfo or {}
         BiaoGe.playerInfo[realmID] = BiaoGe.playerInfo[realmID] or {}
@@ -827,6 +1002,88 @@ BG.Init(function()
         BG.RegisterEvent("PLAYER_LEVEL_UP", function(self, event, level)
             BiaoGe.playerInfo[realmID][player].level = level
         end)
+
+        -- 天赋
+        if not BG.IsRetail then
+            local function GetTalent()
+                local maxNum = 0
+                local ii
+                for i = 1, 3 do
+                    local num = select(5, GetTalentTabInfo(i, nil, nil, GetActiveTalentGroup()))
+                    if num and num >= maxNum then
+                        maxNum = num
+                        ii = i
+                    end
+                end
+                if maxNum == 0 then ii = nil end
+                BiaoGe.playerInfo[realmID][player].talent = ii
+            end
+            BG.RegisterEvent("PLAYER_TALENT_UPDATE", GetTalent)
+            BG.Init2(GetTalent)
+
+            function BG.GetTalentIcon(class, talent, w)
+                w = w or 0
+                if talent then
+                    local a, b, c, d = unpack(BG.iconTexCoord)
+                    local coord = format("100:100:%s:%s:%s:%s", a * 100, b * 100, c * 100, d * 100)
+                    return format("|T%s:%s:%s:0:0:%s|t", BG.talentIcon[class][talent], w, w, coord)
+                end
+                return format("|A:classicon-%s:%s:%s|a", class, w, w)
+            end
+
+            BG.talentIcon = {
+                DEATHKNIGHT = {
+                    "Interface\\Icons\\Spell_Deathknight_BloodPresence", -- T
+                    "Interface\\Icons\\Spell_Deathknight_FrostPresence",
+                    "Interface\\Icons\\Spell_Deathknight_UnholyPresence",
+                },
+                PALADIN = {
+                    "Interface\\Icons\\Spell_Holy_HolyBolt",     -- N
+                    "Interface\\Icons\\Spell_Holy_DevotionAura", -- T
+                    "Interface\\Icons\\Spell_Holy_AuraOfLight",
+                },
+                WARRIOR = {
+                    "Interface\\Icons\\ability_rogue_eviscerate",
+                    "Interface\\Icons\\ability_warrior_innerrage",
+                    "Interface\\Icons\\ability_warrior_defensivestance", -- T
+                },
+                SHAMAN = {
+                    "Interface\\Icons\\spell_nature_lightning",
+                    "Interface\\Icons\\spell_nature_lightningshield",
+                    "Interface\\Icons\\Spell_Nature_HealingWaveGreater", -- N
+                },
+                HUNTER = {
+                    "Interface\\Icons\\Ability_Hunter_BeastTaming",
+                    "Interface\\Icons\\Ability_Marksmanship",
+                    "Interface\\Icons\\Ability_Hunter_SwiftStrike",
+                },
+                DRUID = {
+                    "Interface\\Icons\\spell_nature_starfall",
+                    "Interface\\Icons\\ability_racial_bearform",
+                    "Interface\\Icons\\Spell_Nature_HealingTouch", -- N
+                },
+                ROGUE = {
+                    "Interface\\Icons\\ability_rogue_eviscerate",
+                    "Interface\\Icons\\ability_backstab",
+                    "Interface\\Icons\\Ability_Ambush",
+                },
+                MAGE = {
+                    "Interface\\Icons\\inv_misc_rune_03",
+                    "Interface\\Icons\\spell_fire_firebolt02",
+                    "Interface\\Icons\\spell_frost_frostbolt02",
+                },
+                WARLOCK = {
+                    "Interface\\Icons\\spell_shadow_deathcoil",
+                    "Interface\\Icons\\spell_shadow_metamorphosis",
+                    "Interface\\Icons\\spell_shadow_rainoffire",
+                },
+                PRIEST = {
+                    "Interface\\Icons\\spell_holy_wordfortitude", -- N
+                    "Interface\\Icons\\spell_holy_holybolt",      -- N
+                    "Interface\\Icons\\spell_shadow_shadowwordpain",
+                },
+            }
+        end
 
         if BiaoGe.PlayerItemsLevel then
             for realmID in pairs(BiaoGe.PlayerItemsLevel) do

@@ -1,5 +1,4 @@
 local _, addonTable = ...;
-local _, _, _, tocversion = GetBuildInfo()
 local CommonInfo=addonTable.CommonInfo
 ----自动对话
 local function duorenwuduihua()
@@ -32,7 +31,10 @@ local function duorenwuduihua()
 			end
 	end
 end
-local NoDialogue = {"33662"}
+local NoDialogue = {
+	33662,--取消奥杜尔BUFF
+	37119,--取消ICCBUFF
+}
 local function IsNoDialogue(npcID)
 	for i=1,#NoDialogue do
 		if npcID==NoDialogue[i] then
@@ -48,7 +50,7 @@ local function Eventduihua(self,event)
 		local unitType, _, _, _, _, npcID = strsplit("-", targetGUID)
 		--print(event,unitType,npcID)
 		if unitType and npcID and unitType=="Creature" then
-			if IsNoDialogue(npcID) then return end
+			if IsNoDialogue(tonumber(npcID)) then return end
 		end
 	end
 	if event=="QUEST_DETAIL" then--接

@@ -14,6 +14,7 @@ L['LeaderQrCode'] = '进语音'
 L['Certification'] = '星标'
 L['Activity'] = '活动类型'
 L['Activity Mode'] = '活动模式'
+L['Sort Mode'] = '排序方式'
 L['Mode'] = '模式'
 L['Activity Comment'] = '活动说明'
 L['Manage Activity'] = '管理活动'
@@ -243,10 +244,10 @@ L['Last Activity'] = '往期活动'
 L['Last Activity %s'] = '往期活动%s'
 L['DialogCopyUrl'] = '请按<|cff00ff00Ctrl+C|r>复制网址到浏览器打开'
 
-L.TOC_PRICES_TITLE = [[【TOC物价】功能简介：]]
+L.TOC_PRICES_TITLE = [[【ICC物价】功能简介：]]
 
 L.TOC_PRICES = [[
-查询每个服务器TOC团本（各难度）装备最新价格；
+查询每个服务器ICC团本（各难度）装备最新价格；
 数据更新频率为每小时一次，取各服务器实际交易价格中位数；
 数据来源于魔兽世界相关插件采集，供君参考。
 
@@ -264,7 +265,7 @@ L.TASK_GUIDE = [[
 L.CUSTOMS_TITLE = [[【副本攻略】功能简介：]]
 
 L.CUSTOMS = [[
-由社区达人潜心整理，详细介绍TOC团队副本中各BOSS技能机
+由社区达人潜心整理，详细介绍ICC团队副本中各BOSS技能机
 制与战斗流程，帮助您快速了解每场BOSS战斗中的核心机制原
 理、各职责注意事项，打法推荐等。其中包含图文、表格及视频
 等多种内容形式。

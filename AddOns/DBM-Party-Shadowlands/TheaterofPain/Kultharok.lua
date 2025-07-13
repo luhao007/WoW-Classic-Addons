@@ -1,7 +1,7 @@
 local mod	= DBM:NewMod(2389, "DBM-Party-Shadowlands", 6, 1187)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20250309030036")
+mod:SetRevision("20250519125751")
 mod:SetCreatureID(162309)
 mod:SetEncounterID(2364)
 mod:SetZone(2293)
@@ -29,13 +29,13 @@ local yellDrawSoul					= mod:NewYell(474298)
 local specWarnWellofDarkness		= mod:NewSpecialWarningMoveAway(473540, nil, nil, nil, 1, 2)
 local yellWellofDarkness			= mod:NewYell(473540)
 local specWarnDeathSpiral			= mod:NewSpecialWarningDodgeCount(1216474, nil, nil, nil, 2, 2, 4)
-local specWarnNecroticEruption		= mod:NewSpecialWarningDodgeCount(474087, nil, nil, nil, 1, 15)
+local specWarnNecroticEruption		= mod:NewSpecialWarningCount(474087, nil, nil, nil, 1, 15)
 local specWarnFeastoftheDamned		= mod:NewSpecialWarningCount(473513, nil, nil, nil, 2, 2)
 --local specWarnGTFO				= mod:NewSpecialWarningGTFO(257274, nil, nil, nil, 1, 8)
 
-local timerDrawSoulCD				= mod:NewVarCountTimer("v54.6-57.1", 474298, nil, nil, nil, 3, nil, DBM_COMMON_L.DAMAGE_ICON, nil, 1, 5)
+local timerDrawSoulCD				= mod:NewVarCountTimer("v53.4-57.1", 474298, nil, nil, nil, 3, nil, DBM_COMMON_L.DAMAGE_ICON, nil, 1, 5)
 local timerWellofDarknessCD			= mod:NewCDCountTimer(23.1, 473540, nil, nil, nil, 3, nil, DBM_COMMON_L.HEALER_ICON..DBM_COMMON_L.MAGIC_ICON)--23.1 except when delayed by other stuff
-local timerDeathSpiralCD			= mod:NewCDCountTimer(54.6, 1216474, nil, nil, nil, 3, nil, DBM_COMMON_L.MYTHIC_ICON)
+local timerDeathSpiralCD			= mod:NewVarCountTimer("v53.4-57.1", 1216474, nil, nil, nil, 3, nil, DBM_COMMON_L.MYTHIC_ICON)
 local timerNecroticEruptionCD		= mod:NewCDCountTimer(20.6, 474087, nil, "Tank", nil, 5, nil, DBM_COMMON_L.TANK_ICON)
 local timerFeastoftheDamnedCD		= mod:NewAITimer(20.6, 473513, nil, nil, nil, 2, nil, DBM_COMMON_L.HEALER_ICON)--probably same CD as draw soul, needs confirmation
 
@@ -92,7 +92,7 @@ function mod:OnCombatStart(delay)
 	self.vb.feastCount = 0
 	self.vb.spiralCount = 0
 	self.vb.necroticEruption = 0
-	timerWellofDarknessCD:Start(10.9-delay, 1)--SUCCESS event 473540
+	timerWellofDarknessCD:Start(10.6-delay, 1)--SUCCESS event 473540
 	timerNecroticEruptionCD:Start(16.9, 1)--START (16.9-19.1)
 	if self:IsMythic() then
 		timerDeathSpiralCD:Start(6-delay, 1)--START
@@ -109,7 +109,7 @@ function mod:SPELL_CAST_START(args)
 		specWarnDeathSpiral:Show(self.vb.spiralCount)
 		specWarnDeathSpiral:Play("watchstep")
 		--"Death Spiral-1215787-npc:162309-00004BDA78 = pull:6.0, 30.4, 54.6, 55.8",
-		timerDeathSpiralCD:Start((self.vb.spiralCount == 1) and 30.4 or 54.6, self.vb.spiralCount+1)
+		timerDeathSpiralCD:Start((self.vb.spiralCount == 1) and 27.9 or "v53.4-57.1", self.vb.spiralCount+1)
 		updateAllTimers(self, 2.4)
 	elseif spellId == 474087 then
 		self.vb.necroticEruption = self.vb.necroticEruption + 1

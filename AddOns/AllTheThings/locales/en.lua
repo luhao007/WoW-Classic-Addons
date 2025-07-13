@@ -18,10 +18,6 @@ local GetItemClassInfo = app.WOWAPI.GetItemClassInfo;
 
 for key, value in pairs({
 	-- These need to be localized manually.
-	-- Can also use the direct IconID, i.e. wowhead.com/icon=###
-	-- https://www.wowhead.com/icons
-	["HEADER_ICONS"] = {
-	};
 	["HEADER_NAMES"] = {
 	-- Tier/Dungeon/Event/Holiday Sets
 		-- Artifact Strings, These IDs are used in src/Expansion/Legion [Ask Runaway about removing them]

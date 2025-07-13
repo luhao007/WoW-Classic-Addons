@@ -19,7 +19,7 @@ local api = {};
 app.Modules.Upgrade = api;
 
 -- Module locals
-local CreateItem, DGU, TransmogLastRefresh, GetGroupItemIDWithModID, GetSourceID, CreateItemSource
+local CreateItem, DGU, TransmogLastRefresh, GetGroupItemIDWithModID, GetSourceID, CreateItemSource, CleanLink
 local Runner = app.CreateRunner("upgrade");
 Runner.SetPerFrameDefault(1)
 
@@ -29,6 +29,10 @@ app.AddEventHandler("OnLoad", function()
 	GetGroupItemIDWithModID = app.GetGroupItemIDWithModID
 	GetSourceID = app.GetSourceID
 	CreateItemSource = app.CreateItemSource
+	CleanLink = app.Modules.Item.CleanLink
+	if not CleanLink then
+		error("Upgrade Module requires Modules.Item.CleanLink definition!")
+	end
 end)
 
 -- Static mapping of BonusID -> Next Unlock BonusID for a corresponding Item. Unlock will most-likely always be an Appearance
@@ -360,14 +364,15 @@ local NestedUpgradesAllowedByBonusID = {
 local function GetFirstValueAndKey(t, keys)
 	if not t or not keys then return end
 
-	local k
+	local k, tk
 	for i=1,#keys do
 		k = keys[i]
-		if t[k] then return t[k], k end
+		tk = t[k]
+		if tk then return tk, k end
 	end
 end
 local function GetNextItemUnlockBonusIDByString(item)
-	local itemVals = {(":"):split(item)}
+	local itemVals = {(":"):split(CleanLink(item))}
 
 	-- BonusID count
 	local bonusCount = tonumber(itemVals[14])
@@ -385,12 +390,23 @@ local function GetNextItemUnlockBonusIDByString(item)
 	end
 end
 local function GetNextItemUnlockBonusIDByTable(item)
-	local upgrades = BonusIDNextUnlock[item.bonusID or 0]
-	if upgrades then return upgrades end
+	if not item.sourceID then return end
 
-	-- we currently don't store all bonusIDs in item groups
-	-- upgrades = GetFirstValueAndKey(BonusIDNextUnlock, item.bonuses)
-	-- if upgrades then return upgrades end
+	local upgrades = BonusIDNextUnlock[item.bonusID or 0]
+	if upgrades then
+		-- app.PrintDebug("upgrade.bonusID",upgrades,app:SearchLink(item))
+		return upgrades
+	end
+
+	local bonuses = item.bonuses
+	if bonuses then
+		upgrades = GetFirstValueAndKey(BonusIDNextUnlock, bonuses)
+		if upgrades then
+			-- app.PrintDebug("upgrade.bonuses",upgrades,app:SearchLink(item))
+			return upgrades
+		end
+		return
+	end
 
 	local link = item.link or item.rawlink or item.silentLink
 	if link then
@@ -448,6 +464,8 @@ local function GetUpgrade(t, up)
 		return;
 	end
 
+	itemSource.filledType = "UPGRADE"
+
 	-- cache the upgrade within the item itself
 	t._up = itemSource;
 	-- app.PrintDebug("GU:",itemSource.__type,t.isUpgrade,t.modItemID,itemSource.modItemID)
@@ -494,9 +512,8 @@ local function SetupUpgrade(t)
 	-- have upgrades
 	if IsRetrieving(t.link) then
 		-- app.PrintDebug("re-try upgrade",t.hash,t.link)
-		t.retries = (t.retries or 0) + 1
 		-- in situations where the upgrade item cannot be loaded/found quickly, we unfortunately will just give up
-		if (t.retries > 10) then return end
+		if not t.CanRetry then return end
 		Runner.Run(SetupUpgrade, t)
 	end
 end
@@ -514,9 +531,8 @@ local function CheckIsUpgrade(t)
 	-- have upgrades
 	if IsRetrieving(t.link) then
 		-- app.PrintDebug("re-try upgrade",t.hash,t.link)
-		t.retries = (t.retries or 0) + 1
 		-- in situations where the upgrade item cannot be loaded/found quickly, we unfortunately will just give up
-		if (t.retries > 10) then return end
+		if not t.CanRetry then return end
 		Runner.Run(CheckIsUpgrade, t)
 	end
 end
@@ -572,7 +588,7 @@ local function UpdateUpgrades()
 end
 
 -- Returns the different and upgraded version of 't' (via item link/bonuses or 'up' field)
-api.NextUpgrade = function(t)
+local function NextUpgrade(t)
 
 	-- app.PrintDebug("NU:",t.modItemID)
 	-- try basic upgrade logic first (checking 'up' field)
@@ -608,4 +624,28 @@ api.CollectibleAsUpgrade = function(t)
 	return upgrade and not upgrade.collected;
 end
 
+-- Event Handling
 app.AddEventHandler("OnRecalculate_NewSettings", UpdateUpgrades)
+
+app.AddEventHandler("OnLoad", function()
+	local Fill = app.Modules.Fill
+	if not Fill then return end
+
+	local CreateObject = app.__CreateObject
+	Fill.AddFiller("UPGRADE",
+	function(group, FillData)
+		local nextUpgrade = NextUpgrade(group)
+		if not nextUpgrade then return end
+
+		if not nextUpgrade.collected then
+			group.filledUpgrade = true
+		end
+		-- app.PrintDebug("filledUpgrade=",nextUpgrade.modItemID,nextUpgrade.collected,"<",group.modItemID)
+		local o = CreateObject(nextUpgrade)
+		return { o }
+	end,
+	{
+		SettingsIcon = app.asset("Interface_Upgrade"),
+		SettingsTooltip = "Fills any Upgrade |T"..app.asset("Interface_Upgrade")..":0|t which is available to the given Item\n\nFor an ATT List this is typically shown if available for the default state of an Item as Sourced, whereas in Tooltips it is based on the raw Item data when shown."
+	})
+end)

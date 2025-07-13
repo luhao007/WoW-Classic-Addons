@@ -1,8 +1,8 @@
-## Interface: 30404
+## Interface: 30405
 ## Author: Iza@Gilneas, humfras, Ivaria@Hyjal
-## Version: 3.164-wotlkc
+## Version: CN3.4.5-|cffff7d0a煎饼果子|r|cff93d925溪子自改|r
 
-## Title: VuhDo ['vu:du:]
+## Title: VuhDo-|cffff7d0a煎饼果子|r|cff93d925溪子自改|r
 ## Notes: Raid Frames providing click-heal functionality, buff and debuff control, main tank management and much more
 ## Title-zhCN: |cFFFFE00A<|r|cFFA330C9界面|r|cFFFFE00A>|r |cFFFFFFFF团队面板|r |cFFFFE00AVuhDo|r
 ## Notes-zhCN: 强大的团队面板，可实现鼠标点击治疗、上BUFF等一系列操作

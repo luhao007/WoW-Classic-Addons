@@ -1,10 +1,8 @@
 local addonName, addonTable = ...;
 local L=addonTable.locale
-local _, _, _, tocversion = GetBuildInfo()
 ---
 local Create=addonTable.Create
 local PIGFrame=Create.PIGFrame
-local PIGLine=Create.PIGLine
 local PIGEnter=Create.PIGEnter
 local PIGButton = Create.PIGButton
 local PIGDownMenu=Create.PIGDownMenu
@@ -23,8 +21,7 @@ local Mapfun={}
 addonTable.Mapfun=Mapfun
 local fuFrame = PIGOptionsList(L["MAP_TABNAME"],"TOP")
 --
-local DownY=30
-local RTabFrame =Create.PIGOptionsList_RF(fuFrame,DownY)
+local RTabFrame =Create.PIGOptionsList_RF(fuFrame)
 --
 local MiniMapF,MiniMaptabbut =PIGOptionsList_R(RTabFrame,L["MAP_TABNAME1"],70)
 MiniMapF:Show()
@@ -52,7 +49,7 @@ MiniMapF.Minimap_but:SetScript("OnClick", function (self)
 	else
 		PIGA["Map"]["MinimapBut"]=false;
 	end
-	Pig_Options_RLtishi_UI:Show()
+	PIG_OptionsUI.RLUI:Show()
 	MiniMapF.PIGChecked()
 end)
 -----------
@@ -63,7 +60,7 @@ MiniMapF.Minimap_but_BS:SetScript("OnClick", function (self)
 	else
 		PIGA["Map"]["MiniButShouNa_YN"]=1;
 	end
-	Pig_Options_RLtishi_UI:Show()
+	PIG_OptionsUI.RLUI:Show()
 	MiniMapF.PIGChecked()
 end);
 --收纳功能
@@ -74,7 +71,7 @@ MiniMapF.Minimap_but_SN:SetScript("OnClick", function (self)
 	else
 		PIGA["Map"]["MiniButShouNa_YN"]=2;
 	end
-	Pig_Options_RLtishi_UI:Show()
+	PIG_OptionsUI.RLUI:Show()
 	MiniMapF.PIGChecked()
 end);
 --收纳小地图按钮每行数目
@@ -87,28 +84,27 @@ MiniMapF.Minimap_but_SN.Smeihangshu.Slider:HookScript("OnValueChanged", function
 end)
 --按钮位置
 MiniMapF.Minimap_but_Pointbiaoti=PIGFontString(MiniMapF,{"TOPLEFT",MiniMapF,"TOPLEFT",20,-200},"小地图按钮位置:")
-local mapPointList = {"附着于小地图","自由模式(可随意拖动)","附着于系统菜单","附着于聊天框","ElvUI_小地图下方"};
+local mapPointList = {"附着于小地图","附着于聊天框","自由模式(可随意拖动)"};
 MiniMapF.Minimap_but_Point=PIGDownMenu(MiniMapF,{"TOPLEFT",MiniMapF.Minimap_but_Pointbiaoti,"BOTTOMLEFT",30,-6},{180,24})
 function MiniMapF.Minimap_but_Point:PIGDownMenu_Update_But()
-	if not ElvUI then mapPointList[5]=nil end
 	local info = {}
 	info.func = self.PIGDownMenu_SetValue
 	for i=1,#mapPointList,1 do
 	    info.text, info.arg1 = mapPointList[i], i
-	    info.checked = i==PIGA["Map"]["MinimapPoint"]
+	    info.checked = i==PIGA["Map"]["MinimapPointMode"]
 		self:PIGDownMenu_AddButton(info)
 	end 
 end
 function MiniMapF.Minimap_but_Point:PIGDownMenu_SetValue(value,arg1,arg2)
 	self:PIGDownMenu_SetText(value)
-	PIGA["Map"]["MinimapPoint"]=arg1
+	PIGA["Map"]["MinimapPointMode"]=arg1
 	MiniMapF.PIGChecked()
+	PIG_OptionsUI.MiniMapBut:ButPoint()
 	PIGCloseDropDownMenus()
-	PigMinimapBut_UI:Point()
 end
 MiniMapF.CZinfo = PIGButton(MiniMapF,{"TOPLEFT",MiniMapF.Minimap_but_Point,"BOTTOMLEFT",10,-6},{100,24},"重置位置")
 MiniMapF.CZinfo:SetScript("OnClick", function()
-	PigMinimapBut_UI:CZMinimapInfo()
+	PIG_OptionsUI.MiniMapBut:CZMinimapInfo()
 end);
 --=======================================
 MiniMapF.MinimapButF = PIGFrame(MiniMapF)
@@ -137,11 +133,11 @@ local function UpdatePaichuButLsit()
 		butx:Hide()
 		PIGEnter(butx,"")
 	end
-	for i=1,#PigMinimapBut_UI.MiniList do
+	for i=1,#PIG_OptionsUI.MiniMapBut.MiniList do
 		local butx = MiniMapF.MinimapButF.butlist[i]
 		butx:Show()
-		butx.uiname=PigMinimapBut_UI.MiniList[i]
-		local iconx = _G[PigMinimapBut_UI.MiniList[i]].icon and _G[PigMinimapBut_UI.MiniList[i]].icon:GetTexture() or _G[PigMinimapBut_UI.MiniList[i]].Icon and _G[PigMinimapBut_UI.MiniList[i]].Icon:GetTexture() or 134400
+		butx.uiname=PIG_OptionsUI.MiniMapBut.MiniList[i]
+		local iconx = _G[PIG_OptionsUI.MiniMapBut.MiniList[i]].icon and _G[PIG_OptionsUI.MiniMapBut.MiniList[i]].icon:GetTexture() or _G[PIG_OptionsUI.MiniMapBut.MiniList[i]].Icon and _G[PIG_OptionsUI.MiniMapBut.MiniList[i]].Icon:GetTexture() or 134400
 		butx:SetNormalTexture(iconx)
 		PIGEnter(butx,butx.uiname)
 		if IsNoDIYpaichu(butx.uiname) then
@@ -175,13 +171,13 @@ for id = 1, zongshuV do
 			if datax[i]==self.uiname then
 				self.x:Hide()
 				table.remove(datax,i)
-				Pig_Options_RLtishi_UI:Show()
+				PIG_OptionsUI.RLUI:Show()
 				return
 			end
 		end
 		self.x:Show()
 		table.insert(datax,self.uiname)
-		Pig_Options_RLtishi_UI:Show()
+		PIG_OptionsUI.RLUI:Show()
 	end);
 end
 for hangID=1, hangshuV,1 do
@@ -209,8 +205,18 @@ end
 MiniMapF:HookScript("OnShow", function (self)
 	UpdatePaichuButLsit();
 	self.Minimap_but_SN.Smeihangshu:PIGSetValue(PIGA["Map"]["MiniButShouNa_hang"])
-	self.Minimap_but_Point:PIGDownMenu_SetText(mapPointList[PIGA["Map"]["MinimapPoint"]])
-	MiniMapF.PIGChecked()
+	if PIG_OptionsUI.MiniMapBut.DiyMiniMap then
+		self.Minimap_but_Point:Disable();
+		self.CZinfo:Disable();
+		self.Minimap_but_Point:PIGDownMenu_SetText("被外部插件控制")
+	elseif PIG_OptionsUI.IsOpen_ElvUI() then
+		self.Minimap_but_Point:Disable();
+		self.CZinfo:Disable();
+		self.Minimap_but_Point:PIGDownMenu_SetText("ElvUI模式")
+	else
+		self.Minimap_but_Point:PIGDownMenu_SetText(mapPointList[PIGA["Map"]["MinimapPointMode"]])
+	end
+	self.PIGChecked()
 end);
 
 
@@ -224,10 +230,10 @@ WorldMapF.WorldMapXY:SetScript("OnClick", function (self)
 		Mapfun.WorldMap_XY()
 	else
 		PIGA["Map"]["WorldMapXY"]=false;
-		Pig_Options_RLtishi_UI:Show()
+		PIG_OptionsUI.RLUI:Show()
 	end
 end);
-if tocversion<100000 then
+if PIG_MaxTocversion() then
 	WorldMapF.WorldMapWind = PIGCheckbutton_R(WorldMapF,{L["MAP_WORDWIND"],L["MAP_WORDWINDTIPS"]},true)
 	WorldMapF.WorldMapWind:SetScript("OnClick", function (self)
 		if self:GetChecked() then
@@ -235,7 +241,7 @@ if tocversion<100000 then
 			Mapfun.WorldMap_Wind()
 		else
 			PIGA["Map"]["WorldMapWind"]=false;
-			Pig_Options_RLtishi_UI:Show()
+			PIG_OptionsUI.RLUI:Show()
 		end
 	end);
 	WorldMapF.WorldMapLV = PIGCheckbutton_R(WorldMapF,{L["MAP_WORDLV"],L["MAP_WORDLVTIPS"]},true)
@@ -245,7 +251,7 @@ if tocversion<100000 then
 			Mapfun.WorldMap_LVSkill()
 		else
 			PIGA["Map"]["WorldMapLV"]=false;
-			Pig_Options_RLtishi_UI:Show()
+			PIG_OptionsUI.RLUI:Show()
 		end
 	end);
 	WorldMapF.WorldMapSkill = PIGCheckbutton_R(WorldMapF,{L["MAP_WORDSKILL"],L["MAP_WORDSKILLTIPS"]},true)
@@ -255,7 +261,7 @@ if tocversion<100000 then
 			Mapfun.WorldMap_LVSkill()
 		else
 			PIGA["Map"]["WorldMapSkill"]=false;
-			Pig_Options_RLtishi_UI:Show()
+			PIG_OptionsUI.RLUI:Show()
 		end
 	end);
 	WorldMapF.WorldMapMiwu = PIGCheckbutton_R(WorldMapF,{L["MAP_WORDMIWU"],L["MAP_WORDMIWUTIPS"]},true)
@@ -265,7 +271,7 @@ if tocversion<100000 then
 			Mapfun.WorldMap_Miwu()
 		else
 			PIGA["Map"]["WorldMapMiwu"]=false;
-			Pig_Options_RLtishi_UI:Show()
+			PIG_OptionsUI.RLUI:Show()
 		end
 	end);
 	WorldMapF.WorldMapMiwu.Color = Create.ColorBut(WorldMapF.WorldMapMiwu,{"LEFT",WorldMapF.WorldMapMiwu.Text,"RIGHT",10,0},{18,18})
@@ -281,7 +287,7 @@ if tocversion<100000 then
 end
 WorldMapF:HookScript("OnShow", function (self)
 	WorldMapF.WorldMapXY:SetChecked(PIGA["Map"]["WorldMapXY"])
-	if tocversion<100000 then
+	if PIG_MaxTocversion() then
 		WorldMapF.WorldMapWind:SetChecked(PIGA["Map"]["WorldMapWind"])
 		WorldMapF.WorldMapLV:SetChecked(PIGA["Map"]["WorldMapLV"])
 		WorldMapF.WorldMapSkill:SetChecked(PIGA["Map"]["WorldMapSkill"])
@@ -293,7 +299,7 @@ end);
 --==================================
 addonTable.Map = function()
 	Mapfun.WorldMap_XY()
-	if tocversion<100000 then
+	if PIG_MaxTocversion() then
 		Mapfun.WorldMap_Wind()
 		Mapfun.WorldMap_LVSkill()
 		Mapfun.WorldMap_Miwu()

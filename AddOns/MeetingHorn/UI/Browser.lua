@@ -20,6 +20,7 @@ local medalTextures = {
 ---@field private ActivityList ListView
 ---@field private Activity Button
 ---@field private Mode Button
+---@field private SortMode Button
 ---@field private Header1 Button
 ---@field private Header2 Button
 ---@field private Header3 Button
@@ -53,12 +54,14 @@ function Browser:Constructor()
     -- self.CreateButton:SetText(L['Create Activity'])
     self.ActivityLabel:SetText(L['Activity'])
     self.ModeLabel:SetText(L['Activity Mode'])
+    self.Sortord:SetText(L['Sort Mode'])
     self.SearchLabel:SetText(SEARCH)
     self.ProgressBar.Loading:SetText(L['Receiving active data, please wait patiently'])
     self.ProgressBar:SetMinMaxValues(0, 1)
 
     ns.GUI:GetClass('Dropdown'):Bind(self.Activity)
     ns.GUI:GetClass('Dropdown'):Bind(self.Mode)
+    ns.GUI:GetClass('Dropdown'):Bind(self.SortMode)
 
     ns.ApplyImageButton(self.ApplyLeaderBtn, {
         text = '申请星团长',
@@ -102,10 +105,10 @@ function Browser:Constructor()
     --@end-bcc@]==]
 
     -- @lkc@
+   self:SetupQuickButton('ICC')
    self:SetupQuickButton('TOC')
    self:SetupQuickButton('HTOC')
    self:SetupQuickButton('ULD')
-   self:SetupQuickButton('ICC')
    self:SetupQuickButton('奥杜尔')
    self:SetupQuickButton('宝库')
    self:SetupQuickButton('日常')
@@ -178,6 +181,12 @@ function Browser:Constructor()
     self.Mode:SetCallback('OnSelectChanged', Search)
     self.Mode:SetMaxItem(20)
 
+    self.SortMode:SetMenuTable(ns.SORT_MODE_MENU)
+    self.SortMode:SetDefaultText("推荐排序")
+    self.SortMode:SetValue(1)
+    self.SortMode:SetCallback('OnSelectChanged', Search)
+    self.SortMode:SetMaxItem(20)
+
     self.Input:HookScript('OnTextChanged', Search)
 
     self.VoiceActivity.VoiceActivityTitle:SetTextColor(1, 0.984, 0.863)
@@ -244,6 +253,7 @@ function Browser:Constructor()
     self.Reset:SetScript('OnClick', function()
         self.Activity:SetValue(nil)
         self.Mode:SetValue(nil)
+        self.SortMode:SetValue(1)
         self.Input:SetText('')
         self.sortOrder = nil
         self.sortId = nil
@@ -379,8 +389,9 @@ function Browser:OnItemFormatting(button, item, isVoice)
 
         -- @lkc@
         if item:GetCertificationLevel() then
-            button.Icon:SetTexture(string.format([[Interface\AddOns\MeetingHorn\Media\certification_icon_%d]],
-                                                 item:GetCertificationLevel()))
+            button.Icon:SetTexture([[Interface\AddOns\MeetingHorn\Media\certification_icon]])
+            button.Icon:SetSize(384 / 6, 96 / 6)
+            button.Icon:SetTexCoord(0, 384 / 512, 0, 96 / 128)
             button.Icon:SetShown(true)
         else
             button.Icon:SetShown(false)
@@ -416,9 +427,9 @@ function Browser:OnItemFormatting(button, item, isVoice)
             button.Instance.Diff:Hide()
         end
 
-        button.SameInstanceBgLeft:SetTexture(format("Interface/AddOns/MeetingHorn/Media/ProgressBg%d", item:GetCertificationBgID()))
+        --button.SameInstanceBgLeft:SetTexture(format("Interface/AddOns/MeetingHorn/Media/ProgressBg%d", item:GetCertificationBgID())) -- 隐藏背景
         button.NormalBg:SetShown(not sameInstance)
-        button.SameInstanceBgLeft:SetShown(sameInstance)
+        button.SameInstanceBgLeft:SetShown(False)
         button.QRIcon:SetShown(item:IsOurAddonCreate() and isVoice)
         button.QRIcon:SetSize(149 * 0.5, 64 * 0.3)
         button.QRIcon:ClearAllPoints()
@@ -462,7 +473,13 @@ function Browser:OnItemEnter(item)
     GameTooltip:SetOwner(self, 'ANCHOR_NONE')
     GameTooltip:SetPoint('TOPLEFT', self, 'TOPRIGHT', 8, 60)
     GameTooltip:SetText(item:GetTitle())
-    GameTooltip:AddLine(LeaderName, r, g, b)
+    if item:GetCertificationLevel() then
+        GameTooltip:AddLine(LeaderName..format([[|TInterface\AddOns\MeetingHorn\Media\certification_icon_%d:16:64:0:0:128:64:0:128:0:33|t]],
+            item:GetCertificationLevel()),  r, g, b)
+    else
+        GameTooltip:AddLine(LeaderName, r, g, b)
+    end
+
 
     local medalList = ns.LFG:GetMedalList(LeaderName)
     local medalText = ""
@@ -543,25 +560,36 @@ function Browser:OnClick(id)
     self:Sort()
 end
 
-function Browser:Sort(List)
+function Browser:GetCertificationLevel(starLeaderLevel)
+    if starLeaderLevel == nil then
+        starLeaderLevel = 0
+    end
+    if starLeaderLevel >= 3 and starLeaderLevel <= 7 then
+        return 2
+    elseif starLeaderLevel >= 1 and starLeaderLevel <= 2 then
+        return 1
+    else
+        return 0
+    end
+end
+
+function Browser:Sort(List, SortModeID)
     local sortCall = function()
         sort(List:GetItemList(), function(a, b)
             -- @lkc@
-            local acl, bcl = a:GetCertificationLevel(), b:GetCertificationLevel()
-            if acl or bcl then
-                if acl == bcl then
-                    local bgIDAcl, bgIDbcl = a:GetCertificationBgID(), b:GetCertificationBgID()
-                    if bgIDAcl or bgIDbcl then
-                        if bgIDAcl and bgIDbcl then
-                            return bgIDAcl > bgIDbcl
-                        else
-                            return bgIDAcl
-                        end
+            if SortModeID == 1 or SortModeID == 2 then
+                local acl, bcl
+                if SortModeID == 1 then
+                    acl, bcl = self:GetCertificationLevel(a:GetCertificationLevel()), self:GetCertificationLevel(b:GetCertificationLevel())
+                elseif SortModeID == 2 then
+                    acl, bcl = a:GetCertificationLevel(), b:GetCertificationLevel()
+                end
+                if acl or bcl then
+                    if acl and bcl then
+                        return acl > bcl
+                    else
+                        return acl
                     end
-                elseif acl and bcl then
-                    return acl > bcl
-                else
-                    return acl
                 end
             end
 
@@ -674,8 +702,9 @@ function Browser:Search()
 
     self.ActivityList:SetItemList(result)
     self.VoiceActivityList:SetItemList(VoiceActivityResult)
-    self:Sort(self.ActivityList)
-    self:Sort(self.VoiceActivityList)
+    local SortModeID = self.SortMode:GetValue()
+    self:Sort(self.ActivityList, SortModeID)
+    self:Sort(self.VoiceActivityList, SortModeID)
     self.ActivityList:Refresh()
     self.VoiceActivityList:Refresh()
     self.Empty.Text:SetShown(#result == 0 and #VoiceActivityResult == 0)
@@ -734,15 +763,9 @@ function Browser:CreateActivityMenu(activity)
             func = function()
                 ChatFrame_SendTell(activity:GetLeader())
             end,
-        }, {
-            text = C_FriendList.IsIgnored(activity:GetLeader()) and IGNORE_REMOVE or IGNORE,
-            func = function()
-                C_FriendList.AddOrDelIgnore(activity:GetLeader())
-                if not C_FriendList.IsIgnored(activity:GetLeader()) then
-                    ns.LFG:RemoveActivity(activity)
-                end
-            end,
-        }, {isSeparator = true}, {text = REPORT_PLAYER, isTitle = true},
+        },
+         {isSeparator = true},
+        {text = REPORT_PLAYER, isTitle = true},
         {
             text = REPORT_CHAT,
             func = function()
@@ -750,6 +773,15 @@ function Browser:CreateActivityMenu(activity)
                 local leader = activity:GetLeader()
                 ReportFrame:InitiateReport(reportInfo, leader, activity:GetLeaderPlayerLocation())
                 ns.GUI:CloseMenu()
+            end,
+        },
+        {
+            text = C_FriendList.IsIgnored(activity:GetLeader()) and IGNORE_REMOVE or IGNORE,
+            func = function()
+                C_FriendList.AddOrDelIgnore(activity:GetLeader())
+                if not C_FriendList.IsIgnored(activity:GetLeader()) then
+                    ns.LFG:RemoveActivity(activity)
+                end
             end,
         },
         {isSeparator = true},

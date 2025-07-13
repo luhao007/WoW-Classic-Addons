@@ -104,10 +104,19 @@ function SAO.IsSpellIdentical(self, spellID, spellName, referenceID)
     end
 end
 
+local canHaveMultipleRanks = SAO.IsProject(SAO.ALL_PROJECTS - SAO.CATA_AND_ONWARD);
 -- Test if the player is capable of casting a specific spell
 function SAO.IsSpellLearned(self, spellID)
     if IsSpellKnownOrOverridesKnown(spellID) then
         return true;
+    end
+    if canHaveMultipleRanks then
+        local spellName = GetSpellInfo(spellID);
+        for _, spellID in ipairs(self.SpellIDsByName[spellName] or {}) do
+            if IsSpellKnownOrOverridesKnown(spellID) then
+                return true;
+            end
+        end
     end
     return false;
 end
@@ -124,15 +133,7 @@ function SAO.GetSpellEndTime(self, spellID, suggestedEndTime)
         return -- Return nil if there is no timer effect, to save CPU
     end
 
-    local duration, expirationTime
-
-    if type(spellID) == 'string' then
-        -- spellID is a spell name
-        _, _, _, _, duration, expirationTime = self:FindPlayerAuraByName(spellID);
-    elseif type(spellID) == 'number' and spellID < 1000000 then -- spell IDs over 1000000 are fake ones
-        -- spellID is a spell ID number
-        _, _, _, _, duration, expirationTime = self:FindPlayerAuraByID(spellID);
-    end
+    local duration, expirationTime = self:GetPlayerAuraDurationExpirationTimBySpellIdOrName(spellID);
 
     if type(duration) == 'number' and type(expirationTime) == 'number' then
         local startTime, endTime = expirationTime-duration, expirationTime;

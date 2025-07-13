@@ -1,19 +1,13 @@
 local addonName, addonTable = ...;
-local _, _, _, tocversion = GetBuildInfo()
-local Create, Data, Fun, L, Default, Default_Per= unpack(PIG)
------
-local PIGFrame=Create.PIGFrame
-local PIGButton = Create.PIGButton
-local PIGCheckbutton=Create.PIGCheckbutton
-local PIGFontString=Create.PIGFontString
-----------
 local GDKPInfo=addonTable.GDKPInfo
--- -------
 function GDKPInfo.ADD_Check(RaidR)
+	local Create, Data, Fun, L, Default, Default_Per= unpack(PIG)
+	-----
+	local PIGFrame=Create.PIGFrame
+	local PIGButton = Create.PIGButton
+	local PIGCheckbutton=Create.PIGCheckbutton
+	local PIGFontString=Create.PIGFontString
 	local GnName,GnUI,GnIcon,FrameLevel = unpack(GDKPInfo.uidata)
-	-- local LeftmenuV=GDKPInfo.LeftmenuV
-	-- local buzhuzhize=GDKPInfo.buzhuzhize
-	local RaidR=_G[GnUI]
 	local Check=PIGButton(RaidR,{"TOPRIGHT",RaidR,"TOPRIGHT",-30,-25},{50,22},"查账")
 	Check:SetScript("OnClick", function (self)
 		if self.Box:IsShown() then

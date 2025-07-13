@@ -470,11 +470,7 @@ function Challenge:UpdateProgress()
     end
     if challenge.type == ns.ChallengeType.KillBoss or challenge.type == ns.ChallengeType.LeaderKillBoss then
         for i, v in ipairs(challenge.boss) do
-            if challenge.completedMap[v.id] then
-                self.Body.FormText:Add('|cff00ff80' .. ns.GetEncouterBossName(v.id) .. '|r')
-            else
-                self.Body.FormText:Add(ns.GetEncouterBossName(v.id))
-            end
+            self.Body.FormText:Add( ns.GetEncouterBossName(v.id))
         end
 
         self.Body.ProgressBar:SetMinMaxValues(0, #challenge.boss)

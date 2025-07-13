@@ -538,10 +538,18 @@ securecall(function() -- Modern: G-99 Breakneck is a fake mount
 	end
 	local G99_SPELL_ID, G99_QUEST_ID, questOK = 460013, 84352
 	local inUndermine, wf = false, CreateFrame("Frame", nil, nil, "SecureFrameTemplate")
+	local function pushG99SpellCastID()
+		RW:SetCastAlias("spell:" .. G99_SPELL_ID, C_Spell.GetSpellName(G99_SPELL_ID))
+		return "remove"
+	end
 	local function hasUnlockedG99()
 		if not questOK and C_QuestLog.IsQuestFlaggedCompletedOnAccount(G99_QUEST_ID) then
 			questOK = true
-			RW:SetCastAlias("spell:" .. G99_SPELL_ID, C_Spell.GetSpellName(G99_SPELL_ID))
+			if InCombatLockdown() then
+				EV.PLAYER_REGEN_ENABLED = pushG99SpellCastID
+			else
+				pushG99SpellCastID()
+			end
 		end
 		return questOK
 	end
@@ -575,5 +583,9 @@ securecall(function() -- Modern: G-99 Breakneck is a fake mount
 			updateGroundMount()
 		end
 		return questOK and "remove"
+	end
+	function EV:LOADING_SCREEN_ENABLED()
+		-- [11.1/2504] quest completion cache is flushed on PLW; may not repop by PEW.
+		return hasUnlockedG99() and "remove"
 	end
 end)

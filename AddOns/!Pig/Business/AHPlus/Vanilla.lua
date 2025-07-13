@@ -1,5 +1,4 @@
 local addonName, addonTable = ...;
-local _, _, _, tocversion = GetBuildInfo()
 local gsub = _G.string.gsub
 local L=addonTable.locale
 local Create=addonTable.Create
@@ -11,7 +10,6 @@ local PIGBrowseBiaoti=Create.PIGBrowseBiaoti
 local PIGFontString=Create.PIGFontString
 local PIGSetFont=Create.PIGSetFont
 ---
-local Fun=addonTable.Fun
 local BusinessInfo=addonTable.BusinessInfo
 ---------------------------------
 local function Update_GGG(self,GGG)
@@ -68,8 +66,7 @@ local function Add_GGGF(fujiF,Point,width,hang_Height,Color)
 	end
 	return frame
 end
-
-function BusinessInfo.AHPlus_Vanilla(baocunnum)
+function BusinessInfo.AHPlus_Vanilla()
 	if not PIGA["AHPlus"]["Open"] or AuctionFrameBrowse.piglist then return end
 	local function AHPlus_AHUIoff(Frame)
 		if not PIGA["AHPlus"]["AHUIoff"] then return end
@@ -83,7 +80,7 @@ function BusinessInfo.AHPlus_Vanilla(baocunnum)
 	if IsAddOnLoaded("Blizzard_TradeSkillUI") then
 		AHPlus_AHUIoff("TradeSkillFrame")
 	else
-		local zhuanyeFrame = CreateFrame("FRAME")
+		local zhuanyeFrame = CreateFrame("Frame")
 		zhuanyeFrame:RegisterEvent("ADDON_LOADED")
 		zhuanyeFrame:SetScript("OnEvent", function(self, event, arg1)
 			if arg1 == "Blizzard_TradeSkillUI" then
@@ -96,7 +93,7 @@ function BusinessInfo.AHPlus_Vanilla(baocunnum)
 	if IsAddOnLoaded("Blizzard_CraftUI") then
 		AHPlus_AHUIoff("CraftFrame")
 	else
-		local fumoFrame = CreateFrame("FRAME")
+		local fumoFrame = CreateFrame("Frame")
 		fumoFrame:RegisterEvent("ADDON_LOADED")
 		fumoFrame:SetScript("OnEvent", function(self, event, arg1)
 			if arg1 == "Blizzard_CraftUI" then
@@ -380,12 +377,12 @@ function BusinessInfo.AHPlus_Vanilla(baocunnum)
 			local AHdangqianH = FauxScrollFrame_GetOffset(BrowseScrollFrame)+i;
 			local name, texture, count, quality = GetAuctionItemInfo("list", AHdangqianH);
 			if name then
-				if PIGA["AHPlus"]["CacheData"][Pig_OptionsUI.Realm][name] then
-					local jiagGGG = PIGA["AHPlus"]["CacheData"][Pig_OptionsUI.Realm][name][2]
+				local NameData=BusinessInfo.GetCacheDataG(name)
+				if NameData then
 					AuctionFrameBrowse.qushiUI:Show()
 					AuctionFrameBrowse.qushiUI:SetPoint("TOPRIGHT",self,"TOPLEFT",8,1);
 					local r, g, b,hex = GetItemQualityColor(quality)
-					AuctionFrameBrowse.qushiUI.qushiF.qushitu(jiagGGG,"|c"..hex..name.."|r")
+					AuctionFrameBrowse.qushiUI.qushiF.qushitu(NameData,"|c"..hex..name.."|r")
 				end
 			end
 		end);
@@ -402,12 +399,12 @@ function BusinessInfo.AHPlus_Vanilla(baocunnum)
 					local hejiinfo = PIGA["AHPlus"]["Coll"]
 					for kk=1,#hejiinfo do
 						if hejiinfo[kk][1]==name then
-							PIGTopMsg:add("<|c"..hex..name.."|r>已存在","R")
+							PIG_OptionsUI:ErrorMsg("<|c"..hex..name.."|r>已存在","R")
 							return
 						end
 					end
 					table.insert(PIGA["AHPlus"]["Coll"],{name,texture,quality})
-					PIGTopMsg:add("<|c"..hex..name.."|r>已加入关注")
+					PIG_OptionsUI:ErrorMsg("<|c"..hex..name.."|r>已加入关注")
 					Funlist:Gengxinlistcoll()
 				end
 			end
@@ -453,32 +450,26 @@ function BusinessInfo.AHPlus_Vanilla(baocunnum)
 			local AHdangqianH = FauxScrollFrame_GetOffset(BrowseScrollFrame)+i;
 			local timeleft = GetAuctionItemTimeLeft("list", AHdangqianH)
 			buttonClosingTime:SetText(shengyuTime[timeleft]);
-			local name, texture, count, quality, canUse, level, levelColHeader, minBid, minIncrement, buyoutPrice = GetAuctionItemInfo("list", AHdangqianH);
+			local name, texture, count, quality, canUse, level, levelColHeader, minBid, minIncrement, buyoutPrice,bidAmount, highBidder, bidderFullName, owner, ownerFullName, saleStatus, itemId, hasAllInfo = GetAuctionItemInfo("list", AHdangqianH);
+			local itemLink = GetAuctionItemLink("list", AHdangqianH)
 			button.UpDown.Text:SetText("--");
 			button.UpDown.Text:SetTextColor(0.5, 0.5, 0.5, 0.5);
-			if buyoutPrice>0 then
+			if buyoutPrice>0 and count>0 then
 				local xianjiaV = buyoutPrice/count
-				if PIGA["AHPlus"]["CacheData"][Pig_OptionsUI.Realm][name] then
-					local OldMoneyG = PIGA["AHPlus"]["CacheData"][Pig_OptionsUI.Realm][name][2]
+				local NameData=BusinessInfo.GetCacheDataG(name)
+				if NameData then
+					local OldMoneyNum = #NameData
+					local OldGGGV_1 = NameData[OldMoneyNum]
 					if AHdangqianH==1 then
 						local existingSortColumn, existingSortReverse = GetAuctionSort("list", 1);
 						if existingSortColumn=="unitprice" and existingSortReverse==false then
-							local OldGGGV = OldMoneyG[#OldMoneyG]
-							if xianjiaV~=OldGGGV[1] and GetServerTime()-OldGGGV[2]>300 then
-								table.insert(PIGA["AHPlus"]["CacheData"][Pig_OptionsUI.Realm][name][2],{xianjiaV,GetServerTime()})
+							if xianjiaV~=OldGGGV_1[1] and GetServerTime()-OldGGGV_1[2]>300 then
+								BusinessInfo.ADD_Newdata(name,xianjiaV,itemLink,itemId)
 							end
 						end
-					end
-				else
-					local itemLink = GetAuctionItemLink("list", AHdangqianH)
-					local itemLinkJJ = Fun.GetItemLinkJJ(itemLink)
-					PIGA["AHPlus"]["CacheData"][Pig_OptionsUI.Realm][name]={itemLinkJJ,{{xianjiaV,GetServerTime()}}}
-				end
-				if PIGA["AHPlus"]["CacheData"][Pig_OptionsUI.Realm][name] then
-					local OldMoneyG = PIGA["AHPlus"]["CacheData"][Pig_OptionsUI.Realm][name][2]
-					local OldGGGV = OldMoneyG[#OldMoneyG]				
-					if #OldMoneyG>1 then
-						local baifenbi = (xianjiaV/OldGGGV[1])*100+0.5
+					end				
+					if OldMoneyNum>1 then
+						local baifenbi = (xianjiaV/OldGGGV_1[1])*100+0.5
 						local baifenbi = floor(baifenbi)
 						button.UpDown.Text:SetText(baifenbi.."%");
 						if baifenbi<100 then
@@ -489,6 +480,8 @@ function BusinessInfo.AHPlus_Vanilla(baocunnum)
 							button.UpDown.Text:SetTextColor(1, 1, 1, 1);
 						end
 					end
+				else
+					BusinessInfo.ADD_Newdata(name,xianjiaV,itemLink,itemId)
 				end
 			end
 		end
@@ -591,46 +584,36 @@ function BusinessInfo.AHPlus_Vanilla(baocunnum)
 	end
 	local function Save_Data_End()
 		for k,v in pairs(HCUI.auctionsLin) do
-			local name = v[1]
-			local newGGG = v[2]
-			if HCUI.auctions[name] then
-   				if newGGG<HCUI.auctions[name][1] then
-   					HCUI.auctions[name][1]=newGGG
+			if HCUI.auctions[v[1]] then
+   				if v[2]<HCUI.auctions[v[1]][1] then
+   					HCUI.auctions[v[1]][1]=v[2]
    				end
 			else
-				local itemLinkJJ = Fun.GetItemLinkJJ(v[3])
-				HCUI.auctions[name]={newGGG,itemLinkJJ}
+				HCUI.auctions[v[1]]={v[2],v[3],v[4]}
 			end
 		end
-		local AH_data = PIGA["AHPlus"]["CacheData"][Pig_OptionsUI.Realm]
 		for k,v in pairs(HCUI.auctions) do
-			if AH_data[k] then
-				table.insert(AH_data[k][2],{v[1],GetServerTime()})
-   			else
-   				AH_data[k]={v[2],{{v[1],GetServerTime()}}}
-   			end
+			BusinessInfo.ADD_Newdata(k,v[1],v[2],v[3])
 		end
 		HCUI.jindu.tbiaoti:SetText("价格缓存完毕");
 		HCUI.close:Show();
 		OpenScanFun(nil)
 	end
-	local function SauctionsLinData(name,buyoutPrice,count,index)
+	local function SauctionsLinData(name,buyoutPrice,count,index,itemId)
 		if name and name~="" and name~=" " and buyoutPrice>0 then
 			local ItemLink=GetAuctionItemLink("list", index)
-			local xianzaidanjia =buyoutPrice/count
-			HCUI.auctionsLin[index]={name,xianzaidanjia,ItemLink}
-			au_SetValue()
-		else
-			au_SetValue()
+			local xianjiaV =buyoutPrice/count
+			HCUI.auctionsLin[index]={name,xianjiaV,ItemLink,itemId}
 		end
+		au_SetValue()
 	end
-	local function againGetItem_G()
+	local function AgainGetItem_G()
 		if not HCUI:IsShown() then return end
 		for k,v in pairs(HCUI.ItemLoadList) do
 			local name, texture, count, quality, canUse, level, levelColHeader, minBid, minIncrement, buyoutPrice,bidAmount, highBidder, bidderFullName, owner, ownerFullName, saleStatus, itemId, hasAllInfo=GetAuctionItemInfo("list", k);
 			if hasAllInfo then
 				HCUI.zaicijishu=HCUI.zaicijishu+1
-				SauctionsLinData(name,buyoutPrice,count,k)
+				SauctionsLinData(name,buyoutPrice,count,k,itemId)
 				HCUI.ItemLoadList[k] = nil
 				if HCUI.zaicijishu>=meiyenum then
 					break
@@ -639,7 +622,7 @@ function BusinessInfo.AHPlus_Vanilla(baocunnum)
 		end
 		if next(HCUI.ItemLoadList) then
 			HCUI.zaicijishu=0
-			C_Timer.After(HCUI.ScanCD,againGetItem_G)
+			C_Timer.After(HCUI.ScanCD,AgainGetItem_G)
 		else
 			C_Timer.After(0.4,Save_Data_End)
 		end
@@ -662,7 +645,7 @@ function BusinessInfo.AHPlus_Vanilla(baocunnum)
 				if HCUI.ItemLoadList[index] then
 					local name, texture, count, quality, canUse, level, levelColHeader, minBid, minIncrement, buyoutPrice,bidAmount, highBidder, bidderFullName, owner, ownerFullName, saleStatus, itemId, hasAllInfo=GetAuctionItemInfo("list", index);
 					if hasAllInfo then
-						SauctionsLinData(name,buyoutPrice,count,index)
+						SauctionsLinData(name,buyoutPrice,count,index,itemId)
 						HCUI.ItemLoadList[index] = nil
 					end
 				end
@@ -671,7 +654,7 @@ function BusinessInfo.AHPlus_Vanilla(baocunnum)
 				self:Hide()
 				if next(HCUI.ItemLoadList) then
 					HCUI.zaicijishu=0
-					againGetItem_G()
+					AgainGetItem_G()
 				else
 					Save_Data_End()
 				end
@@ -714,7 +697,7 @@ function BusinessInfo.AHPlus_Vanilla(baocunnum)
 	end
 	AuctionFrameBrowse.History:HookScript("OnClick", function(self, button)
 		self:Disable()
-		HCUI:DEL_OLDdata()
+		BusinessInfo.DEL_OLDdata()
 		AuctionFrameBrowse_Reset(BrowseResetButton)
 		HCUI:Show();
 		HCUI.close:Hide();
@@ -733,18 +716,6 @@ function BusinessInfo.AHPlus_Vanilla(baocunnum)
 		HCUI.UpdateF:Show()
 		QueryAuctionItems("", nil, nil, 0, nil, nil, true, false, nil)--查询全部
 	end)
-	local baocunnum=baocunnum-1
-	function HCUI:DEL_OLDdata()
-		for k,v in pairs(PIGA["AHPlus"]["CacheData"][Pig_OptionsUI.Realm]) do
-			local itemDataL = v[2]
-			local ItemsNum = #itemDataL;
-			if ItemsNum>baocunnum then
-				for ivb=(ItemsNum-baocunnum),1,-1 do
-					table.remove(itemDataL,ivb)
-				end
-			end
-		end
-	end
 	function HCUI.UiFameHide()
 		HCUI.UpdateF:Hide()
 		HCUI:Hide();
@@ -755,16 +726,10 @@ function BusinessInfo.AHPlus_Vanilla(baocunnum)
 	---时光徽章
 	BrowseWowTokenResults.qushibut = PIGButton(BrowseWowTokenResults,{"CENTER",BrowseWowTokenResults,"CENTER",3,10},{80,24},"历史价格",nil,nil,nil,nil,0)
 	BrowseWowTokenResults.qushibut:HookScript("OnClick",function(self)
-		if StatsInfo_UI then
-			if StatsInfo_UI:IsShown() then
-				StatsInfo_UI:Hide()
-			else
-				AuctionFrame:Hide()
-				StatsInfo_UI:Show()
-				Create.Show_TabBut_R(StatsInfo_UI.F,StatsInfo_UI.timetab[1],StatsInfo_UI.timetab[2])
-			end
+		if BusinessInfo.StatsInfoUI then
+			BusinessInfo.StatsInfoUI:TabShow(AuctionFrame)
 		else
-			PIGTopMsg:add("请打开"..addonName..SETTINGS.."→"..L["BUSINESS_TABNAME"].."→"..INFO..STATISTICS)
+			PIG_OptionsUI:ErrorMsg("请打开"..addonName..SETTINGS.."→"..L["BUSINESS_TABNAME"].."→"..INFO..STATISTICS)
 		end
 	end)
 	BrowseWowTokenResults:HookScript("OnShow",function(self)
@@ -821,7 +786,7 @@ function BusinessInfo.AHPlus_Vanilla(baocunnum)
 	local collhang_NUM = 18
 	local function gengxinlistcoll(self)
 		for i = 1, collhang_NUM do
-			_G["colllistitem_"..i]:Hide()
+			coll.list.ButList[i]:Hide()
 	    end
 	    local datainfo=PIGA["AHPlus"]["Coll"]
 		local zongshuNum=#datainfo
@@ -831,7 +796,7 @@ function BusinessInfo.AHPlus_Vanilla(baocunnum)
 		    for i = 1, collhang_NUM do
 				local AHdangqianH = i+offset;
 				if datainfo[AHdangqianH] then
-					local listFGV = _G["colllistitem_"..i]
+					local listFGV = coll.list.ButList[i]
 					listFGV:Show()
 					listFGV.icon:SetTexture(datainfo[AHdangqianH][2])
 					listFGV.link:SetText(datainfo[AHdangqianH][1])
@@ -850,13 +815,15 @@ function BusinessInfo.AHPlus_Vanilla(baocunnum)
 	end)
 	--创建行
 	local collhang_Width =coll.list.Scroll:GetWidth()
+	coll.list.ButList={}
 	for i = 1, collhang_NUM do
-		local colllistitem = CreateFrame("Button", "colllistitem_"..i, coll.list);
+		local colllistitem = CreateFrame("Button", nil, coll.list);
+		coll.list.ButList[i]=colllistitem
 		colllistitem:SetSize(collhang_Width, hang_Height);
 		if i==1 then
 			colllistitem:SetPoint("TOP",coll.list.Scroll,"TOP",5,0);
 		else
-			colllistitem:SetPoint("TOP",_G["colllistitem_"..(i-1)],"BOTTOM",0,-1.5);
+			colllistitem:SetPoint("TOP",coll.list.ButList[i-1],"BOTTOM",0,-1.5);
 		end
 		colllistitem:RegisterForClicks("LeftButtonUp","RightButtonUp")
 		colllistitem:Hide()
@@ -923,13 +890,15 @@ function BusinessInfo.AHPlus_Vanilla(baocunnum)
 	local spellhangnum, hang_Height1= 5,hang_Height+4
 	local SellxulieID = {"",ACTION_SPELL_AURA_APPLIED_DOSE,biaotiLsitName[4],biaotiLsitName[5],AH_TIME,AUCTION_CREATOR}
 	local SellxulieID_www = {40,42,170,150,80,118}
+	SellListF.ButListBiaoti={}
 	for i=1,#SellxulieID do
-		local Buttonxx = CreateFrame("Button","SellList_biaoti_"..i,SellListF);
+		local Buttonxx = CreateFrame("Button",nil,SellListF);
+		SellListF.ButListBiaoti[i]=Buttonxx
 		Buttonxx:SetSize(SellxulieID_www[i],anniuH);
 		if i==1 then
 			Buttonxx:SetPoint("TOPLEFT",SellListF,"TOPLEFT",3,-3);
 		else
-			Buttonxx:SetPoint("LEFT",_G["SellList_biaoti_"..(i-1)],"RIGHT",0,0);
+			Buttonxx:SetPoint("LEFT",SellListF.ButListBiaoti[i-1],"RIGHT",0,0);
 		end
 		if ElvUI and AuctionFrame.backdrop or NDui then
 		else
@@ -960,12 +929,13 @@ function BusinessInfo.AHPlus_Vanilla(baocunnum)
 			Buttonxx.title:SetPoint("LEFT", Buttonxx, "LEFT", 6, 0);
 		end
 	end
+	SellListF.ButList={}
 	local function SetAHPriceFun()
 		local BiddanjiaGG=SellListF.BidV
 		local buyoutdanjiaGG=SellListF.buyoutV
 		if not BiddanjiaGG or not buyoutdanjiaGG then return end
 		local jianshaozhiV = 1
-		if SellListF.owner==Pig_OptionsUI.Name then jianshaozhiV=0 end
+		if SellListF.owner==PIG_OptionsUI.Name then jianshaozhiV=0 end
 		local StackSize = AuctionsStackSizeEntry:GetNumber()
 		local NumStacks = AuctionsNumStacksEntry:GetNumber()
 		local priceType =UIDropDownMenu_GetSelectedValue(PriceDropDown)
@@ -1003,46 +973,13 @@ function BusinessInfo.AHPlus_Vanilla(baocunnum)
 			SellListF.tishibut_txt:SetText("没有放入拍卖物品！") 
 		end
 		for i = 1, spellhangnum do
-		   	local listFGV = _G["SellList_item_"..i]
+		   	local listFGV = SellListF.ButList[i]
 		   	listFGV:Hide()
 		   	listFGV.yajia.hang_count=nil
 			listFGV.yajia.hang_minBid=nil
 			listFGV.yajia.hang_buyoutPrice=nil
 		end
 		SellListF:Show()
-	end
-	local function gengxinSpelllist()
-		local danqianitem = GetAuctionSellItemInfo();
-		local numBatchAuctions = GetNumAuctionItems("list");
-		if numBatchAuctions>0 then
-			for i = 1, spellhangnum do
-				local listFGV = _G["SellList_item_"..i]
-				local name, _, count, _, _, _, _, minBid, _, buyoutPrice, _, _, _, owner =  GetAuctionItemInfo("list", i);
-				if danqianitem~=name then return end	
-				local BiddanjiaGG = minBid/count
-				local buyoutdanjiaGG = buyoutPrice/count
-				if i==1 then
-					AuctionsItemButton.IsSearchOK=nil
-					SellListF.tishibut_txt:SetText("");
-		   			if PIGA["AHPlus"]["autoya"] then
-		   				SellListF.BidV=BiddanjiaGG
-		   				SellListF.buyoutV=buyoutdanjiaGG
-		   				SellListF.ownerV=owner
-		   				SetAHPriceFun() 
-		   			end
-		   		end
-				listFGV.yajia.hang_minBid=BiddanjiaGG
-				listFGV.yajia.hang_buyoutPrice=buyoutdanjiaGG
-				listFGV.yajia.hang_owner=owner
-		   		Update_GGG(listFGV.biddanjia,BiddanjiaGG)
-				Update_GGG(listFGV.yikoudanjia,buyoutdanjiaGG)
-				listFGV.count:SetText(count);
-				listFGV.chushouzhe:SetText(owner);
-				local timeleft = GetAuctionItemTimeLeft("list", i)
-				listFGV.TimeLeft:SetText(shengyuTime[timeleft]);
-				listFGV:Show()
-			end
-		end
 	end
 	local function Query_Search(name)
 		if not name then return end
@@ -1067,17 +1004,48 @@ function BusinessInfo.AHPlus_Vanilla(baocunnum)
 	SellListF:RegisterEvent("AUCTION_ITEM_LIST_UPDATE");
 	SellListF:HookScript("OnEvent",function(self,event,arg1,arg2)
 		if AuctionsItemButton:IsShown() then
-			gengxinSpelllist()
+			local danqianitem = GetAuctionSellItemInfo();
+			local numBatchAuctions = GetNumAuctionItems("list");
+			if numBatchAuctions>0 then
+				for i = 1, spellhangnum do
+					local listFGV = SellListF.ButList[i]
+					local name, _, count, _, _, _, _, minBid, _, buyoutPrice, _, _, _, owner =  GetAuctionItemInfo("list", i);
+					if danqianitem~=name then return end	
+					local BiddanjiaGG = minBid/count
+					local buyoutdanjiaGG = buyoutPrice/count
+					if i==1 then
+						AuctionsItemButton.IsSearchOK=nil
+						SellListF.tishibut_txt:SetText("");
+			   			if PIGA["AHPlus"]["autoya"] then
+			   				SellListF.BidV=BiddanjiaGG
+			   				SellListF.buyoutV=buyoutdanjiaGG
+			   				SellListF.ownerV=owner
+			   				SetAHPriceFun() 
+			   			end
+			   		end
+					listFGV.yajia.hang_minBid=BiddanjiaGG
+					listFGV.yajia.hang_buyoutPrice=buyoutdanjiaGG
+					listFGV.yajia.hang_owner=owner
+			   		Update_GGG(listFGV.biddanjia,BiddanjiaGG)
+					Update_GGG(listFGV.yikoudanjia,buyoutdanjiaGG)
+					listFGV.count:SetText(count);
+					listFGV.chushouzhe:SetText(owner);
+					local timeleft = GetAuctionItemTimeLeft("list", i)
+					listFGV.TimeLeft:SetText(shengyuTime[timeleft]);
+					listFGV:Show()
+				end
+			end
 		end
 	end)
 	local hang_Width1 =SellListF:GetWidth()-10
 	for i = 1, spellhangnum do
-		local listFitem = CreateFrame("Button", "SellList_item_"..i, SellListF);
+		local listFitem = CreateFrame("Button", nil, SellListF);
+		SellListF.ButList[i]=listFitem
 		listFitem:SetSize(hang_Width1, hang_Height1);
 		if i==1 then
 			listFitem:SetPoint("TOP",SellListF,"TOP",0,-28);
 		else
-			listFitem:SetPoint("TOP",_G["SellList_item_"..(i-1)],"BOTTOM",0,-2);
+			listFitem:SetPoint("TOP",SellListF.ButList[i-1],"BOTTOM",0,-2);
 		end
 		listFitem:Hide()
 	
@@ -1269,7 +1237,7 @@ function BusinessInfo.AHPlus_Vanilla(baocunnum)
 			if name==AuctionsItemButton.OldName then
 			else
 				if PIGA["AHPlus"]["oldaucG"] and AuctionsItemButton.OldGlist[name] then
-					PIGTopMsg:add("<"..name..">存在本次历史卖价,不再查询")
+					PIG_OptionsUI:ErrorMsg("<"..name..">存在本次历史卖价,不再查询")
 					SetAHPriceFun(AuctionsItemButton.OldGlist[name][1],AuctionsItemButton.OldGlist[name][2],nil,true)
 				else
 					Query_Search(name)

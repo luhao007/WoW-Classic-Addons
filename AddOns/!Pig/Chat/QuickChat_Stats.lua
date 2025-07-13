@@ -8,10 +8,11 @@ local PIGFontString=Create.PIGFontString
 local Fun=addonTable.Fun
 local PIGGetRaceAtlas=Fun.PIGGetRaceAtlas
 local FasongYCqingqiu=Fun.FasongYCqingqiu
+local Data=addonTable.Data
 ---
 local QuickChatfun=addonTable.QuickChatfun
 function QuickChatfun.QuickBut_Stats()
-	local fuFrame=QuickChatFFF_UI
+	local fuFrame=QuickChatfun.TabButUI
 	local fuWidth = fuFrame.Width
 	local Width,Height = fuWidth,fuWidth
 	local ziframe = {fuFrame:GetChildren()}
@@ -60,12 +61,12 @@ function QuickChatfun.QuickBut_Stats()
 	local greenTexture = "interface/common/indicator-green.blp"
 	local xuanzhongBG = {{0.2, 0.2, 0.2, 0.2},{0.4, 0.8, 0.8, 0.1}}
 	local OptionsW,OptionsH,uifu = 200,400,fuFrame.playerStats.RF
-	local Apphang_Height = 40
-	fuFrame.playerStats.RF=PIGFrame(UIParent,{"CENTER",UIParent,"CENTER",0,0},{OptionsW*MAX_PARTY_MEMBERS,OptionsH},"Pig_playerStatsUI",true)
+	local UIname,hang_Height = "PIG_PlayerStatsUI",20
+	fuFrame.playerStats.RF=PIGFrame(UIParent,{"CENTER",UIParent,"CENTER",0,0},{OptionsW*MAX_PARTY_MEMBERS,OptionsH},UIname,true)
 	local uifu = fuFrame.playerStats.RF
 	uifu:PIGSetBackdrop()
 	uifu:PIGClose()
-	uifu:PIGSetMovable()
+	uifu:PIGSetMovableNoSave()
 	uifu.ButLsit={}
 	uifu.biaoti = PIGFontString(uifu,{"TOP", uifu, "TOP", 0, -2},"成员信息")
 	for id = 1, MAX_PARTY_MEMBERS, 1 do
@@ -78,18 +79,32 @@ function QuickChatfun.QuickBut_Stats()
 			self:SetBackdropColor(unpack(xuanzhongBG[1]));
 		end);
 		uifu.ButLsit[id]=playerbut
-		playerbut.name = PIGFontString(playerbut,{"TOP", playerbut, "TOP", 0, -2},"")
-		playerbut.Level = PIGFontString(playerbut,{"TOP", playerbut.name, "BOTTOM", 0, -2},"1")
+		playerbut.Faction = playerbut:CreateTexture();
+		playerbut.Faction:SetTexture("interface/glues/charactercreate/ui-charactercreate-factions.blp");
+		playerbut.Faction:SetPoint("TOPLEFT", playerbut, "TOPLEFT", 6,-6);
+		playerbut.Faction:SetSize(hang_Height,hang_Height);
+		playerbut.Race = playerbut:CreateTexture();
+		playerbut.Race:SetPoint("LEFT", playerbut.Faction, "RIGHT", 1,0);
+		playerbut.Race:SetSize(hang_Height,hang_Height);
+		playerbut.Class = playerbut:CreateTexture();
+		playerbut.Class:SetTexture("interface/glues/charactercreate/ui-charactercreate-classes.blp")
+		playerbut.Class:SetPoint("LEFT", playerbut.Race, "RIGHT", 1,0);
+		playerbut.Class:SetSize(hang_Height,hang_Height);
+		playerbut.level = PIGFontString(playerbut,{"LEFT", playerbut.Class, "RIGHT", 2, 0},1)
+		playerbut.level:SetTextColor(1,0.843,0, 1);
+		playerbut.name = PIGFontString(playerbut,{"LEFT", playerbut.level, "RIGHT", 0, 0})
+
 		playerbut.Role = playerbut:CreateTexture();
-		playerbut.Role:SetSize(30,30);
-		playerbut.Role:SetPoint("TOPLEFT", playerbut, "TOPLEFT", 20, -40);
+		playerbut.Role:SetSize(hang_Height+16,hang_Height+16);
+		playerbut.Role:SetPoint("TOP", playerbut, "TOP", 0, -60);
 		playerbut.Role:SetAlpha(0.9);
+
 		playerbut.item = CreateFrame("Button",nil,playerbut);
-		playerbut.item:SetPoint("LEFT",playerbut.Role, "RIGHT",6, 0);
-		playerbut.item:SetSize(27,27);
+		playerbut.item:SetPoint("TOPLEFT", playerbut.Faction, "BOTTOMLEFT", 0,-6);
+		playerbut.item:SetSize(hang_Height,hang_Height);
 		playerbut.item:SetHighlightTexture("Interface/Buttons/ButtonHilight-Square")
 		playerbut.item.icon = playerbut.item:CreateTexture();
-		playerbut.item.icon:SetSize(27,27);
+		playerbut.item.icon:SetSize(hang_Height,hang_Height);
 		playerbut.item.icon:SetPoint("CENTER", playerbut.item, "CENTER", 0, 0);
 		playerbut.item.icon:SetAlpha(0.9);
 		playerbut.item.icon:SetTexture(133122);
@@ -104,16 +119,29 @@ function QuickChatfun.QuickBut_Stats()
 		end); 
 		playerbut.iLvl = PIGFontString(playerbut,{"LEFT", playerbut.item, "RIGHT",1, 0});
 		playerbut.iLvl:SetTextColor(0,0.98,0.6, 1);
-		playerbut.tianfuF = PIGFrame(playerbut,{"TOPLEFT", playerbut, "TOPLEFT", 20, -80},{100,Apphang_Height});
-
+		playerbut.numcc=0
+		function playerbut:Update_data(allname)
+			if PIG_OptionsUI.talentData[allname] and PIG_OptionsUI.talentData[allname]["I"] then
+				self.iLvl:SetText(PIG_OptionsUI.talentData[allname]["I"][5]) 
+				self.numcc=0
+			else
+				self.numcc=self.numcc+1
+				if self.numcc<5 then
+					C_Timer.After(1,function() self:Update_data(allname) end)
+				else
+					self.numcc=0
+				end
+			end
+		end
+		playerbut.tianfuF = PIGFrame(playerbut,{"TOPLEFT", playerbut, "TOPLEFT", 20, -80},{100,hang_Height});
 		playerbut.tianfuF.zhutex = playerbut.tianfuF:CreateTexture();
-		playerbut.tianfuF.zhutex:SetSize(Apphang_Height-6,Apphang_Height-6);
+		playerbut.tianfuF.zhutex:SetSize(hang_Height,hang_Height);
 		playerbut.tianfuF.zhutex:SetPoint("LEFT",playerbut.tianfuF, "LEFT",0, 0);
 		playerbut.tianfuF.zhutex:SetAlpha(0.9);
 		playerbut.tianfuF.zhu = PIGFontString(playerbut.tianfuF,{"LEFT",playerbut.tianfuF.zhutex, "RIGHT",0, 0});
 		playerbut.tianfuF.zhu:SetJustifyH("LEFT");
 		playerbut.tianfuF.futex = playerbut.tianfuF:CreateTexture();
-		playerbut.tianfuF.futex:SetSize(Apphang_Height-6,Apphang_Height-6);
+		playerbut.tianfuF.futex:SetSize(hang_Height,hang_Height);
 		playerbut.tianfuF.futex:SetPoint("LEFT",playerbut.tianfuF.zhu, "RIGHT",2, 0);
 		playerbut.tianfuF.futex:SetAlpha(0.9);
 		playerbut.tianfuF.fu = PIGFontString(playerbut.tianfuF,{"LEFT",playerbut.tianfuF.futex, "RIGHT",0, 0});
@@ -137,34 +165,55 @@ function QuickChatfun.QuickBut_Stats()
 		-- 	GameTooltip:Hide();
 		-- end);
 
-
 		playerbut.model = CreateFrame("PlayerModel", nil, playerbut);
 		playerbut.model:SetSize(OptionsW,OptionsH-100);
 		playerbut.model:SetPoint("BOTTOM",playerbut,"BOTTOM",0,0);
-		--playerbut.model:SetUnit("Party"..id)
-		playerbut.model:SetUnit("player")
 	end
 	function Update_List()
 		for id = 1, MAX_PARTY_MEMBERS, 1 do
-			local butmode = uifu.ButLsit[id]
+			local playerbut = uifu.ButLsit[id]
 			local unit = "Party"..id
-			local unit = "player"
-			butmode.model:RefreshUnit()
+			--local unit = "player"
+			playerbut.model:RefreshUnit()
 			if UnitExists(unit) then
-				local className, classFile, classId = UnitClass(unit)
-				local level = UnitLevel(unit)
+				playerbut.Faction:Show()
+				playerbut.Race:Show()
+				playerbut.Class:Show()
+				playerbut.Role:Show()
+				playerbut.item:Show()
+				local allname = GetUnitName(unit, true) or UNKNOWNOBJECT
+				FasongYCqingqiu(allname,5)
+				playerbut.allname=allname
+				playerbut.model:SetUnit(unit)
+				local englishFaction= UnitFactionGroup(unit)
+				if englishFaction=="Alliance" then
+					playerbut.Faction:SetTexCoord(0,0.5,0,1);
+				elseif englishFaction=="Horde" then
+					playerbut.Faction:SetTexCoord(0.5,1,0,1);
+				end
 				local raceName, raceFile, raceID = UnitRace(unit)
+				local gender = UnitSex(unit) or 2
+				local race_icon = PIGGetRaceAtlas(raceFile,gender)
+				playerbut.Race:SetAtlas(race_icon);
+				local className, classFile, classId = UnitClass(unit)
+				playerbut.Class:SetTexCoord(unpack(CLASS_ICON_TCOORDS[classFile]));
+				local level = UnitLevel(unit) or "??"
+				playerbut.level:SetText("("..level..")");
 				local color = PIG_CLASS_COLORS[classFile];
-				local allname = GetUnitName(unit, true)
-				butmode.allname=allname
-				butmode.name:SetText(allname)
-				butmode.name:SetTextColor(color.r,color.g, color.b, 1);
-				butmode.Level:SetText(LEVEL..level.." "..raceName..className)
-				butmode.Level:SetTextColor(color.r,color.g, color.b, 1);
+				playerbut.name:SetTextColor(color.r, color.g, color.b, 1);
+				playerbut.name:SetText(allname)
 				local Role = UnitGroupRolesAssigned(unit)
-				butmode.Role:SetAtlas(PIGGetIconForRole(Role));
+				playerbut.Role:SetAtlas(PIGGetIconForRole(Role));
+				playerbut:Update_data(allname)
 			else
-
+				playerbut.Faction:Hide()
+				playerbut.Race:Hide()
+				playerbut.Class:Hide()
+				playerbut.Role:Hide()
+				playerbut.item:Hide()
+				playerbut.level:SetText("");
+				playerbut.name:SetText("")
+				playerbut.iLvl:SetText("")
 			end
 		end
 	end
@@ -172,9 +221,9 @@ function QuickChatfun.QuickBut_Stats()
 		Update_List()
 	end)
 	uifu:RegisterEvent("GROUP_ROSTER_UPDATE")
-	uifu:RegisterEvent("PLAYER_ENTERING_WORLD")
-	uifu:HookScript("OnEvent",function(self, event,arg1,_,_,_,arg5)
-		C_Timer.After(0.8,function()
+	uifu:HookScript("OnEvent",function(self, event,arg1)
+		if not self:IsShown() then return end
+		C_Timer.After(0.2,function()
 			Update_List()
 		end)
 	end)

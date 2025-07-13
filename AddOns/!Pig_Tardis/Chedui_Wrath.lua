@@ -1,5 +1,4 @@
 local addonName, addonTable = ...;
-local _, _, _, tocversion = GetBuildInfo()
 local Create, Data, Fun, L= unpack(PIG)
 local match = _G.string.match
 ------------------------
@@ -135,22 +134,26 @@ function TardisInfo.Chedui(Activate)
 	fujiF.F.EnterF.errtishi=PIGFontString(fujiF.F.EnterF,{"CENTER", fujiF.F.EnterF, "CENTER", 0,0},LFG_LIST_ENTRY_DELISTED,"OUTLINE");
 	fujiF.F.EnterF.errtishi:SetTextColor(1,0,0,1);
 	fujiF.F.EnterF.errtishi:Hide();
+	fujiF.F.EnterF.ButList={}
 	for ix=1,#zhizename do
-		local tishiui = CreateFrame("Frame", "Chedui_tishi_"..zhizename[ix], fujiF.F.EnterF);
+		local tishiui = CreateFrame("Frame", nil, fujiF.F.EnterF);
+		fujiF.F.EnterF.ButList[ix]=tishiui
 		tishiui:SetSize(tishikWW,tishikHH);
 		if ix==1 then
 			tishiui:SetPoint("TOPLEFT", fujiF.F.EnterF, "TOPLEFT", 0, -biaotiH);
 		else
 			PIGLine(tishiui,"TOP",-0,nil,nil,{0.2,0.2,0.2,0.5})
-			tishiui:SetPoint("TOPLEFT", _G["Chedui_tishi_"..zhizename[ix-1]], "BOTTOMLEFT", 0, 0);
+			tishiui:SetPoint("TOPLEFT", fujiF.F.EnterF.ButList[ix-1], "BOTTOMLEFT", 0, 0);
 		end
 		tishiui.ICON = tishiui:CreateTexture();
 		tishiui.ICON:SetAtlas(PIGGetIconForRole(zhizename[ix], false), TextureKitConstants.IgnoreAtlasSize);
 		tishiui.ICON:SetSize(hang_Height+8,hang_Height+8);
 		tishiui.ICON:SetPoint("LEFT", tishiui, "LEFT", 2,10);
 		tishiui.heji = PIGFontString(tishiui,{"TOP", tishiui.ICON, "BOTTOM",0, 0},0,"OUTLINE");
+		tishiui.ButList={}
 		for class=1,#zhiyename do
-			local tishizhiye = CreateFrame("Frame", "Chedui_tishi_"..zhizename[ix].."_"..class, tishiui);
+			local tishizhiye = CreateFrame("Frame", nil, tishiui);
+			tishiui.ButList[class]=tishizhiye
 			tishizhiye:SetSize(1,hang_Height-4);
 			if class<8 then
 				if class==1 then
@@ -176,9 +179,9 @@ function TardisInfo.Chedui(Activate)
 		self:Show()
 		self.errtishi:Hide();
 		for ix=1,#zhizename do
-			_G["Chedui_tishi_"..zhizename[ix]]:Hide()
+			fujiF.F.EnterF.ButList[ix]:Hide()
 			for class=1,#zhiyename do
-				_G["Chedui_tishi_"..zhizename[ix].."_"..class]:Hide()
+				fujiF.F.EnterF.ButList[ix].ButList[class]:Hide()
 			end
 		end
 		local chengyuaninfo = {	
@@ -219,7 +222,7 @@ function TardisInfo.Chedui(Activate)
 			end
 		end
 		for ix=1,#zhizename do
-			local zhiyocin = _G["Chedui_tishi_"..zhizename[ix]]
+			local zhiyocin = fujiF.F.EnterF.ButList[ix]
 			zhiyocin:Show()
 			zhiyocin.heji:SetText(chengyuaninfo[zhizename[ix]][1])
 			local zhizezhiyeNum = {}
@@ -229,7 +232,7 @@ function TardisInfo.Chedui(Activate)
 				end
 			end
 			for uiid=1,#zhizezhiyeNum do
-				local zzzyui = _G["Chedui_tishi_"..zhizename[ix].."_"..uiid]
+				local zzzyui = fujiF.F.EnterF.ButList[ix].ButList[uiid]
 				zzzyui:Show()
 				zzzyui.icon:SetTexCoord(unpack(CLASS_ICON_TCOORDS[zhizezhiyeNum[uiid][1]]));
 				zzzyui.heji:SetText(zhizezhiyeNum[uiid][2])
@@ -253,22 +256,24 @@ function TardisInfo.Chedui(Activate)
 	-- 	else
 	-- 		self.F:Show()
 	-- 		for i=1,jiluhangNum do
-	-- 			 _G["ApplyModeList_"..i].t:SetText(SIGN_UP..GUILD_BANK_LOG)
+	-- 			 SQUI.ApplyMode.F.ButList[i].t:SetText(SIGN_UP..GUILD_BANK_LOG)
 	-- 		end
 	-- 	end
 	-- end)
 	-- SQUI.ApplyMode.F.biaoti=PIGFontString(SQUI.ApplyMode.F,{"TOP",SQUI.ApplyMode.F,"TOP",0,-4},SIGN_UP..GUILD_BANK_LOG)
 	-- SQUI.ApplyMode.F.line = PIGLine(SQUI.ApplyMode.F,"TOP",-24,nil,nil,{0.2,0.2,0.2,0.5})
 	-- --申请自动填主副天赋
+	-- SQUI.ApplyMode.F.ButList={}
 	-- for i=1,jiluhangNum do
-	-- 	local hangL = CreateFrame("Button", "ApplyModeList_"..i, SQUI.ApplyMode.F,"BackdropTemplate");
+	-- 	local hangL = CreateFrame("Button", nil, SQUI.ApplyMode.F,"BackdropTemplate");
+	--  SQUI.ApplyMode.F.ButList[i]=hangL
 	-- 	hangL:SetBackdrop({bgFile = "interface/chatframe/chatframebackground.blp"});
 	-- 	hangL:SetSize(jilubutww-2,24);
 	-- 	hangL:SetBackdropColor(0.2, 0.2, 0.2, 0.2);
 	-- 	if i==1 then
 	-- 		hangL:SetPoint("TOPLEFT", SQUI.ApplyMode.F, "TOPLEFT", 0, -25);
 	-- 	else
-	-- 		hangL:SetPoint("TOPLEFT", _G["ApplyModeList_"..(i-1)], "BOTTOMLEFT", 0, -1);
+	-- 		hangL:SetPoint("TOPLEFT", SQUI.ApplyMode.F.ButList[i-1], "BOTTOMLEFT", 0, -1);
 	-- 	end
 	-- 	hangL:HookScript("OnEnter", function (self)
 	-- 		self:SetBackdropColor(0.4, 0.4, 0.4, 0.2);
@@ -786,11 +791,9 @@ function TardisInfo.Chedui(Activate)
 		if self:IsShown() then
 			if event == "LFG_LIST_SEARCH_RESULTS_RECEIVED" then
 				self.Hang_Gengxin()
-			end
-			if event == "LFG_LIST_SEARCH_RESULT_UPDATED" then
+			elseif event == "LFG_LIST_SEARCH_RESULT_UPDATED" then
 				self.Hang_Gengxin_H(searchResultID)
-			end
-			if event == "LFG_LIST_APPLICATION_STATUS_UPDATED" then
+			elseif event == "LFG_LIST_APPLICATION_STATUS_UPDATED" then
 				self.Hang_Gengxin_H(searchResultID)
 			end
 		end	
@@ -1474,7 +1477,7 @@ function TardisInfo.Chedui(Activate)
 	FCTabF.ADD.GroupDropDown =PIGDownMenu(FCTabF.ADD,{"TOPLEFT",FCTabF.ADD.Category_T,"TOPLEFT",0,-110},{FCTabF.ADD.Width,nil})
 	FCTabF.ADD.GroupDropDown:Hide()
 	FCTabF.ADD.GroupDropDown.t=PIGFontString(FCTabF.ADD.GroupDropDown,{"BOTTOMLEFT",FCTabF.ADD.GroupDropDown,"TOPLEFT",0,4},"目的地")
-	function FCTabF.ADD.GroupDropDown:PIGDownMenu_Update_But(self)
+	function FCTabF.ADD.GroupDropDown:PIGDownMenu_Update_But()
 		local info = {}
 		info.func = self.PIGDownMenu_SetValue
 		local ActivityGroups = C_LFGList.GetAvailableActivityGroups(FCTabF.selectedCategory)
@@ -1505,7 +1508,7 @@ function TardisInfo.Chedui(Activate)
 		end
 		return true
 	end
-	function FCTabF.ADD.ActivityDropDown:PIGDownMenu_Update_But(self)
+	function FCTabF.ADD.ActivityDropDown:PIGDownMenu_Update_But()
 		local info = {}
 		info.func = self.PIGDownMenu_SetValue
 		local Activities = C_LFGList.GetAvailableActivities(FCTabF.selectedCategory,FCTabF.selectedGroup)
@@ -1523,7 +1526,7 @@ function TardisInfo.Chedui(Activate)
 		for i=1,#newActivities,1 do
 		    info.text, info.arg1, info.arg2 = newActivities[i][1], newActivities[i][2], "activity";
 		    info.checked = newActivities[i][2] == FCTabF.selectedActivity
-			FCTabF.ADD.ActivityDropDown:PIGDownMenu_AddButton(info)
+			self:PIGDownMenu_AddButton(info)
 		end 
 	end
 	function FCTabF.ADD.ActivityDropDown:PIGDownMenu_SetValue(value,arg1,arg2)
@@ -1670,7 +1673,7 @@ function TardisInfo.Chedui(Activate)
 	NameBox:SetMultiLine(true)
 	FCTabF.ADD.NameF.Label=PIGFontString(FCTabF.ADD.NameF,{"BOTTOMLEFT",FCTabF.ADD.NameF,"TOPLEFT",0,2},"标题")
 	FCTabF.ADD.NameF:SetScript('OnShow', function(self)
-        self:SetObject(NameBox, self, {4, -4, -4, 4})
+        self:SetObject(NameBox, {4, -4, -4, 4})
         NameBox.Left:Hide()
         NameBox.Middle:Hide()
         NameBox.Right:Hide()
@@ -1688,7 +1691,7 @@ function TardisInfo.Chedui(Activate)
 	local DescriptionBox = LFGListFrame.EntryCreation.Description
 	FCTabF.ADD.DescriptionF.t=PIGFontString(FCTabF.ADD.DescriptionF,{"BOTTOMLEFT",FCTabF.ADD.DescriptionF,"TOPLEFT",0,2},LFG_LIST_DETAILS)
 	FCTabF.ADD.DescriptionF:SetScript('OnShow', function(self)
-        self:SetObject(DescriptionBox, self, {4, -4, -4, 4})
+        self:SetObject(DescriptionBox, {4, -4, -4, 4})
 		DescriptionBox.EditBox:SetWidth(DescriptionBox:GetWidth())
         DescriptionBox.TopTex:Hide()
         DescriptionBox.TopLeftTex:Hide()
@@ -2029,18 +2032,14 @@ function TardisInfo.Chedui(Activate)
 					UpdateApplicant(frame, arg1);
 				end
 			end
-		end
-		if event=="LFG_LIST_APPLICANT_LIST_UPDATED" or event=="LFG_LIST_AVAILABILITY_UPDATE" then
+		elseif event=="LFG_LIST_APPLICANT_LIST_UPDATED" or event=="LFG_LIST_AVAILABILITY_UPDATE" then
 			self.DQ.Apply.Update_AppList(self.DQ.Apply)
-		end
-		if event=="GROUP_ROSTER_UPDATE" then
+		elseif event=="GROUP_ROSTER_UPDATE" then
 			if self.ADD.ListGroupButton:IsShown() then
 				self.ADD:ListGroupButton_Update()
 			end
 			self.DQ.Apply:Update_Players()
-		end
-		--Mode值(true新建/false编辑/nil取消)
-		if event=="LFG_LIST_ACTIVE_ENTRY_UPDATE" then
+		elseif event=="LFG_LIST_ACTIVE_ENTRY_UPDATE" then--Mode值(true新建/false编辑/nil取消)
 			if arg1==true then
 				self:ShowData("New")
 			elseif arg1==false then

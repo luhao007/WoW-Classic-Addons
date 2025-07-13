@@ -30,7 +30,7 @@ local extDefault ={
 	["Yell"]={
 		["Open"] = true,
 		["ShowDesktopBut"]=false,
-		["mubiaoNum"]={{},{},{}},
+		["mubiaoNum"]={{},{},{},},
 		["Yell_NR"]="[Pig]....",
 		["Yell_CHANNEL"]={["SAY"] = true},
 		["MaxPlayerNum"]=40,
@@ -47,10 +47,9 @@ local extDefault_Per = {
 };
 Default_Per["Tardis"]=extDefault_Per
 -------
-local Config_format=Fun.Config_format
 function addonTable.Load_Config()
 	PIGA["Tardis"] = PIGA["Tardis"] or extDefault
 	PIGA_Per["Tardis"] = PIGA_Per["Tardis"] or extDefault_Per
-	PIGA["Tardis"] = Config_format(PIGA["Tardis"],extDefault)
-	PIGA_Per["Tardis"] = Config_format(PIGA_Per["Tardis"],extDefault_Per)
+	Fun.Load_DefaultData(PIGA["Tardis"],extDefault,0)
+	Fun.Load_DefaultData(PIGA_Per["Tardis"],extDefault_Per, 0, true)
 end

@@ -1,13 +1,13 @@
-## Interface: 30404
+## Interface: 30405
 ## Author: geligasi
-## Version: 1.44
+## Version: 1.59
 
 ## Title: !Pig_Tardis
 ## Notes: Invite enhancement
 ## Title-zhCN: |cFFFFE00A<|r|cFFFFF468功能|r|cFFFFE00A>|r |cFFFFFFFFPig工具箱|r |cFF69CCF0时空之门|r
-## Notes-zhCN: |cffFF8C00!Pig组队增强功能|r|n|cff00FF00祝你游戏愉快-来自|cffFF00FF[猪猪加油]|r的祝福|r
+## Notes-zhCN: |cffFF8C00!Pig组队增强功能|r
 
-## IconTexture: interface/icons/ability_seal.blp
+## IconTexture: Interface/AddOns/!Pig/Libs/logo32.blp
 
 ## AddonCompartmentFunc: PIGCompartmentClick_Tardis
 ## AddonCompartmentFuncOnEnter: PIGCompartmentEnter_Tardis

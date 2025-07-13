@@ -1,7 +1,7 @@
 local mod	= DBM:NewMod(2573, "DBM-Party-WarWithin", 2, 1267)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20250317013712")
+mod:SetRevision("20250513075136")
 mod:SetCreatureID(207940)
 mod:SetEncounterID(2848)
 mod:SetHotfixNoticeRev(20240608000000)
@@ -42,7 +42,7 @@ local specWarnHolySmite						= mod:NewSpecialWarningInterruptCount(423536, false
 local specWarnBlindingLight					= mod:NewSpecialWarningLookAway(428169, nil, nil, nil, 2, 2, 4)
 local specWarnGTFO							= mod:NewSpecialWarningGTFO(425556, nil, nil, nil, 1, 8)
 
-local timerPurifyingLightCD					= mod:NewVarCountTimer("v29.1-35", 444546, nil, nil, nil, 3)
+local timerPurifyingLightCD					= mod:NewVarCountTimer("v28.7-35.2", 444546, nil, nil, nil, 3)
 local timerInnerFireCD						= mod:NewVarCountTimer("v21.8-25.5", 423539, nil, nil, nil, 2)
 local timerHolyFlameCD						= mod:NewVarCountTimer("v12.1-21.8", 451606, nil, nil, nil, 3, nil, DBM_COMMON_L.MAGIC_ICON)
 local timerBlindingLightCD					= mod:NewVarCountTimer("v24.3-36.4", 428169, nil, nil, nil, 2, nil, DBM_COMMON_L.MYTHIC_ICON)
@@ -66,8 +66,8 @@ function mod:OnCombatStart(delay)
 	self.vb.holySmiteCount = 0
 	self.vb.blindingCount = 0
 	timerHolyFlameCD:Start(7-delay, 1)--7-8.1 (but can also sometimes not get cast at all for 45 seconds
-	timerPurifyingLightCD:Start(10.5-delay, 1)--10.5
-	timerInnerFireCD:Start("v15.5-19", 1)--15.5-19
+	timerPurifyingLightCD:Start(10-delay, 1)--10.5
+	timerInnerFireCD:Start("v15.5-19.4", 1)--15.5-19
 	if self:IsMythic() then
 		timerBlindingLightCD:Start(13.6-delay, 1)
 	end
@@ -110,11 +110,13 @@ function mod:SPELL_CAST_START(args)
 	elseif spellId == 444609 then--Stoke the flame (cast after interrupting Inner Light
 --		self.vb.holyFlameCount = 0
 		self:SetStage(2)
-		timerHolyFlameCD:Start(14.5, self.vb.holyFlameCount+1)
-		timerInnerFireCD:Start(18.2, self.vb.innerCount+1)
-		timerPurifyingLightCD:Start(20.6, self.vb.purifyingCount+1)
+		timerHolyFlameCD:Start("v12.1-14.5", self.vb.holyFlameCount+1)
+		--Inner and purify can swap positions
+		--Whichever is 15.8-18.2 the other is 20.6
+		timerInnerFireCD:Start("v15.8-20.6", self.vb.innerCount+1)
+		timerPurifyingLightCD:Start("v15.8-20.6", self.vb.purifyingCount+1)
 		if self:IsMythic() then
-			timerBlindingLightCD:Start(24.2, self.vb.blindingCount+1)
+			timerBlindingLightCD:Start("v21.9-24.2", self.vb.blindingCount+1)
 		end
 	elseif spellId == 428169 then
 		self.vb.blindingCount = self.vb.blindingCount + 1

@@ -1,4 +1,5 @@
 local addonName, addonTable = ...;
+local Data=addonTable.Data
 local wipe, concat = table.wipe, table.concat;
 local find = _G.string.find
 local sub = _G.string.sub
@@ -469,14 +470,14 @@ local function ALA_FormatData(nameX,msgx)
 			if haiyuan_tianfu[LM] ~= nil then
 				local info,tianfu,tianfu2=haiyuan_tianfu[LM](code:sub(5,-1));
 				allinfo.info=info
-				Pig_OptionsUI.talentData[nameX]["T"]={GetServerTime(),tianfu,tianfu2}
+				PIG_OptionsUI.talentData[nameX]["T"]={GetServerTime(),tianfu,tianfu2}
 			end
 		elseif v2_ctrl_code == "!G" then
 			local LM = __debase64[code:sub(4, 4)];
 			if haiyuan_Glyph[LM] ~= nil then
 				local glyph,glyph2=haiyuan_Glyph[LM](code:sub(5));
 				local fwData,fwData2=huifu_Glyph(glyph,glyph2)
-				Pig_OptionsUI.talentData[nameX]["G"]={GetServerTime(),fwData,fwData2}
+				PIG_OptionsUI.talentData[nameX]["G"]={GetServerTime(),fwData,fwData2}
 			end
 		elseif v2_ctrl_code == "!E" then
 			local LM = __debase64[code:sub(4, 4)];
@@ -494,7 +495,7 @@ end
 local function ALA_FormatData_60(nameX,msgx)
 	local code60 = msgx:sub(7,-1)
 	local info,tianfu=haiyuan_tianfu_60(code60)
-	Pig_OptionsUI.talentData[nameX]["T"]={GetServerTime(),tianfu}
+	PIG_OptionsUI.talentData[nameX]["T"]={GetServerTime(),tianfu}
 	Fun.Update_ShowPlayer(info,"yc")
 end
 local function ALA_FormatData_60_Item(nameX,msgx)
@@ -515,7 +516,7 @@ local function ALA_FormatData_TF(nameX,leixing,msgx)
 		local LM = __debase64[msgx1:sub(4, 4)];
 		if haiyuan_tianfu[LM] ~= nil then
 			local _,Tianfu,Tianfu2 = haiyuan_tianfu[LM](msgx1:sub(5,-1))
-			Pig_OptionsUI.talentData[nameX][leixing]={GetServerTime(),Tianfu,Tianfu2}
+			PIG_OptionsUI.talentData[nameX][leixing]={GetServerTime(),Tianfu,Tianfu2}
 		end
 	end
 	if leixing == "G" then
@@ -523,26 +524,26 @@ local function ALA_FormatData_TF(nameX,leixing,msgx)
 		if haiyuan_Glyph[LM] ~= nil then
 			local glyph,glyph2=haiyuan_Glyph[LM](msgx:sub(5));
 			local fwData,fwData2=huifu_Glyph(glyph,glyph2)
-			Pig_OptionsUI.talentData[nameX][leixing]={GetServerTime(),fwData,fwData2}
+			PIG_OptionsUI.talentData[nameX][leixing]={GetServerTime(),fwData,fwData2}
 		end
 	end
 end
 function ALA.ALA_tiquMsg(msgx,nameX)
-	if yuanchengCFrame:IsShown() and yuanchengCFrame.fullnameX==nameX then
+	if _G[Data.LongInspectUIUIname]:IsShown() and _G[Data.LongInspectUIUIname].fullnameX==nameX then
 		local qianzhui = msgx:sub(1, 2)
 		if qianzhui == "!P" or qianzhui == "!T" then
-			yuanchengCFrame.fanhuiYN=true
-			Pig_OptionsUI.talentData[nameX]=Pig_OptionsUI.talentData[nameX] or {["T"]="",["G"]=""}
+			_G[Data.LongInspectUIUIname].fanhuiYN=true
+			PIG_OptionsUI.talentData[nameX]=PIG_OptionsUI.talentData[nameX] or {["T"]="",["G"]=""}
 			if qianzhui == "!P" then
 				local allnum = msgx:sub(5, 5)
 				local danqian = msgx:sub(7, 7)
 				if danqian=="1" then
-					yuanchengCFrame.allmsg=msgx:sub(9, -1)
+					_G[Data.LongInspectUIUIname].allmsg=msgx:sub(9, -1)
 				else
-					yuanchengCFrame.allmsg=yuanchengCFrame.allmsg..msgx:sub(9, -1)
+					_G[Data.LongInspectUIUIname].allmsg=_G[Data.LongInspectUIUIname].allmsg..msgx:sub(9, -1)
 				end
 				if allnum==danqian then
-					ALA_FormatData(nameX,yuanchengCFrame.allmsg)
+					ALA_FormatData(nameX,_G[Data.LongInspectUIUIname].allmsg)
 				end
 			elseif qianzhui == "!T" then
 				ALA_FormatData(nameX,msgx)
@@ -550,17 +551,17 @@ function ALA.ALA_tiquMsg(msgx,nameX)
 		else
 			local qianzhui = msgx:sub(1, 6)	
 			if qianzhui == '_r_tal' or qianzhui == '_reply' or qianzhui == '_r_equ' or qianzhui == '_repeq' or qianzhui == '_r_eq3' then
-				Pig_OptionsUI.talentData[nameX]=Pig_OptionsUI.talentData[nameX] or {["T"]="",["G"]=""}
-				if yuanchengCFrame:IsShown() and yuanchengCFrame.fullnameX==nameX then	
+				PIG_OptionsUI.talentData[nameX]=PIG_OptionsUI.talentData[nameX] or {["T"]="",["G"]=""}
+				if _G[Data.LongInspectUIUIname]:IsShown() and _G[Data.LongInspectUIUIname].fullnameX==nameX then	
 					if qianzhui == '_r_tal' then
-						yuanchengCFrame.fanhuiYN=true
+						_G[Data.LongInspectUIUIname].fanhuiYN=true
 						ALA_FormatData_60(nameX,msgx)
 					elseif qianzhui == '_r_eq3' then
-						yuanchengCFrame.fanhuiYN=true
-						yuanchengCFrame.allmsg=yuanchengCFrame.allmsg..msgx:sub(7, -1)
-						if yuanchengCFrame.ycJieshou then yuanchengCFrame.ycJieshou:Cancel() end
-						yuanchengCFrame.ycJieshou=C_Timer.NewTimer(0.2,function()
-							ALA_FormatData_60_Item(nameX,yuanchengCFrame.allmsg)
+						_G[Data.LongInspectUIUIname].fanhuiYN=true
+						_G[Data.LongInspectUIUIname].allmsg=_G[Data.LongInspectUIUIname].allmsg..msgx:sub(7, -1)
+						if _G[Data.LongInspectUIUIname].ycJieshou then _G[Data.LongInspectUIUIname].ycJieshou:Cancel() end
+						_G[Data.LongInspectUIUIname].ycJieshou=C_Timer.NewTimer(0.2,function()
+							ALA_FormatData_60_Item(nameX,_G[Data.LongInspectUIUIname].allmsg)
 						end)
 					end
 				end
@@ -570,13 +571,13 @@ function ALA.ALA_tiquMsg(msgx,nameX)
 	if InspectFrame and InspectFrame:IsShown() and InspectNameText:GetText()==nameX or Tardis_UI and Tardis_UI:IsShown() then--观察/时空
 		local qianzhui = msgx:sub(1, 2)
 		if qianzhui == "!T" or qianzhui == "!G" then
-			Pig_OptionsUI.talentData[nameX]=Pig_OptionsUI.talentData[nameX] or {["T"]="",["G"]=""}
+			PIG_OptionsUI.talentData[nameX]=PIG_OptionsUI.talentData[nameX] or {["T"]="",["G"]=""}
 			local leixing = msgx:sub(2, 2)	
 			if leixing == "T" then
-				yuanchengCFrame.fanhuiYN_TF=true
+				_G[Data.LongInspectUIUIname].fanhuiYN_TF=true
 			end
 			if leixing == "G" then
-				yuanchengCFrame.fanhuiYN_GG=true
+				_G[Data.LongInspectUIUIname].fanhuiYN_GG=true
 			end
 			ALA_FormatData_TF(nameX,leixing,msgx)
 		end

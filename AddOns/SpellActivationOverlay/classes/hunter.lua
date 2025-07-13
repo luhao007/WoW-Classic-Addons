@@ -1,113 +1,284 @@
 local AddonName, SAO = ...
 
-local function registerClass(self)
-    local aimedShot = 19434;
-    local arcaneShot = 3044;
-    local killShot  = 53351;
-    local chimeraShot = 53209;
-    local explosiveShot = 53301;
-    local counterattack = 19306;
+local aimedShot = 19434;
+local aimedShotBang = 82928;
+local arcaneShot = 3044;
+local chimeraShot = 53209;
+local concussiveShot = 5116;
+local counterattack = 19306;
+local distractingShot = 20736;
+local explosiveShot = 53301;
+local flankingStrike = 415320;
+local killCommand = 34026;
+local killShot = 53351;
+local mongooseBite = 1495;
+local multiShot = 2643;
+local scatterShot = 19503;
+local thrillOfTheHunt = 34498;
+local tranquilizingShot = 19801;
 
-    local issGlowNames = { (GetSpellInfo(aimedShot)), (GetSpellInfo(arcaneShot)), (GetSpellInfo(chimeraShot)) };
-    local lalGlowNames = { (GetSpellInfo(arcaneShot)), (GetSpellInfo(explosiveShot)) };
-
-    if self.IsWrath() or self.IsCata() then
-        -- Improved Steady Shot, formerly Master Marksman
-        self:RegisterAura("improved_steady_shot", 0, 53220, "master_marksman", "Top", 1, 255, 255, 255, true, issGlowNames);
-
-        -- Lock and Load: display something on top if there is at least one charge
-        self:RegisterAura("lock_and_load_1", 1, 56453, "lock_and_load", "Top", 1, 255, 255, 255, true, lalGlowNames);
-        self:RegisterAura("lock_and_load_2", 2, 56453, "lock_and_load", "Top", 1, 255, 255, 255, true, lalGlowNames);
-
-        -- Kill Shot, Execute-like ability for targets at 20% hp or less
-        self:RegisterAura("kill_shot", 0, killShot, nil, "", 0, 0, 0, 0, false, { (GetSpellInfo(killShot)) });
-        self:RegisterCounter("kill_shot");
-    end
-
-    -- Counterattack, registered as both aura and counter, but only used as counter
-    self:RegisterAura("counterattack", 0, counterattack, nil, "", 0, 0, 0, 0, false, { (GetSpellInfo(counterattack)) });
-    self:RegisterCounter("counterattack"); -- Must match name from above call
-
-    if self.IsEra() or self.IsTBC() then
-        -- Mongoose Bite, before Wrath because there is no longer a proc since Wrath
-        local mongooseBite = 1495;
-        self:RegisterAura("mongoose_bite", 0, mongooseBite, nil, "", 0, 0, 0, 0, false, { (GetSpellInfo(mongooseBite)) });
-        self:RegisterCounter("mongoose_bite");
-    end
-
-    if self.IsSoD() then
-        -- Flanking Strike (Season of Discovery)
-        local flankingStrike = 415320;
-        self:RegisterAura("flanking_strike", 0, flankingStrike, "tooth_and_claw", "Left + Right (Flipped)", 1, 255, 255, 255, true, { flankingStrike }, true);
-        self:RegisterCounter("flanking_strike");
-
-        -- Cobra Strikes (Season of Discovery)
-        local cobraStrikes = 425714;
-        self:RegisterAura("cobra_strikes_1", 1, cobraStrikes, "monk_serpent", "Left", 0.7, 255, 255, 255, true);
-        self:RegisterAura("cobra_strikes_2", 2, cobraStrikes, "monk_serpent", "Left + Right (Flipped)", 0.7, 255, 255, 255, true);
-
-        -- Lock and Load (Season of Discovery)
-        -- Unlike Wrath, we do not suggest to glow buttons, because there are too many (all 'shots')
-        self:RegisterAura("lock_and_load", 0, 415414, "lock_and_load", "Top", 1, 255, 255, 255, true);
-
-        -- Sniper Training, 5 stacks only (Season of Discovery)
-        -- self:RegisterAura("sniper_training", 5, 415401, nil, "", 0, 0, 0, 0, false, { (GetSpellInfo(aimedShot)) }, true);
-    end
+local function useKillShot()
+    SAO:CreateEffect(
+        "kill_shot",
+        SAO.WRATH + SAO.CATA,
+        killShot,
+        "counter"
+    );
 end
 
-local function loadOptions(self)
-    local mongooseBite = 1495;
-    local killShot = 53351;
-    local counterattack = 19306;
-    local aimedShot = 19434;
-    local arcaneShot = 3044;
-    local chimeraShot = 53209;
-    local explosiveShot = 53301;
+local function useCounterattack()
+    SAO:CreateEffect(
+        "counterattack",
+        SAO.ALL_PROJECTS - SAO.MOP_AND_ONWARD,
+        counterattack,
+        "counter"
+    );
+end
 
+local function useMongooseBite()
+    SAO:CreateEffect(
+        "mongoose_bite",
+        SAO.ERA + SAO.TBC,
+        mongooseBite,
+        "counter",
+        {
+            useName = false,
+            combatOnly = true,
+            overlay = { texture = "bandits_guile", position = "Top (CW)", scale = 1.1 },
+        }
+    );
+end
+
+local function useKillingStreak()
+    local killingStreakBuff1 = 94006;
+    local killingStreakBuff2 = 94007;
+    local killingStreakTalent = 82748;
+
+    SAO:CreateLinkedEffects(
+        "killing_streak",
+        SAO.CATA,
+        { killingStreakBuff1, killingStreakBuff2 },
+        "aura",
+        {
+            talent = killingStreakTalent,
+            button = killCommand,
+        }
+    );
+end
+
+local function useImprovedSteadyShot()
     local improvedSteadyShotBuff = 53220;
     local improvedSteadyShotTalent = 53221;
+    SAO:CreateEffect(
+        "improved_steady_shot",
+        SAO.WRATH,
+        improvedSteadyShotBuff,
+        "aura",
+        {
+            talent = improvedSteadyShotTalent,
+            overlay = { texture = "master_marksman", position = "Top" },
+            buttons = { aimedShot, arcaneShot, chimeraShot },
+        }
+    );
+end
 
-    local lockAndLoadBuff = 56453;
-    local lockAndLoadTalent = 56342;
-    local lockAndLoadBuffSoD = 415414;
-    local lockAndLoadTalentSoD = 415413;
+local function useMasterMarksman()
+    -- local masterMarksmanBuff1to4 = 82925;
+    local masterMarksmanBuff5 = 82926;
 
-    local flankingStrike = 415320;
-    local cobraStrikes = 425714;
-    -- local sniperTrainingBuff = 415401;
-    -- local sniperTrainingRune = 415399;
+    SAO:CreateEffect(
+        "master_marksman",
+        SAO.CATA_AND_ONWARD,
+        masterMarksmanBuff5, -- Fire! (buff)
+        "aura",
+        {
+            talent = {
+                [SAO.CATA] = 34485, -- Master Marksman (talent)
+                [SAO.MOP_AND_ONWARD] = 34487, -- Master Marksman (passive)
+            },
+            overlay = { texture = "master_marksman", position = "Top" },
+            buttons = {
+                [SAO.CATA] = aimedShotBang,
+                -- [SAO.MOP] = aimedShot, -- Button already glowing natively
+            }
+        }
+    );
+end
 
-    if self.IsWrath() or self.IsCata() then
-        self:AddOverlayOption(improvedSteadyShotTalent, improvedSteadyShotBuff);
-        self:AddOverlayOption(lockAndLoadTalent, lockAndLoadBuff, 0, nil, nil, 2); -- setup any stacks, test with 2 stacks
-    end
-    if self.IsSoD() then
-        self:AddOverlayOption(flankingStrike, flankingStrike);
-        self:AddOverlayOption(cobraStrikes, cobraStrikes, 0, nil, nil, 2); -- setup any stacks, test with 2 stacks
-        self:AddOverlayOption(lockAndLoadTalentSoD, lockAndLoadBuffSoD);
-    end
+local function useLockAndLoad()
+    SAO:CreateEffect(
+        "lock_and_load",
+        SAO.SOD + SAO.WRATH_AND_ONWARD,
+        {
+            [SAO.SOD] = 415414,
+            [SAO.WRATH_AND_ONWARD] = 56453,
+        },
+        "aura",
+        {
+            talent = {
+                [SAO.SOD] = 415413, -- Lock and Load (rune)
+                [SAO.WRATH + SAO.CATA] = 56342, -- Lock and Load (talent)
+                [SAO.MOP_AND_ONWARD] = 56343, -- Lock and Load (passive)
+            },
+            overlays = {
+                [SAO.SOD] = { texture = "lock_and_load", position = "Top" },
+                [SAO.WRATH_AND_ONWARD] = { -- Stacks == 1 is slightly dimmer, to give information that 'only 1 stack remains'
+                    { stacks = 1, texture = "lock_and_load", position = "Top", color = { 200, 200, 200 }, pulse = false, option = false },
+                    { stacks = 2, texture = "lock_and_load", position = "Top", color = { 255, 255, 255 }, pulse = true,  option = { setupHash = SAO:HashNameFromStacks(0), testHash = SAO:HashNameFromStacks(2) } },
+                },
+            },
+            buttons = {
+                [SAO.SOD] = nil, -- Don't glow buttons for Season of Discovery, there would be too many to suggest
+                [SAO.WRATH] = { arcaneShot, explosiveShot },
+                [SAO.CATA] = explosiveShot,
+                -- [SAO.MOP_AND_ONWARD] = explosiveShot, -- Button already glowing natively
+            },
+        }
+    );
+end
 
-    if self.IsWrath() or self.IsCata() then
-        self:AddGlowingOption(nil, killShot, killShot);
-    end
-    self:AddGlowingOption(nil, counterattack, counterattack);
-    if self.IsEra() or self.IsTBC() then
-        self:AddGlowingOption(nil, mongooseBite, mongooseBite);
-    end
-    if self.IsSoD() then
-        self:AddGlowingOption(nil, flankingStrike, flankingStrike);
-        -- self:AddGlowingOption(sniperTrainingRune, sniperTrainingBuff, aimedShot, self:NbStacks(5));
-    end
-    if self.IsWrath() or self.IsCata() then
-        self:AddGlowingOption(improvedSteadyShotTalent, improvedSteadyShotBuff, aimedShot);
-        self:AddGlowingOption(improvedSteadyShotTalent, improvedSteadyShotBuff, arcaneShot);
-        self:AddGlowingOption(improvedSteadyShotTalent, improvedSteadyShotBuff, chimeraShot);
-        self:AddGlowingOption(lockAndLoadTalent, lockAndLoadBuff, arcaneShot);
-        self:AddGlowingOption(lockAndLoadTalent, lockAndLoadBuff, explosiveShot);
-    end
+local function useThrillOfTheHunt()
+    SAO:CreateEffect(
+        "thrill_of_the_hunt",
+        SAO.MOP,
+        34720, -- Thrill of the Hunt (buff)
+        "aura",
+        {
+            talent = 109306, -- Thrill of the Hunt (talent)
+            overlays = {
+                { stacks = 1, texture = "thrill_of_the_hunt_1", position = "Left + Right (Flipped)", pulse = false, option = false },
+                { stacks = 2, texture = "thrill_of_the_hunt_2", position = "Left + Right (Flipped)", pulse = false, option = false },
+                { stacks = 3, texture = "thrill_of_the_hunt_3", position = "Left + Right (Flipped)", pulse = true , option = { setupHash = SAO:HashNameFromStacks(0), testHash = SAO:HashNameFromStacks(3) } },
+            },
+            -- buttons = { arcaneShot, multiShot }, -- Buttons already glowing natively
+        }
+    );
+end
+
+local function useFlankingStrike()
+    SAO:CreateEffect(
+        "flanking_strike",
+        SAO.SOD,
+        flankingStrike,
+        "counter",
+        {
+            useName = false,
+            combatOnly = true,
+            overlay = { texture = "tooth_and_claw", position = "Left + Right (Flipped)" },
+        }
+    );
+end
+
+local function useCobraStrikes()
+    local cobraStrikesBuff = 425714;
+    local cobraStrikesTalent = 425713;
+    SAO:CreateEffect(
+        "cobra_strikes",
+        SAO.SOD,
+        cobraStrikesBuff,
+        "aura",
+        {
+            talent = cobraStrikesTalent,
+            overlays = {
+                { stacks = 1, texture = "monk_serpent", position = "Left", scale = 0.7, option = false },
+                { stacks = 2, texture = "monk_serpent", position = "Left + Right (Flipped)", scale = 0.7, option = { setupHash = SAO:HashNameFromStacks(0), testHash = SAO:HashNameFromStacks(2) } },
+            },
+        }
+    );
+end
+
+local function useSniperTraining()
+    local sniperTrainingBuff = 415401;
+    local sniperTrainingRune = 415399;
+    SAO:CreateEffect(
+        "sniper_training",
+        SAO.SOD,
+        sniperTrainingBuff,
+        "aura",
+        {
+            talent = sniperTrainingRune,
+            combatOnly = true,
+            button = {
+                stacks = 5,
+                spellID = aimedShot,
+                useName = false,
+            },
+        }
+    );
+end
+
+local function useBurningAdrenaline()
+    local burningAdrenalineBuff = 99060;
+
+    SAO:CreateEffect(
+        "burning_adrenaline",
+        SAO.CATA,
+        burningAdrenalineBuff,
+        "aura",
+        {
+            overlay = { texture = "genericarc_05", position = "Left + Right (Flipped)" },
+--[[
+    Do not add buttons for Burning Adrenaline, because there are too many of them:
+    - action bars would light up like a Xmas tree
+    - it adds a lot of bloat to the options panel
+
+    It would be slightly better if we could enable each shot per spec
+    But it's currently not possible, and not planned either
+
+    Also, as a tier set, this effect will be probably forgotten in a few months
+    Not to mention, the effect may just disappear for Mists of Pandaria Classic
+]]
+            -- buttons = {
+            --     aimedShot,
+            --     aimedShotBang,
+            --     arcaneShot,
+            --     chimeraShot,
+            --     concussiveShot,
+            --     distractingShot,
+            --     explosiveShot,
+            --     killCommand,
+            --     multiShot,
+            --     scatterShot,
+            --     thrillOfTheHunt,
+            --     tranquilizingShot,
+            -- },
+        }
+    )
+end
+
+local function registerClass(self)
+
+    -- Kill Shot, Execute-like ability for targets at 20% hp or less
+    useKillShot();
+
+    -- Counterattack, registered as both aura and counter, but only used as counter
+    useCounterattack();
+
+    -- Mongoose Bite, before Wrath because there is no longer a proc since Wrath
+    useMongooseBite();
+
+    -- Beast Mastery
+    useKillingStreak();
+
+    -- Marksmanship
+    useImprovedSteadyShot(); -- Improved Steady Shot, formerly Master Marksman
+    useMasterMarksman(); -- Master Marksman, from Cataclysm
+
+    -- Survival
+    useLockAndLoad();
+
+    -- Talents
+    useThrillOfTheHunt();
+
+    -- Season of Discovery runes
+    useFlankingStrike();
+    useCobraStrikes();
+    -- useSniperTraining();
+
+    -- Tier Sets
+    useBurningAdrenaline(); -- T12 4pc
 end
 
 SAO.Class["HUNTER"] = {
     ["Register"] = registerClass,
-    ["LoadOptions"] = loadOptions,
 }

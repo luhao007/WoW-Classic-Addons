@@ -25,7 +25,7 @@ eventFrame:SetScript("OnEvent", function(self, event, ...)
         local gold = GetMoney()
 
         local key = playerGUID
-        local hash = Hash32(realmName .. name .. class .. faction)
+        local hash = NewBeeHash32(realmName .. name .. class .. faction)
 
         WclBoxGlobal = WclBoxGlobal or {}
         WclBoxCharacter = WclBoxCharacter or {}

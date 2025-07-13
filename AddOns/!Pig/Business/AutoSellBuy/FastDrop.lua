@@ -1,26 +1,6 @@
 local _, addonTable = ...;
-local _, _, _, tocversion = GetBuildInfo()
-local L=addonTable.locale
-local Create=addonTable.Create
-local PIGFrame=Create.PIGFrame
-local PIGButton = Create.PIGButton
-local PIGLine=Create.PIGLine
-local PIGCheckbutton=Create.PIGCheckbutton
-local PIGOptionsList_RF=Create.PIGOptionsList_RF
-local PIGOptionsList_R=Create.PIGOptionsList_R
-local PIGQuickBut=Create.PIGQuickBut
-local Show_TabBut_R=Create.Show_TabBut_R
---
-local GetContainerNumSlots = C_Container.GetContainerNumSlots
-local GetContainerItemID = C_Container.GetContainerItemID
-local GetContainerItemLink = C_Container.GetContainerItemLink
-local PickupContainerItem =C_Container.PickupContainerItem
-local UseContainerItem =C_Container.UseContainerItem
-local bagIDMax= addonTable.Data.bagData["bagIDMax"]
--------
 local BusinessInfo=addonTable.BusinessInfo
-local GnName,GnUI,GnIcon,FrameLevel = unpack(BusinessInfo.AutoSellBuyData)
-local gongnengName = "丢弃"
+function Pig_DelItem() end
 local function shifoucunzai(beibaoInfo,dataX)
 	for x=1,#beibaoInfo do
 		for k=1,#dataX do
@@ -31,50 +11,46 @@ local function shifoucunzai(beibaoInfo,dataX)
 	end
 	return false
 end
-function Pig_DelItem() end
 function BusinessInfo.FastDrop()
-	local fujiF,fujiTabBut=PIGOptionsList_R(AutoSellBuy_UI.F,"丢",50,"Left")
+	local L=addonTable.locale
+	local Data=addonTable.Data
+	local Create=addonTable.Create
+	local PIGButton = Create.PIGButton
+	local PIGCheckbutton=Create.PIGCheckbutton
+	local PIGOptionsList_R=Create.PIGOptionsList_R
+	local PIGQuickBut=Create.PIGQuickBut
+	local Show_TabBut_R=Create.Show_TabBut_R
+	--
+	local GetContainerNumSlots = C_Container.GetContainerNumSlots
+	local GetContainerItemID = C_Container.GetContainerItemID
+	local GetContainerItemLink = C_Container.GetContainerItemLink
+	local PickupContainerItem =C_Container.PickupContainerItem
+	local UseContainerItem =C_Container.UseContainerItem
+	local bagIDMax= addonTable.Data.bagData["bagIDMax"]
+	---
+	local GnName,GnUI,GnIcon,FrameLevel = unpack(BusinessInfo.AutoSellBuyData)
+	local _GN,_GNE = "丢弃","Diuqi"
+	local BindingName = GnUI.."_".._GNE
+	local fujiF,fujiTabBut=PIGOptionsList_R(_G[GnUI].F,"丢",50,"Left")
 	fujiF:Show()
 	fujiTabBut:Selected()
-	local gongnengNameE = "Diuqi"
-	BusinessInfo.ADDScroll(fujiF,gongnengName,gongnengNameE,17,{false,"AutoSellBuy",gongnengNameE.."_List"})
-	QuickButUI.ButList[9]=function()	
-		if PIGA["QuickBut"]["Open"] and PIGA["AutoSellBuy"]["Open"] and PIGA["AutoSellBuy"]["AddBut"] then
-			local QkButUI = "QkBut_AutoSellBuy"
-			if _G[QkButUI] then return end
-			local QuickTooltip = KEY_BUTTON1.."-|cff00FFFF"..gongnengName.."指定物品|r\n"..KEY_BUTTON2.."-|cff00FFFF打开"..GnName.."|r"
-			local QkBut=PIGQuickBut(QkButUI,QuickTooltip,135725,nil,FrameLevel)
-			QkBut:SetScript("OnClick", function(self,button)
-				if button=="LeftButton" then
-					PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
-					Pig_DelItem()
-				else
-					if AutoSellBuy_UI:IsShown() then
-						AutoSellBuy_UI:Hide();
-					else
-						AutoSellBuy_UI:Show()
-						Show_TabBut_R(AutoSellBuy_UI.F,fujiF,fujiTabBut)
-					end
-				end
-			end);
-		end
-	end
+	BusinessInfo.ADDScroll(fujiF,_GN,_GNE,17,{false,"AutoSellBuy",_GNE.."_List"})
 	----
 	fujiF.Bindings = PIGButton(fujiF,{"TOPLEFT",fujiF,"TOPLEFT",20,-10},{76,20},KEY_BINDING);
 	fujiF.Bindings:SetScript("OnClick", function (self)
 		Settings.OpenToCategory(Settings.KEYBINDINGS_CATEGORY_ID, addonName);
 	end)
-	local QkButAction=CreateFrame("Button","QkBut_AutoSellBuy_Del",UIParent, "SecureActionButtonTemplate");
+	local QkButAction=CreateFrame("Button",BindingName,UIParent, "SecureActionButtonTemplate");
 	QkButAction:SetAttribute("type1", "macro");
 	QkButAction:SetAttribute("macrotext", [=[/run Pig_DelItem()]=]);
-	_G["BINDING_NAME_CLICK QkBut_AutoSellBuy_Del:LeftButton"]= "PIG"..gongnengName
+	_G["BINDING_NAME_CLICK "..BindingName..":LeftButton"]= "PIG"..GnName.._GN
 	---
-	fujiF.fuzhiCDM = PIGButton(fujiF,{"TOPLEFT",fujiF,"TOPLEFT",160,-10},{110,20},"复制"..gongnengName.."指令");
+	fujiF.fuzhiCDM = PIGButton(fujiF,{"TOPLEFT",fujiF,"TOPLEFT",160,-10},{110,20},"复制".._GN.."指令");
 	fujiF.fuzhiCDM:SetScript("OnClick", function(event, button)
 		StaticPopup_Show ("AUTOSELLBUY_DROP");
 	end)
 	StaticPopupDialogs["AUTOSELLBUY_DROP"] = {
-		text = "因暴雪API改动，无法自动"..gongnengName.."/一次"..gongnengName.."多个物品。\n可以复制此指令到已有的宏尾部。这样在使用宏时将执行一次动作",
+		text = "因暴雪API改动，无法自动".._GN.."/一次".._GN.."多个物品。\n可以复制此指令到已有的宏尾部。这样在使用宏时将执行一次动作",
 		button1 = "知道了",
 		OnAccept = function()
 			editBoxXX = ChatEdit_ChooseBoxForSend()
@@ -87,13 +63,13 @@ function BusinessInfo.FastDrop()
 		hideOnEscape = true,
 	}
 	---
-	fujiF.runFun = PIGButton(fujiF,{"TOPLEFT",fujiF,"TOPLEFT",100,-46},{90,22},"执行"..gongnengName);
+	fujiF.runFun = PIGButton(fujiF,{"TOPLEFT",fujiF,"TOPLEFT",100,-46},{90,22},"执行".._GN);
 	fujiF.runFun:SetScript("OnClick", function(event, button)
 		Pig_DelItem()
 	end)
 	-----
-	Pig_DelItem=function()
-		local dataX = PIGA["AutoSellBuy"][gongnengNameE.."_List"]
+	Pig_DelItem=function(ly)
+		local dataX = PIGA["AutoSellBuy"][_GNE.."_List"]
 		if #dataX>0 then
 			for bag=0,bagIDMax do
 				local xx=GetContainerNumSlots(bag) 
@@ -109,7 +85,39 @@ function BusinessInfo.FastDrop()
 				end 
 			end
 		else
-			PIGTopMsg:add(gongnengName.."目录为空,"..KEY_BUTTON2.."设置");
+			if ly==1 then
+				PIG_OptionsUI:ErrorMsg(_GN.."目录为空,"..KEY_BUTTON2.."设置");
+			else
+				PIG_OptionsUI:ErrorMsg(_GN.."目录为空");
+			end
+		end
+	end
+	local QuickButUI=_G[Data.QuickButUIname]
+	QuickButUI.ButList[9]=function()	
+		if PIGA["QuickBut"]["Open"] and PIGA["AutoSellBuy"]["Open"] and PIGA["AutoSellBuy"]["AddBut"] then
+			if QuickButUI[_GNE] then return end
+			QuickButUI[_GNE]=true
+			local QuickTooltip = KEY_BUTTON1.."-|cff00FFFF".._GN.."指定物品|r\n"..KEY_BUTTON2.."-|cff00FFFF打开"..GnName.."|r"
+			local QkBut=PIGQuickBut(nil,QuickTooltip,130841,nil,FrameLevel)
+			QkBut:GetNormalTexture():SetPoint("TOPLEFT",QkBut,"TOPLEFT",-9,9);
+			QkBut:GetNormalTexture():SetPoint("BOTTOMRIGHT",QkBut,"BOTTOMRIGHT",9,-9);
+			QkBut.TexX1 = QkBut:CreateTexture();
+			QkBut.TexX1:SetTexture(136453);
+			QkBut.TexX1:SetPoint("TOPLEFT",QkBut,"TOPLEFT",-1,1);
+			QkBut.TexX1:SetPoint("BOTTOMRIGHT",QkBut,"BOTTOMRIGHT",1,-1);
+			QkBut:SetScript("OnClick", function(self,button)
+				if button=="LeftButton" then
+					PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
+					Pig_DelItem(1)
+				else
+					if _G[GnUI]:IsShown() then
+						_G[GnUI]:Hide();
+					else
+						_G[GnUI]:Show()
+						Show_TabBut_R(_G[GnUI].F,fujiF,fujiTabBut)
+					end
+				end
+			end);
 		end
 	end
 end

@@ -13,15 +13,10 @@ local RGB_16 = ns.RGB_16
 local GetClassRGB = ns.GetClassRGB
 local SetClassCFF = ns.SetClassCFF
 local GetText_T = ns.GetText_T
-local FrameDongHua = ns.FrameDongHua
-local FrameHide = ns.FrameHide
 local AddTexture = ns.AddTexture
 local GetItemID = ns.GetItemID
 
-local Width = ns.Width
-local Height = ns.Height
 local Maxb = ns.Maxb
-local Maxi = ns.Maxi
 local HopeMaxn = ns.HopeMaxn
 local HopeMaxb = ns.HopeMaxb
 local HopeMaxi = ns.HopeMaxi
@@ -76,8 +71,7 @@ BG.Init(function()
             GameTooltip:ClearLines()
             local itemID = GetItemInfoInstant(link)
             if itemID then
-                GameTooltip:SetItemByID(itemID)
-                GameTooltip:Show()
+                GameTooltip:SetHyperlink(BG.SetSpecIDToLink(link))
                 BG.Show_AllHighlight(link)
             end
         end)
@@ -136,7 +130,7 @@ BG.Init(function()
         local t = GetServerTime()
         for i = #BiaoGe.auctionMSGhistory, 1, -1 do
             if type(BiaoGe.auctionMSGhistory[i]) == "table" then
-                if t - BiaoGe.auctionMSGhistory[i].time > 3600 * 12 then
+                if t - BiaoGe.auctionMSGhistory[i].time > 60 * 60 * 12 then
                     tremove(BiaoGe.auctionMSGhistory, i)
                 end
             end
@@ -307,8 +301,8 @@ BG.Init(function()
             GameTooltip:SetOwner(self, "ANCHOR_TOP", 0, 0)
             GameTooltip:ClearLines()
             GameTooltip:AddLine(L["拍卖聊天记录框"], 1, 1, 1)
-            GameTooltip:AddLine(L["|cffFFFFFF左键玩家名字：|r设置为买家"], 1, 0.82, 0, true)
-            GameTooltip:AddLine(L["|cffFFFFFFSHIFT+左键玩家名字：|r密语"], 1, 0.82, 0, true)
+            GameTooltip:AddLine(format(L["|cffFFFFFF%s玩家名字：|r设置为买家"], AddTexture("LEFT")), 1, 0.82, 0, true)
+            GameTooltip:AddLine(format(L["|cffFFFFFFSHIFT+%s玩家名字：|r密语"], AddTexture("LEFT")), 1, 0.82, 0, true)
             GameTooltip:AddLine(L["|cffFFFFFFCTRL+滚轮：|r快速滚动"], 1, 0.82, 0, true)
             GameTooltip:AddLine(L["|cffFFFFFFSHIFT+滚轮：|r滚动到最前/最后"], 1, 0.82, 0, true)
             GameTooltip:Show()
@@ -409,8 +403,8 @@ BG.Init(function()
         f:RegisterEvent("CHAT_MSG_RAID")
         f:SetScript("OnEvent", function(self, event, ...)
             local msg, playerName, languageName, channelName, playerName2, specialFlags, zoneChannelID, channelIndex, channelBaseName, languageID, lineID, guid = ...
-            playerName = strsplit("-", playerName)
             local ML
+            playerName = BG.GSN(playerName)
             if event == "CHAT_MSG_RAID_WARNING" or event == "CHAT_MSG_RAID_LEADER" then
                 ML = true
             elseif event == "CHAT_MSG_RAID" then

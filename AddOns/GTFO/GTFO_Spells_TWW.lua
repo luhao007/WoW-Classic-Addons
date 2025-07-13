@@ -209,6 +209,29 @@ GTFO.SpellID["1218158"] = {
   sound = 1;
 };
 
+GTFO.SpellID["470843"] = {
+  --desc = "Noxious Ooze (Ahn'tak)";
+  ignoreApplication = true;
+  sound = 1;
+};
+
+GTFO.SpellID["470827"] = {
+  --desc = "Poison Breath (Ahn'tak)";
+  sound = 1;
+};
+
+GTFO.SpellID["1231544"] = {
+  --desc = "Zapped (Goblin Zapper)";
+  ignoreApplication = true;
+  sound = 1;
+};
+
+GTFO.SpellID["1240428"] = {
+  --desc = "Blessed Bladestorm (Joseph the Enlightened)";
+  ignoreApplication = true;
+  sound = 1;
+};
+
 --- ****************************
 --- * Ara-Kara, City of Echoes *
 --- ****************************
@@ -361,6 +384,12 @@ GTFO.SpellID["424223"] = {
   sound = 1;
 };
 
+GTFO.SpellID["443835"] = {
+  --desc = "Blazing Storms (Blazikon)"; -- Tank is out of range
+  tankSound = 1;
+  sound = 0;
+};
+
 GTFO.SpellID["1218133"] = {
   --desc = "Burning Candles (Sootsnout)";
   ignoreApplication = true;
@@ -472,6 +501,12 @@ GTFO.SpellID["424966"] = {
 GTFO.SpellID["433067"] = {
   --desc = "Seeping Fragment (Voidstone Monstrosity)";
   sound = 1;
+};
+
+GTFO.SpellID["423393"] = {
+  --desc = "Entropy (Voidstone Monstrosity)";
+  sound = 0;
+  tankSound = 1;
 };
 
 --- ******************

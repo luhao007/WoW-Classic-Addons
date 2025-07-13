@@ -71,6 +71,9 @@ if MODERN or CF_WRATH then
 			[204911]=have1,
 			[205254]=c1, -- Honorary Explorer's Compass
 			[199192]=have1, [204359]=have1, [205226]=have1, [210549]=have1, [227450]=have1,  -- racer's purse
+			-- TWW inscription treatises [weekly]
+			[222546]=83725, [222547]=83735, [222548]=83730, [222549]=83732, [222550]=83727, [222551]=83731,
+			[222552]=83729, [222553]=83733, [222554]=83726, [222621]=83728, [222649]=83734,
 			[224292]=-81691, [224913]=-81691, -- radiant fuel shard/cache
 			[228741]=have1, -- lamplighter supply satchel
 			[229899]=c100_lv80, [236096]=c100_lv80, -- coffer key shard
@@ -95,6 +98,8 @@ if MODERN or CF_WRATH then
 			[238207]=have1, [238208]=have1, -- surge dividends
 			[229129]=have1, -- delver's spoils
 			[220152]=c1, -- cursed ghoulfish
+			[237743]=have1, [237759]=have1, [237760]=have1, -- nightfall participation coffers
+			[239004]=have1, [239546]=have1, -- nightfall quest/scenario completion
 		}
 		filtered = {
 			[228988]=ebIsNotRockReviver, -- siren isle rock reviver

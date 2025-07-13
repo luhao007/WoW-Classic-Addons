@@ -1,5 +1,4 @@
 local _, addonTable = ...;
-local _, _, _, tocversion = GetBuildInfo()
 ------------
 local IsAddOnLoaded=IsAddOnLoaded or C_AddOns and C_AddOns.IsAddOnLoaded
 local CommonInfo=addonTable.CommonInfo
@@ -28,10 +27,17 @@ CommonInfo.SetKeyListName = {
 	["alt"]="ALT+"..KEY_BUTTON1,
 }
 local FrameyanchiNUM = {}
+local function CZFocus(Frame)
+	for i=1,#CommonInfo.SetKeyList,1 do
+		local gonegnengKEY = CommonInfo.SetKeyList[i][2].."-type1"
+		Frame:SetAttribute(gonegnengKEY,nil)
+	end
+end
 local function zhixingshezhiFocus(Frame)
 	--print(Frame,type(Frame))
 	if _G[Frame] then
 		if not InCombatLockdown() then
+			CZFocus(_G[Frame])
 			local gonegnengKEY = PIGA["Common"]["SetFocusKEY"].."-type1"
 			_G[Frame]:SetAttribute(gonegnengKEY,"macro")
 			_G[Frame]:SetAttribute("macrotext","/focus mouseover")
@@ -46,7 +52,7 @@ local function zhixingshezhiFocus(Frame)
 		end
 	end
 end
-local function zhixingMouseoverFocus()
+local function SET_MouseoverFocus()
 	if PIGA["Common"]["SetFocusMouse"] then 
 		if not PIG_MouseoverFocuser then
 			local MouseoverFocuser=CreateFrame("CheckButton", "PIG_MouseoverFocuser", UIParent, "SecureActionButtonTemplate")
@@ -54,6 +60,7 @@ local function zhixingMouseoverFocus()
 		end
 		PIG_MouseoverFocuser:SetAttribute("type1","macro")
 		PIG_MouseoverFocuser:SetAttribute("macrotext","/focus mouseover")
+		ClearOverrideBindings(PIG_MouseoverFocuser)
 		SetOverrideBindingClick(PIG_MouseoverFocuser,true,PIGA["Common"]["SetFocusKEY"].."-BUTTON1","PIG_MouseoverFocuser")
 	else
 		if PIG_MouseoverFocuser then
@@ -94,7 +101,7 @@ local function SET_ElvUIUnit()
 end
 function CommonInfo.Commonfun.SetFocus()
 	if not PIGA["Common"]["SetFocus"] then return end
-	zhixingMouseoverFocus()
+	SET_MouseoverFocus()
 	SET_BlizzardUnit()
 	SET_ElvUIUnit()
 	hooksecurefunc("CompactRaidGroup_GenerateForGroup", function(groupIndex)

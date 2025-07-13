@@ -1,7 +1,7 @@
 local mod	= DBM:NewMod(2561, "DBM-Party-WarWithin", 1, 1210)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20250223095900")
+mod:SetRevision("20250513082122")
 mod:SetCreatureID(208747)
 mod:SetEncounterID(2788)
 mod:SetHotfixNoticeRev(20250222000000)
@@ -45,9 +45,9 @@ local specWarnDrainLight					= mod:NewSpecialWarningInterrupt(427176, "HasInterr
 --local specWarnGTFO						= mod:NewSpecialWarningGTFO(372820, nil, nil, nil, 1, 8)
 
 local timerEternalDarknessCD				= mod:NewCDCountTimer(63.1, 428266, nil, nil, nil, 2, nil, DBM_COMMON_L.MAGIC_ICON)
-local timerCallDarkspawnCD					= mod:NewVarCountTimer("v46.9-51.4", 427157, nil, nil, nil, 4, nil, DBM_COMMON_L.INTERRUPT_ICON)
-local timerUmbralSlashCD					= mod:NewVarCountTimer("v30.3-31.5", 427025, nil, nil, nil, 3)
-local timerShadowblastCD					= mod:NewVarCountTimer("v30.3-32.3", 427011, nil, nil, nil, 3)
+local timerCallDarkspawnCD					= mod:NewVarCountTimer("v46.2-52.1", 427157, nil, nil, nil, 4, nil, DBM_COMMON_L.INTERRUPT_ICON)
+local timerUmbralSlashCD					= mod:NewVarCountTimer("v30.3-34", 427025, nil, nil, nil, 3)
+local timerShadowblastCD					= mod:NewVarCountTimer("v30.3-34", 427011, nil, nil, nil, 3)
 
 mod.vb.eternalCount = 0
 mod.vb.callCount = 0
@@ -61,7 +61,7 @@ function mod:OnCombatStart(delay)
 	self.vb.callCount = 0
 	self.vb.umbralCount = 0
 	self.vb.blastCount = 0
-	timerShadowblastCD:Start(10.6-delay, 1)
+	timerShadowblastCD:Start(10.1-delay, 1)
 	timerUmbralSlashCD:Start(20.3-delay, 1)
 	timerCallDarkspawnCD:Start(26.4-delay, 1)
 	if self:IsMythic() then

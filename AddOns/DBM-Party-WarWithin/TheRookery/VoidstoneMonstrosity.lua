@@ -1,7 +1,7 @@
 local mod	= DBM:NewMod(2568, "DBM-Party-WarWithin", 3, 1268)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20250308120337")
+mod:SetRevision("20250619032115")
 mod:SetCreatureID(207207)
 mod:SetEncounterID(2836)
 mod:SetHotfixNoticeRev(20250303000000)
@@ -14,7 +14,7 @@ mod:RegisterCombat("combat")
 
 mod:RegisterEventsInCombat(
 	"SPELL_CAST_START 423305 429487 445457 424371",
-	"SPELL_CAST_SUCCESS 458082 423839",
+	"SPELL_CAST_SUCCESS 458082 423839 423305",
 	"SPELL_AURA_APPLIED 445262 428269 429028 429493 458082",
 	"SPELL_AURA_REMOVED 445262 428269 423839 458082",
 	"SPELL_PERIODIC_DAMAGE 433067",
@@ -53,10 +53,10 @@ local yellStormridersCharge				= mod:NewShortYell(458082)
 local yellStormridersChargeFades		= mod:NewShortFadesYell(458082)
 local specWarnGTFO						= mod:NewSpecialWarningGTFO(433067, nil, nil, nil, 1, 8)
 
-local timerNullUpheavalCD				= mod:NewVarCountTimer("v32.8-34.8", 423305, nil, nil, nil, 3)
-local timerUnleashedCorruptionCD		= mod:NewVarCountTimer("v17.0-18.2", 429487, nil, nil, nil, 3)
-local timerOblivionWaveCD				= mod:NewVarCountTimer("v13.4-15", 445457, nil, nil, nil, 5, nil, DBM_COMMON_L.TANK_ICON)
-local timerStormridersChargeCD			= mod:NewVarCountTimer("v32.8-34.8", 458082, nil, nil, nil, 3)
+local timerNullUpheavalCD				= mod:NewVarCountTimer("v29.8-40.8", 423305, nil, nil, nil, 3)
+local timerUnleashedCorruptionCD		= mod:NewVarCountTimer("v17.0-26.3", 429487, nil, nil, nil, 3)
+local timerOblivionWaveCD				= mod:NewVarCountTimer("v13.4-21.2", 445457, nil, nil, nil, 5, nil, DBM_COMMON_L.TANK_ICON)
+local timerStormridersChargeCD			= mod:NewVarCountTimer("v32.8-41.9", 458082, nil, nil, nil, 3)
 local timerVengeanceActive				= mod:NewBuffActiveTimer(20, 423839, nil, nil, nil, 6)
 
 mod:AddInfoFrameOption(445262)
@@ -74,10 +74,10 @@ function mod:OnCombatStart(delay)
 	self.vb.oblivionCount = 0
 	self.vb.vengeanceCount = 0
 	self.vb.riderCount = 0
-	timerOblivionWaveCD:Start(5.8, 1)
-	timerUnleashedCorruptionCD:Start(10.6, 1)
+	timerOblivionWaveCD:Start(5.2, 1)
+	timerUnleashedCorruptionCD:Start(10.1, 1)
 	timerNullUpheavalCD:Start(16.7, 1)
-	timerStormridersChargeCD:Start(19.7, 1)
+	timerStormridersChargeCD:Start(19.1, 1)
 	if self.Options.NameplateOnReshape then
 		DBM:FireEvent("BossMod_EnableHostileNameplates")
 	end
@@ -92,17 +92,11 @@ function mod:OnCombatEnd()
 	end
 end
 
---function mod:OnCombatEnd()
-
---end
-
 function mod:SPELL_CAST_START(args)
 	local spellId = args.spellId
 	if spellId == 423305 then
-		self.vb.NullUpheavalCount = self.vb.NullUpheavalCount + 1
-		specWarnNullUpheaval:Show(self.vb.NullUpheavalCount)
+		specWarnNullUpheaval:Show(self.vb.NullUpheavalCount+1)
 		specWarnNullUpheaval:Play("watchstep")
-		timerNullUpheavalCD:Start(nil, self.vb.NullUpheavalCount+1)
 	elseif spellId == 429487 then
 		self.vb.unleashedCount = self.vb.unleashedCount + 1
 		timerUnleashedCorruptionCD:Start(nil, self.vb.unleashedCount+1)
@@ -124,6 +118,10 @@ function mod:SPELL_CAST_SUCCESS(args)
 	if spellId == 458082 and self:AntiSpam(3, 1) then
 		self.vb.riderCount = self.vb.riderCount + 1
 		timerStormridersChargeCD:Start(nil, self.vb.riderCount+1)
+	elseif spellId == 423305 then
+		--Only increment count and start timer if cast finishes, because cast can be interrupted by storms vengeance (and then boss retains full energy and doesn't go on CD)
+		self.vb.NullUpheavalCount = self.vb.NullUpheavalCount + 1
+		timerNullUpheavalCD:Start(nil, self.vb.NullUpheavalCount+1)
 	elseif spellId == 423839 then
 		timerVengeanceActive:Start()
 		--Pause timers
@@ -181,10 +179,16 @@ function mod:SPELL_AURA_REMOVED(args)
 	elseif spellId == 423839 then
 		timerVengeanceActive:Stop()
 		--Resume timers
+		--In addition, they're all extended by about 4 sec
 		timerNullUpheavalCD:Resume(self.vb.NullUpheavalCount+1)
 		timerUnleashedCorruptionCD:Resume(self.vb.unleashedCount+1)
 		timerOblivionWaveCD:Resume(self.vb.oblivionCount+1)
 		timerStormridersChargeCD:Resume(self.vb.riderCount+1)
+		--Not sure what addtime will do to a variance timer, especially one in the neg at time of pause.
+		--timerNullUpheavalCD:AddTime(3.8, self.vb.NullUpheavalCount+1)
+		--timerUnleashedCorruptionCD:AddTime(3.8, self.vb.unleashedCount+1)
+		--timerOblivionWaveCD:AddTime(3.8, self.vb.oblivionCount+1)
+		--timerStormridersChargeCD:AddTime(3.8, self.vb.riderCount+1)
 	elseif spellId == 458082 and args:IsPlayer() then
 		yellStormridersChargeFades:Cancel()
 	end

@@ -11,9 +11,7 @@ local RGB = ns.RGB
 local GetClassRGB = ns.GetClassRGB
 local SetClassCFF = ns.SetClassCFF
 local Maxb = ns.Maxb
-local Maxi = ns.Maxi
 local BossNum = ns.BossNum
-local FrameHide = ns.FrameHide
 local AddTexture = ns.AddTexture
 local GetItemID = ns.GetItemID
 
@@ -34,7 +32,7 @@ local function ShowTardeHighLightItem_MyJine(self)
     if tradeInfo then
         for _, v in ipairs(tradeInfo) do
             for b = 1, Maxb[FB] do
-                for i = 1, Maxi[FB] do
+                for i = 1, BG.GetMaxi(FB, b) do
                     local myjine = BG.DuiZhangFrame[FB]["boss" .. b]["myjine" .. i]
                     if myjine and FB == v.FB and b == v.b and i == v.i then
                         local f = BG.CreateHighlightFrame(myjine, nil, { 0, 1, 0, 0.5 }, 4)
@@ -110,46 +108,45 @@ end
 local function OnTextChanged(self)
     local FB = self.FB
     local itemText = self:GetText()
-    local itemID = GetItemInfoInstant(itemText)
-    local name, link, quality, level, _, _, _, _, _, Texture, _, typeID, _, bindType
+    local itemID = GetItemID(itemText)
     if itemID then
-        name, link, quality, level, _, _, _, _, _, Texture, _, typeID, _, bindType = GetItemInfo(itemID)
-    end
-
-    local hard
-    if link and itemText:find("item:") then
-        if FB == "ULD" then
-            for index, value in ipairs(BG.Loot.ULD.Hard10) do
-                if itemID == value then
-                    self:SetText(link .. "H")
-                    hard = true
-                end
-            end
-            if not hard then
-                for index, value in ipairs(BG.Loot.ULD.Hard25) do
+        local item = Item:CreateFromItemID(itemID)
+        item:ContinueOnItemLoad(function()
+            local name, link, quality, level, _, _, _, _, _, Texture,
+            _, typeID, _, bindType = GetItemInfo(itemText)
+            if FB == "ULD" and not itemText:match("H$") then
+                local hard
+                for index, value in ipairs(BG.Loot.ULD.Hard10) do
                     if itemID == value then
-                        self:SetText(link .. "H")
+                        self:SetText(itemText .. "H")
+                        hard = true
+                        break
                     end
                 end
+                if not hard then
+                    for index, value in ipairs(BG.Loot.ULD.Hard25) do
+                        if itemID == value then
+                            self:SetText(itemText .. "H")
+                            break
+                        end
+                    end
+                end
+            elseif FB == "ICC" and not itemText:match("H$") then
+                if itemID == 52030 or itemID == 52029 or itemID == 52028 then
+                    self:SetText(link .. "H")
+                end
             end
-        elseif FB == "ICC" then
-            if itemID == 52030 or itemID == 52029 or itemID == 52028 then
-                self:SetText(link .. "H")
-            end
-        end
-
-        -- 装备图标
-        self.icon:SetTexture(Texture)
+            self.icon:SetTexture(Texture)
+            BG.BindOnEquip(self, bindType)
+            BG.LevelText(self, level, typeID)
+            BG.IsHave(self)
+        end)
     else
         self.icon:SetTexture(nil)
+        BG.BindOnEquip(self)
+        BG.LevelText(self)
+        BG.IsHave(self)
     end
-
-    -- 装绑图标
-    BG.BindOnEquip(self, bindType)
-    -- 在按钮右边增加装等显示
-    BG.LevelText(self, level, typeID)
-    -- 已拥有图标
-    BG.IsHave(self)
 end
 function BG.DuiZhangZhuangBeiUI(FB, t, b, bb, i, ii)
     local bt = CreateFrame("EditBox", nil, BG["DuiZhangFrame" .. FB], "InputBoxTemplate");
@@ -164,7 +161,7 @@ function BG.DuiZhangZhuangBeiUI(FB, t, b, bb, i, ii)
             if BG.zaxiang[FB] and BossNum(FB, b, t) == Maxb[FB] and i == 1 then
                 bt:SetPoint("TOPLEFT", framedown, "BOTTOMLEFT", 0, -20)
             else
-                bt:SetPoint("TOPLEFT", p["preWidget" .. i - 1], "BOTTOMLEFT", 0, -3)
+                bt:SetPoint("TOPLEFT", p["preWidget" .. i - 1], "BOTTOMLEFT", 0, BG.IsBigFB(FB) and 0 or -3)
             end
         end
     end
@@ -177,7 +174,6 @@ function BG.DuiZhangZhuangBeiUI(FB, t, b, bb, i, ii)
     bt.icon:SetSize(16, 16)
     if BiaoGe[FB]["boss" .. b]["zhuangbei" .. i] and b ~= Maxb[FB] and b ~= Maxb[FB] + 1 then
         bt:SetText(BiaoGe[FB]["boss" .. b]["zhuangbei" .. i])
-        BG.EditItemCache(bt, OnTextChanged)
     end
     BG.DuiZhangFrame[FB]["boss" .. b]["zhuangbei" .. i] = bt
     preWidget = bt
@@ -206,7 +202,7 @@ function BG.DuiZhangZhuangBeiUI(FB, t, b, bb, i, ii)
         BG.DuiZhangFrameDs[FB .. 1]["boss" .. b]["ds" .. i]:Show()
         if not tonumber(self:GetText()) then
             local link = bt:GetText()
-            local itemID = select(1, GetItemInfoInstant(link))
+            local itemID = select(1, GetItemID(link))
             BG.Hide_AllHighlight()
             BG.HighlightBag(link)
             BG.HighlightChatFrame(link)
@@ -219,8 +215,7 @@ function BG.DuiZhangZhuangBeiUI(FB, t, b, bb, i, ii)
                     GameTooltip:SetOwner(self, "ANCHOR_RIGHT", 0, 0)
                 end
                 GameTooltip:ClearLines()
-                GameTooltip:SetItemByID(itemID);
-                GameTooltip:Show()
+                GameTooltip:SetHyperlink(BG.SetSpecIDToLink(link))
             end
         end
     end)
@@ -255,7 +250,7 @@ function BG.DuiZhangMyJinEUI(FB, t, b, bb, i, ii)
         local sum = 0
         local n = 0
         for b = 1, Maxb[FB] - 1, 1 do
-            for i = 1, Maxi[FB], 1 do
+            for i = 1, BG.GetMaxi(FB, b), 1 do
                 local myjine = BG.DuiZhangFrame[FB]["boss" .. b]["myjine" .. i]
                 if myjine then
                     n = tonumber(myjine:GetText())
@@ -343,7 +338,7 @@ function BG.DuiZhangOtherJinEUI(FB, t, b, bb, i, ii)
         local sum = 0
         local n = 0
         for b = 1, Maxb[FB], 1 do
-            for i = 1, Maxi[FB], 1 do
+            for i = 1, BG.GetMaxi(FB, b), 1 do
                 local otherjine = BG.DuiZhangFrame[FB]["boss" .. b]["otherjine" .. i]
                 if otherjine then
                     n = tonumber(otherjine:GetText())
@@ -384,7 +379,6 @@ function BG.DuiZhangOtherJinEUI(FB, t, b, bb, i, ii)
     bt:SetScript("OnEnter", function(self)
         BG.DuiZhangFrameDs[FB .. 1]["boss" .. b]["ds" .. i]:Show()
         ShowTardeHighLightItem_OtherJine(self)
-
         local maijia = BG.DuiZhangFrame[FB]["boss" .. b]["maijia" .. i]
         local color = BG.DuiZhangFrame[FB]["boss" .. b]["color" .. i]
         if maijia and color and self:GetText() ~= "" then

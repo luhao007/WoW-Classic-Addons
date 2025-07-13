@@ -20,6 +20,7 @@ local UnitGUID = UnitGUID
 local RiposteHandler = {
 
     initialized = false,
+    hash = nil,
 
     -- Methods
 
@@ -35,6 +36,10 @@ local RiposteHandler = {
         self.alertVariants = SAO:CreateStringVariants("alert", self.optionID, 0, variantValues);
         self.alerting = false;
         self.lastRiposteTime = nil;
+        local hash = SAO.Hash:new();
+        hash:setActionUsable(true);
+        hash:setTalented(true);
+        self.hash = hash.hash;
         self.initialized = true;
     end,
 
@@ -87,11 +92,11 @@ local RiposteHandler = {
     alert = function(self)
         if self.optionTestFunc(self.alertVariants.getOption()) then
             if not self.alerting then
-                local aura = SAO.RegisteredAurasByName["riposte"];
-                if aura then
+                local bucket = SAO:GetBucketByName("riposte");
+                if bucket then
                     -- It might conflict with 'default' counter effect
                     -- But tests showed no significant issues so far
-                    SAO:ActivateOverlay(select(2, unpack(aura)));
+                    bucket[self.hash]:showOverlays();
                 end
                 self.alerting = true;
             end
@@ -112,10 +117,9 @@ local RiposteHandler = {
     unalert = function(self)
         if self.alerting then
             self.alerting = false;
-            local aura = SAO.RegisteredAurasByName["riposte"];
-            if aura then
-                local auraSpellID = aura[3];
-                SAO:DeactivateOverlay(auraSpellID);
+            local bucket = SAO:GetBucketByName("riposte");
+            if bucket then
+                bucket[self.hash]:hideOverlays();
             end
 
             -- Tell the timer that there is no need to remove alert after timeout, because alert is already removed
@@ -127,19 +131,16 @@ local RiposteHandler = {
 local function customLogin(self, ...)
     -- Initialization on PLAYER_LOGIN event because the talent tree may not be available before
 
+    if self.IsCata() then
+        -- Riposte not available for Cataclysm
+        return;
+    end
+
     local riposteSpellID = 14251;
     local riposteSpellName = GetSpellInfo(riposteSpellID);
 
     if (riposteSpellName) then
         RiposteHandler:init(riposteSpellID, riposteSpellName);
-
-        local _, _, tab, index = self:GetTalentByName(riposteSpellName);
-        local talent;
-        if (type(tab) == "number" and type(index) == "number") then
-            talent = { tab, index };
-        end
-
-        self:RegisterCounter("riposte", talent); -- 1st arguement must match 1st argument passed to RegisterAura
     end
 end
 
@@ -149,26 +150,86 @@ local function customCLEU(self, ...)
     end
 end
 
-local function registerClass(self)
+local function useRiposte()
     -- Register Riposte as both an aura and a counter
-    -- Rogue does not really have a 'Riposte' aura, but it will be used by RegisterCounter in customLogin()
-
-    -- The aura must be registered as soon as possible, because it registers the glowID before parsing action buttons
-    -- The counter must be registered as late as possible, because it requires the talent tree, which is not available now
-    local riposteSpellID = 14251;
-    self:RegisterAura("riposte", 0, riposteSpellID, "bandits_guile", "Top (CW)", 1, 255, 255, 255, true, { riposteSpellID });
+    local riposte = 14251;
+    -- Lazy evaluation for variants, because they will be initialized later on
+    local riposteOverlayOption = { variants = function() return RiposteHandler.alertVariants end }
+    local riposteButtonOption = { variants = function() return RiposteHandler.variants end }
+    SAO:CreateEffect(
+        "riposte",
+        SAO.ERA + SAO.TBC + SAO.WRATH,
+        riposte,
+        "counter",
+        {
+            talent = riposte,
+            requireTalent = true,
+            useName = false,
+            overlay = { texture = "bandits_guile", position = "Top (CW)", option = riposteOverlayOption },
+            buttonOption = riposteButtonOption,
+        }
+    );
 end
 
-local function loadOptions(self)
-    if RiposteHandler.initialized then
-        self:AddOverlayOption(RiposteHandler.spellID, RiposteHandler.spellID, 0, nil, RiposteHandler.alertVariants);
-        self:AddGlowingOption(nil, RiposteHandler.optionID, RiposteHandler.spellID, nil, nil, RiposteHandler.variants);
-    end
+local function useMurderousIntent()
+    local backstab = 53;
+    local murderousIntent = 14158;
+    SAO:CreateEffect(
+        "murderous_intent",
+        SAO.CATA,
+        murderousIntent,
+        "execute",
+        {
+            execThreshold = 35,
+            requireTalent = true,
+            button = backstab,
+        }
+    );
+end
+
+local function useCutthroat()
+    local ambush = 8676;
+    local cutthroatBuff = 462707;
+    local cutthroatRune = 424980;
+
+    SAO:CreateEffect(
+        "cutthroat",
+        SAO.SOD,
+        cutthroatBuff,
+        "aura",
+        {
+            talent = cutthroatRune,
+            overlay = { texture = "white_tiger", position = "Left + Right (Flipped)" },
+            button = ambush,
+        }
+    );
+end
+
+local function useBlindside()
+    local blindsideBuff = 121153;
+    local blindsideTalent = 121152;
+
+    SAO:CreateEffect(
+        "blindside",
+        SAO.MOP,
+        blindsideBuff,
+        "aura",
+        {
+            talent = blindsideTalent,
+            overlay = { texture = "sudden_death", position = "Left + Right (Flipped)" },
+        }
+    );
+end
+
+local function registerClass(self)
+    useRiposte();
+    useMurderousIntent();
+    useCutthroat();
+    useBlindside();
 end
 
 SAO.Class["ROGUE"] = {
     ["Register"] = registerClass,
-    ["LoadOptions"] = loadOptions,
     ["PLAYER_LOGIN"] = customLogin,
     ["COMBAT_LOG_EVENT_UNFILTERED"] = customCLEU,
 }

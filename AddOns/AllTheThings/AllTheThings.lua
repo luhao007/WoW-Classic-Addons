@@ -46,10 +46,7 @@ local C_Map_GetMapInfo = C_Map.GetMapInfo;
 local InCombatLockdown = _G.InCombatLockdown;
 local IsInInstance = IsInInstance
 
--- WoW API Cache
-local GetFactionName = app.WOWAPI.GetFactionName;
-local GetItemInfo = app.WOWAPI.GetItemInfo;
-local GetItemID = app.WOWAPI.GetItemID;
+-- WoW API Cache;
 local GetSpellName = app.WOWAPI.GetSpellName;
 local GetTradeSkillTexture = app.WOWAPI.GetTradeSkillTexture;
 
@@ -63,12 +60,28 @@ local CacheFields, SearchForField, SearchForFieldContainer, SearchForObject
 	= app.CacheFields, app.SearchForField, app.SearchForFieldContainer, app.SearchForObject
 local IsRetrieving = app.Modules.RetrievingData.IsRetrieving;
 local GetProgressColorText = app.Modules.Color.GetProgressColorText;
+local CleanLink = app.Modules.Item.CleanLink
 local TryColorizeName = app.TryColorizeName;
+local MergeProperties = app.MergeProperties
 local DESCRIPTION_SEPARATOR = app.DESCRIPTION_SEPARATOR;
 local ATTAccountWideData;
 
--- Color Lib
-local GetProgressColor = app.Modules.Color.GetProgressColor;
+local
+CreateObject,
+MergeObject,
+NestObject,
+MergeObjects,
+NestObjects,
+PriorityNestObjects
+=
+app.__CreateObject,
+app.MergeObject,
+app.NestObject,
+app.MergeObjects,
+app.NestObjects,
+app.PriorityNestObjects
+
+-- Color Lib;
 local Colorize = app.Modules.Color.Colorize;
 
 -- Coroutine Helper Functions
@@ -77,7 +90,6 @@ local StartCoroutine = app.StartCoroutine;
 local Callback = app.CallbackHandlers.Callback;
 local DelayedCallback = app.CallbackHandlers.DelayedCallback;
 local AfterCombatCallback = app.CallbackHandlers.AfterCombatCallback;
-app.UpdateRunner = app.CreateRunner("update");
 app.FillRunner = app.CreateRunner("fill");
 local LocalizeGlobal = app.LocalizeGlobal
 local LocalizeGlobalIfAllowed = app.LocalizeGlobalIfAllowed
@@ -85,6 +97,12 @@ local contains = app.contains;
 local containsValue = app.containsValue;
 local indexOf = app.indexOf;
 local CloneArray = app.CloneArray
+
+-- OnLoad assignments, probably temporary as code gets migrated
+local ExpandGroupsRecursively
+app.AddEventHandler("OnLoad", function()
+	ExpandGroupsRecursively = app.ExpandGroupsRecursively
+end)
 
 -- Data Lib
 local AllTheThingsAD = {};			-- For account-wide data.
@@ -178,894 +196,10 @@ app.AddEventRegistration("SKILL_LINES_CHANGED", function()
 end)
 end -- TradeSkill Functionality
 
-
-local function GetCollectibleIcon(data, iconOnly)
-	if data.collectible then
-		local collected = data.collected
-		if not collected and data.collectedwarband then
-			return iconOnly and L.COLLECTED_WARBAND_ICON or L.COLLECTED_WARBAND;
-		end
-		return iconOnly and app.GetCollectionIcon(collected) or app.GetCollectionText(collected);
-	end
-end
-local function GetTrackableIcon(data, iconOnly, forSaved)
-	if data.trackable then
-		local saved = data.saved;
-		-- only show if the data is saved, or is not repeatable
-		if saved or not rawget(data, "repeatable") then
-			if forSaved then
-				-- if for saved, we ignore if it is un-saved for less clutter
-				if saved then
-					return iconOnly and app.GetCompletionIcon(saved) or app.GetSavedText(saved);
-				end
-			else
-				return iconOnly and app.GetCompletionIcon(saved) or app.GetCompletionText(saved);
-			end
-		end
-	end
-end
-local function GetCostIconForRow(data, iconOnly)
-	-- cost only for filled groups, or if itself is a cost
-	if data.filledCost or data.isCost or (data.progress == data.total and ((data.costTotal or 0) > 0)) then
-		return L[iconOnly and "COST_ICON" or "COST_TEXT"];
-	end
-end
-local function GetCostIconForTooltip(data, iconOnly)
-	-- cost only if itself is a cost
-	if data.filledCost or data.collectibleAsCost then
-		return L[iconOnly and "COST_ICON" or "COST_TEXT"];
-	end
-end
-local function GetUpgradeIconForRow(data, iconOnly)
-	-- upgrade only for filled groups, or if itself is an upgrade
-	if data.filledUpgrade or data.isUpgrade or (data.progress == data.total and ((data.upgradeTotal or 0) > 0)) then
-		return L[iconOnly and "UPGRADE_ICON" or "UPGRADE_TEXT"];
-	end
-end
-local function GetUpgradeIconForTooltip(data, iconOnly)
-	-- upgrade only if itself has an upgrade
-	if data.filledUpgrade or data.collectibleAsUpgrade then
-		return L[iconOnly and "UPGRADE_ICON" or "UPGRADE_TEXT"];
-	end
-end
-local function GetReagentIcon(data, iconOnly)
-	if data.filledReagent then
-		return L[iconOnly and "REAGENT_ICON" or "REAGENT_TEXT"];
-	end
-end
-local function GetProgressTextForRow(data)
-	-- build the row text from left to right with possible info
-	local text = {}
-	-- Reagent (show reagent icon)
-	local icon = GetReagentIcon(data, true);
-	if icon then
-		tinsert(text, icon)
-	end
-	-- Cost (show cost icon)
-	icon = GetCostIconForRow(data, true);
-	if icon then
-		tinsert(text, icon)
-	end
-	-- Upgrade (show upgrade icon)
-	icon = GetUpgradeIconForRow(data, true);
-	if icon then
-		tinsert(text, icon)
-	end
-	-- Progress Achievement
-	local statistic = data.statistic
-	if statistic then
-		tinsert(text, "["..statistic.."]")
-	end
-	-- Collectible
-	local stateIcon = GetCollectibleIcon(data, true)
-	if stateIcon then
-		tinsert(text, stateIcon)
-	end
-	-- Container
-	local total = data.total;
-	local isContainer = total and (total > 1 or (total > 0 and not data.collectible));
-	if isContainer then
-		local textContainer = GetProgressColorText(data.progress or 0, total)
-		tinsert(text, textContainer)
-	end
-	-- Non-collectible/total Container (only contains visible, non-collectibles...)
-	local g = data.g;
-	if not stateIcon and not isContainer and g and #g > 0 then
-		local headerText;
-		if data.expanded then
-			headerText = "---";
-		else
-			headerText = "+++";
-		end
-		tinsert(text, headerText)
-	end
-
-	-- Trackable (Only if no other text available)
-	if #text == 0 then
-		stateIcon = GetTrackableIcon(data, true)
-		if stateIcon then
-			tinsert(text, stateIcon)
-		end
-	end
-
-	return app.TableConcat(text, nil, "", " ");
-end
-local function GetProgressTextForTooltip(data)
-	-- build the row text from left to right with possible info
-	local text = {}
-	local iconOnly = app.Settings:GetTooltipSetting("ShowIconOnly");
-	-- Reagent (show reagent icon)
-	local icon = GetReagentIcon(data, iconOnly);
-	if icon then
-		tinsert(text, icon)
-	end
-	-- Cost (show cost icon)
-	icon = GetCostIconForTooltip(data, iconOnly);
-	if icon then
-		tinsert(text, icon)
-	end
-	-- Upgrade (show upgrade icon)
-	icon = GetUpgradeIconForTooltip(data, iconOnly);
-	if icon then
-		tinsert(text, icon)
-	end
-	-- Progress Achievement (this is a bit redundant with the 'Progress' information type for tooltips)
-	-- local statistic = data.statistic
-	-- if statistic then
-	-- 	tinsert(text, "["..statistic.."]")
-	-- end
-	-- Collectible
-	local stateIcon = GetCollectibleIcon(data, iconOnly)
-	if stateIcon then
-		tinsert(text, stateIcon)
-	end
-	-- Saved (only certain data types)
-	if data.npcID then
-		stateIcon = GetTrackableIcon(data, iconOnly, true)
-		if stateIcon then
-			tinsert(text, stateIcon)
-		end
-	end
-	-- Container
-	local total = data.total;
-	local isContainer = total and (total > 1 or (total > 0 and not data.collectible));
-	if isContainer then
-		local textContainer = GetProgressColorText(data.progress or 0, total)
-		if textContainer then
-			tinsert(text, textContainer)
-		end
-	end
-
-	-- Trackable (Only if no other text available)
-	if #text == 0 then
-		stateIcon = GetTrackableIcon(data, iconOnly)
-		if stateIcon then
-			tinsert(text, stateIcon)
-		end
-	end
-
-	return app.TableConcat(text, nil, "", " ");
-end
-app.GetProgressTextForRow = GetProgressTextForRow;
-app.GetProgressTextForTooltip = GetProgressTextForTooltip;
-
--- Fields which are dynamic or pertain only to the specific ATT window and should never merge automatically
--- Maybe build from /base.lua:DefaultFields since those always are able to be dynamic
-app.MergeSkipFields = {
-	-- true -> never
-	expanded = true,
-	indent = true,
-	g = true,
-	nmr = true,
-	nmc = true,
-	progress = true,
-	total = true,
-	visible = true,
-	modItemID = true,
-	rawlink = true,
-	sourceIgnored = true,
-	isCost = true,
-	costTotal = true,
-	isUpgrade = true,
-	upgradeTotal = true,
-	iconPath = true,
-	hash = true,
-	sharedDescription = true,
-	-- fields added to a group from GetSearchResults
-	tooltipInfo = true,
-	working = true,
-	-- update cached info
-	TLUG = true,
-	-- 1 -> only when cloning
-	e = 1,
-	u = 1,
-	c = 1,
-	up = 1,
-	pb = 1,
-	pvp = 1,
-	races = 1,
-	isDaily = 1,
-	isWeekly = 1,
-	isMonthly = 1,
-	isYearly = 1,
-	OnUpdate = 1,
-	requireSkill = 1,
-	modID = 1,
-	bonusID = 1,
-};
--- Fields on a Thing which are specific to where the Thing is Sourced or displayed in a ATT window
-app.SourceSpecificFields = {
--- Returns the 'most obtainable' event value from the provided set of event values
-	["e"] = function(...)
-		-- print("GetMostObtainableValue:")
-		-- app.PrintTable(vals)
-		local e;
-		local vals = select("#", ...);
-		for i=1,vals do
-			e = select(i, ...);
-			-- missing e value means NOT requiring an event
-			if not e then return; end
-		end
-		return e;
-	end,
--- Returns the 'most obtainable' unobtainable value from the provided set of unobtainable values
-	["u"] = function(...)
-		-- app.PrintDebug("GetMostObtainableValue:")
-		local max, check, new = -1, nil, nil;
-		local phases = L.PHASES;
-		local phase, u;
-		local vals = select("#", ...);
-		-- app.PrintDebug(...)
-		for i=1,vals do
-			u = select(i, ...);
-			-- missing u value means NOT unobtainable
-			if not u then return; end
-			phase = phases[u];
-			if phase then
-				check = phase.state or 0;
-			else
-				-- otherwise it's an invalid unobtainable filter
-				app.print("Invalid Unobtainable Filter:",u);
-				return;
-			end
-			-- track the highest unobtainable value, which is the most obtainable (according to PHASES)
-			if check > max then
-				new = u;
-				max = check;
-			elseif u > new then
-				new = u
-			end
-		end
-		-- app.PrintDebug("new:",new)
-		return new;
-	end,
--- Returns the 'earliest' Added with Patch value from the provided set of `awp` values
-	["awp"] = function(...)
-		local min, awp
-		local vals = select("#", ...);
-		for i=1,vals do
-			awp = select(i, ...)
-			-- ignore missing awp...
-			-- track the lowest awp value, which is the furthest-future patch
-			if awp and (not min or awp < min) then
-				min = awp;
-			end
-		end
-		return min
-	end,
--- Returns the 'highest' Removed with Patch value from the provided set of `rwp` values
-	["rwp"] = function(...)
-		local max, rwp = -1,nil;
-		local vals = select("#", ...);
-		for i=1,vals do
-			rwp = select(i, ...);
-			-- missing rwp value means NOT removed
-			if not rwp then return; end
-			-- track the highest rwp value, which is the furthest-future patch
-			if rwp > max then
-				max = rwp;
-			end
-		end
-		return max;
-	end,
--- Simple boolean
-	["pvp"] = true,
-	["pb"] = true,
-	["requireSkill"] = true,
-};
--- Group Merge Handling
-local MergeProperties
-do
-local function Assign_Direct(g, k, v)
-	g[k] = v
-end
-local function Assign_Missing(g, k, v)
-	if rawget(g, k) == nil then g[k] = v end
-end
-local function Assign_sourceParent(g, k, v)
-	g.sourceParent = v
-end
-local MergeFuncByKey = setmetatable({
-	parent = Assign_sourceParent,
-
-}, { __index = function(t,key)
-	return Assign_Direct
-end})
-local MergeFuncByKeyNoReplace = setmetatable({
-	parent = Assign_sourceParent,
-
-}, { __index = function(t,key)
-	return Assign_Missing
-end})
-local MergeFuncByKeyClone = setmetatable({
-	parent = Assign_sourceParent,
-
-}, { __index = function(t,key)
-	return Assign_Direct
-end})
--- have merge skip fields do nothing
-for k,v in pairs(app.MergeSkipFields) do
-	MergeFuncByKey[k] = app.EmptyFunction
-	MergeFuncByKeyNoReplace[k] = app.EmptyFunction
-	if v == true then
-		MergeFuncByKeyClone[k] = app.EmptyFunction
-	end
-end
--- have source specific fields do nothing
-for k,v in pairs(app.SourceSpecificFields) do
-	MergeFuncByKey[k] = app.EmptyFunction
-	MergeFuncByKeyNoReplace[k] = app.EmptyFunction
-	MergeFuncByKeyClone[k] = app.EmptyFunction
-end
--- Merges the properties of the t group into the g group, making sure not to alter the filterability of the group.
--- Additionally can specify that the object is being cloned so as to skip special merge restrictions
-MergeProperties = function(g, t, noReplace, clone)
-	if not g or not t then return end
-	if g ~= t then
-		g.__merge = t.__merge or t
-	end
-	if noReplace then
-		for k,v in pairs(t) do
-			MergeFuncByKeyNoReplace[k](g,k,v)
-		end
-	elseif clone then
-		for k,v in pairs(t) do
-			MergeFuncByKeyClone[k](g,k,v)
-		end
-	else
-		for k,v in pairs(t) do
-			MergeFuncByKey[k](g,k,v)
-		end
-	end
-	-- custom special logic for fields which need to represent the commonality between all Sources of a group
-	-- loop through specific fields for custom logic
-	-- initial creation of a g object, has no key
-	if not g.key then
-		for k,_ in pairs(app.SourceSpecificFields) do
-			g[k] = t[k];
-		end
-	else
-		local gk, tk;
-		for k,f in pairs(app.SourceSpecificFields) do
-			-- existing is set
-			gk = rawget(g, k)
-			-- app.PrintDebug("SSF",k,g,t,gk,rawget(t, k))
-			if gk then
-				tk = rawget(t, k)
-				-- no value on merger
-				if tk == nil then
-					-- app.PrintDebug(g.hash,"remove",k,gk,tk)
-					g[k] = nil;
-				elseif f and type(f) == "function" then
-					-- two different values with a compare function
-					-- app.PrintDebug(g.hash,"compare",k,gk,tk)
-					g[k] = f(gk, tk);
-					-- app.PrintDebug(g.hash,"result",g[k])
-				end
-			end
-		end
-	end
-	-- only copy metatable to g if another hasn't been set already
-	if not getmetatable(g) and getmetatable(t) then
-		setmetatable(g, getmetatable(t));
-	end
-end
-app.MergeProperties = MergeProperties;
-end -- Group Merge Handling
-
--- The base logic for turning a Table of data into an 'object' that provides dynamic information concerning the type of object which was identified
--- based on the priority of possible key values
-local function CreateObject(t, rootOnly)
-	-- app.PrintDebug("CO",t);
-	-- Commented this part out because there aren't enough class definitions exposed to the logic yet
-	-- Retail class design is still wildin' and doesn't use the CreateClass functionality
-	--local object = app.CloneClassInstance(t, rootOnly);
-	--if object and getmetatable(object) then return object; end
-	if not t then return {}; end
-	-- already an object, so need to create a new instance of the same data
-	if t.key then
-		local result = {};
-		-- app.PrintDebug("CO.key",t.key,t[t.key],"=>",result);
-		MergeProperties(result, t, nil, true);
-		-- include the raw g since it will be replaced at the end with new objects
-		result.g = t.g;
-		t = result;
-		-- if not getmetatable(t) then
-		-- 	app.PrintDebug(Colorize("Bad CreateObject (key without metatable) used:",app.Colors.ChatLinkError))
-		-- 	app.PrintTable(t)
-		-- end
-		-- app.PrintDebug("Merge done",result.key,result[result.key], t, result);
-	-- is it an array of raw datas which needs to be turned into an array of usable objects
-	elseif t[1] then
-		local result = {};
-		-- array
-		-- app.PrintDebug("CO.[]","=>",result);
-		for i,o in ipairs(t) do
-			result[i] = CreateObject(o, rootOnly);
-		end
-		return result;
-	-- use the highest-priority piece of data which exists in the table to turn it into an object
-	else
-		-- a table which somehow has a metatable which doesn't include a 'key' field
-		local meta = getmetatable(t);
-		if meta then
-			app.PrintDebug(Colorize("Bad CreateObject (metatable without key) used:",app.Colors.ChatLinkError))
-			app.PrintTable(t)
-			local result = {};
-			-- app.PrintDebug("CO.meta","=>",result);
-			MergeProperties(result, t, nil, true);
-			if not rootOnly and t.g then
-				local newg = {}
-				result.g = newg
-				for i,o in ipairs(t.g) do
-					newg[#newg+1] = CreateObject(o)
-				end
-			end
-			setmetatable(result, meta);
-			return result;
-		end
-		if t.mapID then
-			t = app.CreateMap(t.mapID, t);
-		elseif t.explorationID then
-			t = app.CreateExploration(t.explorationID, t);
-		elseif t.sourceID then
-			t = app.CreateItemSource(t.sourceID, t.itemID, t);
-		elseif t.encounterID then
-			t = app.CreateEncounter(t.encounterID, t);
-		elseif t.instanceID then
-			t = app.CreateInstance(t.instanceID, t);
-		elseif t.currencyID then
-			t = app.CreateCurrencyClass(t.currencyID, t);
-		elseif t.mountmodID then
-			t = app.CreateMountMod(t.mountmodID, t);
-		elseif t.speciesID then
-			t = app.CreateSpecies(t.speciesID, t);
-		elseif t.objectID then
-			t = app.CreateObject(t.objectID, t);
-		elseif t.flightpathID then
-			t = app.CreateFlightPath(t.flightpathID, t);
-		elseif t.followerID then
-			t = app.CreateFollower(t.followerID, t);
-		elseif t.illusionID then
-			t = app.CreateIllusion(t.illusionID, t);
-		elseif t.professionID then
-			t = app.CreateProfession(t.professionID, t);
-		elseif t.categoryID then
-			t = app.CreateCategory(t.categoryID, t);
-		elseif t.criteriaID then
-			t = app.CreateAchievementCriteria(t.criteriaID, t);
-		elseif t.achID or t.achievementID then
-			t = app.CreateAchievement(t.achID or t.achievementID, t);
-		elseif t.recipeID then
-			t = app.CreateRecipe(t.recipeID, t);
-		elseif t.factionID then
-			t = app.CreateFaction(t.factionID, t);
-		elseif t.heirloomID then
-			t = app.CreateHeirloom(t.heirloomID, t);
-		elseif t.azeriteessenceID then
-			t = app.CreateAzeriteEssence(t.azeriteessenceID, t);
-		elseif t.itemID or t.modItemID then
-			local itemID, modID, bonusID = app.GetItemIDAndModID(t.modItemID or t.itemID)
-			t.itemID = itemID
-			t.modID = modID
-			t.bonusID = bonusID
-			if t.toyID then
-				t = app.CreateToy(itemID, t);
-			elseif t.runeforgepowerID then
-				t = app.CreateRuneforgeLegendary(t.runeforgepowerID, t);
-			elseif t.conduitID then
-				t = app.CreateConduit(t.conduitID, t);
-			else
-				t = app.CreateItem(itemID, t);
-			end
-		elseif t.npcID or t.creatureID then
-			t = app.CreateNPC(t.npcID or t.creatureID, t);
-		elseif t.questID then
-			t = app.CreateQuest(t.questID, t);
-		-- Non-Thing groups
-		elseif t.classID then
-			t = app.CreateCharacterClass(t.classID, t);
-		elseif t.raceID then
-			t = app.CreateRace(t.raceID, t);
-		elseif t.headerID then
-			t = app.CreateNPC(t.headerID, t);
-		elseif t.expansionID then
-			t = app.CreateExpansion(t.expansionID, t);
-		elseif t.unit then
-			t = app.CreateUnit(t.unit, t);
-		elseif t.difficultyID then
-			t = app.CreateDifficulty(t.difficultyID, t);
-		elseif t.spellID then
-			t = app.CreateSpell(t.spellID, t);
-		elseif t.f or t.filterID then
-			t = app.CreateFilter(t.f or t.filterID, t);
-		elseif t.text then
-			t = app.CreateRawText(t.text, t)
-		else
-			-- app.PrintDebug("CO:raw");
-			-- app.PrintTable(t);
-			if rootOnly then
-				-- shallow copy the root table only, since using t as a metatable will allow .g to exist still on the table
-				-- app.PrintDebug("rootOnly copy of",t.text)
-				local result = {};
-				for k,v in pairs(t) do
-					result[k] = v;
-				end
-				t = result;
-			else
-				-- app.PrintDebug("metatable copy of",t.text)
-				t = setmetatable({}, { __index = t });
-			end
-		end
-		-- app.PrintDebug("CO.field","=>",t);
-	end
-
-	-- allows for copying an object without all of the sub-groups
-	if rootOnly then
-		t.g = nil;
-	else
-		-- app.PrintDebug("CreateObject key/value",t.key,t[t.key]);
-		-- if g, then replace each object in all sub groups with an object version of the table
-		local g = t.g;
-		if g then
-			local gNew = {};
-			for i,o in ipairs(g) do
-				gNew[i] = CreateObject(o)
-			end
-			t.g = gNew;
-		end
-	end
-
-	return t;
-end
-app.__CreateObject = CreateObject;
-
-local function GetUnobtainableTexture(group)
-	if not group then return; end
-	if type(group) ~= "table" then
-		-- This function shouldn't be used with only u anymore!
-		app.print("Invalid use of GetUnobtainableTexture", group);
-		return;
-	end
-
-	-- Determine the texture color, default is green for events.
-	-- TODO: Use 4 for inactive events, use 5 for active events
-	local filter, u = 4, group.u;
-	if u then
-		-- only b = 0 (BoE), not BoA/BoP
-		-- removed, elite, bmah, tcg, summon
-		if u > 1 and u < 12 and group.itemID and (group.b or 0) == 0 then
-			filter = 2;
-		else
-			local phase = L.PHASES[u];
-			if phase then
-				if not phase.buildVersion or app.GameBuildVersion < phase.buildVersion then
-					filter = phase.state or 0;
-				else
-					-- This is a phase that's available. No icon.
-					return;
-				end
-			else
-				-- otherwise it's an invalid unobtainable filter
-				app.print("Invalid Unobtainable Filter:",u);
-				return;
-			end
-		end
-		return L.UNOBTAINABLE_ITEM_TEXTURES[filter];
-	end
-	if group.e then
-		return L.UNOBTAINABLE_ITEM_TEXTURES[app.Modules.Events.FilterIsEventActive(group) and 5 or 4];
-	end
-end
-app.GetUnobtainableTexture = GetUnobtainableTexture;
--- Returns an applicable Indicator Icon Texture for the specific group if one can be determined
-app.GetIndicatorIcon = function(group)
-	-- Use the group's own indicator if defined
-	local groupIndicator = group.indicatorIcon
-	if groupIndicator then return groupIndicator end
-
-	-- Otherwise use some common logic
-	if group.saved then
-		if group.parent and group.parent.locks or group.repeatable then
-			return app.asset("known");
-		else
-			return app.asset("known_green");
-		end
-	end
-	return GetUnobtainableTexture(group);
-end
-
-local function GetRelativeFieldInSet(group, field, set)
-	if group then
-		local val = group[field]
-		return set[val] and val or GetRelativeFieldInSet(group.sourceParent or group.parent, field, set);
-	end
-end
-
--- Merges an Object into an existing set of Objects so as to not duplicate any incoming Objects
-local MergeObject,
--- Nests an Object under another Object, only creating the 'g' group if necessary
--- ex. NestObject(parent, new, newCreate, index)
-NestObject,
--- Merges multiple Objects into an existing set of Objects so as to not duplicate any incoming Objects
--- ex. MergeObjects(group, group2, newCreate)
-MergeObjects,
--- Nests multiple Objects under another Object, only creating the 'g' group if necessary
--- ex. NestObjects(parent, groups, newCreate)
-NestObjects,
--- Nests multiple Objects under another Object using an optional set of functions to determine priority on the adding of objects, only creating the 'g' group if necessary
--- ex. PriorityNestObjects(parent, groups, newCreate, function1, function2, ...)
-PriorityNestObjects;
-(function()
-local function GetHash(t)
-	local hash = app.CreateHash(t);
-	app.PrintDebug(Colorize("No base .hash for t:",app.Colors.ChatLinkError),hash,t.text);
-	app.PrintTable(t)
-	return hash;
-end
-MergeObject = function(g, t, index, newCreate)
-	if g and t then
-		local hash = t.hash or GetHash(t);
-		for i,o in ipairs(g) do
-			if (o.hash or GetHash(o)) == hash then
-				MergeProperties(o, t, true);
-				NestObjects(o, t.g, newCreate);
-				return
-			end
-		end
-		if newCreate then t = CreateObject(t); end
-		if index then
-			tinsert(g, index, t);
-		else
-			g[#g + 1] = t
-		end
-	end
-end
-NestObject = function(p, t, newCreate, index)
-	if not p or not t then return end
-	local g = p.g;
-	if g then
-		MergeObject(g, t, index, newCreate);
-	elseif newCreate then
-		p.g = { CreateObject(t) };
-	else
-		p.g = { t };
-	end
-end
-MergeObjects = function(g, g2, newCreate)
-	if not g or not g2 then return end
-	if #g2 > 25 then
-		local t, hash, hashObj
-		local hashTable = {}
-		for i,o in ipairs(g) do
-			local hash = o.hash;
-			if hash then
-				-- are we merging the same object multiple times from one group?
-				hashObj = hashTable[hash]
-				if hashObj then
-					-- don't replace existing properties
-					MergeProperties(hashObj, o, true);
-				else
-					hashTable[hash] = o;
-				end
-			end
-		end
-		if newCreate then
-			for i,o in ipairs(g2) do
-				hash = o.hash;
-				-- print("_",hash);
-				if hash then
-					t = hashTable[hash];
-					if t then
-						MergeProperties(t, o, true);
-						NestObjects(t, o.g, newCreate);
-					else
-						t = CreateObject(o);
-						hashTable[hash] = t;
-						g[#g + 1] = t
-					end
-				else
-					g[#g + 1] = CreateObject(o)
-				end
-			end
-		else
-			for i,o in ipairs(g2) do
-				hash = o.hash;
-				-- print("_",hash);
-				if hash then
-					t = hashTable[hash];
-					if t then
-						MergeProperties(t, o, true);
-						NestObjects(t, o.g);
-					else
-						hashTable[hash] = o;
-						g[#g + 1] = o
-					end
-				else
-					g[#g + 1] = CreateObject(o)
-				end
-			end
-		end
-	else
-		for i,o in ipairs(g2) do
-			MergeObject(g, o, nil, newCreate);
-		end
-	end
-end
-NestObjects = function(p, g, newCreate)
-	if not g then return; end
-	local pg = p.g;
-	if pg then
-		MergeObjects(pg, g, newCreate);
-	elseif #g > 0 then
-		p.g = {};
-		MergeObjects(p.g, g, newCreate);
-	end
-end
-PriorityNestObjects = function(p, g, newCreate, ...)
-	if not g or #g == 0 then return; end
-	local pFuncs = {...};
-	if pFuncs[1] then
-		-- app.PrintDebug("PriorityNestObjects",#pFuncs,"Priorities",#g,"Objects")
-		-- setup containers for the priority buckets
-		local pBuckets, pBucket, skipped = {}, nil, nil;
-		for i,_ in ipairs(pFuncs) do
-			pBuckets[i] = {};
-		end
-		-- check each object
-		for _,o in ipairs(g) do
-			-- check each priority function
-			for i,pFunc in ipairs(pFuncs) do
-				-- if the function matches, put the object in the bucket
-				if pFunc(o) then
-					-- app.PrintDebug("Matched Priority Function",i,o.hash)
-					pBucket = pBuckets[i];
-					pBucket[#pBucket + 1] = o
-					break;
-				end
-			end
-			-- no bucket was found, put in skipped
-			if not pBucket then
-				-- app.PrintDebug("No Priority",o.hash)
-				if skipped then skipped[#skipped + 1] = o
-				else skipped = { o }; end
-			end
-			-- reset bucket
-			pBucket = nil;
-		end
-		-- then nest each bucket in order of priority
-		for i,pBucket in ipairs(pBuckets) do
-			-- app.PrintDebug("Nesting Priority Bucket",i,#pBucket)
-			NestObjects(p, pBucket, newCreate);
-			-- app.PrintDebug(".g",p.g and #p.g)
-		end
-		-- and nest anything skipped
-		-- app.PrintDebug("Nesting Skipped",skipped and #skipped)
-		NestObjects(p, skipped, newCreate);
-		-- app.PrintDebug(".g",p.g and #p.g)
-	else
-		NestObjects(p, g, newCreate);
-	end
-	-- app.PrintDebug("PNO-Done",#pFuncs,"Priorities",#g,"Objects",p.g and #p.g)
-end
--- Merges multiple sources of an object into a single object. Can specify to clean out all sub-groups of the result
-app.MergedObject = function(group, rootOnly)
-	if not group or not group[1] then return group; end
-	local merged = CreateObject(group[1], rootOnly);
-	for i=2,#group do
-		MergeProperties(merged, group[i]);
-	end
-	-- for a merged object, clean any other references it might still have
-	merged.sourceParent = nil;
-	merged.parent = nil;
-	if rootOnly then
-		merged.g = nil;
-	end
-	return merged;
-end
-app.NestObject = NestObject
-app.NestObjects = NestObjects
-end)();
-
-local ExpandGroupsRecursively;
-do
-local SkipAutoExpands = {
-	-- Specific HeaderID values should not expand
-	headerID = {
-		[app.HeaderConstants.ZONE_DROPS] = true,
-		[app.HeaderConstants.COMMON_BOSS_DROPS] = true,
-		[app.HeaderConstants.HOLIDAYS] = true
-	},
-	-- Item/Difficulty as Headers should not expand
-	itemID = true,
-	difficultyID = true,
-}
-local function SkipAutoExpand(group)
-	local key = group.key;
-	local skipKey = SkipAutoExpands[key];
-	if not skipKey then return; end
-	return skipKey == true or skipKey[group[key]];
-end
-ExpandGroupsRecursively = function(group, expanded, manual)
-	-- expand if there is any sub-group
-	if group.g then
-		-- app.PrintDebug("EGR",group.hash,expanded,manual);
-		-- if manually expanding
-		if (manual or (
-				-- not a skipped group for auto-expansion
-				not SkipAutoExpand(group) and
-				-- incomplete things actually exist below itself
-				((group.total or 0) > (group.progress or 0)) and
-				-- account/debug mode is active or it is not a 'saved' thing for this character
-				(app.MODE_DEBUG_OR_ACCOUNT or not group.saved))
-			) then
-			-- app.PrintDebug("EGR:expand");
-			group.expanded = expanded;
-			for _,subgroup in ipairs(group.g) do
-				ExpandGroupsRecursively(subgroup, expanded, manual);
-			end
-		end
-	end
-end
-end
-
 local ResolveSymbolicLink;
--- Fills & returns a group with its symlink references, along with all sub-groups recursively if specified
--- This should only be used on a cloned group so the source group is not contaminated
-local function FillSymLinks(group, recursive)
-	if recursive and group.g then
-		for _,obj in ipairs(group.g) do
-			FillSymLinks(obj, recursive);
-		end
-	end
-	if group.sym then
-		-- app.PrintDebug("FillSymLinks",group.hash)
-		NestObjects(group, ResolveSymbolicLink(group));
-		-- make sure this group doesn't waste time getting resolved again somehow
-		group.sym = nil;
-	end
-	-- if app.Debugging == group then app.Debugging = nil; end
-	return group;
-end
-app.FillSymLinks = FillSymLinks;
-app.RecreateObject = function(t)
-	-- Clones an Object, fills any symlinks, builds groups, and does an Update pass before returning the Object
-	local obj = CreateObject(t);
-	-- fill the copied Item's symlink if any
-	FillSymLinks(obj);
-	-- Build the Item's groups if any
-	AssignChildren(obj);
-	-- Update the group while ignoring some visibility functionality
-	obj.collectibleAsCost = false
-	obj.collectibleAsUpgrade = false
-	app.TopLevelUpdateGroup(obj);
-	obj.collectibleAsCost = nil
-	obj.collectibleAsUpgrade = nil
-	return obj;
-end
 
-local GetFixedItemSpecInfo, GetSpecsString, GetGroupItemIDWithModID, GetItemIDAndModID, GroupMatchesParams, GetClassesString
-	= app.GetFixedItemSpecInfo, app.GetSpecsString, app.GetGroupItemIDWithModID, app.GetItemIDAndModID, app.GroupMatchesParams, app.GetClassesString
+local GetSpecsString, GetGroupItemIDWithModID, GetItemIDAndModID, GroupMatchesParams, GetClassesString
+	= app.GetSpecsString, app.GetGroupItemIDWithModID, app.GetItemIDAndModID, app.GroupMatchesParams, app.GetClassesString
 
 local function CleanInheritingGroups(groups, ...)
 	-- Cleans any groups which are nested under any group with any specified fields
@@ -1151,7 +285,8 @@ local ResolveFunctions = {
 			if cache and #cache > 0 then
 				ArrayAppend(searchResults, cache)
 			else
-				app.print("Failed to select ", field, val);
+				-- TODO: re-enable after all catalystID's are re-structured
+				-- app.print("Failed to select ", field, val);
 			end
 		end
 		SelectMod = nil
@@ -1161,7 +296,7 @@ local ResolveFunctions = {
 		level = level or 1;
 		-- an search for the specific 'o' to retrieve the source parent since the parent is not always actually attached to the reference resolving the symlink
 		local parent
-		local searchedObject = app.SearchForObject(o.key, o[o.key], "key");
+		local searchedObject = app.SearchForObject(o.key, o.keyval, "key");
 		if searchedObject then
 			parent = searchedObject.parent;
 			while level > 1 do
@@ -1695,8 +830,6 @@ local SubroutineCache = {
 		local select, pop, is = ResolveFunctions.select, ResolveFunctions.pop, ResolveFunctions.is;
 		select(finalized, searchResults, o, "select", "npcID", npcID);	-- Main Vendor
 		pop(finalized, searchResults);	-- Remove Main Vendor and push his children into the processing queue.
-		-- TODO: don't think we will need this anymore with 'select' fixes to only pull actual Thing being selected
-		-- is(finalized, searchResults, o, "is", "itemID");	-- Only Items
 	end,
 	-- TW Instance
 	["tw_instance"] = function(finalized, searchResults, o, cmd, instanceID)
@@ -1705,8 +838,7 @@ local SubroutineCache = {
 		push(finalized, searchResults, o, "push", "headerID", app.HeaderConstants.COMMON_BOSS_DROPS);	-- Push into 'Common Boss Drops' header
 		finalize(finalized, searchResults);	-- capture current results
 		select(finalized, searchResults, o, "select", "instanceID", instanceID);	-- select this instance
-		-- TODO: collect into an exportDB table to future-proof new TW eventIDs
-		whereany(finalized, searchResults, o, "whereany", "e", 1271, 1508, 559, 562, 587, 643, 1056, 1263 );	-- Select any TIMEWALKING eventID
+		whereany(finalized, searchResults, o, "whereany", "e", unpack(app.TW_EventIDs or app.EmptyTable) );	-- Select any TIMEWALKING eventID
 		if #searchResults > 0 then o.e = searchResults[1].e; end
 		pop(finalized, searchResults);	-- pop the instance header
 	end,
@@ -1958,20 +1090,10 @@ local function ResolveSymlinkGroupAsync(group)
 	end
 end
 -- Fills the symlinks within a group by using an 'async' process to spread the filler function over multiple game frames to reduce stutter or apparent lag
-app.FillSymlinkAsync = function(o)
-	app.FillRunner.Run(ResolveSymlinkGroupAsync, o);
-end
--- Fills the symlinks within a group by using an 'async' process to spread the filler function over multiple game frames to reduce stutter or apparent lag
 -- NOTE: ONLY performs the symlink for 'achievement_criteria'
 app.FillAchievementCriteriaAsync = function(o)
 	local sym = o.sym
-	if not sym then
-		-- manually apply achievement_criteria symlink if no symlink exists
-		-- this is insane but actually works... bloated AF and needs refinement of checking for existing criteria etc.
-		-- o.sym = {{"achievement_criteria"}}
-		-- app.FillRunner.Run(ResolveSymlinkGroupAsync, o);
-		return
-	end
+	if not sym then return end
 
 	local sym = sym[1][1]
 	if sym ~= "achievement_criteria" then return end
@@ -1983,7 +1105,13 @@ end	-- Symlink Lib
 
 do
 local ContainsLimit, ContainsExceeded;
-local Indicator = app.GetIndicatorIcon;
+local Indicator, GetProgressTextForRow, GetUnobtainableTexture
+app.AddEventHandler("OnLoad", function()
+	GetProgressTextForRow = app.GetProgressTextForRow
+	Indicator = app.GetIndicatorIcon
+	GetUnobtainableTexture = app.GetUnobtainableTexture
+end)
+
 local MaxLayer = 4
 local Indents = {
 	"  ",
@@ -1991,27 +1119,35 @@ local Indents = {
 for i=2,MaxLayer do
 	Indents[i] = Indents[i-1].."  "
 end
-local function BuildContainsInfo(subgroups, entries, indent, layer)
+local ContainsTypesIndicators
+app.AddEventHandler("OnStartup", function() ContainsTypesIndicators = app.Modules.Fill.Settings.Icons end)
+local function BuildContainsInfo(root, entries, indent, layer)
+	local subgroups = root and root.g
 	if not subgroups or #subgroups == 0 then return end
 
 	for _,group in ipairs(subgroups) do
 		-- If there's progress to display for a non-sourceIgnored group, then let's summarize a bit better.
 		if group.visible and not group.sourceIgnored and not group.skipContains then
-			-- Count it, but don't actually add it to entries if it meets the limit
-			if #entries >= ContainsLimit then
-				ContainsExceeded = ContainsExceeded + 1;
+			-- Special case to ignore 'container' layers where the container is a Header which matches the ItemID of the parent
+			if group.headerID and group.headerID == root.itemID then
+				BuildContainsInfo(group, entries, indent, layer)
 			else
-				-- Insert into the display.
-				-- app.PrintDebug("INCLUDE",app.Debugging,GetProgressTextForRow(group),group.hash,group.key,group.key and group[group.key])
-				local o = { group = group, right = GetProgressTextForRow(group) };
-				local indicator = Indicator(group);
-				o.prefix = indicator and (Indents[indent]:sub(3) .. "|T" .. indicator .. ":0|t ") or Indents[indent]
-				entries[#entries + 1] = o
-			end
+				-- Count it, but don't actually add it to entries if it meets the limit
+				if #entries >= ContainsLimit then
+					ContainsExceeded = ContainsExceeded + 1;
+				else
+					-- Insert into the display.
+					-- app.PrintDebug("INCLUDE",app.Debugging,GetProgressTextForRow(group),group.hash,group.key,group.key and group[group.key])
+					local o = { group = group, right = GetProgressTextForRow(group) };
+					local indicator = ContainsTypesIndicators[group.filledType] or Indicator(group);
+					o.prefix = indicator and (Indents[indent]:sub(3) .. "|T" .. indicator .. ":0|t ") or Indents[indent]
+					entries[#entries + 1] = o
+				end
 
-			-- Only go down one more level.
-			if layer < MaxLayer then
-				BuildContainsInfo(group.g, entries, indent + 1, layer + 1);
+				-- Only go down one more level.
+				if layer < MaxLayer then
+					BuildContainsInfo(group, entries, indent + 1, layer + 1);
+				end
 			end
 			-- else
 			-- 	app.PrintDebug("EXCLUDE",app.Debugging,GetProgressTextForRow(group),group.hash,group.key,group.key and group[group.key])
@@ -2053,7 +1189,7 @@ local function AddContainsData(group, tooltipInfo)
 	-- app.Debugging = "CONTAINS-"..group.hash;
 	ContainsLimit = app.Settings:GetTooltipSetting("ContainsCount") or 25;
 	ContainsExceeded = 0;
-	BuildContainsInfo(group.g, entries, 1, 1)
+	BuildContainsInfo(group, entries, 1, 1)
 	-- app.Debugging = nil;
 	-- app.PrintDebug(entries and #entries,"contains entries")
 	if #entries > 0 then
@@ -2223,35 +1359,7 @@ app.AddEventHandler("OnLoad", function()
 	})
 end)
 
-local GetRawField = app.GetRawField
-local SourceSearcher = setmetatable({
-	itemID = function(field, id)
-		local results = SearchForObject("itemID", id, "field", true)
-		-- Original logic did not include cost matches, then I added cost matches when revising the logic
-		-- I'm not sure on why that should be the case... so removing for now
-		-- local costResults = GetRawField("itemIDAsCost", id)
-		-- if results or costResults then return ArrayAppend({}, results, costResults) end
-		if results then return results end
-		local baseItemID = GetItemIDAndModID(id)
-		results = SearchForObject("itemID", baseItemID, "field", true)
-		-- costResults = GetRawField("itemIDAsCost", baseItemID)
-		-- if results or costResults then return ArrayAppend({}, results, costResults) end
-		return results
-	end,
-	currencyID = function(field, id)
-		local results = SearchForObject(field, id, "field", true)
-		-- local costResults = GetRawField("currencyIDAsCost", id)
-		-- if results or costResults then return ArrayAppend({}, results, costResults) end
-		return results
-	end
-},{
-	__index = function(t, field)
-		return GetRawField
-	end
-})
--- Some key-based Searches should simply use a different field
-SourceSearcher.mountmodID = SourceSearcher.itemID
-SourceSearcher.heirloomID = SourceSearcher.itemID
+local SourceSearcher = app.SourceSearcher
 
 local function AddSourceLinesForTooltip(tooltipInfo, paramA, paramB)
 	-- Create a list of sources
@@ -2270,10 +1378,11 @@ local function AddSourceLinesForTooltip(tooltipInfo, paramA, paramB)
 	local sourcesToShow
 	-- paramB is the modItemID for itemID searches, so we may have to fallback to the base itemID if nothing sourced for the modItemID
 	-- TODO: Rings from raid showing all difficulties, need fallback matching for items... modItemID, modID, itemID
-	local allReferences = SourceSearcher[paramA](paramA,paramB) or app.EmptyTable
-	-- app.PrintDebug("Sources count",#allReferences,paramA,paramB,GetItemIDAndModID(paramB))
-	for _,j in ipairs(allReferences) do
-		parent = j.parent;
+	-- using a second return, directSources, to indicate the SourceSearcher has returned the Sources rather than the Things
+	local allReferences, directSources = SourceSearcher[paramA](paramA,paramB)
+	-- app.PrintDebug(directSources and "Source count" or "Search count",#allReferences,paramA,paramB,GetItemIDAndModID(paramB))
+	for _,j in ipairs(allReferences or app.EmptyTable) do
+		parent = directSources and j or j.parent
 		-- app.PrintDebug("source:",app:SearchLink(j),parent and parent.parent,showCompleted or not app.IsComplete(j))
 		if parent and parent.parent
 			and (showCompleted or not app.IsComplete(j))
@@ -2282,7 +1391,7 @@ local function AddSourceLinesForTooltip(tooltipInfo, paramA, paramB)
 			-- app.PrintDebug("SourceLocation",text,FilterInGame(j),FilterSettings(parent),FilterCharacter(parent))
 			if showUnsorted or (not text:match(L.UNSORTED) and not text:match(L.HIDDEN_QUEST_TRIGGERS)) then
 				-- doesn't meet current unobtainable filters from the Thing itself
-				if not FilterInGame(j) then
+				if not FilterInGame(parent) then
 					unobtainable[#unobtainable + 1] = text..UnobtainableTexture
 				else
 					-- something user would currently see in a list or not
@@ -2292,8 +1401,8 @@ local function AddSourceLinesForTooltip(tooltipInfo, paramA, paramB)
 						sourcesToShow[#sourcesToShow + 1] = text..NotCurrentCharacterTexture
 					else
 						-- check if this needs a status icon even though it's being shown
-						right = GetUnobtainableTexture(FirstParent(j, "e", true) or FirstParent(j, "u", true) or j)
-							or (j.rwp and app.asset("status-prerequisites"))
+						right = GetUnobtainableTexture(FirstParent(parent, "e", true) or FirstParent(parent, "u", true) or parent)
+							or (parent.rwp and app.asset("status-prerequisites"))
 						if right then
 							sourcesToShow[#sourcesToShow + 1] = text.." |T" .. right .. ":0|t"
 						else
@@ -2380,6 +1489,7 @@ app.AddEventHandler("OnLoad", function()
 	})
 end)
 
+local unpack = unpack
 local function GetSearchResults(method, paramA, paramB, options)
 	-- app.PrintDebug("GetSearchResults",method,paramA,paramB)
 	if not method then
@@ -2400,7 +1510,12 @@ local function GetSearchResults(method, paramA, paramB, options)
 		= app.RecursiveCharacterRequirementsFilter, app.RecursiveGroupRequirementsFilter
 
 	-- Call to the method to search the database.
-	local group, a, b = method(paramA, paramB);
+	local group, a, b
+	if options and options.AppendSearchParams then
+		group, a, b = method(paramA, paramB, unpack(options.AppendSearchParams))
+	else
+		group, a, b = method(paramA, paramB)
+	end
 	-- app.PrintDebug("GetSearchResults:method",group and #group,a,b)
 	if group then
 		if a then paramA = a; end
@@ -2409,7 +1524,7 @@ local function GetSearchResults(method, paramA, paramB, options)
 		-- Move all post processing here?
 		if #group > 0 then
 			-- For Creatures, Objects and Encounters that are inside of an instance, we only want the data relevant for the instance + difficulty.
-			if paramA == "creatureID" or paramA == "encounterID" or paramA == "objectID" then
+			if paramA == "creatureID" or paramA == "npcID" or paramA == "encounterID" or paramA == "objectID" then
 				local subgroup = {};
 				for _,j in ipairs(group) do
 					if not j.ShouldExcludeFromTooltip then
@@ -2468,48 +1583,44 @@ local function GetSearchResults(method, paramA, paramB, options)
 	end
 
 	-- Determine if this is a cache for an item
-	local itemString
-	if rawlink then
-		-- paramA
-		itemString = rawlink:match("item[%-?%d:]+");
-		if not paramB then
-			if itemString then
-				-- app.PrintDebug("Rawlink SourceID",sourceID,rawlink)
-				local _, itemID, enchantId, gemId1, gemId2, gemId3, gemId4, suffixId, uniqueId, linkLevel, specializationID, upgradeId, linkModID, numBonusIds, bonusID1 = (":"):split(itemString);
-				if itemID then
-					itemID = tonumber(itemID);
-					local modID = tonumber(linkModID) or 0;
-					if modID == 0 then modID = nil; end
-					local bonusID = (tonumber(numBonusIds) or 0) > 0 and tonumber(bonusID1) or 3524;
-					if bonusID == 3524 then bonusID = nil; end
-					local sourceID = app.GetSourceID(rawlink);
-					if sourceID then
-						paramA = "sourceID"
-						paramB = sourceID
-						-- app.PrintDebug("use sourceID params",paramA,paramB)
-					else
-						paramA = "itemID";
-						paramB = GetGroupItemIDWithModID(nil, itemID, modID, bonusID) or itemID;
-						-- app.PrintDebug("use itemID params",paramA,paramB)
-					end
-				end
-			else
-				local kind, id = (":"):split(rawlink);
-				kind = kind:lower();
-				if id then id = tonumber(id); end
-				if kind == "itemid" then
+	if rawlink and not paramB then
+		local itemString = CleanLink(rawlink)
+		if itemString:match("item") then
+			-- app.PrintDebug("Rawlink SourceID",sourceID,rawlink)
+			local _, itemID, enchantId, gemId1, gemId2, gemId3, gemId4, suffixId, uniqueId, linkLevel, specializationID, upgradeId, linkModID, numBonusIds, bonusID1 = (":"):split(itemString);
+			if itemID then
+				itemID = tonumber(itemID);
+				local modID = tonumber(linkModID) or 0;
+				if modID == 0 then modID = nil; end
+				local bonusID = (tonumber(numBonusIds) or 0) > 0 and tonumber(bonusID1) or 3524;
+				if bonusID == 3524 then bonusID = nil; end
+				local sourceID = app.GetSourceID(rawlink);
+				if sourceID then
+					paramA = "sourceID"
+					paramB = sourceID
+					-- app.PrintDebug("use sourceID params",paramA,paramB)
+				else
 					paramA = "itemID";
-					paramB = id;
-				elseif kind == "questid" then
-					paramA = "questID";
-					paramB = id;
-				elseif kind == "creatureid" or kind == "npcid" then
-					paramA = "creatureID";
-					paramB = id;
-				elseif kind == "achievementid" then
-					paramA = "achievementID";
-					paramB = id;
+					paramB = GetGroupItemIDWithModID(nil, itemID, modID, bonusID) or itemID;
+					-- app.PrintDebug("use itemID params",paramA,paramB)
 				end
+			end
+		else
+			local kind, id = (":"):split(rawlink);
+			kind = kind:lower();
+			if id then id = tonumber(id); end
+			if kind == "itemid" then
+				paramA = "itemID";
+				paramB = id;
+			elseif kind == "questid" then
+				paramA = "questID";
+				paramB = id;
+			elseif kind == "creatureid" or kind == "npcid" then
+				paramA = "creatureID";
+				paramB = id;
+			elseif kind == "achievementid" then
+				paramA = "achievementID";
+				paramB = id;
 			end
 		end
 	end
@@ -2547,14 +1658,14 @@ local function GetSearchResults(method, paramA, paramB, options)
 									-- app.PrintDebug("filtered root");
 									if root then
 										if filtered then
-											-- app.PrintDebug("merge root",o.key,o[o.key]);
+											-- app.PrintDebug("merge root",app:SearchLink(o));
 											-- app.PrintTable(o)
 											MergeProperties(root, o, filtered);
 											-- other root content will be nested after
 											MergeObjects(nested, o.g);
 										else
 											local otherRoot = root;
-											-- app.PrintDebug("replace root",otherRoot.key,otherRoot[otherRoot.key]);
+											-- app.PrintDebug("replace root",app:SearchLink(otherRoot));
 											root = o;
 											MergeProperties(root, otherRoot);
 											-- previous root content will be nested after
@@ -2562,10 +1673,11 @@ local function GetSearchResults(method, paramA, paramB, options)
 										end
 									else
 										root = o;
+										-- app.PrintDebug("first root",app:SearchLink(o));
 									end
 									filtered = true
 								else
-									-- app.PrintDebug("unfiltered root",o.key,o[o.key],o.modItemID,paramB);
+									-- app.PrintDebug("unfiltered root",app:SearchLink(o),o.modItemID,paramB);
 									if root then MergeProperties(root, o, true);
 									else root = o; end
 								end
@@ -2573,7 +1685,7 @@ local function GetSearchResults(method, paramA, paramB, options)
 						else
 							for _,o in ipairs(refinedMatches[depth]) do
 								-- Not accurate matched enough to be the root, so it will be nested
-								-- app.PrintDebug("nested")
+								-- app.PrintDebug("nested",app:SearchLink(o))
 								nested[#nested + 1] = o
 							end
 						end
@@ -2624,7 +1736,13 @@ local function GetSearchResults(method, paramA, paramB, options)
 		end
 		if not root then
 			-- app.PrintDebug("Create New Root",paramA,paramB)
-			root = CreateObject({ [paramA] = paramB, missing = true });
+			if paramA == "criteriaID" then
+				local critID, achID = (":"):split(paramB)
+				root = CreateObject({ [paramA] = tonumber(critID), achievementID = tonumber(achID) })
+			else
+				root = CreateObject({ [paramA] = paramB })
+			end
+			root.missing = true
 		end
 		-- If rawLink exists, import it into the root
 		if rawlink then app.ImportRawLink(root, rawlink); end
@@ -2682,9 +1800,10 @@ local function GetSearchResults(method, paramA, paramB, options)
 			-- 	app.PrintTable(o)
 			-- end
 			if o.key then
+				local okey, rootkey = o.key, root.key
 				-- print("Check Single",root.key,root.key and root[root.key],o.key and root[o.key],o.key,o.key and o[o.key],root.key and o[root.key])
 				-- Heroic Tusks of Mannoroth triggers this logic
-				if (root[o.key] == o[o.key]) or (root[root.key] == o[root.key]) then
+				if (root[okey] == o[okey]) or (root[rootkey] == o[rootkey]) then
 					-- print("Single group")
 					root.g = nil;
 					MergeProperties(root, o, true);
@@ -2736,12 +1855,14 @@ local function GetSearchResults(method, paramA, paramB, options)
 
 	app.TopLevelUpdateGroup(group);
 
-	group.itemString = itemString
 	group.isBaseSearchResult = true;
 
 	return group
 end
 app.GetCachedSearchResults = function(method, paramA, paramB, options)
+	if options and options.IgnoreCache then
+		return GetSearchResults(method, paramA, paramB, options)
+	end
 	return app.GetCachedData(paramB and paramA..":"..paramB or paramA, GetSearchResults, method, paramA, paramB, options);
 end
 
@@ -2779,513 +1900,6 @@ app.CalculateTotalCosts = function(group, costID)
 end
 end	-- Search results Lib
 
--- Auto-Expansion logic
-do
--- Determines searches required for upgrades using this group
-local function DetermineUpgradeGroups(group, FillData)
-	local nextUpgrade = group.nextUpgrade;
-	if nextUpgrade then
-		if not nextUpgrade.collected then
-			group.filledUpgrade = true;
-		end
-		-- app.PrintDebug("filledUpgrade=",nextUpgrade.modItemID,nextUpgrade.collected,"<",group.modItemID)
-		local o = CreateObject(nextUpgrade);
-		return { o };
-	end
-end
--- Determines searches required for costs using this group
-local function DeterminePurchaseGroups(group, FillData)
-	-- do not fill purchases on certain items, can skip the skip though based on a level
-	if not app.ShouldFillPurchases(group, FillData) then return end
-
-	local collectibles = group.costCollectibles;
-	if collectibles and #collectibles > 0 then
-		-- if app.Debugging then
-		-- 	local sourceGroup = app.CreateRawText("RAW COLLECTIBLES", {
-		-- 		["OnUpdate"] = app.AlwaysShowUpdate,
-		-- 		["skipFill"] = true,
-		-- 		["g"] = {},
-		-- 	})
-		-- 	NestObjects(sourceGroup, collectibles, true)
-		-- 	NestObject(group, sourceGroup, nil, 1)
-		-- end
-		local groupHash = group.hash;
-		-- app.PrintDebug("DeterminePurchaseGroups",app:SearchLink(group),"-collectibles",collectibles and #collectibles);
-		local groups = {};
-		local clone;
-		for _,o in ipairs(collectibles) do
-			if o.hash ~= groupHash then
-				-- app.PrintDebug("Purchase @",app:SearchLink(o))
-				clone = CreateObject(o);
-				groups[#groups + 1] = clone
-			end
-		end
-		-- app.PrintDebug("DeterminePurchaseGroups",group.hash,"-final",groups and #groups);
-		-- mark this group as no-longer collectible as a cost since its cost collectibles have been determined
-		if #groups > 0 then
-			group.collectibleAsCost = false;
-			group.filledCost = true;
-			group.costTotal = nil;
-		end
-		return groups;
-	end
-end
-local function DetermineRecipeOutputGroups(group, FillData)
-	local recipeID = group.recipeID;
-	if not recipeID then return end
-	-- only fill root recipes or those marked as 'fillable'
-	if not group.fillable and FillData.Root ~= group then return end
-
-	-- this would be more efficient as a RecipeDB instead if that becomes a thing
-	local info
-	for reagent,recipes in pairs(app.ReagentsDB) do
-		info = recipes[recipeID]
-		if info then break end
-	end
-	if not info then return end
-
-	local skipLevel = FillData.SkipLevel or 0
-	-- track crafted items which are filled across the entire fill sequence
-	local craftedItems = FillData.CraftedItems
-
-	local recipeMod = recipeID / 1000000
-	local craftedItemID = info[1];
-	if craftedItemID and not craftedItems[craftedItemID]
-		and not craftedItems[craftedItemID + recipeMod] and skipLevel > 1 then
-		craftedItems[craftedItemID + recipeMod] = true
-		local search = SearchForObject("itemID",craftedItemID,"field")
-		search = (search and CreateObject(search)) or app.CreateItem(craftedItemID)
-		-- app.PrintDebug("DetermineRecipeOutput",search.hash,app:SearchLink(group),"=>",app:SearchLink(search))
-		return {search}
-	end
-end
-local function DetermineCraftedGroups(group, FillData)
-	local itemID = group.itemID;
-	local itemRecipes = app.ReagentsDB[itemID];
-	-- if we're filling a window (level 2) for a Reagent
-	-- then we will allow showing the same crafted item multiple times
-	-- so that different reagents can all be visible for the same purpose
-	local expandedNesting = (FillData.SkipLevel or 0) > 1 and FillData.FillRecipes
-	-- if not itemRecipes then return; end
-	if not itemRecipes then
-		if expandedNesting then
-			return DetermineRecipeOutputGroups(group, FillData)
-		end
-		return
-	end
-
-	local craftableItemIDs = {}
-	-- track crafted items which are filled across the entire fill sequence
-	local craftedItems = FillData.CraftedItems
-	if FillData.Root == group then
-		craftedItems[itemID] = true
-	end
-	local craftedItemID, recipe, skillID
-
-	-- If needing to filter by skill due to BoP reagent, then check via recipe cache instead of by crafted item
-	-- If the reagent itself is BOP, then only show things you can make.
-	-- 2024-08-15: Revised: instead of changing what is filled (affected by filtering) instead always fill everything possible
-	-- and include necessary filtering information for each output, i.e. the skillID on outputs
-	-- this should filter properly based on ignoring filters on BoE items & using Debug/Account mode without having to refill
-
-	local groups = {};
-	-- find recipe(s) which creates this item
-	for recipeID,info in pairs(itemRecipes) do
-		craftedItemID = info[1];
-		-- app.PrintDebug(itemID,"x",info[2],"=>",craftedItemID,"via",recipeID,skipLevel);
-		if craftedItemID and not craftableItemIDs[craftedItemID] and (expandedNesting or not craftedItems[craftedItemID]) then
-			-- app.PrintDebug("recipeID",recipeID);
-			recipe = SearchForObject("recipeID",recipeID,"key") or app.CreateRecipe(recipeID)
-			if recipe then
-				if expandedNesting then
-					recipe = app.CreateNonCollectibleWithGroups(recipe)
-					recipe.fillable = true
-					groups[#groups + 1] = recipe
-				else
-					-- crafted items should be considered unique per recipe
-					craftableItemIDs[craftedItemID + (recipeID / 1000000)] = recipe;
-				end
-			else
-				-- app.PrintDebug("Unsourced recipeID",recipe);
-				-- we don't have the Recipe sourced, so just include the crafted item anyway
-				craftableItemIDs[craftedItemID] = true;
-			end
-		-- else app.PrintDebug("Skipped, already listed")
-		end
-	end
-
-	if not expandedNesting then
-		local search
-		for craftedItemID,recipe in pairs(craftableItemIDs) do
-			craftedItemID = math_floor(craftedItemID)
-			craftedItems[craftedItemID] = true
-			skillID = recipe ~= true and GetRelativeValue(recipe, "skillID") or nil
-			-- Searches for a filter-matched crafted Item
-			search = SearchForObject("itemID",craftedItemID,"field");
-			search = (search and CreateObject(search)) or app.CreateItem(craftedItemID)
-			-- link the respective crafted item object to the skill required by the crafting recipe
-			search.requireSkill = skillID
-			-- app.PrintDebug("craftedItemID",craftedItemID,"via skill",skillID)
-			groups[#groups + 1] = search
-		end
-	end
-
-	-- app.PrintDebug("DetermineCraftedGroups",app:SearchLink(group),groups and #groups);
-	if #groups > 0 then
-		group.filledReagent = true;
-	end
-	return groups;
-end
-local function GetAllNestedGroupsByFunc(results, groups, func)
-	local g
-	for _,o in ipairs(groups) do
-		if func(o) then results[#results + 1] = o end
-		g = o.g
-		if g then
-			for _,t in ipairs(g) do
-				GetAllNestedGroupsByFunc(results, t, func)
-			end
-		end
-	end
-end
-local function GetNpcIDForDrops(group)
-	-- assuming for any 'crs' references on an encounter/header group that all crs are linked to the same resulting content
-	-- Fyrakk Assaults uses two headers with 'crs' test that when changing this check
-	return group.npcID or group.creatureID or (group.encounterID and group.crs and group.crs[1])
-end
-local function DetermineSymlinkGroups(group)
-	if group.sym then
-		-- app.PrintDebug("DSG-Now",app:SearchLink(group));
-		local groups = ResolveSymbolicLink(group);
-		-- make sure this group doesn't waste time getting resolved again somehow
-		group.sym = nil;
-		if groups and #groups > 0 then
-			-- flag all nested symlinked content so that any NPC groups do not nest NPC data
-			local results = {}
-			GetAllNestedGroupsByFunc(results, groups, GetNpcIDForDrops)
-			for _,o in ipairs(results) do
-				o.NestNPCDataSkip = true
-			end
-		end
-		-- app.PrintDebug("DetermineSymlinkGroups",group.hash,groups and #groups);
-		return groups;
-	end
-end
-local NPCExpandHeaders = app.HeaderData.FILLNPCS or app.EmptyTable
--- Pulls in Common drop content for specific NPCs if any exists
--- (so we don't need to always symlink every NPC which is included in common boss drops somewhere)
-local function DetermineNPCDrops(group, FillData)
-	if not FillData.NestNPCData or group.NestNPCDataSkip then return end
-	local npcID = GetNpcIDForDrops(group)
-	if not npcID then return end
-	-- app.PrintDebug("NPC Group",app:SearchLink(group),npcID)
-	-- search for groups of this NPC
-	local npcGroups = SearchForField("npcID", npcID);
-	if not npcGroups or #npcGroups == 0 then return end
-	-- see if there's a difficulty wrapping the fill group
-	local difficultyID = GetRelativeValue(group, "difficultyID");
-	if difficultyID then
-		-- app.PrintDebug("FillNPC.Diff",difficultyID)
-		-- can only fill npc groups for the npc which match the difficultyID
-		local headerID, groups, npcDiff;
-		for _,npcGroup in ipairs(npcGroups) do
-			if npcGroup.hash ~= group.hash then
-				headerID = GetRelativeFieldInSet(npcGroup, "headerID", NPCExpandHeaders);
-				-- app.PrintDebug("DropCheck",app:SearchLink(npcGroup),"=>",headerID)
-				-- where headerID is allowed and the nested difficultyID matches
-				if headerID then
-					npcDiff = GetRelativeValue(npcGroup, "difficultyID");
-					-- copy the header under the NPC groups
-					if not npcDiff or npcDiff == difficultyID then
-						-- wrap the npcGroup in the matching header if it is not a header
-						if not npcGroup.headerID then
-							npcGroup = app.CreateCustomHeader(headerID, {g={CreateObject(npcGroup)}})
-						end
-						-- app.PrintDebug("IsDrop.Diff",difficultyID,group.hash,"<==",npcGroup.hash)
-						if groups then tinsert(groups, CreateObject(npcGroup))
-						else groups = { CreateObject(npcGroup) }; end
-					end
-				end
-			end
-		end
-		return groups;
-	else
-		-- app.PrintDebug("FillNPC")
-		local headerID, groups;
-		for _,npcGroup in ipairs(npcGroups) do
-			if npcGroup.hash ~= group.hash then
-				headerID = GetRelativeFieldInSet(npcGroup, "headerID", NPCExpandHeaders);
-				-- app.PrintDebug("DropCheck",app:SearchLink(npcGroup),"=>",headerID)
-				-- where headerID is allowed
-				if headerID then
-					-- copy the header under the NPC groups
-					-- wrap the npcGroup in the matching header if it is not a header
-					if not npcGroup.headerID then
-						npcGroup = app.CreateCustomHeader(headerID, {g={CreateObject(npcGroup)}})
-					end
-					-- app.PrintDebug("IsDrop",group.hash,"<==",npcGroup.hash)
-					if groups then tinsert(groups, CreateObject(npcGroup))
-					else groups = { CreateObject(npcGroup) }; end
-				end
-			end
-		end
-		return groups;
-	end
-end
-local function SkipFillingGroup(group, FillData)
-	local skipFill = group.skipFill
-	if (skipFill and FillData.InWindow) or skipFill == 2 then return true; end
-
-	-- do not fill the same object twice in multiple Locations
-	local groupHash, included = group.hash, FillData.Included;
-	if included[groupHash] then return true; end
-
-	-- do not fill 'saved' groups in ATT tooltips
-	-- or groups directly under saved groups unless in Debug mode
-	if not app.MODE_DEBUG then
-		-- only ignored filling saved 'quest' groups (unless it's an Item, which we ignore the ignore... :D)
-		if group.questID then
-			if not group.itemID and group.saved then
-				return true
-			end
-			-- don't fill under locked quests
-			if group.locked then
-				return true
-			end
-		end
-		-- root fills of a thing from a saved parent should still show their contains, so don't use .parent
-		local parent = rawget(group, "parent");
-		-- direct parent is a saved quest, then do not fill with stuff
-		if parent and parent.questID and (parent.saved or parent.locked) then return true; end
-	end
-end
-local function FillGroupDirect(group, FillData, doDGU)
-	local groups;
-	local ignoreSkip = group.sym or group.headerID or group.classID
-	-- Determine Cost/Crafted/Symlink groups
-	groups = ArrayAppend(groups,
-		DeterminePurchaseGroups(group, FillData),
-		DetermineUpgradeGroups(group, FillData),
-		DetermineCraftedGroups(group, FillData),
-		DetermineNPCDrops(group, FillData),
-		DetermineSymlinkGroups(group));
-
-	-- Adding the groups normally based on available-source priority
-	PriorityNestObjects(group, groups, nil, app.RecursiveCharacterRequirementsFilter, app.RecursiveGroupRequirementsFilter);
-
-	if groups and #groups > 0 then
-		-- if FillData.Debug then
-		-- 	app.print("FG-MergeResults",#groups,app:SearchLink(group))
-		-- end
-		-- app.PrintDebug("FillGroups-MergeResults",group.hash,#groups)
-		AssignChildren(group);
-		if doDGU then app.DirectGroupUpdate(group); end
-		-- mark this group as being filled since it actually received filled content (unless it's ignored for being skipped)
-		if not ignoreSkip then
-			local groupHash = group.hash;
-			if groupHash then
-				-- app.PrintDebug("FGA-Included",groupHash,#groups)
-				FillData.Included[groupHash] = true;
-			end
-		end
-	end
-end
--- Iterates through all groups of the group, filling them with appropriate data, then recursively follows the next layer of groups
--- local function FillGroupsRecursive(group, FillData)
--- 	if SkipFillingGroup(group, FillData) then
--- 		-- if FillData.Debug then
--- 		-- 	app.print(Colorize("FGR-SKIP",app.Colors.ChatLinkError),app:SearchLink(group))
--- 		-- end
--- 		-- app.PrintDebug(Colorize("FGR-SKIP",app.Colors.ChatLinkError),app:SearchLink(group))
--- 		return;
--- 	end
--- 	-- app.PrintDebug("FGR",group.hash)
-
--- 	FillGroupDirect(group, FillData)
-
--- 	local g = group.g;
--- 	if g then
--- 		-- app.PrintDebug(".g",group.hash,#g)
--- 		-- Then nest anything further
--- 		for _,o in ipairs(g) do
--- 			FillGroupsRecursive(o, FillData);
--- 		end
--- 	end
--- end
--- Fills the group and returns an array of the next layer of groups to fill
-local function FillGroupsLayered(group, FillData)
-	if SkipFillingGroup(group, FillData) then
-		-- if FillData.Debug then
-		-- 	app.print(Colorize("FGR-SKIP",app.Colors.ChatLinkError),app:SearchLink(group))
-		-- end
-		-- app.PrintDebug(Colorize("FGR-SKIP",app.Colors.ChatLinkError),app:SearchLink(group))
-		return;
-	end
-	-- app.PrintDebug("FGR",group.hash)
-
-	FillGroupDirect(group, FillData)
-
-	return group.g
-end
--- Iterates through all groups of the group, filling them with appropriate data, then queueing itself on the FillData.Runner to recursively follow the next layer of groups
--- over multiple frames to reduce stutter
--- local function FillGroupsRecursiveAsync(group, FillData)
--- 	if SkipFillingGroup(group, FillData) then
--- 		-- if FillData.Debug then
--- 		-- 	app.print(Colorize("FGRA-SKIP",app.Colors.ChatLinkError),group.skipFill,FillData.Included[group.hash],app:SearchLink(group))
--- 		-- end
--- 		-- app.PrintDebug(Colorize("FGRA-SKIP",app.Colors.ChatLinkError),group.skipFill,FillData.Included[group.hash],app:SearchLink(group))
--- 		return;
--- 	end
-
--- 	-- if group.questID == 78663 then
--- 	-- 	FillData.Debug = true
--- 	-- 	app.print("FGRA",app:SearchLink(group))
--- 	-- end
-
--- 	FillGroupDirect(group, FillData, true)
-
--- 	local g = group.g;
--- 	if g then
--- 		-- if FillData.Debug then
--- 		-- 	app.print(".g",#g,app:SearchLink(group))
--- 		-- end
--- 		local Run = FillData.Runner.Run;
--- 		-- Then nest anything further
--- 		for _,o in ipairs(g) do
--- 			Run(FillGroupsRecursiveAsync, o, FillData);
--- 		end
--- 	end
--- end
--- Fills the group and returns an array of the next layer of groups to fill
--- Run an entire layer, run a function to run the next layer
--- Capture next layer
-local function FillGroupsLayeredAsync(group, FillData)
-	if SkipFillingGroup(group, FillData) then
-		-- if FillData.Debug then
-		-- 	app.print(Colorize("FGR-SKIP",app.Colors.ChatLinkError),app:SearchLink(group))
-		-- end
-		-- app.PrintDebug(Colorize("FGR-SKIP",app.Colors.ChatLinkError),app:SearchLink(group))
-		return;
-	end
-	-- app.PrintDebug("FGL",group.hash)
-
-	FillGroupDirect(group, FillData, true)
-
-	local g = group.g;
-	if g then
-		-- if FillData.CurrentLayer then
-		-- 	app.PrintDebug("AddLayered.g",FillData.CurrentLayer,#g,app:SearchLink(group))
-		-- end
-		app.ArrayAppend(FillData.NextLayer, g)
-	end
-end
-local function RunGroupsLayeredAsync(FillData)
-	local g = FillData.NextLayer;
-	if #g > 0 then
-		-- if FillData.CurrentLayer then
-		-- 	app.PrintDebug("FillLayered",FillData.CurrentLayer,#g)
-		-- 	FillData.CurrentLayer = FillData.CurrentLayer + 1
-		-- end
-		local Run = FillData.Runner.Run;
-		-- Then nest anything further
-		for _,o in ipairs(g) do
-			Run(FillGroupsLayeredAsync, o, FillData)
-		end
-		wipe(FillData.NextLayer)
-		-- Re-run the layer runner since there's been more filling scheduled
-		Run(RunGroupsLayeredAsync, FillData)
-	end
-end
-local function HandleOnWindowFillComplete(window)
-	window.data._fillcomplete = true
-	app.HandleEvent("OnWindowFillComplete", window)
-end
--- Appends sub-groups into the item group based on what is required to have this item (cost, source sub-group, reagents, symlinks)
-app.FillGroups = function(group)
-	group.__FillGroups = true
-	-- Sometimes entire sub-groups should be preventing from even allowing filling (i.e. Dynamic groups)
-	local skipFull = app.GetRelativeRawWithField(group, "skipFull");
-	if skipFull then return end
-	-- Check if this group is inside a Window or not
-	local groupWindow = app.GetRelativeRawWithField(group, "window");
-	-- Setup the FillData for this fill operation
-	local FillData = {
-		Included = {},
-		CraftedItems = {},
-		NextLayer = {},
-		-- CurrentLayer = 0,	-- debugging
-		InWindow = groupWindow and true or nil,
-		NestNPCData = app.Settings:GetTooltipSetting("NPCData:Nested"),
-		SkipLevel = app.GetSkipLevel(),
-		Root = group,
-		FillRecipes = group.recipeID or app.ReagentsDB[group.itemID or 0]
-	};
-
-	-- app.PrintDebug("FillGroups",app:SearchLink(group),group.__type)
-	-- app.PrintTable(FillData)
-
-	-- Fill the group with all nestable content
-	if groupWindow then
-		local Runner = groupWindow:GetRunner();
-		FillData.Runner = Runner
-		if not groupWindow.SelfHandleOnWindowFillComplete then
-			-- capture a function closure which can handle the event for the window
-			-- since OnEnd does not handle parameters
-			groupWindow.SelfHandleOnWindowFillComplete = function()
-				HandleOnWindowFillComplete(groupWindow)
-			end
-		end
-		-- only trigger the OnWindowFillComplete event if we are filling the Root group of the window
-		if groupWindow.data == group then
-			Runner.OnEnd(groupWindow.SelfHandleOnWindowFillComplete)
-		end
-		-- 1 is way too low as it then takes 1 frame per individual row in the minilist... i.e. Valdrakken took 14,000 frames
-		Runner.SetPerFrame(25);
-		-- Recursive Fill
-		-- Runner.Run(FillGroupsRecursiveAsync, group, FillData);
-
-		-- Layered Fill
-		Runner.Run(FillGroupsLayeredAsync, group, FillData)
-		Runner.Run(RunGroupsLayeredAsync, FillData)
-
-	else
-		-- app.PrintDebug("FG",group.hash)
-		-- this performs depth-first filling which leads to usually one group having tons of nesting
-		-- and other top-level groups being skipped as they had some other means of being
-		-- filled in a deeper group
-		-- FillGroupsRecursive(group, FillData);
-
-		-- this logic performs fills across an entire logical layer of data via a breadth-first approach
-		-- which should ideally have less nesting in total
-		local FillLayer = {group}
-		local NextLayer = {}
-		while #FillLayer > 0 do
-			for _,fillGroup in ipairs(FillLayer) do
-				app.ArrayAppend(NextLayer, FillGroupsLayered(fillGroup, FillData))
-			end
-			FillLayer = NextLayer
-			NextLayer = {}
-		end
-
-		-- app.PrintDebugPrior("FG",group.hash)
-	end
-
-	-- if app.Debugging then app.PrintTable(included) end
-	-- app.PrintDebug("FillGroups Complete",group.hash,group.__type)
-end
-local function TryFillPopoutGroup(group)
-	-- If the group specifically needs to be filled, do that now that it's in the window
-	if not group.__FillGroups then
-		-- app.PrintDebug("DoFillGroups",app:SearchLink(group))
-		app.SetSkipLevel(2)
-		app.FillGroups(group)
-		app.SetSkipLevel(0)
-	end
-end
-app.AddEventHandler("OnNewPopoutGroup", TryFillPopoutGroup)
-end	-- Auto-Expansion Logic
-
 (function()
 -- Keys for groups which are in-game 'Things'
 app.ThingKeys = {
@@ -3317,6 +1931,7 @@ app.ThingKeys = {
 	factionID = true,
 	explorationID = true,
 	titleID = true,
+	campsiteID = true,
 	achievementID = true,	-- special handling
 	criteriaID = true,	-- special handling
 };
@@ -3326,30 +1941,22 @@ local SpecificSources = {
 		[app.HeaderConstants.COMMON_VENDOR_ITEMS] = true,
 		[app.HeaderConstants.DROPS] = true,
 	},
-};
-local function CleanTop(top, keephash)
-	if top then
-		if top.hash == keephash then return true end
-		local g = top.g;
-		if g then
-			local count, gi, cleaned = #g,nil,nil;
-			for i=count,1,-1 do
-				gi = g[i];
-				if CleanTop(gi, keephash) then
-					cleaned = true;
-				else
-					tremove(g, i);
-				end
-			end
-			return cleaned;
-		end
-	end
-end
+}
+local KeepSourced = {
+	criteriaID = true
+}
+local SourceSearcher = app.SourceSearcher
 local function GetThingSources(field, value)
 	if field == "achievementID" then
 		return SearchForField(field, value)
 	end
-	return app.SearchForLink(field..":"..value)
+	if field == "itemID" then
+		-- allow extra return val (indicates directSources)
+		return SourceSearcher.itemID(field, value)
+	end
+	-- ignore extra return vals
+	local results = app.SearchForLink(field..":"..value)
+	return results
 end
 
 -- Builds a 'Source' group from the parent of the group (or other listings of this group) and lists it under the group itself for
@@ -3372,8 +1979,12 @@ local function BuildSourceParent(group)
 
 	-- pull all listings of this 'Thing'
 	local keyValue = group[groupKey];
-	local things = specificSource and { group } or GetThingSources(groupKey, keyValue)
-	-- app.PrintDebug("BuildSourceParent",group.hash,thingCheck,specificSource,keyValue,#things)
+	local isDirectSources
+	local things = specificSource and { group }
+	if not things then
+		things, isDirectSources = GetThingSources(groupKey, keyValue)
+	end
+	-- app.PrintDebug("BuildSourceParent",group.hash,thingCheck,specificSource,keyValue,#things,isDirectSources)
 	-- if app.Debugging then
 	-- 	local sourceGroup = {
 	-- 		["text"] = "DEBUG THINGS",
@@ -3391,7 +2002,9 @@ local function BuildSourceParent(group)
 		local parentKey, parent;
 		-- collect all possible parent groups for all instances of this Thing
 		for _,thing in ipairs(things) do
-			if isAchievement or GroupMatchesParams(thing, groupKey, keyValue) then
+			if isDirectSources then
+				parents[#parents + 1] = CreateObject(thing)
+			elseif isAchievement or GroupMatchesParams(thing, groupKey, keyValue) then
 				---@class ATTTempParentObject
 				---@field key string
 				---@field hash string
@@ -3407,13 +2020,13 @@ local function BuildSourceParent(group)
 						-- only show certain types of parents as sources.. typically 'Game World Things'
 						-- or if the parent is directly tied to an NPC
 						if thingKeys[parentKey] or parent.npcID or parent.creatureID then
-							-- keep the Criteria nested for Achievements, to show proper completion tracking under various Sources
-							if isAchievement then
-								-- app.PrintDebug("isAchieve:keepSource",thing.hash,"under",parent.hash)
-								parent._keepSource = thing.hash;
-							end
 							-- add the parent for display later
-							tinsert(parents, parent);
+							parent = CreateObject(parent, true)
+							parents[#parents + 1] = parent
+							-- achievement criteria can nest inside their Source for clarity
+							if isAchievement and KeepSourced[thing.key] then
+								NestObject(parent, thing, true)
+							end
 							break;
 						end
 						-- TODO: maybe handle mapID/instanceID in a different way as a fallback for things nested under headers within a zone....?
@@ -3423,16 +2036,24 @@ local function BuildSourceParent(group)
 				end
 				-- Things tagged with an npcID should show that NPC as a Source
 				if thing.key ~= "npcID" and (thing.npcID or thing.creatureID) then
-					local parentNPC = SearchForObject("creatureID", thing.npcID or thing.creatureID, "field") or {["npcID"] = thing.npcID or thing.creatureID};
-					tinsert(parents, parentNPC);
+					local parentNPC = CreateObject(SearchForObject("creatureID", thing.npcID or thing.creatureID, "field") or {["npcID"] = thing.npcID or thing.creatureID}, true)
+					parents[#parents + 1] = parentNPC
+					-- achievement criteria can nest inside their Source for clarity
+					if isAchievement and KeepSourced[thing.key] then
+						NestObject(parentNPC, thing, true)
+					end
 				end
 				-- Things tagged with many npcIDs should show all those NPCs as a Source
 				if thing.crs then
 					-- app.PrintDebug("thing.crs",#thing.crs)
 					local parentNPC;
 					for _,npcID in ipairs(thing.crs) do
-						parentNPC = SearchForObject("creatureID", npcID, "field") or {["npcID"] = npcID};
-						tinsert(parents, parentNPC);
+						parentNPC = CreateObject(SearchForObject("creatureID", npcID, "field") or {["npcID"] = npcID}, true)
+						parents[#parents + 1] = parentNPC
+						-- achievement criteria can nest inside their Source for clarity
+						if isAchievement and KeepSourced[thing.key] then
+							NestObject(parentNPC, thing, true)
+						end
 					end
 				end
 				-- Things tagged with providers should show the providers as a Source
@@ -3447,14 +2068,18 @@ local function BuildSourceParent(group)
 								or   (type == "n" and SearchForObject("npcID", id, "field"))
 								or   (type == "s" and SearchForObject("spellID", id, "field"));
 						if pRef then
-							pRef = CreateObject(pRef);
-							tinsert(parents, pRef);
+							pRef = CreateObject(pRef, true);
+							parents[#parents + 1] = pRef
 						else
 							pRef = (type == "i" and app.CreateItem(id))
 								or   (type == "o" and app.CreateObject(id))
 								or   (type == "n" and app.CreateNPC(id))
 								or   (type == "s" and app.CreateSpell(id));
-							tinsert(parents, pRef);
+							parents[#parents + 1] = pRef
+						end
+						-- achievement criteria can nest inside their Source for clarity
+						if isAchievement and thing.key == "criteriaID" then
+							NestObject(pRef, thing, true)
 						end
 					end
 				end
@@ -3464,11 +2089,11 @@ local function BuildSourceParent(group)
 						-- app.PrintDebug("Root Provider",type,id);
 						local pRef = SearchForObject("npcID", id, "field");
 						if pRef then
-							pRef = CreateObject(pRef);
-							tinsert(parents, pRef);
+							pRef = CreateObject(pRef, true);
+							parents[#parents + 1] = pRef
 						else
 							pRef = app.CreateNPC(id);
-							tinsert(parents, pRef);
+							parents[#parents + 1] = pRef
 						end
 					end
 				end
@@ -3482,47 +2107,36 @@ local function BuildSourceParent(group)
 				-- end
 			end
 		end
-		-- Raw Criteria inherently are not directly cached and will not find themselves, so instead
-		-- show their containing Achievement as the Source
+		-- Raw Criteria include their containing Achievement as the Source
 		-- re-popping this Achievement will do normal Sources for all the Criteria and be useful
 		if groupKey == "criteriaID" then
 			local achID = group.achievementID;
-			parent = SearchForObject("achievementID", achID, "key") or { achievementID = achID };
+			parent = CreateObject(SearchForObject("achievementID", achID, "key") or { achievementID = achID }, true)
 			-- app.PrintDebug("add achievement for empty criteria",achID)
-			tinsert(parents, parent);
+			parents[#parents + 1] = parent
 		end
+
+		if #parents == 0 then return end
+
 		-- if there are valid parent groups for sources, merge them into a 'Source(s)' group
-		if #parents > 0 then
-			-- app.PrintDebug("Found parents",#parents)
-			local sourceGroup = app.CreateRawText(L.SOURCES, {
-				description = L.SOURCES_DESC,
-				icon = 134441,
-				OnUpdate = app.AlwaysShowUpdate,
-				sourceIgnored = true,
-				skipFill = true,
-				SortPriority = -3.0,
-				g = {},
-				OnClick = app.UI.OnClick.IgnoreRightClick,
-			})
-			local clonedParent, keepSource;
-			local clones = {};
-			for _,parent in ipairs(parents) do
-				keepSource = parent._keepSource;
-				-- clear the flag from the Source
-				parent._keepSource = nil;
-				-- if keepSource then app.PrintDebug("Keeping Criteria under",parent.hash) end
-				clonedParent = keepSource and CreateObject(parent) or CreateObject(parent, true);
-				clonedParent.collectible = false;
-				if keepSource then
-					CleanTop(clonedParent, keepSource);
-				else
-					clonedParent.OnUpdate = app.AlwaysShowUpdate;	-- TODO: filter actual unobtainable sources...
-				end
-				tinsert(clones, clonedParent);
-			end
-			PriorityNestObjects(sourceGroup, clones, nil, app.RecursiveCharacterRequirementsFilter, app.RecursiveGroupRequirementsFilter);
-			NestObject(group, sourceGroup, nil, 1);
+		-- app.PrintDebug("Found parents",#parents)
+		local sourceGroup = app.CreateRawText(L.SOURCES, {
+			description = L.SOURCES_DESC,
+			icon = 134441,
+			OnUpdate = app.AlwaysShowUpdate,
+			sourceIgnored = true,
+			skipFull = true,
+			SortPriority = -3.0,
+			g = {},
+			OnClick = app.UI.OnClick.IgnoreRightClick,
+		})
+		for _,parent in ipairs(parents) do
+			-- if there's nothing nested under the parent, then force it to be visible
+			-- otherwise the visibility can be driven by the nested thing
+			parent.OnSetVisibility = not parent.g and app.AlwaysShowUpdate or nil	-- TODO: filter actual unobtainable sources...
 		end
+		PriorityNestObjects(sourceGroup, parents, nil, app.RecursiveCharacterRequirementsFilter, app.RecursiveGroupRequirementsFilter);
+		NestObject(group, sourceGroup, nil, 1);
 	end
 end
 app.AddEventHandler("OnNewPopoutGroup", BuildSourceParent)
@@ -3535,7 +2149,7 @@ end)();
 (function()
 local C_CreatureInfo_GetRaceInfo = C_CreatureInfo.GetRaceInfo;
 local outgoing,incoming,queue,active = {},{},{},nil;
-local whiteListedFields = { --[["Achievements",]] "AzeriteEssenceRanks", "BattlePets", "Exploration", "Factions", "FlightPaths", "Followers", "GarrisonBuildings", "Quests", "Spells", "Titles" };
+local whiteListedFields = { --[["Achievements",]] "Artifacts", "AzeriteEssenceRanks", "BattlePets", "Exploration", "Factions", "FlightPaths", "Followers", "GarrisonBuildings", "Quests", "Spells", "Titles" };
 app.CharacterSyncTables = whiteListedFields;
 local function splittoarray(sep, inputstr)
 	local t = {};
@@ -3660,7 +2274,7 @@ local function DefaultSyncCharacterData(allCharacters, key)
 		end
 	end
 end
--- Used for data which is primarily Account-learned, but has Character-learned exceptions
+-- Used for data which is defaulted as Account-learned, but has Character-learned exceptions
 local function PartialSyncCharacterData(allCharacters, key)
 	local characterData
 	local data = ATTAccountWideData[key];
@@ -3703,6 +2317,9 @@ local function SyncCharacterQuestData(allCharacters, key)
 	-- don't completely wipe quest data, some questID are marked as 'complete' due to other restrictions on the account
 	-- so we want to maintain those even though no character actually has it completed
 	-- TODO: perhaps in the future we can instead treat these quests as 'uncollectible' for the account rather than 'complete'
+	-- TODO: once these quests are no longer assigned as completion == 2 we can then use the PartialSyncCharacterData for Quests
+	-- and make sure AccountWide quests are instead saved directly into ATTAccountWideData when completed
+	-- and cleaned from individual Character caches here during sync
 	for questID,completion in pairs(data) do
 		if completion ~= 2 then
 			data[questID] = nil
@@ -3877,1729 +2494,6 @@ app.AddEventHandler("OnReady", function()
 end);
 end)();
 
--- Item Information Lib
-local LIMIT_UPDATE_SEARCH_RESULTS = 10
--- Dynamically increments the progress for the parent heirarchy of each collectible search result
-local function UpdateSearchResults(searchResults)
-	-- app.PrintDebug("UpdateSearchResults",searchResults and #searchResults)
-	if not searchResults or #searchResults == 0 then return end
-	-- in extreme cases of tons of search results to update all at once, we will split up the updates to remove the apparent stutter
-	if #searchResults > LIMIT_UPDATE_SEARCH_RESULTS then
-		local subresults = {}
-		for i,result in ipairs(searchResults) do
-			subresults[#subresults + 1] = result
-			if i % LIMIT_UPDATE_SEARCH_RESULTS == 0 then
-				app.UpdateRunner.Run(UpdateSearchResults, subresults)
-				subresults = {}
-			end
-		end
-		app.UpdateRunner.Run(UpdateSearchResults, subresults)
-		return
-	end
-	-- Update all the results within visible windows
-	local hashes = {};
-	local found = {};
-	local HandleEvent = app.HandleEvent
-	-- Directly update the Source groups of the search results, and collect their hashes for updates in other windows
-	for _,result in ipairs(searchResults) do
-		hashes[result.hash] = true;
-		found[#found + 1] = result;
-		-- Make sure any update events are handled for this Thing
-		HandleEvent("OnSearchResultUpdate", result)
-	end
-
-	-- loop through visible ATT windows and collect matching groups
-	-- app.PrintDebug("Checking Windows...")
-	local SearchForSpecificGroups = app.SearchForSpecificGroups;
-	for suffix,window in pairs(app.Windows) do
-		-- Collect matching groups from the updating groups from visible windows other than Main list
-		if window.Suffix ~= "Prime" and window:IsVisible() then
-			-- app.PrintDebug(window.Suffix)
-			for _,result in ipairs(searchResults) do
-				SearchForSpecificGroups(found, window.data, hashes);
-			end
-		end
-	end
-
-	-- apply direct updates to all found groups
-	-- app.PrintDebug("Updating",#found,"groups")
-	local DirectGroupUpdate = app.DirectGroupUpdate;
-	for _,o in ipairs(found) do
-		DirectGroupUpdate(o, true);
-	end
-	app.WipeSearchCache();
-	-- app.PrintDebug("UpdateSearchResults Done")
-end
-
--- Pulls all cached fields for the field/id and passes the results into UpdateSearchResults
-local function UpdateRawID(field, id)
-	-- app.PrintDebug("UpdateRawID",field,id)
-	if field and id then
-		UpdateSearchResults(app.SearchForFieldInAllCaches(field, id));
-	end
-end
-app.UpdateRawID = UpdateRawID;
--- Pulls all cached fields for the field/ids and passes the results into UpdateSearchResults
-local function UpdateRawIDs(field, ids)
-	-- app.PrintDebug("UpdateRawIDs",field,ids and #ids)
-	if field and ids and #ids > 0 then
-		UpdateSearchResults(app.SearchForManyInAllCaches(field, ids));
-	end
-end
-app.UpdateRawIDs = UpdateRawIDs;
-
-do
-local KeyMaps = setmetatable({
-	a = "achievementID",
-	achievement = "achievementID",
-	azessence = "azeriteessenceID",
-	battlepet = "speciesID",
-	c = "currencyID",
-	currency = "currencyID",
-	enchant = "spellID",
-	fp = "flightpathID",
-	follower = "followerID",
-	garrbuilding = "garrisonbuildingID",
-	garrfollower = "followerID",
-	i = "modItemID",
-	item = "modItemID",
-	itemid = "modItemID",
-	mount = "spellID",
-	mountid = "spellID",
-	n = "creatureID",
-	npc = "creatureID",
-	npcid = "creatureID",
-	o = "objectID",
-	object = "objectID",
-	r = "spellID",
-	recipe = "spellID",
-	rfp = "runeforgepowerID",
-	s = "sourceID",
-	source = "sourceID",
-	species = "speciesID",
-	spell = "spellID",
-	talent = "spellID",
-	q = "questID",
-	quest = "questID",
-}, { __index = function(t,key) return key:gsub("id", "ID") end})
-
-local function SearchForLink(link)
-	local itemString = link:match("item[%-?%d:]+")
-	if itemString then
-		-- Parse the link and get the itemID and bonus ids.
-		-- app.PrintDebug(itemString)
-		local linkData = {(":"):split(itemString)}
-		-- app.PrintTable(linkData)
-		local itemID = linkData[2]
-		if itemID then
-			-- ref: https://warcraft.wiki.gg/wiki/ItemLink
-			-- indexes are shifted by 1 due to 'item' being the first index
-			itemID = tonumber(itemID) or 0;
-			local modID = tonumber(linkData[13]) or 0
-			local bonusCount = tonumber(linkData[14]) or 0
-			local bonusID1 = bonusCount > 0 and linkData[15] or 0
-			local itemModifierIndex = 15 + bonusCount
-			local itemModifierCount = tonumber(linkData[itemModifierIndex]) or 0
-			local artifactID
-			if itemModifierCount > 0 then
-				for i=itemModifierIndex + 1,itemModifierIndex + (2 * itemModifierCount),2 do
-					if linkData[i] == "8" then
-						artifactID = tonumber(linkData[i + 1])
-						break
-					end
-				end
-			end
-			local search
-			-- Don't use SourceID for artifact searches since they contain many SourceIDs
-			local sourceID = not artifactID and app.GetSourceID(link);
-			if sourceID then
-				-- Search for the Source ID. (an appearance)
-				-- app.PrintDebug("SEARCHING FOR ITEM LINK WITH SOURCE", link, itemID, sourceID);
-				search = SearchForObject("sourceID", sourceID, nil, true)
-				-- app.PrintDebug("SFL.sourceID",sourceID,#search)
-				if #search > 0 then return search, "sourceID", sourceID end
-			end
-			-- Search for the Item ID. (an item without an appearance)
-			-- app.PrintDebug("SFL-exact",itemID, modID, (tonumber(bonusCount) or 0) > 0 and bonusID1)
-			local exactItemID
-			local modItemID
-			-- Artifacts use a different modItemID
-			if artifactID then
-				exactItemID = app.GetArtifactModItemID(itemID, artifactID, modID == 0)
-				-- fallback to non-offhand... still something about the links that makes some 2H artifacts weird
-				modItemID = app.GetArtifactModItemID(itemID, artifactID)
-				-- app.PrintDebug("artifact!",exactItemID)
-			else
-				exactItemID = GetGroupItemIDWithModID(nil, itemID, modID, bonusID1);
-				modItemID = GetGroupItemIDWithModID(nil, itemID, modID);
-			end
-			-- app.PrintDebug("SEARCHING FOR ITEM LINK", link, exactItemID, modItemID, itemID);
-			if exactItemID ~= itemID then
-				search = SearchForObject("modItemID", exactItemID, nil, true);
-				-- app.PrintDebug("SFL.modItemID",exactItemID,#search)
-				if #search > 0 then return search, "modItemID", exactItemID end
-			end
-			if modItemID ~= itemID and modItemID ~= exactItemID then
-				search = SearchForObject("modItemID", modItemID, nil, true);
-				-- app.PrintDebug("SFL.modItemID",modItemID,#search)
-				if #search > 0 then return search, "modItemID", modItemID end
-			end
-			return SearchForObject("itemID", itemID, nil, true), "itemID", itemID
-		end
-	end
-
-	local kind, id, id2, id3 = (":"):split(link);
-	kind = kind:lower();
-	if kind:sub(1,2) == "|c" then
-		kind = kind:sub(11);
-	end
-	if kind:sub(1,2) == "|h" then
-		kind = kind:sub(3);
-	end
-	if id then id = tonumber(select(1, ("|["):split(id)) or id); end
-	if not id or not kind then
-		-- can't search for nothing!
-		return;
-	end
-	--print(link:gsub("|c", "c"):gsub("|h", "h"));
-	-- app.PrintDebug("SFL",kind,">",KeyMaps[kind],id,">")
-	kind = (KeyMaps[kind].."ID"):gsub("IDID", "ID")
-	if kind == "modItemID" then
-		if not id2 and not id3 then
-			id, id2, id3 = GetItemIDAndModID(id)
-		end
-		id = GetGroupItemIDWithModID(nil, id, id2, id3)
-	end
-	-- app.PrintDebug(#SearchForObject(KeyMaps[kind], id, nil, true))
-	return SearchForObject(kind, id, nil, true), kind, id
-end
-app.SearchForLink = SearchForLink;
-end
-
--- Processing Functions
-do
-local GetTimePreciseSec = GetTimePreciseSec
-local DefaultGroupVisibility, DefaultThingVisibility;
-local UpdateGroups;
-local RecursiveGroupRequirementsFilter, GroupFilter, GroupVisibilityFilter, ThingVisibilityFilter, TrackableFilter
-local FilterSet, FilterGet, Filters_ItemUnbound, ItemUnboundSetting
--- local debug
--- Local caches for some heavily used functions within updates
-local function CacheFilterFunctions()
-	local FilterApi = app.Modules.Filter;
-	FilterSet = FilterApi.Set
-	FilterGet = FilterApi.Get
-	Filters_ItemUnbound = FilterApi.Filters.ItemUnbound
-	ItemUnboundSetting = FilterGet.ItemUnbound()
-	RecursiveGroupRequirementsFilter = app.RecursiveGroupRequirementsFilter;
-	GroupFilter = app.GroupFilter;
-	GroupVisibilityFilter, ThingVisibilityFilter = app.GroupVisibilityFilter, app.CollectedItemVisibilityFilter;
-	TrackableFilter = app.ShowTrackableThings
-	DefaultGroupVisibility, DefaultThingVisibility = app.DefaultGroupFilter(), app.DefaultThingFilter();
-	-- app.PrintDebug("CacheFilterFunctions","DG",DefaultGroupVisibility,"DT",DefaultThingVisibility)
-	-- app.PrintDebug("ItemUnboundSetting",ItemUnboundSetting)
-end
--- TODO: test perf when instead using an array of ordered visibility checkers which is defined via settings changes
--- similar to information types
-local function SetGroupVisibility(parent, group)
-	local forceShowParent;
-	-- Set visible initially based on the global 'default' visibility, or whether the group should inherently be shown
-	local visible = DefaultGroupVisibility;
-	-- Need to check all possible reasons a group could be visible, from simplest to more complex
-	-- Force show
-	if not visible and group.forceShow then
-		visible = true;
-		group.forceShow = nil;
-		-- Continue the forceShow visibility outward
-		forceShowParent = true;
-	end
-	-- Total
-	if not visible and group.total > 0 then
-		visible = group.progress < group.total or GroupVisibilityFilter(group);
-	end
-	-- Cost
-	if not visible and ((group.costTotal or 0) > 0) then
-		visible = true
-		-- app.PrintDebug("SGV.cost",group.hash,visible,group.costTotal)
-	end
-	-- Upgrade
-	if not visible and ((group.upgradeTotal or 0) > 0) then
-		visible = true
-		-- if debug then print("SGV.hasUpgrade",group.hash,visible) end
-	end
-	-- Trackable
-	if not visible and TrackableFilter(group) then
-		visible = not group.saved or GroupVisibilityFilter(group)
-		forceShowParent = visible;
-	end
-	-- Custom Visibility
-	if not visible and group.OnSetVisibility then
-		visible = group:OnSetVisibility()
-	end
-	-- Apply the visibility to the group
-	if visible then
-		group.visible = true;
-		-- source ignored group which is determined to be visible should ensure the parent is also visible
-		if not forceShowParent and group.sourceIgnored then
-			forceShowParent = true;
-			-- app.PrintDebug("SGV:ForceParent",parent.text,"via Source Ignored",group.text)
-		end
-	end
-	if parent and forceShowParent then
-		parent.forceShow = forceShowParent;
-	end
-end
-local function SetThingVisibility(parent, group)
-	local forceShowParent;
-	local visible = DefaultThingVisibility;
-	-- Need to check all possible reasons a group could be visible, from simplest to more complex
-	-- Force show
-	if not visible and group.forceShow then
-		visible = true;
-		group.forceShow = nil;
-		-- Continue the forceShow visibility outward
-		forceShowParent = true;
-		-- if debug then print("forceshow",visible) end
-	end
-	-- Total
-	if not visible and group.total > 0 then
-		visible = group.progress < group.total or ThingVisibilityFilter(group);
-		-- app.PrintDebug("STV.total",group.hash,visible,group.progress,group.total,ThingVisibilityFilter(group))
-	end
-	-- Cost
-	if not visible and ((group.costTotal or 0) > 0) then
-		visible = true
-		-- app.PrintDebug("STV.cost",group.hash,visible,group.costTotal)
-	end
-	-- Upgrade
-	if not visible and ((group.upgradeTotal or 0) > 0) then
-		visible = true
-		-- if debug then print("STV.hasUpgrade",group.hash,visible) end
-	end
-	-- Trackable
-	if not visible and TrackableFilter(group) then
-		visible = not group.saved or ThingVisibilityFilter(group)
-		forceShowParent = visible;
-		-- if debug then print("trackable",visible) end
-	end
-	-- Custom Visibility
-	if not visible and group.OnSetVisibility then
-		visible = group:OnSetVisibility()
-	end
-	-- Loot Mode
-	if not visible then
-		if ((group.itemID and group.f) or group.sym) and app.Settings.Collectibles.Loot then
-			visible = true;
-		end
-		forceShowParent = visible;
-	end
-	-- Apply the visibility to the group
-	if visible then
-		group.visible = true;
-		-- source ignored group which is determined to be visible should ensure the parent is also visible
-		if not forceShowParent and group.sourceIgnored then
-			forceShowParent = true;
-			-- app.PrintDebug("STV:ForceParent",parent.text,"via Source Ignored",group.text)
-		end
-	end
-	if parent and forceShowParent then
-		parent.forceShow = forceShowParent;
-	end
-end
-local function UpdateGroup(group, parent)
-	group.visible = nil;
-
-	-- debug = group.itemID and group.factionID == 2045
-	-- if debug then print("UG",group.hash,parent and parent.hash) end
-
-	-- Determine if this user can enter the instance or acquire the item and item is equippable/usable
-	-- Things which are determined to be a cost for something else which meets user filters will
-	-- be shown anyway, so don't need to undergo a filtering pass
-	local valid = group.isCost or group.forceShow
-	-- if valid then
-		-- app.PrintDebug("Pre-valid group as from cost/upgrade",group.isCost,group.isUpgrade,app:SearchLink(group))
-	-- end
-	-- A group with a source parent means it has a different 'real' heirarchy than in the current window
-	-- so need to verify filtering based on that instead of only itself
-	if not valid then
-		if group.sourceParent then
-			valid = RecursiveGroupRequirementsFilter(group);
-			-- if debug then print("UG.RGRF",valid,"=>",group.sourceParent.hash) end
-		else
-			valid = GroupFilter(group);
-			-- if debug then print("UG.GF",valid) end
-		end
-	end
-
-	if valid then
-		-- Set total/progress for this object using its cost/custom information if any
-		local customTotal = group.customTotal or 0;
-		local customProgress = customTotal > 0 and group.customProgress or 0;
-		local total, progress = customTotal, customProgress;
-
-		-- if debug then print("UG.Init","custom",customProgress,customTotal,"=>",progress,total) end
-
-		-- If this item is collectible, then mark it as such.
-		if group.collectible then
-			total = total + 1;
-			if group.collected then
-				progress = progress + 1;
-			end
-		end
-
-		-- Set the total/progress on the group
-		-- if debug then print("UG.prog",progress,total,group.collectible) end
-		group.progress = progress;
-		group.total = total;
-		group.costTotal = group.isCost and 1 or 0
-		group.upgradeTotal = group.isUpgrade and 1 or 0
-
-		-- Check if this is a group
-		local g = group.g;
-		if g then
-			-- if debug then print("UpdateGroup.g",group.progress,group.total,group.__type) end
-
-			-- skip Character filtering for sub-groups if this Item meets the Ignore BoE filter logic, since it can be moved to the designated character
-			-- local ItemBindFilter, NoFilter = app.ItemBindFilter, app.NoFilter;
-			if ItemUnboundSetting and Filters_ItemUnbound(group) then
-				-- app.ItemBindFilter = NoFilter;
-				-- Toggle only Account-level filtering within this Item and turn off the ItemUnboundSetting to ignore sub-checks for the same logic
-				ItemUnboundSetting = nil;
-				FilterSet.ItemUnbound(nil, true);
-				-- app.PrintDebug("Within BoE",group.hash,group.link)
-				-- Update the subgroups recursively...
-				UpdateGroups(group, g);
-				-- reapply the previous BoE filter
-				-- app.PrintDebug("Leaving BoE",group.hash,group.link)
-				FilterSet.ItemUnbound(true);
-				ItemUnboundSetting = true;
-				-- app.ItemBindFilter = ItemBindFilter;
-			else
-				UpdateGroups(group, g);
-			end
-
-			-- app.PrintDebug("UpdateGroup.g.Updated",group.progress,group.total,group.__type)
-			SetGroupVisibility(parent, group);
-		else
-			SetThingVisibility(parent, group);
-		end
-
-		-- Increment the parent group's totals if the group is not ignored for sources
-		if parent and not group.sourceIgnored then
-			parent.total = (parent.total or 0) + group.total;
-			parent.progress = (parent.progress or 0) + group.progress;
-			parent.costTotal = (parent.costTotal or 0) + (group.costTotal or 0);
-			parent.upgradeTotal = (parent.upgradeTotal or 0) + (group.upgradeTotal or 0);
-		-- else
-			-- print("Ignoring progress/total",group.progress,"/",group.total,"for group",group.text)
-		end
-	end
-
-	-- if debug then print("UpdateGroup.Done",group.progress,group.total,group.visible,group.__type) end
-	-- debug = nil
-	-- return group.visible;
-end
-UpdateGroups = function(parent, g)
-	if g then
-		for _,group in ipairs(g) do
-			if group.OnUpdate then
-				if not group:OnUpdate(parent, UpdateGroup) then
-					UpdateGroup(group, parent);
-				elseif group.visible then
-					group.total = nil;
-					group.progress = nil;
-					UpdateGroups(group, group.g);
-				end
-			else
-				UpdateGroup(group, parent);
-			end
-		end
-	end
-end
-app.UpdateGroups = UpdateGroups;
--- Adjusts the progress/total of the group's parent chain, and refreshes visibility based on the new values
-local function AdjustParentProgress(group, progChange, totalChange, costChange, upgradeChange)
-	-- rawget, .parent will default to sourceParent in some cases
-	local parent = group and not group.sourceIgnored and rawget(group, "parent");
-	if parent then
-		-- app.PrintDebug("APP:",parent.text)
-		-- app.PrintDebug("CUR:",parent.progress,parent.total)
-		-- app.PrintDebug("CHG:",progChange,totalChange)
-		parent.total = (parent.total or 0) + totalChange;
-		parent.progress = (parent.progress or 0) + progChange;
-		parent.costTotal = (parent.costTotal or 0) + costChange;
-		parent.upgradeTotal = (parent.upgradeTotal or 0) + upgradeChange;
-		-- Assign cost cache
-		-- app.PrintDebug("END:",parent.progress,parent.total)
-		-- verify visibility of the group, always a 'group' since it is already a parent of another group, as long as it's not the root window data
-		if not parent.window then
-			parent.visible = nil
-			SetGroupVisibility(rawget(parent, "parent"), parent);
-		end
-		AdjustParentProgress(parent, progChange, totalChange, costChange, upgradeChange);
-	end
-end
--- For directly applying the full Update operation for the top-level data group within a window
-local function TopLevelUpdateGroup(group)
-	group.TLUG = GetTimePreciseSec();
-	group.total = nil;
-	group.progress = nil;
-	group.costTotal = nil;
-	group.upgradeTotal = nil;
-	CacheFilterFunctions();
-	-- app.PrintDebug("TLUG",group.hash)
-	-- Root data in Windows should ALWAYS be visible
-	if group.window then
-		-- app.PrintDebug("Root Group",group.text)
-		group.forceShow = true;
-	end
-	if group.OnUpdate then
-		if not group:OnUpdate(nil, UpdateGroup) then
-			UpdateGroup(group);
-		elseif group.visible then
-			group.total = nil;
-			group.progress = nil;
-			UpdateGroups(group, group.g);
-		end
-	else
-		UpdateGroup(group);
-	end
-	-- app.PrintDebugPrior("TLUG",group.hash)
-end
-app.TopLevelUpdateGroup = TopLevelUpdateGroup;
-local DGUDelay = 0.5;
--- Allows changing the Delayed group update frequency between 0 - 2 seconds, mainly for testing
-app.SetDGUDelay = function(delay)
-	DGUDelay = math.min(2, math.max(0, tonumber(delay)));
-end
--- For directly applying the full Update operation at the specified group, and propagating the difference upwards in the parent hierarchy,
--- then triggering a delayed soft-update of the Window containing the group if any. 'got' indicates that this group was 'gotten'
--- and was the cause for the update
-local function DirectGroupUpdate(group, got)
-	-- DGU OnUpdate needs to run regardless of filtering
-	if group.DGUOnUpdate then
-		-- app.PrintDebug("DGU:OnUpdate",group.hash)
-		group:DGUOnUpdate();
-	end
-	local window = app.GetRelativeRawWithField(group, "window");
-	if window then window:ToggleExtraFilters(true) end
-	local wasHidden = app.GetRawRelativeField(group, "visible")
-	-- starting an update from a non-top-level group means we need to verify this group should even handle updates based on current filters first
-	if wasHidden and not app.RecursiveDirectGroupRequirementsFilter(group) then
-		-- app.PrintDebug("DGU:Filtered",group.visible,app:SearchLink(group))
-		if window then window:ToggleExtraFilters() end
-		return;
-	end
-	local prevTotal, prevProg, prevCost, prevUpgrade
-		= group.total or 0, group.progress or 0, group.costTotal or 0, group.upgradeTotal or 0
-	TopLevelUpdateGroup(group);
-	local progChange, totalChange, costChange, upgradeChange
-		= group.progress - prevProg, group.total - prevTotal, group.costTotal - prevCost, group.upgradeTotal - prevUpgrade
-	-- Something to change for a visible group prior to the DGU or changed in visibility
-	if progChange ~= 0 or totalChange ~= 0 or costChange ~= 0 or upgradeChange ~= 0 then
-		local isHidden = not group.visible
-		-- app.PrintDebug("DGU:Change",window.Suffix,wasHidden,"=>",isHidden,app:SearchLink(group),progChange, totalChange, costChange, upgradeChange)
-		if not isHidden or isHidden ~= wasHidden then
-			AdjustParentProgress(group, progChange, totalChange, costChange, upgradeChange);
-		end
-	end
-	-- After completing the Direct Update, setup a soft-update on the affected Window, if any
-	if window then
-		-- sometimes we may want to trigger a delayed fill operation on a group, but when attempting the fill originally,
-		-- the group may not yet be in a state for proper filling... so we can instead assign the group to trigger a fill
-		-- once it received a direct update within a window
-		-- TODO: use an Event for this check eventually
-		if group.DGU_Fill then
-			group.DGU_Fill = nil
-			-- app.PrintDebug("DGU_Fill",app:SearchLink(group))
-			app.FillGroups(group)
-		end
-		-- app.PrintDebug("DGU:Update",group.hash,">",window.Suffix,window.Update,window.isQuestChain)
-		DelayedCallback(window.Update, DGUDelay, window, window.isQuestChain, got);
-		window:ToggleExtraFilters()
-	elseif group.DGU_Fill then
-		-- group wants to fill, but isn't yet in a window... so do a delayed DGU again
-		if not tonumber(group.DGU_Fill) then
-			group.DGU_Fill = 3
-		else
-			group.DGU_Fill = group.DGU_Fill - 1
-		end
-		-- give up after a few tries if it doesn't get into a window...
-		if group.DGU_Fill <= 0 then
-			group.DGU_Fill = nil
-			-- app.PrintDebug("DGU_Fill ignored",app:SearchLink(group))
-			return
-		end
-		-- app.PrintDebug("Delayed DGU_Fill",app:SearchLink(group))
-		app.FillRunner.Run(DirectGroupUpdate, group)
-	end
-end
-app.DirectGroupUpdate = DirectGroupUpdate;
--- Trigger a soft-Update of the window containing the specific group, regardless of Filtering/Visibility of the group
-local function DirectGroupRefresh(group)
-	local window = app.GetRelativeRawWithField(group, "window");
-	if window then
-		-- app.PrintDebug("DGR:Refresh",group.hash,">",window.Suffix,window.Refresh)
-		DelayedCallback(window.Update, DGUDelay, window);
-	end
-end
-app.DirectGroupRefresh = DirectGroupRefresh;
-end -- Processing Functions
-
--- Panel Class Library
-(function()
--- Adds ATT information about the list of Achievements into the provided tooltip
-local function AddAchievementInfoToTooltip(info, achievements, reference)
-	if achievements then
-		local text
-		for _,ach in ipairs(achievements) do
-			text = ach.text;
-			if not text then
-				text = RETRIEVING_DATA;
-				reference.working = true;
-			end
-			text = app.GetCompletionIcon(ach.saved) .. " [" .. ach.achievementID .. "] " .. text;
-			if ach.isGuild then text = text .. " (" .. GUILD .. ")"; end
-			tinsert(info, {
-				left = text
-			});
-		end
-	end
-end
--- Adds ATT information about the list of Quests into the provided tooltip
-local function AddQuestInfoToTooltip(info, quests, reference)
-	if quests then
-		local text, mapID;
-		for _,q in ipairs(quests) do
-			text = q.text;
-			if not text then
-				text = RETRIEVING_DATA;
-				reference.working = true;
-			end
-			text = app.GetCompletionIcon(q.saved) .. " [" .. q.questID .. "] " .. text;
-			mapID = q.mapID
-				or (q.maps and q.maps[1])
-				or (q.coord and q.coord[3])
-				or (q.coords and q.coords[1] and q.coords[1][3]);
-			if mapID then
-				text = text .. " (" .. app.GetMapName(mapID) .. ")";
-			end
-			tinsert(info, {
-				left = text
-			});
-		end
-	end
-end
--- Returns true if any subgroup of the provided group is currently expanded, otherwise nil
-local function HasExpandedSubgroup(group)
-	if group and group.g then
-		for _,subgroup in ipairs(group.g) do
-			-- dont need recursion since a group has to be expanded for a subgroup to be visible within it
-			if subgroup.expanded then
-				return true;
-			end
-		end
-	end
-end
--- probably temporary function to fix Retail Lua errors when using AH
-app.TrySearchAHForGroup = function(group)
-	-- nothing works. AH frame is weird
-
-	-- local itemID = group.itemID
-	-- if itemID then
-	local name, link = group.name, group.link or group.silentLink
-	if name and HandleModifiedItemClick(link) then
-		local AH = app.AH
-		if not AH then AH = {} app.AH = AH end
-		-- AuctionFrameBrowse_Search();	-- doesn't exist
-		-- local itemKey = C_AuctionHouse.MakeItemKey(itemID)
-		-- local itemKeys = {itemKey}
-		local query = AH.query
-		if not query then
-			local sorts = {
-				-- {sortOrder = Enum.AuctionHouseSortOrder.Name, reverseSort = false},
-				{sortOrder = Enum.AuctionHouseSortOrder.Price, reverseSort = false},
-				-- {sortOrder = Enum.AuctionHouseSortOrder.Buyout, reverseSort = false},
-			}
-			local filters = {
-				-- Enum.AuctionHouseFilter.None
-			}
-			-- local itemClassFilters = {
-			-- 	classID = LE_ITEM_CLASS_CONTAINER,
-			-- 	subClassID = nil,
-			-- 	inventoryType = nil
-			-- }
-			query = {
-				sorts = sorts,
-				filters = filters,
-				-- itemClassFilters = itemClassFilters,
-			}
-			-- cache the query for future use to only change the search
-			AH.query = query
-		end
-		query.searchString = name
-		-- app.PrintDebug("search")
-		-- app.PrintTable(query)
-		-- local result = C_AuctionHouse.GetItemSearchResultInfo(itemKey, 0) -- always nil
-		-- app.PrintTable(result)
-		-- C_AuctionHouse.SearchForItemKeys(itemKeys,sorts) -- always Lua error
-		C_AuctionHouse.SendBrowseQuery(query)
-		return true;
-	end
-end
-do
-local IsTracking, StartTracking, StopTracking
-	= C_ContentTracking.IsTracking, C_ContentTracking.StartTracking, C_ContentTracking.StopTracking
-app.AddContentTracking = function(group)
-	-- if this group is currently tracked
-	local sourceID, mountID, achievementID = group.sourceID, group.mountJournalID, group.achievementID
-	local type = sourceID and 0
-				or mountID and 1
-				or achievementID and 2
-				or nil
-	if type then
-		local id = type == 1 and mountID
-				or type == 2 and achievementID
-				or sourceID
-		if IsTracking(type,id) then
-			-- app.PrintDebug("StopTracking",type,id)
-			StopTracking(type, id, Enum.ContentTrackingStopType.Manual)
-		else
-			-- app.PrintDebug("StartTracking",type,id)
-			StartTracking(type, id)
-		end
-		return true
-	end
-end
-end
-
-function app:CreateMiniListForGroup(group, forceFresh)
-	-- Criteria now show their Source Achievement properly
-	-- Achievements already fill out their Criteria information automatically, don't think this is necessary now - Runaway
-	-- Is this an achievement lacking some achievement information?
-	-- local achievementID = not group.criteriaID and group.achievementID;
-	-- if achievementID and not group.g then
-	-- 	app.PrintDebug("Finding better achievement data...",achievementID)
-	-- 	local searchResults = SearchForField("achievementID", achievementID);
-	-- 	if #searchResults > 0 then
-	-- 		local bestResult;
-	-- 		for i=1,#searchResults,1 do
-	-- 			local searchResult = searchResults[i];
-	-- 			if searchResult.achievementID == achievementID and not searchResult.criteriaID then
-	-- 				if not bestResult or searchResult.g then
-	-- 					bestResult = searchResult;
-	-- 				end
-	-- 			end
-	-- 		end
-	-- 		if bestResult then group = bestResult; end
-	-- 		app.PrintDebug("Found",bestResult and bestResult.hash,group,bestResult)
-	-- 	end
-	-- end
-
-	-- Pop Out Functionality! :O
-	local suffix = app.GenerateSourceHash(group);
-	local popout = not forceFresh and app.Windows[suffix];
-	-- force data to be re-collected if this is a quest chain since its logic is affected by settings
-	if group.questID or group.sourceQuests then popout = nil; end
-	-- app.PrintDebug("Popout for",suffix,"showing?",showing)
-	if not popout then
-		popout = app:GetWindow(suffix);
-
-		-- app.PrintDebug("group")
-		-- app.PrintTable(group)
-
-		-- being a search result means it has already received certain processing
-		if not group.isBaseSearchResult then
-			local skipFull = app.GetRelativeValue(group, "skipFull")
-			-- clone/search initially so as to not let popout operations modify the source data
-			group = CreateObject(group);
-			popout:SetData(group);
-			group.skipFull = skipFull
-
-			-- app.PrintDebug(Colorize("clone",app.Colors.ChatLink))
-			-- app.PrintTable(group)
-			-- app.PrintDebug(Colorize(".g",app.Colors.ChatLink))
-			-- app.PrintTable(group.g)
-
-			-- make a search for this group if it is an item/currency/achievement and not already a container for things
-			local key = group.key;
-			if not group.g and not group.criteriaID and app.ThingKeys[key] then
-				local cmd = group.link or key .. ":" .. group[key];
-				app.SetSkipLevel(2);
-				local groupSearch = app.GetCachedSearchResults(app.SearchForLink, cmd, nil, {SkipFill=true});
-				app.SetSkipLevel(0);
-
-				-- app.PrintDebug(Colorize("search",app.Colors.ChatLink))
-				-- app.PrintTable(groupSearch)
-				-- app.PrintDebug(Colorize(".g",app.Colors.ChatLink))
-				-- app.PrintTable(groupSearch.g)
-				-- Sometimes we want a specific Thing (/att i:147770)
-				-- but since it is keyed by a different ID (spell 242155)
-				-- this re-search replaces with an alternate item (147580)
-				-- so instead we should only merge properties from the re-search to ensure initial data isn't replaced due to alternate data matching
-				MergeProperties(group, groupSearch, true)
-				-- g is not merged automatically
-				-- app.PrintDebug("Copy .g",#groupSearch.g)
-				---@diagnostic disable-next-line: need-check-nil
-				group.g = groupSearch.g
-				-- app.PrintDebug(Colorize(".g",app.Colors.ChatLink))
-				-- app.PrintTable(group.g)
-				-- This isn't needed for the example noted anymore...
-				-- if not group.key and key then
-				-- 	group.key = key;	-- Dunno what causes this in app.GetCachedSearchResults, but assigning this before calling to the new CreateObject function fixes currency popouts for currencies that aren't in the addon. /att currencyid:1533
-				-- 	-- CreateMiniListForGroup missing key response, will likely fail to Create a Class Instance!
-				-- end
-
-				-- app.PrintDebug(Colorize("merge",app.Colors.ChatLink))
-				-- app.PrintTable(group)
-				-- app.PrintDebug(Colorize(".g",app.Colors.ChatLink))
-				-- app.PrintTable(group.g)
-			end
-		else
-			popout:SetData(group);
-		end
-
-		group.isPopout = true
-
-		-- Insert the data group into the Raw Data table.
-		-- app.PrintDebug(Colorize("popout",app.Colors.ChatLink))
-		-- app.PrintTable(group)
-		-- app.PrintDebug(Colorize(".g",app.Colors.ChatLink))
-		-- app.PrintTable(group.g)
-		-- This logic allows for nested searches of groups within a popout to be returned as the root search which resets the parent
-		-- if not group.isBaseSearchResult then
-		--	-- make a search for this group if it is an item/currency and not already a container for things
-		-- 	if not group.g and (group.itemID or group.currencyID) then
-		-- 		local cmd = group.key .. ":" .. group[group.key];
-		-- 		group = app.GetCachedSearchResults(app.SearchForLink, cmd);
-		-- 	else
-		-- 		group = CreateObject(group);
-		-- 	end
-		-- end
-
-		-- TODO: Crafting Information
-		-- TODO: Lock Criteria
-
-		-- custom Update method for the popout so we don't have to force refresh
-		popout.Update = function(self, force, got)
-			-- app.PrintDebug("Update.ExpireTime", self.Suffix, force, got)
-			-- mark the popout to expire after 5 min from now if it is visible
-			if self:IsVisible() then
-				self.ExpireTime = time() + 300;
-				-- app.PrintDebug("Expire Refreshed",popout.Suffix)
-			end
-			-- Add Timerunning filter to the popout
-			popout.Filters = app.Settings:GetTooltipSetting("Filter:MiniList:Timerunning") and { Timerunning = true } or nil
-			self:BaseUpdate(force or got, got);
-		end
-
-		app.HandleEvent("OnNewPopoutGroup", popout.data)
-		-- Sort any content added to the Popout data by the Global sort (not for popped out difficulty groups)
-		if not popout.data.difficultyID then
-			app.Sort(popout.data.g, app.SortDefaults.Global)
-		end
-
-		popout:BuildData();
-		-- always expand all groups on initial creation
-		ExpandGroupsRecursively(popout.data, true, true);
-		-- Adjust some update/refresh logic if this is a Quest Chain window
-		if popout.isQuestChain then
-			local oldUpdate = popout.Update;
-			popout.Update = function(self, ...)
-				-- app.PrintDebug("Update.isQuestChain", self.Suffix, ...)
-				local oldQuestAccountWide = app.Settings.AccountWide.Quests;
-				local oldQuestCollection = app.Settings.Collectibles.Quests;
-				app.Settings.Collectibles.Quests = true;
-				app.Settings.AccountWide.Quests = false;
-				oldUpdate(self, ...);
-				app.Settings.Collectibles.Quests = oldQuestCollection;
-				app.Settings.AccountWide.Quests = oldQuestAccountWide;
-			end;
-			local oldRefresh = popout.Refresh;
-			popout.Refresh = function(self, ...)
-				-- app.PrintDebug("Refresh.isQuestChain", self.Suffix, ...)
-				local oldQuestAccountWide = app.Settings.AccountWide.Quests;
-				local oldQuestCollection = app.Settings.Collectibles.Quests;
-				app.Settings.Collectibles.Quests = true;
-				app.Settings.AccountWide.Quests = false;
-				oldRefresh(self, ...);
-				app.Settings.Collectibles.Quests = oldQuestCollection;
-				app.Settings.AccountWide.Quests = oldQuestAccountWide;
-			end;
-			-- Populate the Quest Rewards
-			-- think this causes quest popouts to somehow break...
-			-- app.TryPopulateQuestRewards(group)
-
-			-- Then trigger a soft update of the window afterwards
-			DelayedCallback(popout.Update, 0.25, popout);
-		end
-	end
-	popout:Toggle(true);
-	return popout;
-end
-
-app.AddEventHandler("RowOnClick", function(self, button)
-	local reference = self.ref;
-	if reference then
-		-- If the row data itself has an OnClick handler... execute that first.
-		if reference.OnClick and reference.OnClick(self, button) then
-			return true;
-		end
-
-		local window = self:GetParent():GetParent();
-		-- All non-Shift Right Clicks open a mini list or the settings.
-		if button == "RightButton" then
-			if IsAltKeyDown() then
-				app.AddTomTomWaypoint(reference);
-			elseif IsShiftKeyDown() then
-				if app.Settings:GetTooltipSetting("Sort:Progress") then
-					app.print("Sorting selection by total progress...");
-					StartCoroutine("Sorting", function()
-						app.SortGroup(reference, "progress");
-						app.print("Finished Sorting.");
-						window:Update();
-					end);
-				else
-					app.print("Sorting selection alphabetically...");
-					StartCoroutine("Sorting", function()
-						app.SortGroup(reference, "name");
-						app.print("Finished Sorting.");
-						window:Update();
-					end);
-				end
-			else
-				if self.index > 0 then
-					if reference.__dlo then
-						-- clone the underlying object of the DLO and create a popout of that instead of the DLO itself
-						app:CreateMiniListForGroup(reference.__o);
-						return;
-					end
-					app:CreateMiniListForGroup(reference);
-				else
-					app.Settings:Open();
-				end
-			end
-		else
-			if IsShiftKeyDown() then
-				-- If we're at the Auction House
-				local isTSMOpen = TSM_API and TSM_API.IsUIVisible("AUCTION");
-				if isTSMOpen or (AuctionFrame and AuctionFrame:IsShown()) or (AuctionHouseFrame and AuctionHouseFrame:IsShown()) then
-					local missingItems = {};
-					app.Search.SearchForMissingItemsRecursively(reference, missingItems);
-					local count = #missingItems;
-					if count > 0 then
-						if isTSMOpen then
-							-- This is the new, unusable POS API that I don't understand. lol
-							local dict, path, itemString = {}, nil, nil;
-							for i,group in ipairs(missingItems) do
-								path = app.GenerateSourcePathForTSM(group, 0);
-								if path then
-									itemString = dict[path];
-									if itemString then
-										dict[path] = itemString .. ",i:" .. group.itemID;
-									else
-										dict[path] = "i:" .. group.itemID;
-									end
-								end
-							end
-							local search,first = "",true;
-							for path,itemString in pairs(dict) do
-								if first then
-									first = false;
-								else
-									search = search .. ",";
-								end
-								search = search .. "group:" .. path .. "," .. itemString;
-							end
-							app:ShowPopupDialogWithMultiLineEditBox(search, nil, "Copy this to your TSM Import Group Popup");
-							return true;
-						elseif Auctionator and Auctionator.API and (AuctionatorShoppingFrame and (AuctionatorShoppingFrame:IsVisible() or count > 1)) then
-							-- Auctionator needs unique Item Names. Nothing else.
-							local uniqueNames = {};
-							for i,group in ipairs(missingItems) do
-								local name = group.name;
-								if name then uniqueNames[name] = 1; end
-							end
-
-							-- Build the array of names.
-							local arr = {};
-							for key,value in pairs(uniqueNames) do
-								tinsert(arr, key);
-							end
-							Auctionator.API.v1.MultiSearch(L.TITLE, arr);
-							return;
-						elseif TSMAPI and TSMAPI.Auction then
-							-- This was the old, better, TSM API that made sense.
-							local itemList, search = {}, nil;
-							for i,group in ipairs(missingItems) do
-								search = group.tsm or TSMAPI.Item:ToItemString(group.link or group.itemID);
-								if search then itemList[search] = app.GenerateSourcePathForTSM(group, 0); end
-							end
-							app:ShowPopupDialog(L.TSM_WARNING_1 .. L.TITLE .. L.TSM_WARNING_2,
-							function()
-								TSMAPI.Groups:CreatePreset(itemList);
-								app.print(L.PRESET_UPDATE_SUCCESS);
-								if not TSMAPI.Operations:GetFirstByItem(search, "Shopping") then
-									print(L.SHOPPING_OP_MISSING_1);
-									print(L.SHOPPING_OP_MISSING_2);
-								end
-							end);
-							return true;
-						elseif reference.g and #reference.g > 0 and not reference.link then
-							app.print(L.AUCTIONATOR_GROUPS);
-							return true;
-						end
-					end
-
-					-- Attempt to search manually with the link.
-					local searched = app.TrySearchAHForGroup(reference);
-					if searched then return true end
-				else
-					-- Not at the Auction House
-					-- If this reference has a link, then attempt to preview the appearance or write to the chat window.
-					local link = reference.link or reference.silentLink;
-					if (link and HandleModifiedItemClick(link)) or ChatEdit_InsertLink(link) then return true; end
-
-					if button == "LeftButton" then
-						-- Default behavior is to Refresh Collections.
-						app.RefreshCollections();
-					end
-					return true;
-				end
-			end
-
-			-- Alt Click on a data row attempts to (un)track the group/nested groups, not from window header unless a popout window
-			if IsAltKeyDown() and (self.index > 0 or window.ExpireTime) then
-				if app.AddContentTracking(reference) then
-					return true
-				end
-			end
-
-			-- Control Click Expands the Groups
-			if IsControlKeyDown() then
-				-- If this reference has a link, then attempt to preview the appearance.
-				if reference.illusionID then
-					-- Illusions are a nasty animal that need to be displayed a special way.
-					DressUpVisual(reference.illusionLink);
-					return true;
-				else
-					local link = reference.link or reference.silentLink;
-					if link and HandleModifiedItemClick(link) then
-						return true;
-					end
-				end
-
-				-- If this reference is anything else, expand the groups.
-				if reference.g then
-					-- mark the window if it is being fully-collapsed
-					if self.index < 1 then
-						window.fullCollapsed = HasExpandedSubgroup(reference);
-					end
-					-- always expand if collapsed or if clicked the header and all immediate subgroups are collapsed, otherwise collapse
-					ExpandGroupsRecursively(reference, not reference.expanded or (self.index < 1 and not window.fullCollapsed), true);
-					window:Update();
-					return true;
-				end
-			end
-			if self.index > 0 then
-				reference.expanded = not reference.expanded;
-				window:Update();
-			elseif not reference.expanded then
-				reference.expanded = true;
-				window:Update();
-			else
-				-- Allow the First Frame to move the parent.
-				-- Toggle lock/unlock by holding Alt when clicking the header of a Window if it is movable
-				if IsAltKeyDown() and window:IsMovable() then
-					local locked = not window.isLocked;
-					window.isLocked = locked;
-					window:StorePosition();
-
-					-- force tooltip to refresh since locked state drives tooltip content
-					self:GetScript("OnLeave")(self)
-					self:GetScript("OnEnter")(self)
-				else
-					self:SetScript("OnMouseUp", function(self)
-						self:SetScript("OnMouseUp", nil);
-						window:StopATTMoving()
-					end);
-					window:ToggleATTMoving()
-				end
-			end
-		end
-	end
-end)
-
-local GetNumberWithZeros = app.Modules.Color.GetNumberWithZeros;
----@class ATTGameTooltip: GameTooltip
-local GameTooltip = GameTooltip;
-app.AddEventHandler("RowOnEnter", function(self)
-	local reference = self.ref;
-	if not reference then return; end
-	reference.working = nil;
-	local tooltip = GameTooltip;
-	if not tooltip then return end;
-	local modifier = IsModifierKeyDown();
-	local IsRefreshing = tooltip.ATT_IsRefreshing;
-	if IsRefreshing then
-		local modded = not not tooltip.ATT_IsModifierKeyDown;
-		if modded ~= modifier then
-			tooltip.ATT_IsModifierKeyDown = modifier;
-			--print("Modifier change detected!", modded, modifier);
-		elseif tooltip.ATT_AttachComplete == true then
-			--print("Ignoring refresh.");
-			return;
-		end
-	else
-		tooltip.ATT_IsModifierKeyDown = modifier;
-		tooltip.ATT_IsRefreshing = true;
-		tooltip:ClearATTReferenceTexture();
-	end
-	-- app.PrintDebug("RowOnEnter", "Rebuilding...");
-
-	-- Always display tooltip data when viewing information from our windows.
-	local wereTooltipIntegrationsDisabled = not app.Settings:GetTooltipSetting("Enabled");
-	if wereTooltipIntegrationsDisabled then app.Settings:SetTooltipSetting("Enabled", true); end
-
-	-- Build tooltip information.
-	local tooltipInfo = {};
-	tooltip:ClearLines();
-	app.ActiveRowReference = reference;
-	local owner;
-	if self:GetCenter() > (UIParent:GetWidth() / 2) and (not AuctionFrame or not AuctionFrame:IsVisible()) then
-		owner = "ANCHOR_LEFT"
-	else
-		owner = "ANCHOR_RIGHT"
-	end
-	tooltip:SetOwner(self, owner);
-
-	-- Attempt to show the object as a hyperlink in the tooltip
-	local linkSuccessful;
-	local refkey = reference.key
-	local questReplace = app.Settings:GetTooltipSetting("Objectives")
-	if refkey ~= "encounterID" and refkey ~= "instanceID" and (refkey ~= "questID" or not questReplace) then
-		-- Encounter & Instance Links break the tooltip
-		local link = reference.link or reference.tooltipLink or reference.silentLink
-		if link and link:sub(1, 1) ~= "[" then
-			local ok, result = pcall(tooltip.SetHyperlink, tooltip, link);
-			if ok and result then
-				linkSuccessful = true;
-			else
-				-- if a link fails to render a tooltip, it clears the tooltip and the owner
-				-- so we have to re-assign it here for it to use :Show()
-				tooltip:SetOwner(self, owner);
-				if not questReplace then questReplace = true end
-			end
-			-- app.PrintDebug("Link:", link:gsub("|","\\"));
-			-- app.PrintDebug("Link Result!", result, refkey, reference.__type,"TT lines",tooltip:NumLines());
-		-- elseif link then app.PrintDebug("Ignore tooltip link",link) else
-		end
-
-		-- Only if the link was unsuccessful.
-		if (not linkSuccessful or tooltip.ATT_AttachComplete == nil) and reference.currencyID then
-			---@diagnostic disable-next-line: redundant-parameter
-			tooltip:SetCurrencyByID(reference.currencyID, 1);
-		end
-	end
-
-	-- Default top row line if nothing is generated from a link.
-	if tooltip:NumLines() < 1 then
-		-- sometimes text is nil
-		tooltipInfo[#tooltipInfo + 1] = { left = reference.text or RETRIEVING_DATA }
-	end
-
-	local title = reference.title;
-	if title then
-		local left, right = DESCRIPTION_SEPARATOR:split(title);
-		if right then
-			tooltipInfo[#tooltipInfo + 1] = {
-				left = left,
-				right = right,
-				r = 1, g = 1, b = 1
-			}
-		else
-			tooltipInfo[#tooltipInfo + 1] = {
-				left = title,
-				r = 1, g = 1, b = 1
-			}
-		end
-	end
-	if reference.speciesID then
-		-- TODO: Once we move the Battle Pets to their own class file, add this using settings.AppendInformationTextEntry to the speciesID InformationType.
-		local progress, total = C_PetJournal.GetNumCollectedInfo(reference.speciesID);
-		if total then
-			tooltipInfo[#tooltipInfo + 1] = {
-				left = tostring(progress) .. " / " .. tostring(total) .. L.COLLECTED_STRING,
-			}
-		end
-	end
-	if reference.questID then
-		-- TODO: This could be moved to the Quests lib and hook in using settings.AppendInformationTextEntry.
-		local oneTimeQuestCharGuid = ATTAccountWideData.OneTimeQuests[reference.questID];
-		if oneTimeQuestCharGuid then
-			local charData = ATTCharacterData[oneTimeQuestCharGuid];
-			tooltipInfo[#tooltipInfo + 1] = {
-				left = L.QUEST_ONCE_PER_ACCOUNT,
-				right = L.COMPLETED_BY:format(charData and charData.text or UNKNOWN),
-			}
-		elseif oneTimeQuestCharGuid == false then
-			tooltipInfo[#tooltipInfo + 1] = {
-				left = L.QUEST_ONCE_PER_ACCOUNT,
-				color = "ffcf271b",
-			}
-		end
-	end
-
-	-- TODO: Convert cost to an InformationType.
-	if reference.cost then
-		if type(reference.cost) == "table" then
-			local _, name, icon, amount;
-			for k,v in pairs(reference.cost) do
-				_ = v[1];
-				if _ == "i" then
-					_,name,_,_,_,_,_,_,_,icon = GetItemInfo(v[2]);
-					amount = v[3];
-					if amount > 1 then
-						amount = formatNumericWithCommas(amount) .. "x ";
-					else
-						amount = "";
-					end
-				elseif _ == "c" then
-					amount = v[3];
-					local currencyData = C_CurrencyInfo.GetCurrencyInfo(v[2]);
-					name = C_CurrencyInfo.GetCurrencyLink(v[2], amount) or (currencyData and currencyData.name) or "Unknown";
-					icon = currencyData and currencyData.iconFileID or nil;
-					if amount > 1 then
-						amount = formatNumericWithCommas(amount) .. "x ";
-					else
-						amount = "";
-					end
-				elseif _ == "g" then
-					name = "";
-					icon = nil;
-					amount = GetMoneyString(v[2]);
-				end
-				if not name then
-					reference.working = true;
-					name = RETRIEVING_DATA;
-				end
-				tooltipInfo[#tooltipInfo + 1] = {
-					left = (k == 1 and L.COST),
-					right = amount .. (icon and ("|T" .. icon .. ":0|t") or "") .. name,
-				}
-			end
-		else
-			tooltipInfo[#tooltipInfo + 1] = {
-				left = L.COST,
-				right = GetMoneyString(reference.cost),
-			}
-		end
-	end
-
-	-- Additional information (search will insert this information if found in search)
-	if tooltip.ATT_AttachComplete == nil then
-		-- an item used for a faction which is repeatable
-		if reference.itemID and reference.factionID and reference.repeatable then
-			tooltipInfo[#tooltipInfo + 1] = {
-				left = L.ITEM_GIVES_REP .. (GetFactionName(reference.factionID) or ("Faction #" .. tostring(reference.factionID))) .. "'",
-				color = app.Colors.TooltipDescription,
-				wrap = true,
-			}
-		end
-
-		-- Add any ID toggle fields
-		app.ProcessInformationTypes(tooltipInfo, reference);
-	end
-
-	-- Ignored for Source/Progress
-	if reference.sourceIgnored then
-		tooltipInfo[#tooltipInfo + 1] = {
-			left = L.DOES_NOT_CONTRIBUTE_TO_PROGRESS,
-			wrap = true,
-		}
-	end
-	-- Further conditional texts that can be displayed
-	if reference.timeRemaining then
-		tooltipInfo[#tooltipInfo + 1] = {
-			left = app.GetColoredTimeRemaining(reference.timeRemaining),
-		}
-	end
-
-	-- Calculate Best Drop Percentage. (Legacy Loot Mode)
-	if reference.itemID and not reference.speciesID and not reference.spellID and app.Settings:GetTooltipSetting("DropChances") then
-		local numSpecializations = GetNumSpecializations();
-		if numSpecializations and numSpecializations > 0 then
-			local encounterID = GetRelativeValue(reference.parent, "encounterID");
-			if encounterID then
-				local difficultyID = GetRelativeValue(reference.parent, "difficultyID");
-				local encounterCache = SearchForField("encounterID", encounterID);
-				if #encounterCache > 0 then
-					local itemList = {};
-					for i,encounter in ipairs(encounterCache) do
-						if encounter.g and GetRelativeValue(encounter.parent, "difficultyID") == difficultyID then
-							app.SearchForRelativeItems(encounter, itemList);
-						end
-					end
-					local item
-					for i=#itemList,1,-1 do
-						item = itemList[i]
-						if item.u and item.u < 3 then
-							tremove(itemList, i)
-						end
-					end
-					local specHits = {};
-					for _,item in ipairs(itemList) do
-						local specs = item.specs;
-						if specs then
-							for j,spec in ipairs(specs) do
-								specHits[spec] = (specHits[spec] or 0) + 1;
-							end
-						end
-					end
-
-					local totalItems = #itemList; -- if somehow encounter drops 0 items but an item still references the encounter
-					local chance, color;
-					local legacyLoot = C_Loot.IsLegacyLootModeEnabled();
-
-					-- Legacy Loot is simply 1 / total items chance since spec has no relevance to drops, i.e. this one item / total items in drop table
-					if totalItems > 0 then
-						chance = 100 / totalItems;
-						color = GetProgressColor(chance / 100);
-						tooltipInfo[#tooltipInfo + 1] = {
-							left = L.LOOT_TABLE_CHANCE,
-							right = "|c"..color..GetNumberWithZeros(chance, 1) .. "%|r",
-						}
-					else
-						tooltipInfo[#tooltipInfo + 1] = {
-							left = L.LOOT_TABLE_CHANCE,
-							right = "N/A",
-						}
-					end
-
-					local specs = reference.specs;
-					if specs and #specs > 0 then
-						-- Available for one or more loot specialization.
-						local least, bestSpecs = 999, {};
-						for _,spec in ipairs(specs) do
-							local specHit = specHits[spec] or 0;
-							-- For Personal Loot!
-							if specHit > 0 and specHit <= least then
-								least = specHit;
-								bestSpecs[spec] = specHit;
-							end
-						end
-						-- something has a best spec
-						if least < 999 then
-							-- define the best specs based on min
-							local rollSpec = {};
-							for specID,count in pairs(bestSpecs) do
-								if count == least then
-									tinsert(rollSpec, specID);
-								end
-							end
-							chance = 100 / least;
-							color = GetProgressColor(chance / 100);
-							-- print out the specs with min items
-							local specString = GetSpecsString(rollSpec, true, true) or "???";
-							tooltipInfo[#tooltipInfo + 1] = {
-								left = legacyLoot and L.BEST_BONUS_ROLL_CHANCE or L.BEST_PERSONAL_LOOT_CHANCE,
-								right = specString.."  |c"..color..GetNumberWithZeros(chance, 1).."%|r",
-							}
-						end
-					elseif legacyLoot then
-						-- Not available at all, best loot spec is the one with the most number of items in it.
-						local most = 0;
-						local bestSpecID
-						for i=1,numSpecializations,1 do
-							local id = GetSpecializationInfo(i);
-							local specHit = specHits[id] or 0;
-							if specHit > most then
-								most = specHit;
-								bestSpecID = i;
-							end
-						end
-						if bestSpecID then
-							local id, name, description, icon = GetSpecializationInfo(bestSpecID);
-							if totalItems > 0 then
-								chance = 100 / (totalItems - specHits[id]);
-								color = GetProgressColor(chance / 100);
-								tooltipInfo[#tooltipInfo + 1] = {
-									left = L.HEADER_NAMES[app.HeaderConstants.BONUS_ROLL],
-									right = "|T" .. icon .. ":0|t " .. name .. " |c"..color..GetNumberWithZeros(chance, 1) .. "%|r",
-								}
-							else
-								tooltipInfo[#tooltipInfo + 1] = {
-									left = L.HEADER_NAMES[app.HeaderConstants.BONUS_ROLL],
-									right = "N/A",
-								}
-							end
-						end
-					end
-				end
-			end
-		end
-	end
-
-	-- Show info about if this Thing cannot be collected due to a custom collectibility
-	-- restriction on the Thing which this character does not meet
-	if reference.customCollect then
-		local customCollectEx;
-		local requires = L.REQUIRES;
-		for i,c in ipairs(reference.customCollect) do
-			customCollectEx = L.CUSTOM_COLLECTS_REASONS[c];
-			local icon_color_str = customCollectEx.icon.." |c"..customCollectEx.color..(customCollectEx.text or "[MISSING_LOCALE_KEY]");
-			if not app.CurrentCharacter.CustomCollects[c] then
-				tooltipInfo[#tooltipInfo + 1] = {
-					left = "|cffc20000" .. requires .. ":|r " .. icon_color_str,
-					right = customCollectEx.desc or "",
-				}
-			else
-				tooltipInfo[#tooltipInfo + 1] = {
-					left = requires .. ": " .. icon_color_str,
-					right = customCollectEx.desc or "",
-				}
-			end
-		end
-	end
-
-	-- Show Quest Prereqs
-	local isDebugMode, sqs, bestMatch = app.MODE_DEBUG, nil, nil;
-	if reference.sourceQuests and (not reference.saved or isDebugMode) then
-		local prereqs, bc = {}, {};
-		for i,sourceQuestID in ipairs(reference.sourceQuests) do
-			if sourceQuestID > 0 and (isDebugMode or not IsQuestFlaggedCompleted(sourceQuestID)) then
-				sqs = SearchForField("questID", sourceQuestID);
-				if #sqs > 0 then
-					bestMatch = nil;
-					for j,sq in ipairs(sqs) do
-						if sq.questID == sourceQuestID then
-							if isDebugMode or (not IsQuestFlaggedCompleted(sourceQuestID) and app.GroupFilter(sq)) then
-								if sq.sourceQuests then
-									-- Always prefer the source quest with additional source quest data.
-									bestMatch = sq;
-								elseif not sq.itemID and (not bestMatch or not bestMatch.sourceQuests) then
-									-- Otherwise try to find the version of the quest that isn't an item.
-									bestMatch = sq;
-								end
-							end
-						end
-					end
-					if bestMatch then
-						if bestMatch.isBreadcrumb then
-							tinsert(bc, bestMatch);
-						else
-							tinsert(prereqs, bestMatch);
-						end
-					end
-				else
-					tinsert(prereqs, app.CreateQuest(sourceQuestID));
-				end
-			end
-		end
-		if prereqs and #prereqs > 0 then
-			tooltipInfo[#tooltipInfo + 1] = {
-				left = L.PREREQUISITE_QUESTS,
-			}
-			AddQuestInfoToTooltip(tooltipInfo, prereqs, reference);
-		end
-		if bc and #bc > 0 then
-			tooltipInfo[#tooltipInfo + 1] = {
-				left = L.BREADCRUMBS_WARNING,
-			}
-			AddQuestInfoToTooltip(tooltipInfo, bc, reference);
-		end
-	end
-	if reference.sourceAchievements and (not reference.collected or isDebugMode) then
-		local prereqs, sas = {};
-		for i,sourceAchievementID in ipairs(reference.sourceAchievements) do
-			if sourceAchievementID > 0 and (isDebugMode or not ATTAccountWideData.Achievements[sourceAchievementID]) then
-				sas = SearchForField("achievementID", sourceAchievementID);
-				if #sas > 0 then
-					bestMatch = nil;
-					for j,sa in ipairs(sas) do
-						if sa.achievementID == sourceAchievementID then
-							if isDebugMode or (not sa.saved and app.GroupFilter(sa)) then
-								bestMatch = sa;
-							end
-						end
-					end
-					if bestMatch then
-						tinsert(prereqs, bestMatch);
-					end
-				else
-					tinsert(prereqs, app.CreateAchievement(sourceAchievementID));
-				end
-			end
-		end
-		if prereqs and #prereqs > 0 then
-			tooltipInfo[#tooltipInfo + 1] = {
-				left = "This has an incomplete prerequisite achievement that you need to complete first.",
-			}
-			AddAchievementInfoToTooltip(tooltipInfo, prereqs, reference);
-		end
-	end
-
-	-- Show Breadcrumb information
-	local lockedWarning;
-	if reference.isBreadcrumb then
-		tooltipInfo[#tooltipInfo + 1] = {
-			left = L.THIS_IS_BREADCRUMB,
-			color = app.Colors.Breadcrumb,
-		}
-		if reference.nextQuests then
-			local isBreadcrumbAvailable = true;
-			local nextq, nq = {}, nil;
-			for _,nextQuestID in ipairs(reference.nextQuests) do
-				if nextQuestID > 0 then
-					nq = SearchForObject("questID", nextQuestID, "field");
-					-- existing quest group
-					if nq then
-						tinsert(nextq, nq);
-					else
-						tinsert(nextq, app.CreateQuest(nextQuestID));
-					end
-					if IsQuestFlaggedCompleted(nextQuestID) then
-						isBreadcrumbAvailable = false;
-					end
-				end
-			end
-			if isBreadcrumbAvailable then
-				-- The character is able to accept the breadcrumb quest without Party Sync
-				tooltipInfo[#tooltipInfo + 1] = {
-					left = L.BREADCRUMB_PARTYSYNC,
-				}
-				AddQuestInfoToTooltip(tooltipInfo, nextq, reference);
-			elseif reference.DisablePartySync == false then
-				-- unknown if party sync will function for this Thing
-				tooltipInfo[#tooltipInfo + 1] = {
-					left = L.BREADCRUMB_PARTYSYNC_4,
-					color = app.Colors.LockedWarning,
-				}
-				AddQuestInfoToTooltip(tooltipInfo, nextq, reference);
-			elseif not reference.DisablePartySync then
-				-- The character wont be able to accept this quest without the help of a lower level character using Party Sync
-				tooltipInfo[#tooltipInfo + 1] = {
-					left = L.BREADCRUMB_PARTYSYNC_2,
-					color = app.Colors.LockedWarning,
-				}
-				AddQuestInfoToTooltip(tooltipInfo, nextq, reference);
-			else
-				-- known to not be possible in party sync
-				tooltipInfo[#tooltipInfo + 1] = {
-					left = L.DISABLE_PARTYSYNC,
-				}
-			end
-			lockedWarning = true;
-		end
-	end
-
-	-- Show information about it becoming locked due to some criteira
-	local lockCriteria = reference.lc;
-	if lockCriteria then
-		-- list the reasons this may become locked due to lock criteria
-		local critKey, critValue;
-		local critFuncs = app.QuestLockCriteriaFunctions;
-		local critFunc;
-		tooltipInfo[#tooltipInfo + 1] = {
-			left = L.UNAVAILABLE_WARNING_FORMAT:format(lockCriteria[1]),
-			color = app.Colors.LockedWarning,
-		}
-		for i=2,#lockCriteria,2 do
-			critKey = lockCriteria[i];
-			critValue = lockCriteria[i + 1];
-			critFunc = critFuncs[critKey];
-			if critFunc then
-				local label = critFuncs["label_"..critKey];
-				local text = tostring(critFuncs["text_"..critKey](critValue))
-				-- TODO: probably a more general way to check this on lines that can be retrieving
-				if not reference.working and IsRetrieving(text) then
-					reference.working = true
-				end
-				tooltipInfo[#tooltipInfo + 1] = {
-					left = app.GetCompletionIcon(critFunc(critValue)).." "..label..": "..text,
-				}
-			end
-		end
-	end
-	local altQuests = reference.altQuests;
-	if altQuests then
-		-- list the reasons this may become locked due to altQuests specifically
-		local critValue;
-		local critFuncs = app.QuestLockCriteriaFunctions;
-		local critFunc = critFuncs.questID;
-		local label = critFuncs.label_questID;
-		local text;
-		tooltipInfo[#tooltipInfo + 1] = {
-			left = L.UNAVAILABLE_WARNING_FORMAT:format(1),
-			color = app.Colors.LockedWarning,
-		}
-		for i=1,#altQuests,1 do
-			critValue = altQuests[i];
-			if critFunc then
-				text = critFuncs.text_questID(critValue);
-				tooltipInfo[#tooltipInfo + 1] = {
-					left = app.GetCompletionIcon(critFunc(critValue)).." "..label..": "..text,
-				}
-			end
-		end
-	end
-
-	-- it is locked and no warning has been added to the tooltip
-	if not lockedWarning and reference.locked then
-		if reference.DisablePartySync == false then
-			-- unknown if party sync will function for this Thing
-			tooltipInfo[#tooltipInfo + 1] = {
-				left = L.BREADCRUMB_PARTYSYNC_4,
-				color = app.Colors.LockedWarning,
-			}
-		elseif not reference.DisablePartySync then
-			-- should be possible in party sync
-			tooltipInfo[#tooltipInfo + 1] = {
-				left = L.BREADCRUMB_PARTYSYNC_3,
-				color = app.Colors.LockedWarning,
-			}
-		else
-			-- known to not be possible in party sync
-			tooltipInfo[#tooltipInfo + 1] = {
-				left = L.DISABLE_PARTYSYNC,
-			}
-		end
-	end
-
-	if app.Settings:GetTooltipSetting("Show:TooltipHelp") then
-		if reference.g then
-			-- If we're at the Auction House
-			if (AuctionFrame and AuctionFrame:IsShown()) or (AuctionHouseFrame and AuctionHouseFrame:IsShown()) then
-				tooltipInfo[#tooltipInfo + 1] = {
-					left = L[(self.index > 0 and "OTHER_ROW_INSTRUCTIONS_AH") or "TOP_ROW_INSTRUCTIONS_AH"],
-				}
-			else
-				tooltipInfo[#tooltipInfo + 1] = {
-					left = L[(self.index > 0 and "OTHER_ROW_INSTRUCTIONS") or "TOP_ROW_INSTRUCTIONS"],
-				}
-			end
-		end
-		if reference.questID then
-			tooltipInfo[#tooltipInfo + 1] = {
-				left = L.QUEST_ROW_INSTRUCTIONS,
-			}
-		end
-	end
-	-- Add info in tooltip for the header of a Window for whether it is locked or not
-	if self.index == 0 then
-		local owner = self:GetParent():GetParent();
-		if owner and owner.isLocked then
-			tooltipInfo[#tooltipInfo + 1] = {
-				left = L.TOP_ROW_TO_UNLOCK,
-			}
-		elseif app.Settings:GetTooltipSetting("Show:TooltipHelp") then
-			tooltipInfo[#tooltipInfo + 1] = {
-				left = L.TOP_ROW_TO_LOCK,
-			}
-		end
-	end
-
-	--[[ ROW DEBUGGING ]
-	tooltipInfo[#tooltipInfo + 1] = {
-		left = "Self",
-		right = tostring(reference),
-	}
-	tooltipInfo[#tooltipInfo + 1] = {
-		left = "Base",
-		right = tostring(getmetatable(reference)),
-	});
-	tooltipInfo[#tooltipInfo + 1] = {
-		left = "Parent",
-		right = tostring(rawget(reference, "parent")),
-	}
-	tooltipInfo[#tooltipInfo + 1] = {
-		left = "ParentText",
-		right = tostring((rawget(reference, "parent") or app.EmptyTable).text),
-	}
-	tooltipInfo[#tooltipInfo + 1] = {
-		left = "SourceParent",
-		right = tostring(rawget(reference, "sourceParent")),
-	}
-	tooltipInfo[#tooltipInfo + 1] = {
-		left = "SourceParentText",
-		right = tostring((rawget(reference, "sourceParent") or app.EmptyTable).text),
-	}
-	tooltipInfo[#tooltipInfo + 1] = {
-		left = "-- Ref Fields:",
-	}
-	for key,val in pairs(reference) do
-		if key ~= "lore" and key ~= "description" then
-			tooltipInfo[#tooltipInfo + 1] = {
-				left = key,
-				right = tostring(val),
-			}
-		end
-	end
-	local fields = {
-		"__type",
-		-- "key",
-		-- "hash",
-		-- "name",
-		-- "link",
-		-- "sourceIgnored",
-		-- "collectible",
-		-- "collected",
-		-- "trackable",
-		-- "saved",
-		"collectibleAsCost",
-		"costTotal",
-		"isCost",
-		"filledCost",
-		"isUpgrade",
-		"collectibleAsUpgrade",
-		"upgradeTotal",
-		"filledUpgrade",
-		"skipFill",
-		-- "itemID",
-		-- "modItemID"
-	};
-	tooltipInfo[#tooltipInfo + 1] = {
-		left = "-- Extra Fields:",
-	}
-	for _,key in ipairs(fields) do
-		tooltipInfo[#tooltipInfo + 1] = {
-			left = key,
-			right = tostring(reference[key]),
-		}
-	end
-	tooltipInfo[#tooltipInfo + 1] = {
-		left = "Row Indent",
-		right = tostring(CalculateRowIndent(reference)),
-	}
-	-- END DEBUGGING]]
-
-
-	-- Attach all of the Information to the tooltip.
-	app.Modules.Tooltip.AttachTooltipInformation(tooltip, tooltipInfo);
-	if not IsRefreshing then tooltip:SetATTReferenceForTexture(reference); end
-	tooltip:Show();
-
-	-- Reactivate the original tooltip integrations setting.
-	if wereTooltipIntegrationsDisabled then app.Settings:SetTooltipSetting("Enabled", false); end
-	app.ActiveRowReference = nil;
-
-	-- Tooltip for something which was not attached via search, so mark it as complete here
-	tooltip.ATT_AttachComplete = not reference.working;
-end)
-app.AddEventHandler("RowOnLeave", function (self)
-	local reference = self.ref;
-	if reference then reference.working = nil; end
-	app.ActiveRowReference = nil;
-	GameTooltip.ATT_AttachComplete = nil;
-	GameTooltip.ATT_IsRefreshing = nil;
-	GameTooltip.ATT_IsModifierKeyDown = nil;
-	GameTooltip:ClearATTReferenceTexture();
-	GameTooltip:ClearLines();
-	GameTooltip:Hide();
-end)
-
-end)();
-
 do	-- Main Data
 -- Returns {name,icon} for a known HeaderConstants NPCID
 local function SimpleNPCGroup(npcID, t)
@@ -5643,11 +2537,11 @@ function app:GetDataCache()
 		-- TODO: yuck all of this... should assign the available functionality during startup events
 		-- and use proper methods
 		__index = function(t, key)
-			-- app.PrintDebug("Top-Root-Get",key)
+			-- app.PrintDebug("Top-Root-Get",rawget(t,"TLUG"),key)
 			if key == "title" then
 				return t.modeString .. DESCRIPTION_SEPARATOR .. t.untilNextPercentage;
 			elseif key == "progressText" then
-				if t.total < 1 then
+				if not rawget(t,"TLUG") and app.CurrentCharacter then
 					local primeData = app.CurrentCharacter.PrimeData;
 					if primeData then
 						return GetProgressColorText(primeData.progress, primeData.total);
@@ -5657,7 +2551,7 @@ function app:GetDataCache()
 			elseif key == "modeString" then
 				return app.Settings:GetModeString();
 			elseif key == "untilNextPercentage" then
-				if t.total < 1 and app.CurrentCharacter then
+				if not rawget(t,"TLUG") and app.CurrentCharacter then
 					local primeData = app.CurrentCharacter.PrimeData;
 					if primeData then
 						return app.Modules.Color.GetProgressTextToNextPercent(primeData.progress, primeData.total);
@@ -5669,12 +2563,12 @@ function app:GetDataCache()
 			end
 		end,
 		__newindex = function(t, key, val)
-			-- app.PrintDebug("Top-Root-Set",key,val)
+			-- app.PrintDebug("Top-Root-Set",rawget(t,"TLUG"),key,val)
 			if key == "visible" then
 				return;
 			end
 			-- until the Main list receives a top-level update
-			if not t.TLUG then
+			if not rawget(t,"TLUG") then
 				-- ignore setting progress/total values
 				if key == "progress" or key == "total" then
 					return;
@@ -5771,11 +2665,8 @@ function app:GetDataCache()
 
 	-- Pet Battles
 	if app.Categories.PetBattles then
-		db = app.CreateNPC(app.HeaderConstants.PET_BATTLE);
+		db = app.CreateNPC(app.HeaderConstants.PET_BATTLES);
 		db.g = app.Categories.PetBattles;
-		db.lvl = 3; -- Must be 3 to train (used to be 5 pre-scale)
-		db.text = SHOW_PET_BATTLES_ON_MAP_TEXT; -- Pet Battles
-		db.icon = app.asset("Category_PetBattles");
 		tinsert(g, db);
 	end
 
@@ -5785,17 +2676,6 @@ function app:GetDataCache()
 		db.isPVPCategory = true;
 		tinsert(g, db);
 	end
-
-	-- TODO: Do we need this as a new root?
-	-- Skyriding
-	--if app.Categories.Skyriding then
-	--	db = app.CreateNPC(app.HeaderConstants.SKYRIDING);
-	--	db.g = app.Categories.Skyriding;
-	--	db.lvl = 10;
-	--	db.text = DYNAMIC_FLIGHT; -- Skyriding
-	--	db.icon = "|TInterface\\Icons\\ability_dragonriding_dragonridinggliding01:0|t";
-	--	tinsert(g, db);
-	--end
 
 	-- Craftables
 	if app.Categories.Craftables then
@@ -5868,10 +2748,14 @@ function app:GetDataCache()
 		end
 	}));
 
+	-- Module-based Groups
+	app.HandleEvent("OnAddExtraMainCategories", g)
+
 	-- Create Dynamic Groups Button
 	tinsert(g, app.CreateRawText(L.CLICK_TO_CREATE_FORMAT:format(L.SETTINGS_MENU.DYNAMIC_CATEGORY_LABEL), {
-		["icon"] = app.asset("Interface_CreateDynamic"),
-		["OnUpdate"] = app.AlwaysShowUpdate,
+		icon = app.asset("Interface_CreateDynamic"),
+		OnUpdate = app.AlwaysShowUpdate,
+		sourceIgnored = true,
 		-- ["OnClick"] = function(row, button)
 			-- could implement logic to auto-populate all dynamic groups like before... will see if people complain about individual generation
 		-- end,
@@ -5915,6 +2799,12 @@ function app:GetDataCache()
 			app.CreateDynamicHeader("speciesID", {
 				name = AUCTION_CATEGORY_BATTLE_PETS,
 				icon = app.asset("Category_PetJournal")
+			}),
+
+			-- Campsites
+			app.CreateDynamicHeader("campsiteID", {
+				name = WARBAND_SCENES,
+				icon = app.asset("Category_Campsites")
 			}),
 
 			-- Character Unlocks
@@ -5970,6 +2860,9 @@ function app:GetDataCache()
 
 			-- Mount Mods
 			app.CreateDynamicHeader("mountmodID", SimpleNPCGroup(app.HeaderConstants.MOUNT_MODS)),
+
+			-- Pet Battles
+			app.CreateDynamicHeader("pb", SimpleNPCGroup(app.HeaderConstants.PET_BATTLES, {dynamic_withsubgroups = true})),
 
 			-- Professions
 			app.CreateDynamicHeaderByValue("professionID", {
@@ -6122,287 +3015,9 @@ function app:GetDataCache()
 end
 app.AddEventHandler("OnLoad", app.GetDataCache)
 
-local LastSettingsChangeUpdate
-local function CheckNewSettings()
-	if LastSettingsChangeUpdate ~= app._SettingsRefresh then
-		LastSettingsChangeUpdate = app._SettingsRefresh
-		app.HandleEvent("OnRecalculate_NewSettings")
-	end
-end
-app.AddEventHandler("OnRecalculateDone", CheckNewSettings)
-local function ForceUpdateWindows()
-	app.HandleEvent("OnUpdateWindows", true)
-end
-app.AddEventHandler("OnRefreshComplete", ForceUpdateWindows, true)
 end	-- Dynamic/Main Data
 
 do -- Search Response Logic
-local IncludeUnavailableRecipes, IgnoreBoEFilter;
--- Set some logic which is used during recursion without needing to set it on every recurse
-local function SetRescursiveFilters()
-	IncludeUnavailableRecipes = not app.BuildSearchResponse_IgnoreUnavailableRecipes;
-	IgnoreBoEFilter = app.Modules.Filter.SettingsFilters.IgnoreBoEFilter;
-end
--- If/when this section becomes a module, set Module.SearchResponse.SearchNil instead
-app.SearchNil = "zsxdcfawoidsajd"
-local MainRoot
-local ClonedHierarchyGroups = {};
-local ClonedHierarachyMapping = {};
-local SearchGroups = {};
-local DropFields = {}
--- A set of Criteria functions which must all be valid for each search result to be included in the response
-local __SearchCriteria = {
-	-- Include only non-sourceIgnored groups
-	function(o) return not o.sourceIgnored end,
-	-- Include unavailable Recipes or any content which is not a Recipe or meets the BoE filter
-	function(o) return IncludeUnavailableRecipes or not o.spellID or IgnoreBoEFilter(o) end,
-}
-local SearchCriteria = {}
--- A set of Criteria functions which must all be valid for each search result to be included in the response
-local __SearchValueCriteria = {
-	-- Include if the field of the group matches the desired value, or via translated requireSkill value matches
-	function(o, field, value)
-		local v = o[field]
-		return v == value
-			or (field == "requireSkill" and v and app.SkillDB.SpellToSkill[app.SpecializationSpellIDs[v] or 0] == value)
-	end
-}
-local SearchValueCriteria = {}
--- A set of Criteria functions which must all be valid for each search result to be included in the response
-local __ParentInclusionCriteria = {
-	-- Exclude heirarchical parents which don't exist, or specify '_nosearch' or are 'sourceIgnored'
-	function(parent)
-		-- check the parent to see if this parent chain will be excluded
-		if not parent then
-			-- app.PrintDebug("Don't capture non-parented",group.text)
-			return
-		end
-		if parent.sourceIgnored then
-			-- app.PrintDebug("Don't capture SourceIgnored",group.text)
-			return
-		end
-		if GetRelativeValue(parent, "_nosearch") then
-			-- app.PrintDebug("Don't capture _nosearch",group.text)
-			return
-		end
-		return true
-	end
-}
-local ParentInclusionCriteria = {}
-local function ResetCriterias(criteria)
-	wipe(SearchCriteria)
-	wipe(SearchValueCriteria)
-	wipe(ParentInclusionCriteria)
-	if criteria and criteria.SearchCriteria then
-		for _,f in ipairs(criteria.SearchCriteria) do
-			SearchCriteria[#SearchCriteria + 1] = f
-		end
-	else
-		for _,f in ipairs(__SearchCriteria) do
-			SearchCriteria[#SearchCriteria + 1] = f
-		end
-	end
-	if criteria and criteria.SearchValueCriteria then
-		for _,f in ipairs(criteria.SearchValueCriteria) do
-			SearchValueCriteria[#SearchValueCriteria + 1] = f
-		end
-	else
-		for _,f in ipairs(__SearchValueCriteria) do
-			SearchValueCriteria[#SearchValueCriteria + 1] = f
-		end
-	end
-	if criteria and criteria.ParentInclusionCriteria then
-		for _,f in ipairs(criteria.ParentInclusionCriteria) do
-			ParentInclusionCriteria[#ParentInclusionCriteria + 1] = f
-		end
-	else
-		for _,f in ipairs(__ParentInclusionCriteria) do
-			ParentInclusionCriteria[#ParentInclusionCriteria + 1] = f
-		end
-	end
-end
-local function Eval_SearchCriteria(o)
-	for i=1,#SearchCriteria do
-		if not SearchCriteria[i](o) then return end
-	end
-	return true
-end
-local function Eval_SearchValueCriteria(o, field, value)
-	for i=1,#SearchValueCriteria do
-		if not SearchValueCriteria[i](o, field, value) then return end
-	end
-	return true
-end
-local function Eval_ParentInclusionCriteria(o)
-	for i=1,#ParentInclusionCriteria do
-		if not ParentInclusionCriteria[i](o) then return end
-	end
-	return true
-end
--- Wraps a given object such that it can act as an unfiltered Header of the base group
-local CreateWrapFilterHeader = app.CreateVisualHeaderWithGroups
-local function CloneGroupIntoHeirarchy(group)
-	local groupCopy = CreateWrapFilterHeader(group);
-	ClonedHierarachyMapping[group] = groupCopy;
-	return groupCopy;
-end
--- Finds existing clone of the parent group, or clones the group into the proper clone hierarchy
-local function MatchOrCloneParentInHierarchy(group)
-	if group then
-		-- already cloned group, return the clone
-		local groupCopy = ClonedHierarachyMapping[group];
-		if groupCopy then return groupCopy; end
-
-		-- check the parent to see if this parent chain will be excluded
-		local parent = group.parent;
-		if not Eval_ParentInclusionCriteria(parent) then
-			-- app.PrintDebug("PIH-PCrit",app:SearchLink(parent))
-			return
-		end
-
-		-- is this a top-level group?
-		if parent == MainRoot then
-			groupCopy = CloneGroupIntoHeirarchy(group);
-			groupCopy.__priorSearchRoot = true
-			tinsert(ClonedHierarchyGroups, groupCopy);
-			-- app.PrintDebug("Added top cloned parent",groupCopy.text)
-			return groupCopy;
-		elseif group.__priorSearchRoot then
-			groupCopy = CloneGroupIntoHeirarchy(group);
-			tinsert(ClonedHierarchyGroups, groupCopy);
-			-- app.PrintDebug("Added top cloned parent from __priorSearchRoot",groupCopy.text)
-			return groupCopy;
-		else
-			-- need to clone and attach this group to its cloned parent
-			local clonedParent = MatchOrCloneParentInHierarchy(parent);
-			if not clonedParent then
-				-- app.PrintDebug("PIH-NoParent",app:SearchLink(parent))
-				return
-			end
-			groupCopy = CloneGroupIntoHeirarchy(group);
-			NestObject(clonedParent, groupCopy);
-			return groupCopy;
-		end
-	end
-end
--- Builds ClonedHierarchyGroups from an array of Sourced groups
-local function BuildClonedHierarchy(sources)
-	-- app.PrintDebug("BSR:Sourced",sources and #sources)
-	if not sources then return end
-	local parent, thing;
-	-- for each source of each Thing with the value
-	for _,source in ipairs(sources) do
-		if Eval_SearchCriteria(source) then
-			-- find/clone the expected parent group in hierachy
-			parent = MatchOrCloneParentInHierarchy(source.parent);
-			if parent then
-				-- clone the Thing into the cloned parent
-				thing = DropFields.g and CreateObject(source, true) or CreateObject(source);
-				-- don't copy in any extra data for the thing which can pull things into groups, or reference other groups
-				if DropFields.sym then thing.sym = nil; end
-				thing.sourceParent = nil;
-				-- need to map the cloned Thing also since it may end up being a parent of another Thing
-				ClonedHierarachyMapping[source] = thing;
-				NestObject(parent, thing);
-			-- else app.PrintDebug("CloneHierarchy-Fail",source.parent,app:SearchLink(source))
-			end
-		-- else app.PrintDebug("Criteria-Fail:",app:SearchLink(source))
-		end
-	end
-end
--- Recursively collects all groups which have the specified field existing
-local function AddSearchGroupsByField(groups, field)
-	if groups then
-		for _,group in ipairs(groups) do
-			if group[field] ~= nil then
-				tinsert(SearchGroups, group);
-			else
-				AddSearchGroupsByField(group.g, field);
-			end
-		end
-	end
-end
--- Recursively collects all groups which have the specified field=value
-local function AddSearchGroupsByFieldValue(groups, field, value)
-	if groups then
-		for _,group in ipairs(groups) do
-			if Eval_SearchValueCriteria(group, field, value) then
-				tinsert(SearchGroups, group);
-			else
-				AddSearchGroupsByFieldValue(group.g, field, value);
-			end
-		end
-	end
-end
--- Builds ClonedHierarchyGroups from the cached container using groups which match a particular key and value
-local function BuildSearchResponseViaCacheContainer(cacheContainer, value)
-	-- app.PrintDebug("BSR:Cached",value)
-	if cacheContainer then
-		if value then
-			local sources = cacheContainer[value];
-			BuildClonedHierarchy(sources);
-		else
-			for id,sources in pairs(cacheContainer) do
-				-- each Thing's Sources need to be built
-				BuildClonedHierarchy(sources);
-			end
-		end
-	end
-end
--- Collects a cloned hierarchy of groups which have the field and/or value within the given field. Specify 'clear' if found groups which match
--- should additionally clear their contents when being cloned
-function app:BuildSearchResponse(field, value, drop, criteria)
-	return app:BuildTargettedSearchResponse(app:GetDataCache(), field, value, drop, criteria)
-end
--- Collects a cloned hierarchy of groups within the given target 'groups' which have the field and/or value within the given field. Specify 'clear' if found groups which match
--- should additionally clear their contents when being cloned
-function app:BuildTargettedSearchResponse(groups, field, value, drop, criteria)
-	if not groups then return end
-	if groups.g then groups = groups.g end
-	if #groups == 0 then app.PrintDebug("BuildTargettedSearchResponse.FAIL - No groups available") return end
-	MainRoot = app:GetDataCache()
-	if not MainRoot then app.PrintDebug("BuildTargettedSearchResponse.FAIL - No MainRoot available") return end
-	-- make sure each set of search results goes into a new container
-	-- otherwise two searches within the same window will replace the first set
-	ClonedHierarchyGroups = {}
-	wipe(ClonedHierarachyMapping);
-	wipe(SearchGroups);
-	wipe(DropFields)
-	-- by default always drop 'sym' from results
-	DropFields.sym = true
-	if drop then
-		for k,v in pairs(drop) do
-			DropFields[k] = v
-		end
-	end
-
-	SetRescursiveFilters();
-	-- add custom Criterias from external param
-	ResetCriterias(criteria)
-	-- app.PrintDebug("BSR:",field,value)
-	-- app.PrintTable(DropFields)
-	-- app.PrintTable(criteria)
-	-- app.PrintTable(SearchCriteria)
-	-- app.PrintTable(SearchValueCriteria)
-	-- can only do cache searches if there isn't custom criteria provided if we are actually searching MainRoot
-	local cacheContainer = not criteria and groups == MainRoot and app.GetRawFieldContainer(field);
-	if cacheContainer then
-		BuildSearchResponseViaCacheContainer(cacheContainer, value);
-	elseif value ~= nil then
-		-- allow searching specifically for a nil field
-		if value == app.SearchNil then
-			value = nil;
-		end
-		-- app.PrintDebug("BSR:FieldValue",#groups,field,value)
-		AddSearchGroupsByFieldValue(groups, field, value);
-		BuildClonedHierarchy(SearchGroups);
-	else
-		-- app.PrintDebug("BSR:Field",#groups,field)
-		AddSearchGroupsByField(groups, field);
-		BuildClonedHierarchy(SearchGroups);
-	end
-	return ClonedHierarchyGroups;
-end
 end -- Search Response Logic
 
 -- Store the Custom Windows Update functions which are required by specific Windows
@@ -6961,6 +3576,37 @@ customWindowUpdates.CurrentInstance = function(self, force, got)
 		local results, groups, nested, header, headerKeys, difficultyID, nextParent, headerID, isInInstance
 		local rootGroups, mapGroups = {}, {};
 
+		local function TryExpandCurrentDifficulty()
+
+			if not app.Settings:GetTooltipSetting("Expand:Difficulty") then return end
+
+			local difficultyID = app.GetCurrentDifficultyID()
+			if difficultyID == 0 or not header.g then return end
+
+			local expanded
+			for _,row in ipairs(header.g) do
+				if row.difficultyID or row.difficulties then
+					if (row.difficultyID or -1) == difficultyID or (row.difficulties and containsValue(row.difficulties, difficultyID)) then
+						if not row.expanded then
+							ExpandGroupsRecursively(row, true, true);
+							expanded = true;
+						end
+					elseif row.expanded then
+						ExpandGroupsRecursively(row, false, true);
+					end
+				-- Zone Drops/Common Boss Drops should also be expanded within instances
+				-- elseif row.headerID == app.HeaderConstants.ZONE_DROPS or row.headerID == app.HeaderConstants.COMMON_BOSS_DROPS then
+				-- 	if not row.expanded then ExpandGroupsRecursively(row, true); expanded = true; end
+				end
+			end
+			-- No difficulty found to expand, so just expand everything in the list once it is built
+			if not expanded then
+				self.ExpandInfo = { Expand = true };
+				expanded = true;
+			end
+			return expanded
+		end
+
 		self.MapCache = setmetatable({}, { __mode = "kv" })
 		local function TrySwapFromCache()
 			-- window to keep cached maps/not re-build & update them
@@ -6983,6 +3629,7 @@ customWindowUpdates.CurrentInstance = function(self, force, got)
 			-- app.PrintDebug("Loaded cached Map",mapID)
 			header._lastshown = GetTimePreciseSec()
 			self:SetData(header)
+			TryExpandCurrentDifficulty()
 			self.CurrentMaps = header._maps
 			-- app.PrintTable(self.CurrentMaps)
 			-- Reset the Fill if needed
@@ -7162,33 +3809,8 @@ customWindowUpdates.CurrentInstance = function(self, force, got)
 				app.FillGroups(header);
 				app.SetSkipLevel(0);
 
-				local expanded;
 				-- if enabled, minimize rows based on difficulty
-				local difficultyID = app.GetCurrentDifficultyID();
-				if app.Settings:GetTooltipSetting("Expand:Difficulty") then
-					if difficultyID and difficultyID > 0 and header.g then
-						for _,row in ipairs(header.g) do
-							if row.difficultyID or row.difficulties then
-								if (row.difficultyID or -1) == difficultyID or (row.difficulties and containsValue(row.difficulties, difficultyID)) then
-									if not row.expanded then
-										ExpandGroupsRecursively(row, true, true);
-										expanded = true;
-									end
-								elseif row.expanded then
-									ExpandGroupsRecursively(row, false, true);
-								end
-							-- Zone Drops/Common Boss Drops should also be expanded within instances
-							-- elseif row.headerID == app.HeaderConstants.ZONE_DROPS or row.headerID == app.HeaderConstants.COMMON_BOSS_DROPS then
-							-- 	if not row.expanded then ExpandGroupsRecursively(row, true); expanded = true; end
-							end
-						end
-						-- No difficulty found to expand, so just expand everything in the list once it is built
-						if not expanded then
-							self.ExpandInfo = { Expand = true };
-							expanded = true;
-						end
-					end
-				end
+				local expanded = TryExpandCurrentDifficulty()
 
 				self:BuildData();
 
@@ -7296,7 +3918,7 @@ customWindowUpdates.ItemFilter = function(self, force)
 				local results = app:BuildSearchResponse(field, value, {g=true});
 				-- app.PrintDebug("Results",#results)
 				ArrayAppend(self.data.g, results);
-				self.data.text = L.ITEM_FILTER_TEXT..("  [%s=%s]"):format(field,tostring(value));
+				self.data.text = L.ITEM_FILTER_TEXT..("  [%s=%s]"):format(field,tostring(value == app.Modules.Search.SearchNil and "nil" or value));
 			end
 
 			-- Item Filter
@@ -7340,7 +3962,7 @@ customWindowUpdates.ItemFilter = function(self, force)
 									if value and value ~= "" then
 										-- allows performing a value search when looking for 'nil'
 										if value == "nil" then
-											value = app.SearchNil;
+											value = app.Modules.Search.SearchNil;
 										-- use proper bool values if specified
 										elseif value == "true" then
 											value = true;
@@ -7433,6 +4055,7 @@ customWindowUpdates.NWP = function(self, force)
 				{ id = "artifactID", name = ITEM_QUALITY6_DESC, icon = app.asset("Weapon_Type_Artifact") },
 				{ id = "azeriteessenceID", name = SPLASH_BATTLEFORAZEROTH_8_2_0_FEATURE2_TITLE, icon = app.asset("Category_AzeriteEssences") },
 				{ id = "speciesID", name = AUCTION_CATEGORY_BATTLE_PETS, icon = app.asset("Category_PetJournal") },
+				{ id = "campsiteID", name = WARBAND_SCENES, icon = app.asset("Category_Campsites") },
 				{ id = "characterUnlock", name = CHARACTER .. " " .. UNLOCK .. "s", icon = app.asset("Category_ItemSets") },
 				{ id = "conduitID", name = GetSpellName(348869) .. " (" .. EXPANSION_NAME8 .. ")", icon = 3601566 },
 				{ id = "currencyID", name = CURRENCY, icon = app.asset("Interface_Vendor") },
@@ -7492,7 +4115,7 @@ customWindowUpdates.awp = function(self, force)	-- TODO: Change this to remember
 	local BFA = {80001,80100,80105,80200,80205,80300,80307}
 	local SL = {90001,90002,90005,90100,90105,90200,90205,90207}
 	local DF = {100000,100002,100005,100007,100100,100105,100107,100200,100205,100206,100207}
-	local TWW = {110000,110002,110005,110007,110100}
+	local TWW = {110000,110002,110005,110007,110100,110105,110107}
 
 	-- Locals
 	local param = {}
@@ -7623,6 +4246,7 @@ customWindowUpdates.awp = function(self, force)	-- TODO: Change this to remember
 					{ id = "artifactID", name = ITEM_QUALITY6_DESC, icon = app.asset("Weapon_Type_Artifact") },
 					{ id = "azeriteessenceID", name = SPLASH_BATTLEFORAZEROTH_8_2_0_FEATURE2_TITLE, icon = app.asset("Category_AzeriteEssences") },
 					{ id = "speciesID", name = AUCTION_CATEGORY_BATTLE_PETS, icon = app.asset("Category_PetJournal") },
+					{ id = "campsiteID", name = WARBAND_SCENES, icon = app.asset("Category_Campsites") },
 					{ id = "characterUnlock", name = CHARACTER .. " " .. UNLOCK .. "s", icon = app.asset("Category_ItemSets") },
 					{ id = "conduitID", name = GetSpellName(348869) .. " (" .. EXPANSION_NAME8 .. ")", icon = 3601566 },
 					{ id = "currencyID", name = CURRENCY, icon = app.asset("Interface_Vendor") },
@@ -7678,9 +4302,9 @@ end;
 customWindowUpdates.Prime = function(self, ...)
 	self:BaseUpdate(...);
 
-	-- Write the current character's progress.
+	-- Write the current character's progress if a top-level update has been completed
 	local rootData = self.data;
-	if rootData and rootData.total and rootData.total > 0 then
+	if rootData and rootData.TLUG and rootData.total and rootData.total > 0 then
 		app.CurrentCharacter.PrimeData = {
 			progress = rootData.progress,
 			total = rootData.total,
@@ -8720,20 +5344,31 @@ customWindowUpdates.list = function(self, force, got)
 			data._VerifyGroupSourceID = data._VerifyGroupSourceID + 1
 			local link, source = data.link or data.silentLink, data.sourceID;
 			if not link then return; end
-			if not GetItemInfo(link) then
-				-- app.PrintDebug("No Item Data Cached",link,data._VerifyGroupSourceID)
-				return;
-			end
 			-- If it doesn't, the source ID will need to be harvested.
 			local sourceID = app.GetSourceID(link);
 			-- app.PrintDebug("SourceIDs",data.modItemID,source,app.GetSourceID(link),link)
 			if sourceID and sourceID > 0 then
 				-- only save the source if it is different than what we already have, or being forced
 				if not source or source < 1 or source ~= sourceID then
-					-- app.print("SourceID Update",link,data.modItemID,source,"=>",sourceID);
 					-- print(GetItemInfo(text))
-					data.sourceID = sourceID;
-					app.SaveHarvestSource(data);
+					if not source then
+						-- app.print("SourceID Update",link,data.modItemID,source,"=>",sourceID);
+						data.sourceID = sourceID
+						app.SaveHarvestSource(data)
+					else
+						app.print("SourceID Diff!",link,source,"=>",sourceID)
+						-- replace the item information of the root Item (this affects the Main list)
+						-- since the inherent item information does not match the SourceID any longer
+						local mt = getmetatable(data)
+						if mt then
+							local rootData = mt.__index
+							if rootData then
+								rootData.rawlink = nil
+								rootData.itemID = nil
+								rootData.modItemID = nil
+							end
+						end
+					end
 				end
 			end
 			return true
@@ -8914,7 +5549,9 @@ customWindowUpdates.list = function(self, force, got)
 			if func then return func(id); end
 			-- Simply a visible table whose Base will be the actual referenced object
 			return setmetatable({ visible = true }, {
-				__index = SearchForObject(type, id, "field") or CreateObject({[type]=id})
+				__index = SearchForObject(dataType, id, "key")
+					or SearchForObject(type, id, "field")
+					or CreateObject({[type]=id})
 			});
 		end
 
@@ -8954,13 +5591,13 @@ customWindowUpdates.list = function(self, force, got)
 				end
 			end
 			or function(o, key)
-				local text, key = o.text, o.key;
+				local text = o.text;
 				if not IsRetrieving(text) then
 					if not self.VerifyGroupSourceID(o) then
 						DGR(o);
 						return "Harvesting..."
 					end
-					return "#"..(o[dataType] or o[key or 0] or "?")..": "..text;
+					return "#"..(o[dataType] or o.keyval or "?")..": "..text;
 				end
 			end,
 			OnLoad = function(o)
@@ -8976,7 +5613,7 @@ customWindowUpdates.list = function(self, force, got)
 						local text = o.text;
 						-- app.PrintDebug("check",text)
 						return IsRetrieving(text) or
-							(not text:find("#") and text ~= UNKNOWN);
+							(not text:find("#") and text ~= UNKNOWN and not text:find("transmogappearance:"));
 					end
 				end
 			else
@@ -9152,7 +5789,7 @@ customWindowUpdates.Tradeskills = function(self, force, got)
 			end
 		end
 		app.HarvestRecipes = function()
-			local reagentsDB = LocalizeGlobal("AllTheThingsHarvestItems", {})
+			local reagentsDB = LocalizeGlobal("AllTheThingsHarvestItems", true)
 			reagentsDB.ReagentsDB = app.ReagentsDB
 			local Runner = self:GetRunner()
 			Runner.SetPerFrame(100);
@@ -9188,7 +5825,7 @@ customWindowUpdates.Tradeskills = function(self, force, got)
 			if not updates.Recipes then
 				-- app.PrintDebug("UpdateLearnedRecipes",self.lastTradeSkillID)
 				if app.Debugging then
-					local reagentsDB = LocalizeGlobal("AllTheThingsHarvestItems", {})
+					local reagentsDB = LocalizeGlobal("AllTheThingsHarvestItems", true)
 					reagentsDB.ReagentsDB = app.ReagentsDB
 				end
 				updates.Recipes = true;
@@ -9273,7 +5910,7 @@ customWindowUpdates.Tradeskills = function(self, force, got)
 				end
 				-- If something new was "learned", then refresh the data.
 				-- app.PrintDebug("Done. learned",#learned)
-				UpdateRawIDs("spellID", learned);
+				app.UpdateRawIDs("spellID", learned);
 				if #learned > 0 then
 					app.HandleEvent("OnThingCollected", "Recipes")
 					self.force = true;
@@ -9288,6 +5925,18 @@ customWindowUpdates.Tradeskills = function(self, force, got)
 				end
 			end
 		end
+		-- Custom SearchValueCriteria for requireSkill searches
+		local criteria = {
+			SearchValueCriteria = {
+				-- Include if the field of the group matches the desired value (or via translated requireSkill value matches)
+				-- and if it filters for the current character
+				function(o, field, value)
+					local v = o[field]
+					return v and (v == value or app.SkillDB.SpellToSkill[app.SpecializationSpellIDs[v] or 0] == value)
+						and app.CurrentCharacterFilters(o)
+				end
+			}
+		}
 		local function UpdateData(self, updates)
 			-- Open the Tradeskill list for this Profession
 			local data = updates.Data;
@@ -9295,7 +5944,7 @@ customWindowUpdates.Tradeskills = function(self, force, got)
 				-- app.PrintDebug("UpdateData",self.lastTradeSkillID)
 				data = app.CreateProfession(self.lastTradeSkillID);
 				app.BuildSearchResponse_IgnoreUnavailableRecipes = true;
-				NestObjects(data, app:BuildSearchResponse("requireSkill", data.requireSkill));
+				NestObjects(data, app:BuildSearchResponse("requireSkill", data.requireSkill, nil, criteria));
 				-- Profession headers use 'professionID' and don't actually convey a requirement on knowing the skill
 				-- but in a Profession window for that skill it's nice to see what that skill can craft...
 				NestObjects(data, app:BuildSearchResponse("professionID", data.requireSkill));
@@ -9391,44 +6040,45 @@ customWindowUpdates.Tradeskills = function(self, force, got)
 			AfterCombatCallback(self.Update, self);
 		end
 		-- Setup Event Handlers and register for events
-		self:SetScript("OnEvent", function(self, e, ...)
-			-- app.PrintDebug("Tradeskills.event",e,...)
-			if e == "TRADE_SKILL_LIST_UPDATE" then
-				if self:IsVisible() then
-					-- If it's not yours, don't take credit for it.
-					if C_TradeSkillUI.IsTradeSkillLinked() or C_TradeSkillUI.IsTradeSkillGuild() then
-						self:SetVisible(false);
-						return false;
-					end
-
-					-- Check to see if ATT has information about this profession.
-					local tradeSkillID = app.GetTradeSkillLine();
-					if not tradeSkillID or #SearchForField("professionID", tradeSkillID) < 1 then
-						self:SetVisible(false);
-						return false;
-					end
+		local EventHandlers = {
+			TRADE_SKILL_SHOW = function(self)
+				-- If it's not yours, don't take credit for it.
+				if C_TradeSkillUI.IsTradeSkillLinked() or C_TradeSkillUI.IsTradeSkillGuild() then
+					self:SetVisible(false)
+					return false
 				end
-				self:RefreshRecipes();
-			elseif e == "TRADE_SKILL_SHOW" then
+
+				-- Check to see if ATT has information about this profession.
+				local tradeSkillID = app.GetTradeSkillLine()
+				if not tradeSkillID or #SearchForField("professionID", tradeSkillID) < 1 then
+					self:SetVisible(false)
+					return false
+				end
+
 				if self.TSMCraftingVisible == nil then
-					self:SetTSMCraftingVisible(false);
+					self:SetTSMCraftingVisible(false)
 				end
 				if app.Settings:GetTooltipSetting("Auto:ProfessionList") then
-					-- Check to see if ATT has information about this profession.
-					local tradeSkillID = app.GetTradeSkillLine();
-					if not tradeSkillID or #SearchForField("professionID", tradeSkillID) < 1 then
-						self:SetVisible(false);
-					else
-						self:SetVisible(true);
-					end
+					self:SetVisible(true)
 				end
-				self:RefreshRecipes(true);
-			elseif e == "TRADE_SKILL_CLOSE"
-				or e == "GARRISON_TRADESKILL_NPC_CLOSED" then
-				self:SetVisible(false);
-			end
-		end);
-		return;
+				self:RefreshRecipes(true)
+			end,
+			TRADE_SKILL_CLOSE = function(self)
+				self:SetVisible(false)
+			end,
+		}
+		EventHandlers.GARRISON_TRADESKILL_NPC_CLOSED = EventHandlers.TRADE_SKILL_CLOSE
+
+		self:SetScript("OnEvent", function(self, e, ...)
+			-- app.PrintDebug("Tradeskills.event",e,...)
+			local handler = EventHandlers[e]
+			if not handler then return end
+
+			-- app.PrintDebug("Tradeskills.event.handle",e)
+			handler(self, e, ...)
+			-- app.PrintDebugPrior("Tradeskills.event.done")
+		end)
+		return
 	end
 	if self:IsVisible() then
 		if TSM_API and TSMAPI_FOUR then
@@ -9987,533 +6637,6 @@ customWindowUpdates.WorldQuests = function(self, force, got)
 end;
 end)();
 
--- ATT Debugger Logic
-app.LoadDebugger = function()
-	local debuggerWindow = app:GetWindow("Debugger", UIParent, function(self, force)
-		if not self.initialized then
-			self.initialized = true;
-			force = true;
-			local CleanFields = {
-				parent = 1,
-				sourceParent = 1,
-				total = 1,
-				text = 1,
-				forceShow = 1,
-				progress = 1,
-				OnUpdate = 1,
-				expanded = 1,
-				hash = 1,
-				rawlink = 1,
-				modItemID = 1,
-				f = 1,
-				key = 1,
-				visible = 1,
-				displayInfo = 1,
-				displayID = 1,
-				fetchedDisplayID = 1,
-				nmr = 1,
-				nmc = 1,
-				TLUG = 1,
-				locked = 1,
-				collectibleAsCost = 1,
-				costTotal = 1,
-				upgradeTotal = 1,
-				icon = 1,
-				_OnUpdate = 1,
-				_SettingsRefresh = 1,
-				_coord = 1,
-				__merge = 1,
-			};
-			local function CleanObject(obj)
-				if obj == nil then return end
-				if type(obj) == "table" then
-					local clean = {};
-					if obj[1] then
-						for _,o in ipairs(obj) do
-							clean[#clean + 1] = CleanObject(o)
-						end
-					else
-						for k,v in pairs(obj) do
-							if not CleanFields[k] then
-								clean[k] = CleanObject(v)
-							end
-						end
-					end
-					return clean
-				elseif type(obj) == "number" then
-					return obj
-				else
-					return tostring(obj)
-				end
-			end
-			local function InitDebuggerData()
-				if not self.rawData then
-					self.rawData = LocalizeGlobal("AllTheThingsDebugData", true);
-					if self.rawData[1] then
-						-- need to clean and create again to get different tables used as the actual 'objects' within the rows, otherwise the object data gets saved into the Global as well
-						NestObjects(self.data, CreateObject(CleanObject(self.rawData)));
-					end
-					if not self.data.g then self.data.g = {}; end
-					for i=#self.data.options,1,-1 do
-						tinsert(self.data.g, 1, self.data.options[i]);
-					end
-					AssignChildren(self.data);
-					AfterCombatCallback(self.Update, self, true);
-				end
-			end
-			-- batch operation to clear the rawData, and re-populate with a cleaned version of the current debugger content
-			self.BackupData = function(self)
-				wipe(self.rawData);
-				-- skip clickable rows
-				for _,o in ipairs(self.data.g) do
-					if not o.OnClick then
-						tinsert(self.rawData, CleanObject(o));
-					end
-				end
-				app.print("Debugger Data Saved");
-			end
-			local IgnoredNPCs = {
-				[142668] = 1,	-- Merchant Maku (Brutosaur)
-				[142666] = 1,	-- Collector Unta (Brutosaur)
-				[62821] = 1,	-- Mystic Birdhat (Grand Yak)
-				[62822] = 1,	-- Cousin Slowhands (Grand Yak)
-				[32642] = 1,	-- Mojodishu (Mammoth)
-				[32641] = 1,	-- Drix Blackwrench (Mammoth)
-			};
-			self:SetData({
-				['text'] = "Session History",
-				['icon'] = app.asset("WindowIcon_RaidAssistant"),
-				["description"] = "This keeps a visual record of all of the quests, maps, loot, and vendors that you have come into contact with since the session was started.",
-				["OnUpdate"] = app.AlwaysShowUpdate,
-				['back'] = 1,
-				['options'] = {
-					{
-						["hash"] = "clearHistory",
-						['text'] = "Clear History",
-						['icon'] = 132293,
-						["description"] = "Click this to fully clear this window.\n\nNOTE: If you click this by accident, use the dynamic Restore Buttons that this generates to reapply the data that was cleared.\n\nWARNING: If you reload the UI, the data stored in the Reload Button will be lost forever!",
-						["OnUpdate"] = app.AlwaysShowUpdate,
-						['count'] = 0,
-						['OnClick'] = function(row, button)
-							local copy = {};
-							for i,o in ipairs(self.data.g) do
-								-- only backup non-button groups
-								if not o.OnClick then
-									tinsert(copy, o);
-								end
-							end
-							if #copy < 1 then
-								app.print("There is nothing to clear.");
-								return true;
-							end
-							row.ref.count = row.ref.count + 1;
-							tinsert(self.data.options, {
-								["hash"] = "restore" .. row.ref.count,
-								['text'] = "Restore Button " .. row.ref.count,
-								['icon'] = app.asset("Button_Reroll"),
-								["description"] = "Click this to restore your cleared data.\n\nNOTE: Each Restore Button houses different data.\n\nWARNING: This data will be lost forever when you reload your UI!",
-								["OnUpdate"] = app.AlwaysShowUpdate,
-								['data'] = copy,
-								['OnClick'] = function(row, button)
-									for i,info in ipairs(row.ref.data) do
-										NestObject(self.data, CreateObject(info));
-									end
-									AssignChildren(self.data);
-									AfterCombatCallback(self.Update, self, true);
-									return true;
-								end,
-							});
-							wipe(self.rawData);
-							wipe(self.data.g);
-							for i=#self.data.options,1,-1 do
-								tinsert(self.data.g, 1, self.data.options[i]);
-							end
-							AssignChildren(self.data);
-							AfterCombatCallback(self.Update, self, true);
-							return true;
-						end,
-					},
-				},
-				['g'] = {},
-			});
-
-			local function CategorizeObject(info)
-				if info.isVendor then
-					return app.CreateNPC(app.HeaderConstants.VENDORS, { g = { info }})
-				elseif info.questID then
-					if info.isWorldQuest then
-						return app.CreateNPC(app.HeaderConstants.WORLD_QUESTS, { g = { info }})
-					else
-						return app.CreateNPC(app.HeaderConstants.QUESTS, { g = { info }})
-					end
-				elseif info.npcID then
-					return app.CreateNPC(app.HeaderConstants.ZONE_DROPS, { g = { info }})
-				elseif info.objectID then
-					return app.CreateNPC(app.HeaderConstants.TREASURES, { g = { info }})
-				elseif info.unit then
-					return app.CreateNPC(app.HeaderConstants.DROPS, { g = { info }})
-				end
-				return info
-			end
-
-			local AddObject = function(info)
-				-- print("Debugger.AddObject")
-				-- app.PrintTable(info)
-				-- print("---")
-				-- Bubble Up the Maps
-				local mapInfo;
-				local mapID = app.CurrentMapID;
-				if mapID then
-					if info then
-						local pos = C_Map.GetPlayerMapPosition(mapID, "player");
-						if pos then
-							local px, py = pos:GetXY();
-							info.coord = { math.ceil(px * 10000) / 100, math.ceil(py * 10000) / 100, mapID };
-						end
-						info = CategorizeObject(info)
-					end
-					repeat
-						mapInfo = C_Map_GetMapInfo(mapID);
-						if mapInfo then
-							if not info then
-								info = { ["mapID"] = mapInfo.mapID };
-								-- print("Added mapID",mapInfo.mapID)
-							else
-								info = { ["mapID"] = mapInfo.mapID, ["g"] = { info } };
-								-- print("Pushed into mapID",mapInfo.mapID)
-							end
-							mapID = mapInfo.parentMapID
-						end
-					until not mapInfo or not mapID;
-				end
-
-				if info then
-					NestObject(self.data, CreateObject(info));
-					self:BuildData();
-					AfterCombatCallback(self.Update, self, true);
-					-- trigger the delayed backup
-					DelayedCallback(self.BackupData, 15, self);
-				end
-			end
-
-			-- Merchant Additions
-			local AddMerchant = function(guid)
-				-- print("AddMerchant",guid)
-				local guid = guid or UnitGUID("npc");
-				if guid then
-					local ty, zero, server_id, instance_id, zone_uid, npc_id, spawn_uid = ("-"):split(guid);
-					if npc_id then
-						npc_id = tonumber(npc_id);
-
-						if IgnoredNPCs[npc_id] then return true; end
-
-						local numItems = GetMerchantNumItems();
-						app.PrintDebug("MERCHANT DETAILS", ty, npc_id, numItems);
-
-						local rawGroups = {};
-						for i=1,numItems,1 do
-							local link = GetMerchantItemLink(i);
-							if link then
-								local merchItemIno = C_MerchantFrame.GetItemInfo(i);
-								-- Parse as an ITEM LINK.
-								local item = { ["itemID"] = tonumber(link:match("item:(%d+)")), ["rawlink"] = link, ["cost"] = merchItemIno.price };
-								if merchItemIno.hasExtendedCost then
-									local cost = {};
-									local itemCount = GetMerchantItemCostInfo(i);
-									for j=1,itemCount,1 do
-										local _, itemValue, itemLink = GetMerchantItemCostItem(i, j);
-										if itemLink then
-											-- print("  ", itemValue, itemLink, gsub(itemLink, "\124", "\124\124"));
-											local m = itemLink:match("currency:(%d+)");
-											if m then
-												-- Parse as a CURRENCY.
-												tinsert(cost, {"c", tonumber(m), itemValue});
-											else
-												-- Parse as an ITEM.
-												tinsert(cost, {"i", tonumber(itemLink:match("item:(%d+)")), itemValue});
-											end
-										end
-									end
-									if cost[1] then
-										item.cost = cost;
-									end
-								end
-
-								tinsert(rawGroups, item);
-							end
-						end
-
-						local info = { [(ty == "GameObject") and "objectID" or "npcID"] = npc_id };
-						local faction = UnitFactionGroup("npc");
-						if faction then
-							info.r = faction == "Horde" and Enum.FlightPathFaction.Horde or Enum.FlightPathFaction.Alliance;
-						end
-						info.isVendor = 1;
-						info.g = rawGroups;
-						AddObject(info);
-					end
-				end
-			end
-
-			-- Setup Event Handlers and register for events
-			self:SetScript("OnEvent", function(self, e, ...)
-				-- app.PrintDebug(e, ...);
-				if e == "ZONE_CHANGED_NEW_AREA" or e == "NEW_WMO_CHUNK" then
-					AddObject();
-				elseif e == "MERCHANT_SHOW" or e == "MERCHANT_UPDATE" then
-					SetMerchantFilter(LE_LOOT_FILTER_ALL)
-					MerchantFrame_Update()
-					DelayedCallback(AddMerchant, 0.5, UnitGUID("npc"));
-				elseif e == "TRADE_SKILL_LIST_UPDATE" then
-					local tradeSkillID = app.GetTradeSkillLine();
-					local currentCategoryID, categories = -1, {};
-					local categoryData, categoryList, rawGroups = {}, {}, {};
-					local categoryIDs = { C_TradeSkillUI_GetCategories() };
-					for i = 1,#categoryIDs do
-						currentCategoryID = categoryIDs[i];
-						C_TradeSkillUI.GetCategoryInfo(currentCategoryID, categoryData);
-						if categoryData.name then
-							if not categories[currentCategoryID] then
-								local category = {
-									["parentCategoryID"] = categoryData.parentCategoryID,
-									["categoryID"] = currentCategoryID,
-									["name"] = categoryData.name,
-									["g"] = {}
-								};
-								categories[currentCategoryID] = category;
-								tinsert(categoryList, category);
-							end
-						end
-					end
-
-					local recipeIDs = C_TradeSkillUI.GetAllRecipeIDs();
-					for i = 1,#recipeIDs do
-						local spellRecipeInfo = C_TradeSkillUI.GetRecipeInfo(recipeIDs[i]);
-						if spellRecipeInfo then
-							currentCategoryID = spellRecipeInfo.categoryID;
-							if not categories[currentCategoryID] then
-								C_TradeSkillUI.GetCategoryInfo(currentCategoryID, categoryData);
-								if categoryData.name then
-									local category = {
-										["parentCategoryID"] = categoryData.parentCategoryID,
-										["categoryID"] = currentCategoryID,
-										["name"] = categoryData.name,
-										["g"] = {}
-									};
-									categories[currentCategoryID] = category;
-									tinsert(categoryList, category);
-								end
-							end
-							local recipe = {
-								["recipeID"] = spellRecipeInfo.recipeID,
-								["requireSkill"] = tradeSkillID,
-								["name"] = spellRecipeInfo.name,
-							};
-							if spellRecipeInfo.previousRecipeID then
-								recipe.previousRecipeID = spellRecipeInfo.previousRecipeID;
-							end
-							if spellRecipeInfo.nextRecipeID then
-								recipe.nextRecipeID = spellRecipeInfo.nextRecipeID;
-							end
-							tinsert(categories[currentCategoryID].g, recipe);
-						end
-					end
-
-					-- Make each category parent have children. (not as gross as that sounds)
-					for i=#categoryList,1,-1 do
-						local category = categoryList[i];
-						if category.parentCategoryID then
-							local parentCategory = categories[category.parentCategoryID];
-							category.parentCategoryID = nil;
-							if parentCategory then
-								tinsert(parentCategory.g, 1, category);
-								tremove(categoryList, i);
-							end
-						end
-					end
-
-					-- Now merge the categories into the raw groups table.
-					for i,category in ipairs(categoryList) do
-						tinsert(rawGroups, category);
-					end
-					local info = {
-						["professionID"] = tradeSkillID,
-						["icon"] = GetTradeSkillTexture(tradeSkillID),
-						["name"] = C_TradeSkillUI.GetTradeSkillDisplayName(tradeSkillID),
-						["g"] = rawGroups
-					};
-					NestObject(self.data, CreateObject(info));
-					AssignChildren(self.data);
-					AfterCombatCallback(self.Update, self, true);
-					-- trigger the delayed backup
-					DelayedCallback(self.BackupData, 15, self);
-				-- Capture quest NPC dialogs
-				elseif e == "QUEST_DETAIL" or e == "QUEST_PROGRESS" or e == "QUEST_COMPLETE" then
-					local questStartItemID = ...;
-					local questID = GetQuestID();
-					if questID == 0 then return false; end
-					local npc = "questnpc";
-					local guid = UnitGUID(npc);
-					if not guid then
-						npc = "npc";
-						guid = UnitGUID(npc);
-					end
-					local type, zero, server_id, instance_id, zone_uid, npc_id, spawn_uid;
-					if guid then type, zero, server_id, instance_id, zone_uid, npc_id, spawn_uid = ("-"):split(guid); end
-					app.PrintDebug(e, questStartItemID, " => Quest #", questID, type, npc_id, app.NPCNameFromID[npc_id]);
-
-					local rawGroups = {};
-					for i=1,GetNumQuestRewards(),1 do
-						local link = GetQuestItemLink("reward", i);
-						if link then tinsert(rawGroups, { ["itemID"] = GetItemID(link) }); end
-					end
-					for i=1,GetNumQuestChoices(),1 do
-						local link = GetQuestItemLink("choice", i);
-						if link then tinsert(rawGroups, { ["itemID"] = GetItemID(link) }); end
-					end
-					-- GetNumQuestLogRewardSpells removed in 10.1
-					-- for i=1,GetNumQuestLogRewardSpells(questID),1 do
-					-- 	local texture, name, isTradeskillSpell, isSpellLearned, hideSpellLearnText, isBoostSpell, garrFollowerID, genericUnlock, spellID = GetQuestLogRewardSpell(i, questID);
-					-- 	if garrFollowerID then
-					-- 		tinsert(rawGroups, { ["followerID"] = garrFollowerID, ["name"] = name });
-					-- 	elseif spellID then
-					-- 		if isTradeskillSpell then
-					-- 			tinsert(rawGroups, { ["recipeID"] = spellID, ["name"] = name });
-					-- 		else
-					-- 			tinsert(rawGroups, { ["spellID"] = spellID, ["name"] = name });
-					-- 		end
-					-- 	end
-					-- end
-
-					local info = { ["questID"] = questID };
-					if #rawGroups > 0 then
-						info.g = rawGroups
-					end
-					info.name = app.GetQuestName(questID)
-					if e == "QUEST_DETAIL" then
-						local providers = {}
-						if questStartItemID and questStartItemID > 0 then tinsert(providers, { "i", questStartItemID }); end
-						if npc_id then
-							npc_id = tonumber(npc_id);
-							if type == "GameObject" then
-								tinsert(providers, { "o", npc_id })
-							else
-								info.qg = npc_id
-								info.qg_name = app.NPCNameFromID[npc_id]
-							end
-							local faction = UnitFactionGroup(npc);
-							if faction then
-								info.r = faction == "Horde" and Enum.FlightPathFaction.Horde or Enum.FlightPathFaction.Alliance;
-							end
-						end
-						if #providers > 0 then
-							info.providers = providers
-						end
-					end
-					AddObject(info);
-				-- Capture accepted quests which skip NPC dialog windows (addons, auto-accepted)
-				elseif e == "QUEST_ACCEPTED" then
-					local questID = ...
-					if questID then
-						local info = { ["questID"] = questID };
-						info.name = app.GetQuestName(questID)
-						AddObject(info);
-					end
-				-- Capture various personal/party loot received
-				elseif e == "CHAT_MSG_LOOT" then
-					local msg, player, a, b, c, d, e, f, g, h, i, j, k, l = ...;
-					-- "You receive item: item:###" will break the match
-					-- this probably doesn't work in other locales
-					msg = msg:gsub("item: ", "");
-					-- print("Loot parse",msg)
-					local itemString = msg:match("item[%-?%d:]+");
-					if itemString then
-						-- print("Looted Item",itemString)
-						local itemID = GetItemID(itemString);
-						AddObject({ ["unit"] = j, ["g"] = { { ["itemID"] = itemID, ["rawlink"] = itemString } } });
-					end
-				-- Capture personal loot sources
-				elseif e == "LOOT_READY" then
-					local slots = GetNumLootItems();
-					-- print("Loot Slots:",slots);
-					local loot, source, itemID, info;
-					local type, zero, server_id, instance_id, zone_uid, id, spawn_uid;
-					local mapID = app.CurrentMapID;
-					if mapID then
-						local pos = C_Map.GetPlayerMapPosition(mapID, "player");
-						if pos then
-							local px, py = pos:GetXY();
-							print("coord", math.ceil(px * 10000) / 100, math.ceil(py * 10000) / 100, mapID)
-						end
-					end
-					for i=1,slots,1 do
-						loot = GetLootSlotLink(i);
-						if loot then
-							itemID = GetItemID(loot);
-							if itemID then
-								source = { GetLootSourceInfo(i) };
-								for j=1,#source,2 do
-									type, zero, server_id, instance_id, zone_uid, id, spawn_uid = ("-"):split(source[j]);
-									-- TODO: test this with Item containers
-									app.PrintDebug("Add Loot",itemID,"from",type,id)
-									info = { [(type == "GameObject") and "objectID" or "npcID"] = tonumber(id), ["g"] = { { ["itemID"] = itemID, ["rawlink"] = loot } } };
-									-- print("Add Loot")
-									-- app.PrintTable(info);
-									AddObject(info);
-								end
-							else
-								app.PrintDebug("No ItemID!",loot)
-							end
-						end
-					end
-				elseif e == "QUEST_LOOT_RECEIVED" then
-					local questID, itemLink = ...
-					local itemID = GetItemID(itemLink)
-					local info = { ["questID"] = questID, ["g"] = { { ["itemID"] = itemID, ["rawlink"] = itemLink } } }
-					app.PrintDebug("Add Quest Loot from",questID,itemLink,itemID)
-					AddObject(info)
-				elseif e == "LOOT_OPENED" then
-					local guid = GetLootSourceInfo(1)
-					if guid then
-						local type, zero, server_id, instance_id, zone_uid, npc_id, spawn_uid = ("-"):split(guid);
-						if(type == "GameObject") then
-							local text = GameTooltipTextLeft1:GetText()
-							print('ObjectID: '..(npc_id or 'UNKNOWN').. ' || ' .. 'Name: ' .. (text or 'UNKNOWN'))
-						end
-					end
-				end
-			end);
-			self:RegisterEvent("QUEST_ACCEPTED");
-			self:RegisterEvent("QUEST_DETAIL");
-			self:RegisterEvent("QUEST_PROGRESS");
-			self:RegisterEvent("QUEST_LOOT_RECEIVED");
-			self:RegisterEvent("QUEST_COMPLETE");
-			self:RegisterEvent("TRADE_SKILL_LIST_UPDATE");
-			self:RegisterEvent("ZONE_CHANGED_NEW_AREA");
-			self:RegisterEvent("NEW_WMO_CHUNK");
-			self:RegisterEvent("MERCHANT_SHOW");
-			self:RegisterEvent("MERCHANT_UPDATE");
-			self:RegisterEvent("LOOT_OPENED");
-			self:RegisterEvent("LOOT_READY");
-			self:RegisterEvent("CHAT_MSG_LOOT");
-			--self:RegisterAllEvents();
-
-			InitDebuggerData();
-			-- Ensure the current Zone is added when the Window is initialized
-			AddObject();
-			AssignChildren(self.data);
-		end
-
-		-- Update the window and all of its row data
-		self:BaseUpdate(force);
-	end);
-	app.TopLevelUpdateGroup(debuggerWindow.data);
-	debuggerWindow:Show();
-	app.LoadDebugger = function()
-		debuggerWindow:Toggle();
-	end
-end	-- app.LoadDebugger
-
 -- Auction House Lib
 (function()
 local auctionFrame = CreateFrame("Frame");
@@ -10919,18 +7042,11 @@ app.Startup = function()
 	if app.RaceIndex then currentCharacter.raceID = app.RaceIndex; end
 	if app.Class then currentCharacter.class = app.Class; end
 	if app.Race then currentCharacter.race = app.Race; end
-	if not currentCharacter.Achievements then currentCharacter.Achievements = {}; end
 	if not currentCharacter.ActiveSkills then currentCharacter.ActiveSkills = {}; end
 	if not currentCharacter.CustomCollects then currentCharacter.CustomCollects = {}; end
 	if not currentCharacter.Deaths then currentCharacter.Deaths = 0; end
-	if not currentCharacter.Exploration then currentCharacter.Exploration = {}; end
-	if not currentCharacter.Factions then currentCharacter.Factions = {}; end
-	if not currentCharacter.FlightPaths then currentCharacter.FlightPaths = {}; end
 	if not currentCharacter.Lockouts then currentCharacter.Lockouts = {}; end
 	if not currentCharacter.Professions then currentCharacter.Professions = {}; end
-	if not currentCharacter.Quests then currentCharacter.Quests = {}; end
-	if not currentCharacter.Spells then currentCharacter.Spells = {}; end
-	if not currentCharacter.Titles then currentCharacter.Titles = {}; end
 	app.CurrentCharacter = currentCharacter;
 	app.AddEventHandler("OnPlayerLevelUp", function()
 		currentCharacter.lvl = app.Level;
@@ -10939,24 +7055,17 @@ app.Startup = function()
 	-- Account Wide Data Storage
 	ATTAccountWideData = LocalizeGlobalIfAllowed("ATTAccountWideData", true);
 	local accountWideData = ATTAccountWideData;
-	if not accountWideData.Achievements then accountWideData.Achievements = {}; end
-	if not accountWideData.BattlePets then accountWideData.BattlePets = {}; end
-	if not accountWideData.Exploration then accountWideData.Exploration = {}; end
-	if not accountWideData.Factions then accountWideData.Factions = {}; end
 	if not accountWideData.FactionBonus then accountWideData.FactionBonus = {}; end
-	if not accountWideData.FlightPaths then accountWideData.FlightPaths = {}; end
 	if not accountWideData.HeirloomRanks then accountWideData.HeirloomRanks = {}; end
-	if not accountWideData.Quests then accountWideData.Quests = {}; end
-	if not accountWideData.Spells then accountWideData.Spells = {}; end
-	if not accountWideData.Titles then accountWideData.Titles = {}; end
-	if not accountWideData.OneTimeQuests then accountWideData.OneTimeQuests = {}; end
 
 	-- Old unused data
 	currentCharacter.CommonItems = nil
-	accountWideData.CommonItems = nil
+	ATTAccountWideData.CommonItems = nil
 
 	-- Notify Event Handlers that Saved Variable Data is available.
-	app.HandleEvent("OnSavedVariablesAvailable", currentCharacter, accountWideData);
+	app.HandleEvent("OnSavedVariablesAvailable", currentCharacter, ATTAccountWideData);
+	-- Event handlers which need Saved Variable data which is added by OnSavedVariablesAvailable handlers into saved variables
+	app.HandleEvent("OnAfterSavedVariablesAvailable", currentCharacter, ATTAccountWideData);
 
 	-- Update the total account wide death counter.
 	local deaths = 0;
@@ -10965,7 +7074,7 @@ app.Startup = function()
 			deaths = deaths + character.Deaths;
 		end
 	end
-	accountWideData.Deaths = deaths;
+	ATTAccountWideData.Deaths = deaths;
 
 	-- CRIEVE NOTE: Once the Sync Window is moved over from Classic, this can be removed.
 	if not AllTheThingsAD.LinkedAccounts then
@@ -10987,7 +7096,7 @@ local function PrePopulateAchievementSymlinks()
 		for achID,groups in pairs(achCache) do
 			for i=1,#groups do
 				group = groups[i]
-				if group.__type == "BaseAchievement" and not GetRelativeValue(group, "sourceIgnored") then
+				if group.__type == "Achievement" and not GetRelativeValue(group, "sourceIgnored") then
 					-- app.PrintDebug("FillAchSym",group.hash)
 					Run(FillSym, group)
 				end
@@ -10995,9 +7104,10 @@ local function PrePopulateAchievementSymlinks()
 		end
 		app.FillRunner.SetPerFrame(25)
 	end
+	app.RemoveEventHandler(PrePopulateAchievementSymlinks)
 	-- app.PrintDebug("Done:FillAchSym")
 end
-app.AddEventHandler("OnInit", PrePopulateAchievementSymlinks)
+app.AddEventHandler("OnRefreshCollectionsDone", PrePopulateAchievementSymlinks)
 
 -- Function which is triggered after Startup
 local function InitDataCoroutine()
@@ -11012,8 +7122,8 @@ local function InitDataCoroutine()
 	-- Wait for the app to finish OnStartup event, somehow this can trigger out of order on some clients
 	while app.Wait_OnStartupDone do yield(); end
 
-	local accountWideData = LocalizeGlobalIfAllowed("ATTAccountWideData");
-	local characterData = LocalizeGlobalIfAllowed("ATTCharacterData");
+	local accountWideData = LocalizeGlobalIfAllowed("ATTAccountWideData", true);
+	local characterData = LocalizeGlobalIfAllowed("ATTCharacterData", true);
 	local currentCharacter = characterData[app.GUID];
 
 	-- Clean up other matching Characters with identical Name-Realm but differing GUID
@@ -11071,12 +7181,32 @@ local function InitDataCoroutine()
 				end
 				backups[guid] = character;
 				characterData[guid] = nil;
-				-- app.print("Removed & Backed up Duplicate Data of Current Character:",character.text,guid)
+				local count = 0
+				for guid,char in pairs(backups) do
+					count = count + 1
+				end
+				app.print("Removed & Backed up Duplicate Data of Current Character:",character.text,guid,"[You have",count,"total character backups]")
+				app.print("Use '/att remove-deleted-character-backups help' for more info")
 			end
 			for _,guid in ipairs(toClean) do
 				app.FunctionRunner.Run(cleanCharacterFunc, guid);
 			end
 		end
+
+		-- Allows removing the character backups that ATT automatically creates for duplicated characters which are replaced by new ones
+		app.ChatCommands.Add("remove-deleted-character-backups", function(args)
+			local backups = 0
+			for guid,char in pairs(accountWideData._CharacterBackups) do
+				backups = backups + 1
+			end
+			accountWideData._CharacterBackups = nil
+			app.print("Cleaned up",backups,"character backups!")
+			return true
+		end, {
+			"Usage : /att remove-deleted-character-backups",
+			"Allows permanently removing all deleted character backup data",
+			"-- ATT removes and cleans out character-specific cached data which is stored by a character with the same Name-Realm as the logged-in character but a different character GUID. If you find yourself creating and deleting a lot of repeated characters, this will clean up those characters' data backups",
+		})
 	end);
 
 	app.HandleEvent("OnInit")
@@ -11086,10 +7216,6 @@ local function InitDataCoroutine()
 	for questID,completion in pairs(currentQuestsCache) do
 		if completion == 2 then currentQuestsCache[questID] = nil; end
 	end
-
-	-- Let a frame go before hitting the initial refresh to make sure as much time as possible is allowed for the operation
-	-- app.PrintDebug("Yield prior to Refresh")
-	yield();
 
 	-- Setup the use of profiles after a short delay to ensure that the layout window positions are collected
 	if not AllTheThingsProfiles then DelayedCallback(app.SetupProfiles, 5); end
@@ -11120,170 +7246,6 @@ app:RegisterFuncEvent("PLAYER_ENTERING_WORLD", function(...)
 	StartCoroutine("InitDataCoroutine", InitDataCoroutine);
 end);
 end -- Setup and Startup Functionality
-
--- Slash Command List
-SLASH_AllTheThings1 = "/allthethings";
-SLASH_AllTheThings2 = "/things";
-SLASH_AllTheThings3 = "/att";
-SlashCmdList.AllTheThings = function(cmd)
-	if cmd then
-		-- app.PrintDebug(cmd)
-		local args = { (" "):split(cmd:lower()) };
-		cmd = args[1];
-		-- app.PrintDebug(args)
-		-- first arg is always the window/command to execute
-		app.ResetCustomWindowParam(cmd);
-		for k=2,#args do
-			local customArg, customValue = args[k], nil;
-			customArg, customValue = ("="):split(customArg);
-			-- app.PrintDebug("Split custom arg:",customArg,customValue)
-			app.SetCustomWindowParam(cmd, customArg, customValue or true);
-		end
-
-		-- Eventually will migrate known Chat Commands to their respective creators
-		-- TODO: maybe this block migrates to base.lua or a separate module?
-		local commandFunc = app.ChatCommands[cmd]
-		if commandFunc then
-			local help = args[2] == "help"
-			if help then return app.ChatCommands.PrintHelp(cmd) end
-			return commandFunc(args)
-		end
-
-		if not cmd or cmd == "" or cmd == "main" or cmd == "mainlist" then
-			app.ToggleMainList();
-			return true;
-		elseif cmd == "bounty" then
-			app:GetWindow("Bounty"):Toggle();
-			return true;
-		elseif cmd == "debugger" then
-			app.LoadDebugger();
-			return true;
-		elseif cmd == "filters" then
-			app:GetWindow("ItemFilter"):Toggle();
-			return true;
-		elseif cmd == "finder" then
-			app.SetCustomWindowParam("list", "type", "itemharvester");
-			app.SetCustomWindowParam("list", "harvesting", true);
-			app.SetCustomWindowParam("list", "limit", 225000);
-			app:GetWindow("list"):Toggle();
-			return true;
-		elseif cmd == "harvest_achievements" then
-			app:GetWindow("AchievementHarvester"):Toggle();
-			return true;
-		elseif cmd == "ra" then
-			app:GetWindow("RaidAssistant"):Toggle();
-			return true;
-		elseif cmd == "ran" or cmd == "rand" or cmd == "random" then
-			app:GetWindow("Random"):Toggle();
-			return true;
-		elseif cmd == "list" then
-			app:GetWindow("list"):Toggle();
-			return true;
-		elseif cmd == "nwp" then
-			app:GetWindow("NWP"):Toggle();
-			return true;
-		elseif cmd == "awp" then
-			--app:GetWindow("awp"):Hide();
-			app.SetCustomWindowParam("awp", "reset", true);
-			app:GetWindow("awp"):Toggle();
-			return true;
-		elseif cmd == "rwp" then
-			app:GetWindow("RWP"):Toggle();
-			return true;
-		elseif cmd == "wq" then
-			app:GetWindow("WorldQuests"):Toggle();
-			return true;
-		elseif cmd == "unsorted" then
-			app:GetWindow("Unsorted"):Toggle();
-			return true;
-		elseif cmd == "nyi" then
-			app:GetWindow("NeverImplemented"):Toggle();
-			return true;
-		elseif cmd == "hat" then
-			app:GetWindow("HiddenAchievementTriggers"):Toggle();
-			return true;
-		elseif cmd == "hct" then
-			app:GetWindow("HiddenCurrencyTriggers"):Toggle();
-			return true;
-		elseif cmd == "hqt" then
-			app:GetWindow("HiddenQuestTriggers"):Toggle();
-			return true;
-		elseif cmd == "sourceless" then
-			app:GetWindow("Sourceless"):Toggle();
-			return true;
-		elseif cmd:sub(1, 4) == "mini" then
-			app:ToggleMiniListForCurrentZone();
-			return true;
-		else
-			if cmd:sub(1, 6) == "mapid:" then
-				app:GetWindow("CurrentInstance"):SetMapID(tonumber(cmd:sub(7)), true);
-				return true;
-			end
-		end
-
-		-- Search for the Link in the database
-		app.SetSkipLevel(2);
-		local group = app.GetCachedSearchResults(app.SearchForLink, cmd, nil, {SkipFill = true});
-		app.SetSkipLevel(0);
-		-- make sure it's 'something' returned from the search before throwing it into a window
-		if group and (group.link or group.name or group.text or group.key) then
-			app:CreateMiniListForGroup(group);
-			return true;
-		end
-		app.print("Unknown Command: ", cmd);
-	else
-		-- Default command
-		app.ToggleMainList();
-	end
-end
-
-SLASH_AllTheThingsBOUNTY1 = "/attbounty";
-SlashCmdList.AllTheThingsBOUNTY = function(cmd)
-	app:GetWindow("Bounty"):Toggle();
-end
-
-SLASH_AllTheThingsHARVESTER1 = "/attharvest";
-SLASH_AllTheThingsHARVESTER2 = "/attharvester";
-SlashCmdList.AllTheThingsHARVESTER = function(cmd)
-	app.print("Force Debug Mode");
-	app.Debugging = true
-	app.Settings:ForceRefreshFromToggle();
-	app.Settings:SetDebugMode(true);
-	app.SetCustomWindowParam("list", "reset", true);
-	app.SetCustomWindowParam("list", "type", "cache:item");
-	app.SetCustomWindowParam("list", "harvesting", true);
-	local args = { (","):split(cmd:lower()) };
-	app.SetCustomWindowParam("list", "min", args[1]);
-	app.SetCustomWindowParam("list", "limit", args[2]);
-	app:GetWindow("list"):Toggle();
-end
-
-SLASH_AllTheThingsMAPS1 = "/attmaps";
-SlashCmdList.AllTheThingsMAPS = function(cmd)
-	app:GetWindow("CosmicInfuser"):Toggle();
-end
-
-SLASH_AllTheThingsMINI1 = "/attmini";
-SLASH_AllTheThingsMINI2 = "/attminilist";
-SlashCmdList.AllTheThingsMINI = function(cmd)
-	app:ToggleMiniListForCurrentZone();
-end
-
-SLASH_AllTheThingsRA1 = "/attra";
-SlashCmdList.AllTheThingsRA = function(cmd)
-	app:GetWindow("RaidAssistant"):Toggle();
-end
-
-SLASH_AllTheThingsRAN1 = "/attran";
-SLASH_AllTheThingsRAN2 = "/attrandom";
-SlashCmdList.AllTheThingsRAN = function(cmd)
-	app:GetWindow("Random"):Toggle();
-end
-
-SLASH_AllTheThingsWQ1 = "/attwq";
-SlashCmdList.AllTheThingsWQ = function(cmd)
-	app:GetWindow("WorldQuests"):Toggle();
-end
 
 -- Define Event Behaviours
 app.AddonLoadedTriggers = {

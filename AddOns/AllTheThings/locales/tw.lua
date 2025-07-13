@@ -123,11 +123,11 @@ local GetSpellName = app.WOWAPI.GetSpellName;
 	L.DEBUG_LOGIN = "登錄後獲得的獎勵。\n\n幹得好！你做到了！\n\n僅在偵錯模式下可見。";
 	L.UNSORTED = "未分類";
 	L.UNSORTED_DESC = "此資料尚未在 ATT 中獲得 " .. app.Version .. "。";
+	L.UNSORTED_DESC_2 = "這裡的物品存在於遊戲中，玩家可能會獲得，但 ATT 還沒有找到準確位置";
 	L.NEVER_IMPLEMENTED = "從未實裝";
 	L.NEVER_IMPLEMENTED_DESC = "這裡的物品在技術上存在於遊戲內，但從未向玩家開放過";
 	L.HIDDEN_QUEST_TRIGGERS = "隱藏任務觸發";
 	L.HIDDEN_QUEST_TRIGGERS_DESC = "這些任務是依據特定的標準手動確定觸發的任務，主要用於遊戲內部的追蹤目的";
-	L.UNSORTED_DESC_2 = "這裡的物品存在於遊戲中，玩家可能會獲得，但 ATT 還沒有找到準確位置";
 	L.OPEN_AUTOMATICALLY = "自動開啟";
 	L.OPEN_AUTOMATICALLY_DESC = "如果你不是暴雪開發者，最好是取消勾選此項。這樣做是為了迫使暴雪修復或承認這些錯誤。";
 	L.MINI_LIST = "小列表";
@@ -162,6 +162,7 @@ local GetSpellName = app.WOWAPI.GetSpellName;
 	L.RAID_DIFF_DESC_2 = "此設定允許自訂團隊難度。\n\n點擊此行可返回團隊助手。";
 	L.LEGACY_RAID_DIFF_DESC_2 = "此設定允許自訂經典拾取團隊難度。（圍攻奧格瑪之前的）\n\n點擊此行可返回團隊助手。";
 	L.REROLL = "重新刷新";
+	L.REROLL_2 = "重新刷新：";
 	L.REROLL_DESC = "點擊此按鈕可使用活動篩選器重新刷新。";
 	L.APPLY_SEARCH_FILTER = "套用搜尋篩選";
 	L.APPLY_SEARCH_FILTER_DESC = "請選擇一個搜尋篩選選項。";
@@ -180,7 +181,6 @@ local GetSpellName = app.WOWAPI.GetSpellName;
 	L.GO_GO_RANDOM_DESC = "此視窗允許隨機選擇要獲得的地點或物品。去吧！";
 	L.CHANGE_SEARCH_FILTER = "更改搜尋篩選";
 	L.CHANGE_SEARCH_FILTER_DESC = "點擊此按鈕可更改搜尋篩選。";
-	L.REROLL_2 = "重新刷新：";
 	L.NOTHING_TO_SELECT_FROM = "沒有什麼可以隨意選擇的。如果在“設定”中啟用了“臨時更新”，則必須在使用此視窗之前更新主列表（/att）。";
 	L.NO_SEARCH_METHOD = "未指定搜尋方法。";
 	L.PROFESSION_LIST = "專業技能列表";
@@ -281,10 +281,24 @@ local GetSpellName = app.WOWAPI.GetSpellName;
 			L.TITLE_NONE_THINGS = "一無所有 ";
 			L.TITLE_ONLY = " 僅 ";
 			L.TITLE_INSANE = app.ccColors.Insane.."瘋狂|R ";
+			--TODO: L.TITLE_RANKED = "Ranked ";
+			--TODO: L.TITLE_CORE = "Core ";
 			L.TITLE_SOME_THINGS = "隨隨便便 ";
 			L.TITLE_LEVEL = "等級 ";
 			L.TITLE_SOLO = "單人 ";
 			L._BETA_LABEL = " |cff4AA7FF[測試]|R";
+
+			--TODO: L.PRESET_TOOLTIP = "Enable this preset. This will adjust only the relevant tracking options of the current profile.";
+			--TODO: L.PRESET_NONE = "None of the Things Mode disables the tracking of all collectibles. Way to challenge yourself.";
+			--TODO: L.PRESET_CORE = "Core Mode enables the collectibles visible in the game's Warband Collections journal.";
+			--TODO: L.PRESET_RANKED = "Ranked Mode enables the collectibles tracked by websites such as Data For Azeroth and WoWthing.";
+			--TODO: L.PRESET_INSANE = app.ccColors.Insane .. "Insane Mode|R enables all " .. app.ccColors.Insane .. "colored options|R and gives you a real challenge!";
+			--TODO: L.PRESET_ACCOUNT = app.ccColors.Account .. "Account Mode|R enables all account-wide tracking, and will show progress from all of your characters.";
+			--TODO: L.PRESET_SOLO = "Solo Mode disables all account-wide tracking, and will only show progress for your current character.";
+			--TODO: L.PRESET_UNIQUE = "Unique Mode disables Sources, marking gear as collected when you have learned their unique appearance.";
+			--TODO: L.PRESET_COMP = "Completionist Mode enables Sources, only marking gear as collected when you have learned the appearance from that specific item.";
+			--TODO: L.PRESET_RESTORE = "Restore";
+			--TODO: L.PRESET_RESTORE_TOOLTIP = "Restore your tracking options to before applying any presets.";
 
 		L.MINIMAP_SLIDER = "小地圖按鈕尺寸";
 		L.MINIMAP_SLIDER_TOOLTIP = '使用此選項可自訂小地圖按鈕的大小。\n\n預設：36';
@@ -321,8 +335,8 @@ local GetSpellName = app.WOWAPI.GetSpellName;
 		L.AUTO_WQ_LIST_CHECKBOX_TOOLTIP = "如果你想讓'世界任務'列表自動出現請啟用此選項。每當你切換區域時列表將自動更新。\n\n你也可以將此設定綁定到一個按鍵上。\n\n按鍵設定 -> 插件 -> ALL THE THINGS -> 打開/關閉世界任務列表\n\n快捷命令：/attwq";
 		L.AUCTION_TAB_CHECKBOX = "顯示拍賣行模組標籤";
 		L.AUCTION_TAB_CHECKBOX_TOOLTIP = "如果你想查看 ATT 提供的拍賣行模組請啟用此選項。\n\n一些插件很調皮會大量修改這個框架。ATT 並不總是和那些玩具玩得很好。";
-		L.ICON_LEGEND_LABEL = "圖標圖例";
-		L.ICON_LEGEND_TEXT = app.ccColors.White .. "|T" .. app.asset("status-unobtainable") .. ":0|t " .. "無法獲得" .. "\n|T" .. app.asset("status-prerequisites") .. ":0|t " .. "僅在滿足先決條件的情況下獲得" .. "\n|T" .. app.asset("status-seasonal-available") .. ":0|t " .. AVAILABLE .."季節性內容" .. "\n|T" .. app.asset("status-seasonal-unavailable") .. ":0|t " .. UNAVAILABLE .. "季節性內容" .. "\n|T374225:0|t " .. "當前角色不可用";	--TODO: check (un)available seasonal content
+		L.ICON_LEGEND_STATUS_LABEL = "圖標圖例";
+		L.ICON_LEGEND_STATUS_TEXT = app.ccColors.White .. "|T" .. app.asset("status-unobtainable") .. ":0|t " .. "無法獲得" .. "\n|T" .. app.asset("status-prerequisites") .. ":0|t " .. "僅在滿足先決條件的情況下獲得" .. "\n|T" .. app.asset("status-seasonal-available") .. ":0|t " .. AVAILABLE .."季節性內容" .. "\n|T" .. app.asset("status-seasonal-unavailable") .. ":0|t " .. UNAVAILABLE .. "季節性內容" .. "\n|T374225:0|t " .. "當前角色不可用";	--TODO: check (un)available seasonal content
 		L.CHAT_COMMANDS_LABEL = "聊天命令";
 		L.CHAT_COMMANDS_TEXT = "/att |cffFFFFFF或|R /things |cffFFFFFF或|R /allthethings\n|cffFFFFFF打開主列表。\n\n|R/att mini |cffFFFFFF或|R /attmini\n|cffFFFFFF打開小列表。\n\n|R/att bounty\n|cffFFFFFF打開被出錯或未確認的物品列表。\n\n|R/att ra |cffFFFFFF或|R /attra\n|cffFFFFFF打開團隊助手。\n\n|R/att wq |cffFFFFFF或|R /attwq\n|cffFFFFFF打開世界任務列表。\n\n|R/att item:1234 |cffFFFFFF或|R /att [物品連接]\n|cffFFFFFF打開一個共享外觀的視窗。也適用於其他事物，例如|R quest:1234|cffFFFFFF，|Rnpcid:1234|cffFFFFFF，|Rmapid:1234|cffFFFFFF 或 |Rrecipeid:1234|cffFFFFFF。\n\n|R/att rwp\n|cffFFFFFF顯示所有未來用更新刪除的東西。\n\n|R/att random |cffFFFFFF或|R /attrandom |cffFFFFFF或|R /attran\n|cffFFFFFF打開隨機列表。\n\n|R/att unsorted\n|cffFFFFFF打開未知來源物品列表。最好在偵錯模式下打開。\n\n|R/rl\n|cffFFFFFF重載魔獸介面。|R";
 
@@ -737,10 +751,8 @@ for key,value in pairs({
 	-- Interface: Information Page
 		ACHIEVEMENT_ID = "成就 ID";
 		ACHIEVEMENT_CATEGORY_ID = "成就類別 ID";
-		ADDED_WITH_PATCH_CLASSIC_FORMAT = "該物品是隨更新 %s 加入的";
 		READDED_WITH_PATCH_CLASSIC_FORMAT = "該物品是隨更新 %s 重新加入的";
 		REMOVED_WITH_PATCH_CLASSIC_FORMAT = "該物品是隨更新 %s 移除的";
-		WAS_ADDED_WITH_PATCH_CLASSIC_FORMAT = "該物品曾是隨更新 %s 加入的";
 
 
 	-- Features Page

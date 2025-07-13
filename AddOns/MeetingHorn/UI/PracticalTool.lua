@@ -75,7 +75,7 @@ function PracticalTool:Constructor()
     self.Toolbar:SetPoint("TOPLEFT", self, "TOPLEFT", 2, -25)
     self.Toolbar:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -6, 230)
 
-    local TocPricesModule = self:CreateImageTextModule(self.Toolbar, "Interface/AddOns/MeetingHorn/Media/PracticalTool/iocn1", "TOC物价", function()
+    local TocPricesModule = self:CreateImageTextModule(self.Toolbar, "Interface/AddOns/MeetingHorn/Media/PracticalTool/iocn1", "ICC物价", function()
         self:OnTocPricesModuleClick()
     end )
     TocPricesModule:SetPoint("LEFT", self.Toolbar, "LEFT", 10, 0)

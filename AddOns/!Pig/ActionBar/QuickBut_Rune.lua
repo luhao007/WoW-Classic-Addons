@@ -1,10 +1,7 @@
 local _, addonTable = ...;
-local _, _, _, tocversion = GetBuildInfo()
 --------
 local Create = addonTable.Create
 local PIGFrame=Create.PIGFrame
-local PIGButton = Create.PIGButton
-local PIGLine=Create.PIGLine
 local PIGQuickBut=Create.PIGQuickBut
 local PIGFontString=Create.PIGFontString
 -- --==============================
@@ -12,11 +9,13 @@ local Data=addonTable.Data
 local InvSlot=Data.InvSlot
 local EngravingSlot=Data.EngravingSlot
 -----
+local QuickButUI=_G[Data.QuickButUIname]
 QuickButUI.ButList[4]=function()
-	if tocversion>20000 or not PIGA["QuickBut"]["Open"] or not PIGA["QuickBut"]["Rune"] then return end
+	if PIG_MaxTocversion(20000,true) or not PIGA["QuickBut"]["Open"] or not PIGA["QuickBut"]["Rune"] then return end
 	if not C_Engraving or C_Engraving and not C_Engraving.IsEngravingEnabled() then return end
-	local GnUI = "QkBut_AutoRune"
-	if _G[GnUI] then return end
+	if QuickButUI.Rune then return end
+	QuickButUI.Rune=true	
+	---
 	local Icon=134419
 	local AutoRune=PIGQuickBut(GnUI,"",Icon)
 	local fuwenNum,butW = 5,AutoRune:GetHeight()
@@ -31,9 +30,11 @@ QuickButUI.ButList[4]=function()
 		AutoRuneList.F:Show()
 	end)
 	AutoRuneList:PIGSetBackdrop()
+	AutoRuneList.ButList={}
 	for Slot=1,19 do
 		if EngravingSlot[Slot] then
-			local RuneBut = CreateFrame("Button","QkBut_RuneSlot_"..Slot,AutoRuneList);
+			local RuneBut = CreateFrame("Button",nil,AutoRuneList);
+			AutoRuneList.ButList[Slot]=RuneBut
 			RuneBut:SetHighlightTexture("Interface/Buttons/ButtonHilight-Square");
 			RuneBut:SetSize(butW,butW);
 			RuneBut:SetNormalTexture(134419)
@@ -65,10 +66,13 @@ QuickButUI.ButList[4]=function()
 		self:Show()
 	end)
 	AutoRuneList.F:PIGSetBackdrop()
+	AutoRuneList.F.ButList={}
 	for Slot=1,19 do
 		if EngravingSlot[Slot] then
+			AutoRuneList.F.ButList[Slot]={}
 			for ir=1,fuwenNum do
-				local RuneBut = CreateFrame("Button","QkBut_RuneSlot_but"..Slot..ir,AutoRuneList.F);
+				local RuneBut = CreateFrame("Button",nil,AutoRuneList.F);
+				AutoRuneList.F.ButList[Slot][ir]=RuneBut
 				RuneBut:SetHighlightTexture("Interface/Buttons/ButtonHilight-Square");
 				RuneBut:SetSize(butW,butW);
 				RuneBut:SetNormalTexture(134419)
@@ -97,7 +101,7 @@ QuickButUI.ButList[4]=function()
 	local function Engraving_UpdateRuneList()
 		for Slot=1,19 do
 			if EngravingSlot[Slot] then
-				local RuneSlot = _G["QkBut_RuneSlot_"..Slot]
+				local RuneSlot = AutoRuneList.ButList[Slot]
 				local engravingInfo = C_Engraving.GetRuneForEquipmentSlot(Slot);
 				if engravingInfo then
 					RuneSlot:SetNormalTexture(engravingInfo.iconTexture);
@@ -118,13 +122,13 @@ QuickButUI.ButList[4]=function()
 				local engravingInfo = C_Engraving.GetRuneForEquipmentSlot(category);
 				if not engravingInfo or engravingInfo and engravingInfo.skillLineAbilityID~=rune.skillLineAbilityID then
 					AutoRuneList.F.BUTxuhao=AutoRuneList.F.BUTxuhao+1
-					local RuneBut = _G["QkBut_RuneSlot_but"..rune.equipmentSlot..AutoRuneList.F.BUTxuhao]
+					local RuneBut = AutoRuneList.F.ButList[rune.equipmentSlot][AutoRuneList.F.BUTxuhao]
 					RuneBut:Show()
 					RuneBut.skillLineAbilityID=rune.skillLineAbilityID
 					RuneBut:SetNormalTexture(rune.iconTexture);
 					if category==11 then
 						AutoRuneList.F.BUTxuhao_1=AutoRuneList.F.BUTxuhao_1+1
-						local RuneBut = _G["QkBut_RuneSlot_but12"..AutoRuneList.F.BUTxuhao_1]
+						local RuneBut = AutoRuneList.F.ButList[12][AutoRuneList.F.BUTxuhao_1]
 						RuneBut:Show()
 						RuneBut.skillLineAbilityID=rune.skillLineAbilityID
 						RuneBut:SetNormalTexture(rune.iconTexture);
@@ -141,7 +145,7 @@ QuickButUI.ButList[4]=function()
 		for Slot=1,19 do
 			if EngravingSlot[Slot] then
 				for ir=1,fuwenNum do
-					local RuneBut = _G["QkBut_RuneSlot_but"..Slot..ir]
+					local RuneBut = AutoRuneList.F.ButList[Slot][ir]
 					RuneBut:Hide()
 				end
 			end
@@ -173,18 +177,18 @@ QuickButUI.ButList[4]=function()
 			for Slot=1,19 do
 				if EngravingSlot[Slot] then
 					AutoRuneList.fuwenbuweiNUM=AutoRuneList.fuwenbuweiNUM+1
-					local RuneSlot = _G["QkBut_RuneSlot_"..Slot]
+					local RuneSlot = AutoRuneList.ButList[Slot]
 					RuneSlot:ClearAllPoints();
 					RuneSlot.biaoti:ClearAllPoints();
 					RuneSlot.biaoti:SetPoint("TOP",RuneSlot,"TOP",0,0)
 					RuneSlot:SetPoint("TOPLEFT",AutoRuneList,"TOPLEFT",(AutoRuneList.fuwenbuweiNUM-1)*butW+1,1);
 					for ir=1,fuwenNum do
-						local RuneBut = _G["QkBut_RuneSlot_but"..Slot..ir]
+						local RuneBut = AutoRuneList.F.ButList[Slot][ir]
 						RuneBut:ClearAllPoints();
 						if ir==1 then
 							RuneBut:SetPoint("TOPLEFT",AutoRuneList.F,"TOPLEFT",(AutoRuneList.fuwenbuweiNUM-1)*butW+1,1);
 						else
-							RuneBut:SetPoint("TOP",_G["QkBut_RuneSlot_but"..Slot..(ir-1)],"BOTTOM",0,0);
+							RuneBut:SetPoint("TOP",AutoRuneList.F.ButList[Slot][ir-1],"BOTTOM",0,0);
 						end
 					end
 				end
@@ -195,18 +199,18 @@ QuickButUI.ButList[4]=function()
 			for Slot=1,19 do
 				if EngravingSlot[Slot] then
 					AutoRuneList.fuwenbuweiNUM=AutoRuneList.fuwenbuweiNUM+1
-					local RuneSlot = _G["QkBut_RuneSlot_"..Slot]
+					local RuneSlot = AutoRuneList.ButList[Slot]
 					RuneSlot:ClearAllPoints();
 					RuneSlot.biaoti:ClearAllPoints();
 					RuneSlot.biaoti:SetPoint("BOTTOM",RuneSlot,"BOTTOM",0,0)
 					RuneSlot:SetPoint("BOTTOMLEFT",AutoRuneList,"BOTTOMLEFT",(AutoRuneList.fuwenbuweiNUM-1)*butW+1,2);
 					for ir=1,fuwenNum do
-						local RuneBut = _G["QkBut_RuneSlot_but"..Slot..ir]
+						local RuneBut = AutoRuneList.F.ButList[Slot][ir]
 						RuneBut:ClearAllPoints();
 						if ir==1 then
 							RuneBut:SetPoint("BOTTOMLEFT",AutoRuneList.F,"BOTTOMLEFT",(AutoRuneList.fuwenbuweiNUM-1)*butW+1,1);
 						else
-							RuneBut:SetPoint("BOTTOM",_G["QkBut_RuneSlot_but"..Slot..(ir-1)],"TOP",0,0);
+							RuneBut:SetPoint("BOTTOM",AutoRuneList.F.ButList[Slot][ir-1],"TOP",0,0);
 						end
 					end
 				end

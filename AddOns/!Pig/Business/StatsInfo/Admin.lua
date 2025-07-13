@@ -1,5 +1,4 @@
 local addonName, addonTable = ...;
-local _, _, _, tocversion = GetBuildInfo()
 local L=addonTable.locale
 local Create=addonTable.Create
 local fmod=math.fmod
@@ -12,8 +11,7 @@ local PIGFontString=Create.PIGFontString
 local PIGOptionsList_R=Create.PIGOptionsList_R
 --------
 local BusinessInfo=addonTable.BusinessInfo
-function BusinessInfo.Admin()
-	local StatsInfo = StatsInfo_UI
+function BusinessInfo.Admin(StatsInfo)
 	local fujiF,fujiTabBut=PIGOptionsList_R(StatsInfo.F,"角\n色",StatsInfo.butW,"Left")
 	---
 	local hang_Height,hang_NUM,UIWWW  = 24, 17,fujiF:GetWidth()*0.5;
@@ -28,7 +26,7 @@ function BusinessInfo.Admin()
 	local function gengxin_List(self)
 		if not fujiF:IsVisible() then return end
 		for id = 1, hang_NUM, 1 do
-			local fujik = _G["PIG_Admin_"..id]
+			local fujik = fujiF.Admin.ButList[id]
 			fujik:Hide();
 			fujik.nameDQ:Hide()
 		end
@@ -51,7 +49,7 @@ function BusinessInfo.Admin()
 		    for id = 1, hang_NUM do
 				local dangqian = id+offset;
 				if cdmulu[dangqian] then
-					local fujik = _G["PIG_Admin_"..id]
+					local fujik = fujiF.Admin.ButList[id]
 					fujik:Show();
 					fujik.allname=cdmulu[dangqian][1]
 					fujik.name:SetText(cdmulu[dangqian][1]);
@@ -80,13 +78,15 @@ function BusinessInfo.Admin()
 	fujiF.Admin.Scroll:SetScript("OnVerticalScroll", function(self, offset)
 	    FauxScrollFrame_OnVerticalScroll(self, offset, hang_Height, gengxin_List)
 	end)
+	fujiF.Admin.ButList={}
 	for id = 1, hang_NUM, 1 do
-		local hang = CreateFrame("Frame", "PIG_Admin_"..id, fujiF.Admin);
+		local hang = CreateFrame("Frame", nil, fujiF.Admin);
+		fujiF.Admin.ButList[id]=hang
 		hang:SetSize(fujiF.Admin:GetWidth()-18,hang_Height+4);
 		if id==1 then
 			hang:SetPoint("TOPLEFT", fujiF.Admin.Scroll, "TOPLEFT", 0, 0);
 		else
-			hang:SetPoint("TOPLEFT", _G["PIG_Admin_"..id-1], "BOTTOMLEFT", 0, 0);
+			hang:SetPoint("TOPLEFT", fujiF.Admin.ButList[id-1], "BOTTOMLEFT", 0, 0);
 		end
 		if id~=hang_NUM then
 			hang.line = PIGLine(hang,"BOT",0,nil,nil,{0.3,0.3,0.3,0.6})
@@ -131,7 +131,7 @@ function BusinessInfo.Admin()
 	local function gengxin_List_Hide(self)
 		if not fujiF:IsVisible() then return end
 		for id = 1, hang_NUM, 1 do
-			local fujik=_G["PIG_Admin_Hide_"..id]
+			local fujik=fujiF.Admin_Hide.ButList[id]
 			fujik:Hide();
 			fujik.nameDQ:Hide()
 		end
@@ -154,7 +154,7 @@ function BusinessInfo.Admin()
 		    for id = 1, hang_NUM do
 				local dangqian = id+offset;
 				if cdmulu[dangqian] then
-					local fujik = _G["PIG_Admin_Hide_"..id]
+					local fujik = fujiF.Admin_Hide.ButList[id]
 					fujik:Show();
 					fujik.allname=cdmulu[dangqian][1]
 					fujik.name:SetText(cdmulu[dangqian][1]);
@@ -183,13 +183,15 @@ function BusinessInfo.Admin()
 	fujiF.Admin_Hide.Scroll:SetScript("OnVerticalScroll", function(self, offset)
 	    FauxScrollFrame_OnVerticalScroll(self, offset, hang_Height, gengxin_List_Hide)
 	end)
+	fujiF.Admin_Hide.ButList={}
 	for id = 1, hang_NUM, 1 do
-		local hang = CreateFrame("Frame", "PIG_Admin_Hide_"..id, fujiF.Admin_Hide);
+		local hang = CreateFrame("Frame", nil, fujiF.Admin_Hide);
+		fujiF.Admin_Hide.ButList[id]=hang
 		hang:SetSize(fujiF.Admin_Hide:GetWidth()-18,hang_Height+4);
 		if id==1 then
 			hang:SetPoint("TOPLEFT", fujiF.Admin_Hide.Scroll, "TOPLEFT", 0, 0);
 		else
-			hang:SetPoint("TOPLEFT", _G["PIG_Admin_Hide_"..id-1], "BOTTOMLEFT", 0, 0);
+			hang:SetPoint("TOPLEFT", fujiF.Admin_Hide.ButList[id-1], "BOTTOMLEFT", 0, 0);
 		end
 		if id~=hang_NUM then
 			hang.line = PIGLine(hang,"BOT",0,nil,nil,{0.3,0.3,0.3,0.6})
@@ -225,22 +227,7 @@ function BusinessInfo.Admin()
 	end
 	------------
 	function fujiF.caozuoshuaxin(ly,name)
-		if ly=="del" then
-			PIGA["StatsInfo"]["Players"][name]=nil
-			PIGA["StatsInfo"]["PlayerSH"][name]=nil
-			PIGA["StatsInfo"]["FubenCD"][name]=nil
-			PIGA["StatsInfo"]["InstancesCD"][name]=nil
-			PIGA["StatsInfo"]["SkillData"][name]=nil
-			PIGA["StatsInfo"]["Times"][name]=nil
-			PIGA["StatsInfo"]["Token"][name]=nil
-			PIGA["StatsInfo"]["Items"][name]=nil
-			PIGA["StatsInfo"]["TradeData"][name]=nil
-			PIGA["StatsInfo"]["AHData"][name]=nil		
-		elseif ly=="hide" then
-			PIGA["StatsInfo"]["PlayerSH"][name]=true
-		elseif ly=="show" then
-			PIGA["StatsInfo"]["PlayerSH"][name]=nil
-		end
+		StatsInfo:Del_DataInfo(ly,name)
 		gengxin_List(fujiF.Admin.Scroll);
 		gengxin_List_Hide(fujiF.Admin_Hide.Scroll);
 	end

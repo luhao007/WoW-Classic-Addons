@@ -309,6 +309,45 @@ MT.BuildEnv('INIT');
 		end
 	end
 
+	function MT.NewCache()
+		return { TalData = {  }, GlyData = {  }, EquData = {  }, EngData = {  }, PakData = {  }, };
+	end
+
+	local function BuildTipTextList(Tooltip, IsRight)
+		local name = Tooltip:GetName();
+		if name then
+			return setmetatable(
+				{
+					Prefix = name .. (IsRight and "TextRight" or "TextLeft");
+				},
+				{
+					__index = function(tbl, i)
+						local Line = _G[tbl.Prefix .. i];
+						if Line then
+							tbl[i] = Line;
+							return Line;
+						end
+						return nil;
+					end,
+				}
+			);
+		end
+	end
+	MT.TipTextLeft = setmetatable({  }, {
+		__index = function(tbl, Tooltip)
+			local List = BuildTipTextList(Tooltip);
+			tbl[Tooltip] = List;
+			return List;
+		end,
+	});
+	MT.TipTextRight = setmetatable({  }, {
+		__index = function(tbl, Tooltip)
+			local List = BuildTipTextList(Tooltip, true);
+			tbl[Tooltip] = List;
+			return List;
+		end,
+	});
+
 -->
 	MT.UI = {  };
 	MT.CALLBACK = {  };
@@ -322,6 +361,7 @@ MT.BuildEnv('INIT');
 	VT.NameBindingFrame = {  };
 	VT.ImportTargetFrame = {  };
 	VT.PrevQueryRequestSentTime = {  };		--	真实发送请求的时间
+	VT.QueryRequestNotResponsed = {  };
 	VT.ApplyingTalents = {  };
 	VT.AutoShowEquipmentFrameOnComm = {  };
 
@@ -407,12 +447,12 @@ MT.BuildEnv('INIT');
 	VT.__support_glyph = VT.__dep.__emulib.CT.SUPPORT_GLYPH;
 	VT.__support_engraving = VT.__dep.__emulib.CT.SUPPORT_ENGRAVING;
 
-	if CT.BNTAG == "\97\108\101\120\35\53\49\54\55\50\50" or CT.BNTAG == "ALEX#125620" or CT.BNTAG == "Sanjeev#1289" then
+	if CT.BNTAG == "\97\108\101\120\35\53\49\54\55\50\50" or CT.BNTAG == "ALEX#125620" or CT.BNTAG == '\65\76\65\35\53\49\51\55\55' then
 		MT.Debug = MT.DebugDev;
 	else
 		MT.Debug = MT.DebugRelease;
 	end
-	if CT.BNTAG == '\97\108\101\120\35\53\49\54\55\50\50' or CT.BNTAG == '\229\141\149\233\133\146\231\170\157\35\53\49\54\51\55' or CT.BNTAG == '\65\76\65\35\53\49\51\55\55' then
+	if CT.BNTAG == '\97\108\101\120\35\53\49\54\55\50\50' or CT.BNTAG == "ALEX#125620" or CT.BNTAG == '\65\76\65\35\53\49\51\55\55' or CT.BNTAG == '\229\141\149\233\133\146\231\170\157\35\53\49\54\51\55' then
 		VT.__supreme = true;
 	else
 		VT.__supreme = false;

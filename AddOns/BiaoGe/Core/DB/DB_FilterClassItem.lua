@@ -5,7 +5,7 @@ local L = ns.L
 local pt = print
 
 local RealmID = GetRealmID()
-local player = UnitName("player")
+local player = BG.playerName
 local _, class = UnitClass("player")
 
 BG.Init(function()
@@ -20,23 +20,16 @@ BG.Init(function()
         ["MAGE"] = 1,
         ["WARLOCK"] = 1,
         ["PRIEST"] = 2,
+
+        ["EVOKER"] = 3,
+        ["DEMONHUNTER"] = 2,
+        ["MONK"] = 3,
     }
     BG.MaxFilter = MaxFilter
 
-    if not BiaoGe.FilterClassItemDB then
-        BiaoGe.FilterClassItemDB = {}
-    end
-    if not BiaoGe.FilterClassItemDB[RealmID] then
-        BiaoGe.FilterClassItemDB[RealmID] = {}
-    end
-    if not BiaoGe.FilterClassItemDB[RealmID][player] then
-        BiaoGe.FilterClassItemDB[RealmID][player] = {}
-    elseif BG.IsVanilla then -- 赛季服重置数据
-        if not BiaoGe.options.SearchHistory.dt231208 then
-            BiaoGe.FilterClassItemDB[RealmID][player] = {}
-            BiaoGe.options.SearchHistory.dt231208 = true
-        end
-    end
+    BiaoGe.FilterClassItemDB = BiaoGe.FilterClassItemDB or {}
+    BiaoGe.FilterClassItemDB[RealmID] = BiaoGe.FilterClassItemDB[RealmID] or {}
+    BiaoGe.FilterClassItemDB[RealmID][player] = BiaoGe.FilterClassItemDB[RealmID][player] or {}
     for i = 1, MaxFilter[class] do
         if not BiaoGe.FilterClassItemDB[RealmID][player][i] then
             BiaoGe.FilterClassItemDB[RealmID][player][i] = {}
@@ -78,6 +71,15 @@ BG.Init(function()
 
             ["PRIEST" .. "1"] = { icon = "Interface/Icons/spell_holy_wordfortitude", name = L["牧师-戒律/神圣"] }, -- 真言术：韧N
             ["PRIEST" .. "2"] = { icon = "Interface/Icons/spell_shadow_shadowwordpain", name = L["牧师-暗影"] }, -- 暗言术：痛AM
+
+            ["EVOKER" .. "1"] = { icon = "Interface/Icons/ability_evoker_powerswell", name = L["唤魔师-湮灭"] },
+            ["EVOKER" .. "2"] = { icon = "Interface/Icons/ability_evoker_emeraldblossom", name = L["唤魔师-恩护"] },
+            ["EVOKER" .. "3"] = { icon = "Interface/Icons/ability_evoker_reversion_green", name = L["唤魔师-增辉"] },
+            ["DEMONHUNTER" .. "1"] = { icon = "Interface/Icons/ability_demonhunter_specdps", name = L["恶魔猎手-浩劫"] },
+            ["DEMONHUNTER" .. "2"] = { icon = "Interface/Icons/spell_shadow_demonform", name = L["恶魔猎手-复仇"] },
+            ["MONK" .. "1"] = { icon = "Interface/Icons/ability_monk_standingkick", name = L["武僧-酒仙"] },
+            ["MONK" .. "2"] = { icon = "Interface/Icons/ability_monk_expelharm", name = L["武僧-织雾"] },
+            ["MONK" .. "3"] = { icon = "Interface/Icons/ability_monk_summontigerstatue", name = L["武僧-踏风"] },
         }
 
         for i = 1, MaxFilter[class] do
@@ -91,79 +93,76 @@ BG.Init(function()
             "Interface/Icons/spell_deathknight_bloodpresence",  -- 血DT
             "Interface/Icons/spell_deathknight_frostpresence",  -- 冰DK
             "Interface/Icons/spell_deathknight_unholypresence", -- 邪DK
-
             "Interface/Icons/ability_rogue_ambush",             -- 武器
             "Interface/Icons/ability_warrior_defensivestance",  -- 防御姿势T
             "Interface/Icons/INV_Sword_48",                     -- 斩杀
-
             "Interface/Icons/spell_holy_holybolt",              -- 圣光N
             "Interface/Icons/spell_holy_devotionaura",          -- 虔诚T
             "Interface/Icons/spell_holy_auraoflight",           -- 惩戒DPS
-
             "Interface/Icons/ability_hunter_beasttaming",       -- 野兽
             "Interface/Icons/ability_marksmanship",             -- 射击
             "Interface/Icons/ability_hunter_swiftstrike",       -- 生存
-
             "Interface/Icons/spell_nature_lightning",           -- 闪电箭FXDPS
             "Interface/Icons/spell_nature_lightningshield",     -- 闪电之盾DPS
             "Interface/Icons/spell_nature_magicimmunity",       -- 治疗波N
-
             "Interface/Icons/spell_nature_starfall",            -- 月火FXDPS
             "Interface/Icons/ability_racial_bearform",          -- 熊T
             "Interface/Icons/ability_druid_catform",            -- 猎豹形态DPS
             "Interface/Icons/spell_nature_healingtouch",        -- 治疗之触N
-
             "Interface/Icons/ability_rogue_eviscerate",         -- 刺杀
             "Interface/Icons/ability_backstab",                 -- 战斗
             "Interface/Icons/ability_stealth",                  -- 敏锐
-
             "Interface/Icons/spell_shadow_deathcoil",           -- 痛苦
             "Interface/Icons/spell_shadow_metamorphosis",       -- 恶魔
             "Interface/Icons/spell_shadow_rainoffire",          -- 毁灭
-
             "Interface/Icons/spell_holy_magicalsentry",         -- 奥术
             "Interface/Icons/spell_fire_flamebolt",             -- 火焰
             "Interface/Icons/spell_frost_frostbolt02",          -- 冰霜
-
             "Interface/Icons/spell_holy_wordfortitude",         -- 戒律
             "Interface/Icons/spell_holy_guardianspirit",        -- 神圣
             "Interface/Icons/spell_shadow_shadowwordpain",      -- 暗影
 
-
-            -- 额外
-            135957, 237480, 135372,
-            132369, 132337, 132362,
-            135993, 135891, 135959,
-            132180, 132293, 135826,
-            135790, 136023, 237579,
-            136078, 236162, 236168,
-            132304, 132298, 136177,
-            136183, 237558, 136228,
-            135841, 236217, 135735,
-            136200, 135936, 135940,
-
-            -- 135957, 237480, 135372, 135371,
-            -- 132369, 132337, 132362, 132307,
-            -- 135993, 135891, 135959, 135875,
-            -- 132180, 132293, 135826, 132330,
-            -- 135790, 136023, 237579, 136026,
-            -- 136078, 236162, 236168, 132135,
-            -- 132304, 132298, 136177, 132306,
-            -- 136183, 237558, 136228, 135789,
-            -- 135841, 236217, 135735, 135848,
-            -- 136200, 135936, 135940, 135953,
-
+            "Interface/Icons/ability_monk_standingkick",        -- 武僧
+            "Interface/Icons/ability_monk_expelharm",
+            "Interface/Icons/ability_monk_summontigerstatue",
         }
+        if BG.IsRetail then
+            tinsert(BG.FilterClassItemDB.NewIcon, "Interface/Icons/ability_evoker_powerswell")
+            tinsert(BG.FilterClassItemDB.NewIcon, "Interface/Icons/ability_evoker_emeraldblossom")
+            tinsert(BG.FilterClassItemDB.NewIcon, "Interface/Icons/ability_evoker_reversion_green")
+            tinsert(BG.FilterClassItemDB.NewIcon, "Interface/Icons/ability_demonhunter_specdps")
+            tinsert(BG.FilterClassItemDB.NewIcon, "Interface/Icons/spell_shadow_demonform")
+            tinsert(BG.FilterClassItemDB.NewIcon, "Interface/Icons/ability_monk_standingkick")
+            tinsert(BG.FilterClassItemDB.NewIcon, "Interface/Icons/ability_monk_expelharm")
+            tinsert(BG.FilterClassItemDB.NewIcon, "Interface/Icons/ability_monk_summontigerstatue")
+        else
+            local tbl = {
+                -- 额外
+                135957, 237480, 135372,
+                132369, 132337, 132362,
+                135993, 135891, 135959,
+                132180, 132293, 135826,
+                135790, 136023, 237579,
+                136078, 236162, 236168,
+                132304, 132298, 136177,
+                136183, 237558, 136228,
+                135841, 236217, 135735,
+                136200, 135936, 135940,
+            }
+            for _, icon in ipairs(tbl) do
+                tinsert(BG.FilterClassItemDB.NewIcon, icon)
+            end
+        end
     end
     ------------------装备词缀------------------
     do
         if BG.IsVanilla then
             BG.FilterClassItemDB.ShuXing = {
                 -- { name = "力量", value = ITEM_MOD_STRENGTH }, --%c%s 力量
-                { name = "力量", value = "%+.*" .. ITEM_MOD_STRENGTH_SHORT, name2 = ITEM_MOD_STRENGTH_SHORT },
-                { name = "敏捷", value = "%+.*" .. SPEC_FRAME_PRIMARY_STAT_AGILITY, name2 = SPEC_FRAME_PRIMARY_STAT_AGILITY },
-                { name = "智力", value = "%+.*" .. ITEM_MOD_INTELLECT_SHORT, name2 = ITEM_MOD_INTELLECT_SHORT },
-                { name = "精神", value = "%+.*" .. ITEM_MOD_SPIRIT_SHORT, name2 = ITEM_MOD_SPIRIT_SHORT },
+                { name = "力量", value = "%+%C-" .. ITEM_MOD_STRENGTH_SHORT, name2 = ITEM_MOD_STRENGTH_SHORT },
+                { name = "敏捷", value = "%+%C-" .. SPEC_FRAME_PRIMARY_STAT_AGILITY, name2 = SPEC_FRAME_PRIMARY_STAT_AGILITY },
+                { name = "智力", value = "%+%C-" .. ITEM_MOD_INTELLECT_SHORT, name2 = ITEM_MOD_INTELLECT_SHORT },
+                { name = "精神", value = "%+%C-" .. ITEM_MOD_SPIRIT_SHORT, name2 = ITEM_MOD_SPIRIT_SHORT },
                 { name = "5回法力值", value = ITEM_MOD_MANA_REGENERATION },
                 { name = "防御", value = STAT_CATEGORY_DEFENSE },
                 { name = "招架", value = STAT_PARRY },
@@ -223,13 +222,13 @@ BG.Init(function()
                 ["PRIEST" .. "1"] = n1,    -- MS
                 ["PRIEST" .. "2"] = fx1,   -- AM
             }
-        else
+        elseif BG.IsWLK or BG.IsCTM or BG.IsMOP then
             if BG.IsWLK then
                 BG.FilterClassItemDB.ShuXing = {
-                    { name = "力量", value = "%+.*" .. ITEM_MOD_STRENGTH_SHORT, name2 = ITEM_MOD_STRENGTH_SHORT },
-                    { name = "敏捷", value = "%+.*" .. SPEC_FRAME_PRIMARY_STAT_AGILITY, name2 = SPEC_FRAME_PRIMARY_STAT_AGILITY },
-                    { name = "智力", value = "%+.*" .. ITEM_MOD_INTELLECT_SHORT, name2 = ITEM_MOD_INTELLECT_SHORT },
-                    { name = "精神", value = "%+.*" .. ITEM_MOD_SPIRIT_SHORT, name2 = ITEM_MOD_SPIRIT_SHORT },
+                    { name = "力量", value = "%+%C-" .. ITEM_MOD_STRENGTH_SHORT, name2 = ITEM_MOD_STRENGTH_SHORT },
+                    { name = "敏捷", value = "%+%C-" .. SPEC_FRAME_PRIMARY_STAT_AGILITY, name2 = SPEC_FRAME_PRIMARY_STAT_AGILITY },
+                    { name = "智力", value = "%+%C-" .. ITEM_MOD_INTELLECT_SHORT, name2 = ITEM_MOD_INTELLECT_SHORT },
+                    { name = "精神", value = "%+%C-" .. ITEM_MOD_SPIRIT_SHORT, name2 = ITEM_MOD_SPIRIT_SHORT },
                     { name = "5回法力值", value = ITEM_MOD_MANA_REGENERATION },
                     { name = "命中", value = HIT_LCD },
                     { name = "急速", value = STAT_HASTE },
@@ -247,14 +246,14 @@ BG.Init(function()
                     { name = "法术强度", value = ITEM_MOD_SPELL_POWER_SHORT },
                     -- { name = "副手物品", value = INVTYPE_HOLDABLE, onenter = L["这里是指法系的副手，不是物理dps的副手武器"] },
                 }
-            elseif BG.IsCTM then
+            elseif BG.IsCTM or BG.IsMOP then
                 BG.FilterClassItemDB.ShuXing = {
-                    { name = "力量", value = "%+.*" .. ITEM_MOD_STRENGTH_SHORT, name2 = ITEM_MOD_STRENGTH_SHORT },
-                    { name = "敏捷", value = "%+.*" .. SPEC_FRAME_PRIMARY_STAT_AGILITY, name2 = SPEC_FRAME_PRIMARY_STAT_AGILITY },
-                    { name = "智力", value = "%+.*" .. ITEM_MOD_INTELLECT_SHORT, name2 = ITEM_MOD_INTELLECT_SHORT },
-                    { name = "精神", value = "%+.*" .. ITEM_MOD_SPIRIT_SHORT, name2 = ITEM_MOD_SPIRIT_SHORT },
+                    { name = "力量", value = "%+%C-" .. ITEM_MOD_STRENGTH_SHORT, name2 = ITEM_MOD_STRENGTH_SHORT },
+                    { name = "敏捷", value = "%+%C-" .. SPEC_FRAME_PRIMARY_STAT_AGILITY, name2 = SPEC_FRAME_PRIMARY_STAT_AGILITY },
+                    { name = "智力", value = "%+%C-" .. ITEM_MOD_INTELLECT_SHORT, name2 = ITEM_MOD_INTELLECT_SHORT },
+                    { name = "精神", value = "%+%C-" .. ITEM_MOD_SPIRIT_SHORT, name2 = ITEM_MOD_SPIRIT_SHORT },
                     { name = "5回法力值", value = ITEM_MOD_MANA_REGENERATION },
-                    { name = "精通", value = "%+.*" .. ITEM_MOD_MASTERY_RATING_SHORT, name2 = ITEM_MOD_MASTERY_RATING_SHORT },
+                    { name = "精通", value = "%+%C-" .. ITEM_MOD_MASTERY_RATING_SHORT, name2 = ITEM_MOD_MASTERY_RATING_SHORT },
                     { name = "命中", value = HIT_LCD },
                     { name = "急速", value = STAT_HASTE },
                     { name = "暴击", value = STAT_CRITICAL_STRIKE },
@@ -318,8 +317,51 @@ BG.Init(function()
 
                 ["PRIEST" .. "1"] = n1,        -- MS
                 ["PRIEST" .. "2"] = fx1,       -- AM
+
+                ["MONK" .. "1"] = t3,          -- 酒仙
+                ["MONK" .. "2"] = n1,          -- 织雾
+                ["MONK" .. "3"] = dps2,        -- 踏风
+            }
+        elseif BG.IsRetail then
+            BG.FilterClassItemDB.ShuXing = {
+                { name = "精通", value = "%+%C-" .. ITEM_MOD_MASTERY_RATING_SHORT, name2 = ITEM_MOD_MASTERY_RATING_SHORT },
+                { name = "爆击", value = "%+%C-" .. ITEM_MOD_CRIT_RATING_SHORT, name2 = ITEM_MOD_CRIT_RATING_SHORT },
+                { name = "急速", value = "%+%C-" .. ITEM_MOD_HASTE_RATING_SHORT, name2 = ITEM_MOD_HASTE_RATING_SHORT },
+                { name = "全能", value = "%+%C-" .. ITEM_MOD_VERSATILITY, name2 = ITEM_MOD_VERSATILITY },
+            }
+
+            BG.FilterClassItem_Default.ShuXing = {
+                ["DEATHKNIGHT" .. "1"] = {}, -- 血DK
+                ["DEATHKNIGHT" .. "2"] = {}, -- DK
+                ["WARRIOR" .. "1"] = {},     -- FZ
+                ["WARRIOR" .. "2"] = {},     -- KBZ
+                ["PALADIN" .. "1"] = {},     -- NQ
+                ["PALADIN" .. "2"] = {},     -- FQ
+                ["PALADIN" .. "3"] = {},     -- CJQ
+                ["HUNTER" .. "1"] = {},      -- LR
+                ["SHAMAN" .. "1"] = {},      -- 元素
+                ["SHAMAN" .. "2"] = {},      -- ZQS
+                ["SHAMAN" .. "3"] = {},      -- NS
+                ["DRUID" .. "1"] = {},       -- 咕咕
+                ["DRUID" .. "2"] = {},       -- 熊T
+                ["DRUID" .. "3"] = {},       -- 猫D
+                ["DRUID" .. "4"] = {},       -- ND
+                ["ROGUE" .. "1"] = {},       -- DZ
+                ["WARLOCK" .. "1"] = {},     -- SS
+                ["MAGE" .. "1"] = {},        -- FS
+                ["PRIEST" .. "1"] = {},      -- MS
+                ["PRIEST" .. "2"] = {},      -- AM
+                ["EVOKER" .. "1"] = {},
+                ["EVOKER" .. "2"] = {},
+                ["EVOKER" .. "3"] = {},
+                ["DEMONHUNTER" .. "1"] = {},
+                ["DEMONHUNTER" .. "2"] = {},
+                ["MONK" .. "1"] = {},
+                ["MONK" .. "2"] = {},
+                ["MONK" .. "3"] = {},
             }
         end
+
         for k, v in pairs(BG.FilterClassItemDB.ShuXing) do
             if type(BG.FilterClassItemDB.ShuXing[k].value) == "table" then
                 for _, text in pairs(BG.FilterClassItemDB.ShuXing[k].value) do
@@ -341,24 +383,22 @@ BG.Init(function()
     end
     ------------------武器类型------------------
     do
-        BG.FilterClassItemDB.Weapon = {
-            { name = "7", value = L["单手剑"] },
-            { name = "0", value = L["单手斧"] },
-            { name = "4", value = L["单手锤"] },
-            { name = "15", value = L["匕首"] },
-            { name = "13", value = L["拳套"] },
-            { name = "8", value = L["双手剑"] },
-            { name = "1", value = L["双手斧"] },
-            { name = "5", value = L["双手锤"] },
-            { name = "6", value = L["长柄武器"] },
-            { name = "10", value = L["法杖"] },
-            { name = "3", value = L["枪"] },
-            { name = "2", value = L["弓"] },
-            { name = "18", value = L["弩"] },
-            { name = "19", value = L["魔杖"] },
-            { name = "16", value = L["投掷武器"] },
-        }
-
+        -- 0 单手斧
+        -- 1 双手斧
+        -- 2 弓	
+        -- 3 枪
+        -- 4 单手锤	
+        -- 5 双手锤	
+        -- 6 长柄武器
+        -- 7 单手剑	
+        -- 8 双手剑	
+        -- 10 法杖	
+        -- 13 拳套
+        -- 15 匕首
+        -- 16 投掷武器
+        -- 18 弩
+        -- 19 魔杖
+        -- 20 钓鱼竿
         local G = {
             ["单手斧"] = "0",
             ["双手斧"] = "1",
@@ -369,6 +409,7 @@ BG.Init(function()
             ["长柄武器"] = "6",
             ["单手剑"] = "7",
             ["双手剑"] = "8",
+            ["战刃"] = "9",
             ["法杖"] = "10",
             ["拳套"] = "13",
             ["匕首"] = "15",
@@ -377,85 +418,138 @@ BG.Init(function()
             ["魔杖"] = "19",
         }
 
-
-        if BG.IsVanilla then
+        if BG.IsRetail then
+            BG.FilterClassItemDB.Weapon = {
+                { name = "7", value = L["单手剑"] },
+                { name = "0", value = L["单手斧"] },
+                { name = "4", value = L["单手锤"] },
+                { name = "15", value = L["匕首"] },
+                { name = "13", value = L["拳套"] },
+                { name = "9", value = L["战刃"] },
+                { name = "8", value = L["双手剑"] },
+                { name = "1", value = L["双手斧"] },
+                { name = "5", value = L["双手锤"] },
+                { name = "6", value = L["长柄武器"] },
+                { name = "10", value = L["法杖"] },
+                { name = "3", value = L["枪"] },
+                { name = "2", value = L["弓"] },
+                { name = "18", value = L["弩"] },
+                { name = "19", value = L["魔杖"] },
+            }
             BG.FilterClassItem_Default.Weapon = {
-                ["WARRIOR" .. "1"] = { G["双手斧"], G["双手锤"], G["长柄武器"], G["双手剑"], G["法杖"], G["魔杖"] }, -- FZ
-                ["WARRIOR" .. "2"] = { G["魔杖"] }, -- KBZ
-
-                ["PALADIN" .. "1"] = { G["双手斧"], G["弓"], G["枪"], G["双手锤"], G["长柄武器"], G["双手剑"], G["法杖"], G["拳套"], G["匕首"], G["投掷武器"], G["弩"], G["魔杖"] }, -- NQ
-                ["PALADIN" .. "2"] = { G["双手斧"], G["弓"], G["枪"], G["双手锤"], G["长柄武器"], G["双手剑"], G["法杖"], G["拳套"], G["匕首"], G["投掷武器"], G["弩"], G["魔杖"] }, -- FQ
-                ["PALADIN" .. "3"] = { G["单手斧"], G["弓"], G["枪"], G["单手锤"], G["单手剑"], G["法杖"], G["拳套"], G["匕首"], G["投掷武器"], G["弩"], G["魔杖"] }, -- CJQ
-
-                ["HUNTER" .. "1"]  = { G["单手锤"], G["双手锤"], G["投掷武器"], G["魔杖"] }, -- LR
-
-                ["SHAMAN" .. "1"]  = { G["弓"], G["枪"], G["长柄武器"], G["单手剑"], G["双手剑"], G["投掷武器"], G["弩"], G["魔杖"] }, -- 元素
-                ["SHAMAN" .. "2"]  = { G["双手斧"], G["弓"], G["枪"], G["双手锤"], G["长柄武器"], G["单手剑"], G["双手剑"], G["法杖"], G["投掷武器"], G["弩"], G["魔杖"] }, -- ZQS
-                ["SHAMAN" .. "3"]  = { G["弓"], G["枪"], G["长柄武器"], G["单手剑"], G["双手剑"], G["投掷武器"], G["弩"], G["魔杖"] }, -- NS
-
-                ["DRUID" .. "1"]   = { G["单手斧"], G["双手斧"], G["弓"], G["枪"], G["单手剑"], G["双手剑"], G["拳套"], G["双手锤"], G["长柄武器"], G["投掷武器"], G["弩"], G["魔杖"] }, -- 咕咕
-                ["DRUID" .. "2"]   = { G["单手斧"], G["双手斧"], G["弓"], G["枪"], G["单手剑"], G["双手剑"], G["单手锤"], G["拳套"], G["匕首"], G["长柄武器"], G["投掷武器"], G["弩"], G["魔杖"] }, -- 熊T
-                ["DRUID" .. "3"]   = { G["单手斧"], G["双手斧"], G["弓"], G["枪"], G["单手剑"], G["双手剑"], G["单手锤"], G["拳套"], G["匕首"], G["长柄武器"], G["投掷武器"], G["弩"], G["魔杖"] }, -- 猫D
-                ["DRUID" .. "4"]   = { G["单手斧"], G["双手斧"], G["弓"], G["枪"], G["单手剑"], G["双手剑"], G["拳套"], G["双手锤"], G["长柄武器"], G["投掷武器"], G["弩"], G["魔杖"] }, -- ND
-
-                ["ROGUE" .. "1"]   = { G["单手斧"], G["双手斧"], G["双手锤"], G["长柄武器"], G["双手剑"], G["法杖"], G["魔杖"], }, -- DZ
-
-                ["WARLOCK" .. "1"] = { G["单手斧"], G["双手斧"], G["弓"], G["枪"], G["单手锤"], G["双手锤"], G["长柄武器"], G["双手剑"], G["拳套"], G["投掷武器"], G["弩"] }, -- SS
-
-                ["MAGE" .. "1"]    = { G["单手斧"], G["双手斧"], G["弓"], G["枪"], G["单手锤"], G["双手锤"], G["长柄武器"], G["双手剑"], G["拳套"], G["投掷武器"], G["弩"] }, -- FS
-
-                ["PRIEST" .. "1"]  = { G["单手斧"], G["双手斧"], G["弓"], G["枪"], G["双手锤"], G["长柄武器"], G["单手剑"], G["双手剑"], G["拳套"], G["投掷武器"], G["弩"] }, -- MS
-                ["PRIEST" .. "2"]  = { G["单手斧"], G["双手斧"], G["弓"], G["枪"], G["双手锤"], G["长柄武器"], G["单手剑"], G["双手剑"], G["拳套"], G["投掷武器"], G["弩"] }, -- AM
+                ["DEATHKNIGHT" .. "1"] = { G["战刃"], G["单手斧"], G["弓"], G["枪"], G["单手锤"], G["单手剑"], G["法杖"], G["拳套"], G["匕首"], G["弩"], G["魔杖"] }, -- 血DK
+                ["DEATHKNIGHT" .. "2"] = { G["战刃"], G["双手剑"], G["双手锤"], G["双手斧"], G["长柄武器"], G["弓"], G["枪"], G["法杖"], G["拳套"], G["匕首"], G["弩"], G["魔杖"] }, -- DK
+                ["WARRIOR" .. "1"]     = { G["战刃"], G["双手斧"], G["双手锤"], G["长柄武器"], G["双手剑"], G["法杖"], G["魔杖"] }, -- FZ
+                ["WARRIOR" .. "2"]     = { G["战刃"], G["单手斧"], G["单手锤"], G["单手剑"], G["拳套"], G["匕首"], G["魔杖"] }, -- KBZ
+                ["PALADIN" .. "1"]     = { G["战刃"], G["双手斧"], G["弓"], G["枪"], G["双手锤"], G["长柄武器"], G["双手剑"], G["法杖"], G["拳套"], G["匕首"], G["弩"], G["魔杖"] }, -- NQ
+                ["PALADIN" .. "2"]     = { G["战刃"], G["双手斧"], G["弓"], G["枪"], G["双手锤"], G["长柄武器"], G["双手剑"], G["法杖"], G["拳套"], G["匕首"], G["弩"], G["魔杖"] }, -- FQ
+                ["PALADIN" .. "3"]     = { G["战刃"], G["单手斧"], G["弓"], G["枪"], G["单手锤"], G["单手剑"], G["法杖"], G["拳套"], G["匕首"], G["弩"], G["魔杖"] }, -- CJQ
+                ["HUNTER" .. "1"]      = { G["战刃"], G["单手斧"], G["单手剑"], G["单手锤"], G["拳套"], G["匕首"], G["双手锤"], G["魔杖"] }, -- LR
+                ["SHAMAN" .. "1"]      = { G["战刃"], G["弓"], G["枪"], G["长柄武器"], G["单手剑"], G["双手剑"], G["弩"], G["魔杖"] }, -- 元素
+                ["SHAMAN" .. "2"]      = { G["战刃"], G["双手斧"], G["弓"], G["枪"], G["双手锤"], G["长柄武器"], G["单手剑"], G["双手剑"], G["法杖"], G["弩"], G["魔杖"] }, -- ZQS
+                ["SHAMAN" .. "3"]      = { G["战刃"], G["弓"], G["枪"], G["长柄武器"], G["单手剑"], G["双手剑"], G["弩"], G["魔杖"] }, -- NS
+                ["DRUID" .. "1"]       = { G["战刃"], G["单手斧"], G["双手斧"], G["弓"], G["枪"], G["单手剑"], G["双手剑"], G["拳套"], G["双手锤"], G["长柄武器"], G["弩"], G["魔杖"] }, -- 咕咕
+                ["DRUID" .. "2"]       = { G["战刃"], G["单手斧"], G["双手斧"], G["弓"], G["枪"], G["单手剑"], G["双手剑"], G["单手锤"], G["拳套"], G["匕首"], G["弩"], G["魔杖"] }, -- 熊T
+                ["DRUID" .. "3"]       = { G["战刃"], G["单手斧"], G["双手斧"], G["弓"], G["枪"], G["单手剑"], G["双手剑"], G["单手锤"], G["拳套"], G["匕首"], G["弩"], G["魔杖"] }, -- 猫D
+                ["DRUID" .. "4"]       = { G["战刃"], G["单手斧"], G["双手斧"], G["弓"], G["枪"], G["单手剑"], G["双手剑"], G["拳套"], G["双手锤"], G["长柄武器"], G["弩"], G["魔杖"] }, -- ND
+                ["ROGUE" .. "1"]       = { G["战刃"], G["双手斧"], G["双手锤"], G["长柄武器"], G["双手剑"], G["法杖"], G["魔杖"], }, -- DZ
+                ["WARLOCK" .. "1"]     = { G["战刃"], G["单手斧"], G["双手斧"], G["弓"], G["枪"], G["单手锤"], G["双手锤"], G["长柄武器"], G["双手剑"], G["拳套"], G["弩"] }, -- SS
+                ["MAGE" .. "1"]        = { G["战刃"], G["单手斧"], G["双手斧"], G["弓"], G["枪"], G["单手锤"], G["双手锤"], G["长柄武器"], G["双手剑"], G["拳套"], G["弩"] }, -- FS
+                ["PRIEST" .. "1"]      = { G["战刃"], G["单手斧"], G["双手斧"], G["弓"], G["枪"], G["双手锤"], G["长柄武器"], G["单手剑"], G["双手剑"], G["拳套"], G["弩"] }, -- MS
+                ["PRIEST" .. "2"]      = { G["战刃"], G["单手斧"], G["双手斧"], G["弓"], G["枪"], G["双手锤"], G["长柄武器"], G["单手剑"], G["双手剑"], G["拳套"], G["弩"] }, -- AM
+                ["EVOKER" .. "1"]      = { G["战刃"], G["双手斧"], G["弓"], G["枪"], G["双手锤"], G["双手剑"], G["弩"], G["魔杖"], G["拳套"], G["长柄武器"], },
+                ["EVOKER" .. "2"]      = { G["战刃"], G["双手斧"], G["弓"], G["枪"], G["双手锤"], G["双手剑"], G["弩"], G["魔杖"], G["拳套"], G["长柄武器"], },
+                ["EVOKER" .. "3"]      = { G["战刃"], G["双手斧"], G["弓"], G["枪"], G["双手锤"], G["双手剑"], G["弩"], G["魔杖"], G["拳套"], G["长柄武器"], },
+                ["DEMONHUNTER" .. "1"] = { G["双手斧"], G["弓"], G["枪"], G["双手锤"], G["双手剑"], G["弩"], G["魔杖"], G["匕首"], G["长柄武器"], G["法杖"], G["单手锤"], G["单手斧"], G["单手剑"], },
+                ["DEMONHUNTER" .. "2"] = { G["双手斧"], G["弓"], G["枪"], G["双手锤"], G["双手剑"], G["弩"], G["魔杖"], G["匕首"], G["长柄武器"], G["法杖"], G["单手锤"], G["单手斧"], G["单手剑"], },
+                ["MONK" .. "1"]        = { G["战刃"], G["双手斧"], G["弓"], G["枪"], G["双手锤"], G["双手剑"], G["弩"], G["魔杖"], G["匕首"], },
+                ["MONK" .. "2"]        = { G["战刃"], G["双手斧"], G["弓"], G["枪"], G["双手锤"], G["双手剑"], G["弩"], G["魔杖"], G["匕首"], },
+                ["MONK" .. "3"]        = { G["战刃"], G["双手斧"], G["弓"], G["枪"], G["双手锤"], G["双手剑"], G["弩"], G["魔杖"], G["匕首"], },
             }
         else
-            BG.FilterClassItem_Default.Weapon = {
-                ["DEATHKNIGHT" .. "1"] = { G["单手斧"], G["弓"], G["枪"], G["单手锤"], G["单手剑"], G["法杖"], G["拳套"], G["匕首"], G["投掷武器"], G["弩"], G["魔杖"] }, -- 血DK
-                ["DEATHKNIGHT" .. "2"] = { G["双手剑"], G["双手锤"], G["双手斧"], G["长柄武器"], G["弓"], G["枪"], G["法杖"], G["拳套"], G["匕首"], G["投掷武器"], G["弩"], G["魔杖"] }, -- DK
-
-                ["WARRIOR" .. "1"]     = { G["双手斧"], G["双手锤"], G["长柄武器"], G["双手剑"], G["法杖"], G["魔杖"] }, -- FZ
-                ["WARRIOR" .. "2"]     = { G["单手斧"], G["单手锤"], G["单手剑"], G["拳套"], G["匕首"], G["魔杖"] }, -- KBZ
-
-                ["PALADIN" .. "1"]     = { G["双手斧"], G["弓"], G["枪"], G["双手锤"], G["长柄武器"], G["双手剑"], G["法杖"], G["拳套"], G["匕首"], G["投掷武器"], G["弩"], G["魔杖"] }, -- NQ
-                ["PALADIN" .. "2"]     = { G["双手斧"], G["弓"], G["枪"], G["双手锤"], G["长柄武器"], G["双手剑"], G["法杖"], G["拳套"], G["匕首"], G["投掷武器"], G["弩"], G["魔杖"] }, -- FQ
-                ["PALADIN" .. "3"]     = { G["单手斧"], G["弓"], G["枪"], G["单手锤"], G["单手剑"], G["法杖"], G["拳套"], G["匕首"], G["投掷武器"], G["弩"], G["魔杖"] }, -- CJQ
-
-                ["HUNTER" .. "1"]      = { G["单手斧"], G["单手剑"], G["单手锤"], G["拳套"], G["匕首"], G["双手锤"], G["投掷武器"], G["魔杖"] }, -- LR
-
-                ["SHAMAN" .. "1"]      = { G["弓"], G["枪"], G["长柄武器"], G["单手剑"], G["双手剑"], G["投掷武器"], G["弩"], G["魔杖"] }, -- 元素
-                ["SHAMAN" .. "2"]      = { G["双手斧"], G["弓"], G["枪"], G["双手锤"], G["长柄武器"], G["单手剑"], G["双手剑"], G["法杖"], G["投掷武器"], G["弩"], G["魔杖"] }, -- ZQS
-                ["SHAMAN" .. "3"]      = { G["弓"], G["枪"], G["长柄武器"], G["单手剑"], G["双手剑"], G["投掷武器"], G["弩"], G["魔杖"] }, -- NS
-
-                ["DRUID" .. "1"]       = { G["单手斧"], G["双手斧"], G["弓"], G["枪"], G["单手剑"], G["双手剑"], G["拳套"], G["双手锤"], G["长柄武器"], G["投掷武器"], G["弩"], G["魔杖"] }, -- 咕咕
-                ["DRUID" .. "2"]       = { G["单手斧"], G["双手斧"], G["弓"], G["枪"], G["单手剑"], G["双手剑"], G["单手锤"], G["拳套"], G["匕首"], G["投掷武器"], G["弩"], G["魔杖"] }, -- 熊T
-                ["DRUID" .. "3"]       = { G["单手斧"], G["双手斧"], G["弓"], G["枪"], G["单手剑"], G["双手剑"], G["单手锤"], G["拳套"], G["匕首"], G["投掷武器"], G["弩"], G["魔杖"] }, -- 猫D
-                ["DRUID" .. "4"]       = { G["单手斧"], G["双手斧"], G["弓"], G["枪"], G["单手剑"], G["双手剑"], G["拳套"], G["双手锤"], G["长柄武器"], G["投掷武器"], G["弩"], G["魔杖"] }, -- ND
-
-                ["ROGUE" .. "1"]       = { G["双手斧"], G["双手锤"], G["长柄武器"], G["双手剑"], G["法杖"], G["魔杖"], }, -- DZ
-
-                ["WARLOCK" .. "1"]     = { G["单手斧"], G["双手斧"], G["弓"], G["枪"], G["单手锤"], G["双手锤"], G["长柄武器"], G["双手剑"], G["拳套"], G["投掷武器"], G["弩"] }, -- SS
-
-                ["MAGE" .. "1"]        = { G["单手斧"], G["双手斧"], G["弓"], G["枪"], G["单手锤"], G["双手锤"], G["长柄武器"], G["双手剑"], G["拳套"], G["投掷武器"], G["弩"] }, -- FS
-
-                ["PRIEST" .. "1"]      = { G["单手斧"], G["双手斧"], G["弓"], G["枪"], G["双手锤"], G["长柄武器"], G["单手剑"], G["双手剑"], G["拳套"], G["投掷武器"], G["弩"] }, -- MS
-                ["PRIEST" .. "2"]      = { G["单手斧"], G["双手斧"], G["弓"], G["枪"], G["双手锤"], G["长柄武器"], G["单手剑"], G["双手剑"], G["拳套"], G["投掷武器"], G["弩"] }, -- AM
-
-                -- 0 单手斧
-                -- 1 双手斧
-                -- 2 弓	
-                -- 3 枪
-                -- 4 单手锤	
-                -- 5 双手锤	
-                -- 6 长柄武器
-                -- 7 单手剑	
-                -- 8 双手剑	
-                -- 10 法杖	
-                -- 13 拳套
-                -- 15 匕首
-                -- 16 投掷武器
-                -- 18 弩
-                -- 19 魔杖
-                -- 20 钓鱼竿
+            BG.FilterClassItemDB.Weapon = {
+                { name = "7", value = L["单手剑"] },
+                { name = "0", value = L["单手斧"] },
+                { name = "4", value = L["单手锤"] },
+                { name = "15", value = L["匕首"] },
+                { name = "13", value = L["拳套"] },
+                { name = "8", value = L["双手剑"] },
+                { name = "1", value = L["双手斧"] },
+                { name = "5", value = L["双手锤"] },
+                { name = "6", value = L["长柄武器"] },
+                { name = "10", value = L["法杖"] },
+                { name = "3", value = L["枪"] },
+                { name = "2", value = L["弓"] },
+                { name = "18", value = L["弩"] },
+                { name = "19", value = L["魔杖"] },
+                { name = "16", value = L["投掷武器"] },
             }
+            if BG.IsVanilla then
+                BG.FilterClassItem_Default.Weapon = {
+                    ["WARRIOR" .. "1"] = { G["双手斧"], G["双手锤"], G["长柄武器"], G["双手剑"], G["法杖"], G["魔杖"] }, -- FZ
+                    ["WARRIOR" .. "2"] = { G["魔杖"] }, -- KBZ
+
+                    ["PALADIN" .. "1"] = { G["双手斧"], G["弓"], G["枪"], G["双手锤"], G["长柄武器"], G["双手剑"], G["法杖"], G["拳套"], G["匕首"], G["投掷武器"], G["弩"], G["魔杖"] }, -- NQ
+                    ["PALADIN" .. "2"] = { G["双手斧"], G["弓"], G["枪"], G["双手锤"], G["长柄武器"], G["双手剑"], G["法杖"], G["拳套"], G["匕首"], G["投掷武器"], G["弩"], G["魔杖"] }, -- FQ
+                    ["PALADIN" .. "3"] = { G["单手斧"], G["弓"], G["枪"], G["单手锤"], G["单手剑"], G["法杖"], G["拳套"], G["匕首"], G["投掷武器"], G["弩"], G["魔杖"] }, -- CJQ
+
+                    ["HUNTER" .. "1"]  = { G["单手锤"], G["双手锤"], G["投掷武器"], G["魔杖"] }, -- LR
+
+                    ["SHAMAN" .. "1"]  = { G["弓"], G["枪"], G["长柄武器"], G["单手剑"], G["双手剑"], G["投掷武器"], G["弩"], G["魔杖"] }, -- 元素
+                    ["SHAMAN" .. "2"]  = { G["双手斧"], G["弓"], G["枪"], G["双手锤"], G["长柄武器"], G["单手剑"], G["双手剑"], G["法杖"], G["投掷武器"], G["弩"], G["魔杖"] }, -- ZQS
+                    ["SHAMAN" .. "3"]  = { G["弓"], G["枪"], G["长柄武器"], G["单手剑"], G["双手剑"], G["投掷武器"], G["弩"], G["魔杖"] }, -- NS
+
+                    ["DRUID" .. "1"]   = { G["单手斧"], G["双手斧"], G["弓"], G["枪"], G["单手剑"], G["双手剑"], G["拳套"], G["双手锤"], G["长柄武器"], G["投掷武器"], G["弩"], G["魔杖"] }, -- 咕咕
+                    ["DRUID" .. "2"]   = { G["单手斧"], G["双手斧"], G["弓"], G["枪"], G["单手剑"], G["双手剑"], G["单手锤"], G["拳套"], G["匕首"], G["长柄武器"], G["投掷武器"], G["弩"], G["魔杖"] }, -- 熊T
+                    ["DRUID" .. "3"]   = { G["单手斧"], G["双手斧"], G["弓"], G["枪"], G["单手剑"], G["双手剑"], G["单手锤"], G["拳套"], G["匕首"], G["长柄武器"], G["投掷武器"], G["弩"], G["魔杖"] }, -- 猫D
+                    ["DRUID" .. "4"]   = { G["单手斧"], G["双手斧"], G["弓"], G["枪"], G["单手剑"], G["双手剑"], G["拳套"], G["双手锤"], G["长柄武器"], G["投掷武器"], G["弩"], G["魔杖"] }, -- ND
+
+                    ["ROGUE" .. "1"]   = { G["单手斧"], G["双手斧"], G["双手锤"], G["长柄武器"], G["双手剑"], G["法杖"], G["魔杖"], }, -- DZ
+
+                    ["WARLOCK" .. "1"] = { G["单手斧"], G["双手斧"], G["弓"], G["枪"], G["单手锤"], G["双手锤"], G["长柄武器"], G["双手剑"], G["拳套"], G["投掷武器"], G["弩"] }, -- SS
+
+                    ["MAGE" .. "1"]    = { G["单手斧"], G["双手斧"], G["弓"], G["枪"], G["单手锤"], G["双手锤"], G["长柄武器"], G["双手剑"], G["拳套"], G["投掷武器"], G["弩"] }, -- FS
+
+                    ["PRIEST" .. "1"]  = { G["单手斧"], G["双手斧"], G["弓"], G["枪"], G["双手锤"], G["长柄武器"], G["单手剑"], G["双手剑"], G["拳套"], G["投掷武器"], G["弩"] }, -- MS
+                    ["PRIEST" .. "2"]  = { G["单手斧"], G["双手斧"], G["弓"], G["枪"], G["双手锤"], G["长柄武器"], G["单手剑"], G["双手剑"], G["拳套"], G["投掷武器"], G["弩"] }, -- AM
+                }
+            else
+                BG.FilterClassItem_Default.Weapon = {
+                    ["DEATHKNIGHT" .. "1"] = { G["单手斧"], G["弓"], G["枪"], G["单手锤"], G["单手剑"], G["法杖"], G["拳套"], G["匕首"], G["投掷武器"], G["弩"], G["魔杖"] }, -- 血DK
+                    ["DEATHKNIGHT" .. "2"] = { G["双手剑"], G["双手锤"], G["双手斧"], G["长柄武器"], G["弓"], G["枪"], G["法杖"], G["拳套"], G["匕首"], G["投掷武器"], G["弩"], G["魔杖"] }, -- DK
+
+                    ["WARRIOR" .. "1"]     = { G["双手斧"], G["双手锤"], G["长柄武器"], G["双手剑"], G["法杖"], G["魔杖"] }, -- FZ
+                    ["WARRIOR" .. "2"]     = { G["单手斧"], G["单手锤"], G["单手剑"], G["拳套"], G["匕首"], G["魔杖"] }, -- KBZ
+
+                    ["PALADIN" .. "1"]     = { G["双手斧"], G["弓"], G["枪"], G["双手锤"], G["长柄武器"], G["双手剑"], G["法杖"], G["拳套"], G["匕首"], G["投掷武器"], G["弩"], G["魔杖"] }, -- NQ
+                    ["PALADIN" .. "2"]     = { G["双手斧"], G["弓"], G["枪"], G["双手锤"], G["长柄武器"], G["双手剑"], G["法杖"], G["拳套"], G["匕首"], G["投掷武器"], G["弩"], G["魔杖"] }, -- FQ
+                    ["PALADIN" .. "3"]     = { G["单手斧"], G["弓"], G["枪"], G["单手锤"], G["单手剑"], G["法杖"], G["拳套"], G["匕首"], G["投掷武器"], G["弩"], G["魔杖"] }, -- CJQ
+
+                    ["HUNTER" .. "1"]      = { G["单手斧"], G["单手剑"], G["单手锤"], G["拳套"], G["匕首"], G["双手锤"], G["投掷武器"], G["魔杖"] }, -- LR
+
+                    ["SHAMAN" .. "1"]      = { G["弓"], G["枪"], G["长柄武器"], G["单手剑"], G["双手剑"], G["投掷武器"], G["弩"], G["魔杖"] }, -- 元素
+                    ["SHAMAN" .. "2"]      = { G["双手斧"], G["弓"], G["枪"], G["双手锤"], G["长柄武器"], G["单手剑"], G["双手剑"], G["法杖"], G["投掷武器"], G["弩"], G["魔杖"] }, -- ZQS
+                    ["SHAMAN" .. "3"]      = { G["弓"], G["枪"], G["长柄武器"], G["单手剑"], G["双手剑"], G["投掷武器"], G["弩"], G["魔杖"] }, -- NS
+
+                    ["DRUID" .. "1"]       = { G["单手斧"], G["双手斧"], G["弓"], G["枪"], G["单手剑"], G["双手剑"], G["拳套"], G["双手锤"], G["长柄武器"], G["投掷武器"], G["弩"], G["魔杖"] }, -- 咕咕
+                    ["DRUID" .. "2"]       = { G["单手斧"], G["双手斧"], G["弓"], G["枪"], G["单手剑"], G["双手剑"], G["单手锤"], G["拳套"], G["匕首"], G["投掷武器"], G["弩"], G["魔杖"] }, -- 熊T
+                    ["DRUID" .. "3"]       = { G["单手斧"], G["双手斧"], G["弓"], G["枪"], G["单手剑"], G["双手剑"], G["单手锤"], G["拳套"], G["匕首"], G["投掷武器"], G["弩"], G["魔杖"] }, -- 猫D
+                    ["DRUID" .. "4"]       = { G["单手斧"], G["双手斧"], G["弓"], G["枪"], G["单手剑"], G["双手剑"], G["拳套"], G["双手锤"], G["长柄武器"], G["投掷武器"], G["弩"], G["魔杖"] }, -- ND
+
+                    ["ROGUE" .. "1"]       = { G["双手斧"], G["双手锤"], G["长柄武器"], G["双手剑"], G["法杖"], G["魔杖"], }, -- DZ
+
+                    ["WARLOCK" .. "1"]     = { G["单手斧"], G["双手斧"], G["弓"], G["枪"], G["单手锤"], G["双手锤"], G["长柄武器"], G["双手剑"], G["拳套"], G["投掷武器"], G["弩"] }, -- SS
+
+                    ["MAGE" .. "1"]        = { G["单手斧"], G["双手斧"], G["弓"], G["枪"], G["单手锤"], G["双手锤"], G["长柄武器"], G["双手剑"], G["拳套"], G["投掷武器"], G["弩"] }, -- FS
+
+                    ["PRIEST" .. "1"]      = { G["单手斧"], G["双手斧"], G["弓"], G["枪"], G["双手锤"], G["长柄武器"], G["单手剑"], G["双手剑"], G["拳套"], G["投掷武器"], G["弩"] }, -- MS
+                    ["PRIEST" .. "2"]      = { G["单手斧"], G["双手斧"], G["弓"], G["枪"], G["双手锤"], G["长柄武器"], G["单手剑"], G["双手剑"], G["拳套"], G["投掷武器"], G["弩"] }, -- AM
+
+                    ["MONK" .. "1"]        = { G["匕首"], G["双手斧"], G["双手锤"], G["双手剑"], G["弓"], G["枪"], G["投掷武器"], G["弩"], G["魔杖"] }, -- 酒仙
+                    ["MONK" .. "2"]        = { G["匕首"], G["双手斧"], G["双手锤"], G["双手剑"], G["弓"], G["枪"], G["投掷武器"], G["弩"], G["魔杖"] }, -- 织雾
+                    ["MONK" .. "3"]        = { G["匕首"], G["双手斧"], G["双手锤"], G["双手剑"], G["弓"], G["枪"], G["投掷武器"], G["弩"], G["魔杖"] }, -- 踏风
+                }
+            end
         end
 
         for i = 1, MaxFilter[class] do
@@ -470,21 +564,6 @@ BG.Init(function()
     end
     ------------------护甲类型------------------
     do
-        BG.FilterClassItemDB.Armor = {
-            { name = "1", value = L["布甲"], onenter = L["全部布甲会被过滤（披风除外，否则本来合适你的披风也可能会被过滤）"] },
-            { name = "2", value = L["皮甲"] },
-            { name = "3", value = L["锁甲"] },
-            { name = "4", value = L["板甲"] },
-            { name = "6", value = SHIELDSLOT },
-            { name = "0", value = INVTYPE_HOLDABLE },
-            { name = "7", value = L["圣契"] },
-            { name = "8", value = L["神像"] },
-            { name = "9", value = L["图腾"] },
-        }
-        if not BG.IsVanilla then
-            tinsert(BG.FilterClassItemDB.Armor, { name = "10", value = L["魔印"] })
-        end
-
         local G = {
             ["布甲"] = "1",
             ["皮甲"] = "2",
@@ -497,8 +576,18 @@ BG.Init(function()
             ["图腾"] = "9",
             ["魔印"] = "10",
         }
-
         if BG.IsVanilla then
+            BG.FilterClassItemDB.Armor = {
+                { name = "1", value = L["布甲"], onenter = L["全部布甲会被过滤（披风除外，否则本来合适你的披风也可能会被过滤）"] },
+                { name = "2", value = L["皮甲"] },
+                { name = "3", value = L["锁甲"] },
+                { name = "4", value = L["板甲"] },
+                { name = "6", value = SHIELDSLOT },
+                { name = "0", value = INVTYPE_HOLDABLE },
+                { name = "7", value = L["圣契"] },
+                { name = "8", value = L["神像"] },
+                { name = "9", value = L["图腾"] },
+            }
             BG.FilterClassItem_Default.Armor = {
                 ["WARRIOR" .. "1"] = { G["布甲"], G["皮甲"], G["圣契"], G["神像"], G["图腾"], G["副手物品"] }, -- FZ
                 ["WARRIOR" .. "2"] = { G["布甲"], G["盾牌"], G["圣契"], G["神像"], G["图腾"], G["副手物品"] }, -- DPS
@@ -519,30 +608,19 @@ BG.Init(function()
                 ["PRIEST" .. "1"]  = { G["皮甲"], G["锁甲"], G["板甲"], G["盾牌"], G["圣契"], G["神像"], G["图腾"] }, -- MS
                 ["PRIEST" .. "2"]  = { G["皮甲"], G["锁甲"], G["板甲"], G["盾牌"], G["圣契"], G["神像"], G["图腾"] }, -- AM
             }
-        elseif BG.IsCTM then
-            BG.FilterClassItem_Default.Armor = {
-                ["DEATHKNIGHT" .. "1"] = { G["布甲"], G["皮甲"], G["锁甲"], G["盾牌"], G["圣契"], G["神像"], G["图腾"], G["副手物品"] }, -- 血DK
-                ["DEATHKNIGHT" .. "2"] = { G["布甲"], G["皮甲"], G["锁甲"], G["盾牌"], G["圣契"], G["神像"], G["图腾"], G["副手物品"] }, -- DPS
-                ["WARRIOR" .. "1"]     = { G["布甲"], G["皮甲"], G["锁甲"], G["圣契"], G["神像"], G["图腾"], G["魔印"], G["副手物品"] }, -- FZ
-                ["WARRIOR" .. "2"]     = { G["布甲"], G["皮甲"], G["锁甲"], G["盾牌"], G["圣契"], G["神像"], G["图腾"], G["魔印"], G["副手物品"] }, -- DPS
-                ["PALADIN" .. "1"]     = { G["布甲"], G["皮甲"], G["锁甲"], G["神像"], G["图腾"], G["魔印"] }, -- NQ
-                ["PALADIN" .. "2"]     = { G["布甲"], G["皮甲"], G["锁甲"], G["神像"], G["图腾"], G["魔印"], G["副手物品"] }, -- FQ
-                ["PALADIN" .. "3"]     = { G["布甲"], G["皮甲"], G["锁甲"], G["盾牌"], G["神像"], G["图腾"], G["魔印"], G["副手物品"] }, -- CJQ
-                ["HUNTER" .. "1"]      = { G["布甲"], G["皮甲"], G["板甲"], G["盾牌"], G["圣契"], G["神像"], G["图腾"], G["魔印"], G["副手物品"] }, -- LR
-                ["SHAMAN" .. "1"]      = { G["布甲"], G["皮甲"], G["板甲"], G["圣契"], G["神像"], G["魔印"] }, -- 元素
-                ["SHAMAN" .. "2"]      = { G["布甲"], G["皮甲"], G["板甲"], G["盾牌"], G["圣契"], G["神像"], G["魔印"], G["副手物品"] }, -- ZQS
-                ["SHAMAN" .. "3"]      = { G["布甲"], G["皮甲"], G["板甲"], G["圣契"], G["神像"], G["魔印"] }, -- NS
-                ["DRUID" .. "1"]       = { G["布甲"], G["锁甲"], G["板甲"], G["盾牌"], G["圣契"], G["图腾"], G["魔印"] }, -- 咕咕
-                ["DRUID" .. "2"]       = { G["布甲"], G["锁甲"], G["板甲"], G["盾牌"], G["圣契"], G["图腾"], G["魔印"], G["副手物品"] }, -- 熊T
-                ["DRUID" .. "3"]       = { G["布甲"], G["锁甲"], G["板甲"], G["盾牌"], G["圣契"], G["图腾"], G["魔印"], G["副手物品"] }, -- 猫D
-                ["DRUID" .. "4"]       = { G["布甲"], G["锁甲"], G["板甲"], G["盾牌"], G["圣契"], G["图腾"], G["魔印"] }, -- ND
-                ["ROGUE" .. "1"]       = { G["布甲"], G["锁甲"], G["板甲"], G["盾牌"], G["圣契"], G["神像"], G["图腾"], G["魔印"], G["副手物品"] }, -- DZ
-                ["WARLOCK" .. "1"]     = { G["皮甲"], G["锁甲"], G["板甲"], G["盾牌"], G["圣契"], G["神像"], G["图腾"], G["魔印"] }, -- SS
-                ["MAGE" .. "1"]        = { G["皮甲"], G["锁甲"], G["板甲"], G["盾牌"], G["圣契"], G["神像"], G["图腾"], G["魔印"] }, -- FS
-                ["PRIEST" .. "1"]      = { G["皮甲"], G["锁甲"], G["板甲"], G["盾牌"], G["圣契"], G["神像"], G["图腾"], G["魔印"] }, -- MS
-                ["PRIEST" .. "2"]      = { G["皮甲"], G["锁甲"], G["板甲"], G["盾牌"], G["圣契"], G["神像"], G["图腾"], G["魔印"] }, -- AM
+        elseif BG.IsWLK then
+            BG.FilterClassItemDB.Armor = {
+                { name = "1", value = L["布甲"], onenter = L["全部布甲会被过滤（披风除外，否则本来合适你的披风也可能会被过滤）"] },
+                { name = "2", value = L["皮甲"] },
+                { name = "3", value = L["锁甲"] },
+                { name = "4", value = L["板甲"] },
+                { name = "6", value = SHIELDSLOT },
+                { name = "0", value = INVTYPE_HOLDABLE },
+                { name = "7", value = L["圣契"] },
+                { name = "8", value = L["神像"] },
+                { name = "9", value = L["图腾"] },
+                { name = "10", value = L["魔印"] },
             }
-        else
             BG.FilterClassItem_Default.Armor = {
                 ["DEATHKNIGHT" .. "1"] = { G["布甲"], G["皮甲"], G["锁甲"], G["盾牌"], G["圣契"], G["神像"], G["图腾"], G["副手物品"] }, -- 血DK
                 ["DEATHKNIGHT" .. "2"] = { G["布甲"], G["盾牌"], G["圣契"], G["神像"], G["图腾"], G["副手物品"] }, -- DPS
@@ -564,16 +642,121 @@ BG.Init(function()
                 ["MAGE" .. "1"]        = { G["皮甲"], G["锁甲"], G["板甲"], G["盾牌"], G["圣契"], G["神像"], G["图腾"], G["魔印"] }, -- FS
                 ["PRIEST" .. "1"]      = { G["皮甲"], G["锁甲"], G["板甲"], G["盾牌"], G["圣契"], G["神像"], G["图腾"], G["魔印"] }, -- MS
                 ["PRIEST" .. "2"]      = { G["皮甲"], G["锁甲"], G["板甲"], G["盾牌"], G["圣契"], G["神像"], G["图腾"], G["魔印"] }, -- AM
+            }
+        elseif BG.IsCTM then
+            BG.FilterClassItemDB.Armor = {
+                { name = "1", value = L["布甲"], onenter = L["全部布甲会被过滤（披风除外，否则本来合适你的披风也可能会被过滤）"] },
+                { name = "2", value = L["皮甲"] },
+                { name = "3", value = L["锁甲"] },
+                { name = "4", value = L["板甲"] },
+                { name = "6", value = SHIELDSLOT },
+                { name = "0", value = INVTYPE_HOLDABLE },
+                { name = "7", value = L["圣契"] },
+                { name = "8", value = L["神像"] },
+                { name = "9", value = L["图腾"] },
+                { name = "10", value = L["魔印"] },
+            }
+            BG.FilterClassItem_Default.Armor = {
+                ["DEATHKNIGHT" .. "1"] = { G["布甲"], G["皮甲"], G["锁甲"], G["盾牌"], G["圣契"], G["神像"], G["图腾"], G["副手物品"] }, -- 血DK
+                ["DEATHKNIGHT" .. "2"] = { G["布甲"], G["皮甲"], G["锁甲"], G["盾牌"], G["圣契"], G["神像"], G["图腾"], G["副手物品"] }, -- DPS
+                ["WARRIOR" .. "1"]     = { G["布甲"], G["皮甲"], G["锁甲"], G["圣契"], G["神像"], G["图腾"], G["魔印"], G["副手物品"] }, -- FZ
+                ["WARRIOR" .. "2"]     = { G["布甲"], G["皮甲"], G["锁甲"], G["盾牌"], G["圣契"], G["神像"], G["图腾"], G["魔印"], G["副手物品"] }, -- DPS
+                ["PALADIN" .. "1"]     = { G["布甲"], G["皮甲"], G["锁甲"], G["神像"], G["图腾"], G["魔印"] }, -- NQ
+                ["PALADIN" .. "2"]     = { G["布甲"], G["皮甲"], G["锁甲"], G["神像"], G["图腾"], G["魔印"], G["副手物品"] }, -- FQ
+                ["PALADIN" .. "3"]     = { G["布甲"], G["皮甲"], G["锁甲"], G["盾牌"], G["神像"], G["图腾"], G["魔印"], G["副手物品"] }, -- CJQ
+                ["HUNTER" .. "1"]      = { G["布甲"], G["皮甲"], G["板甲"], G["盾牌"], G["圣契"], G["神像"], G["图腾"], G["魔印"], G["副手物品"] }, -- LR
+                ["SHAMAN" .. "1"]      = { G["布甲"], G["皮甲"], G["板甲"], G["圣契"], G["神像"], G["魔印"] }, -- 元素
+                ["SHAMAN" .. "2"]      = { G["布甲"], G["皮甲"], G["板甲"], G["盾牌"], G["圣契"], G["神像"], G["魔印"], G["副手物品"] }, -- ZQS
+                ["SHAMAN" .. "3"]      = { G["布甲"], G["皮甲"], G["板甲"], G["圣契"], G["神像"], G["魔印"] }, -- NS
+                ["DRUID" .. "1"]       = { G["布甲"], G["锁甲"], G["板甲"], G["盾牌"], G["圣契"], G["图腾"], G["魔印"] }, -- 咕咕
+                ["DRUID" .. "2"]       = { G["布甲"], G["锁甲"], G["板甲"], G["盾牌"], G["圣契"], G["图腾"], G["魔印"], G["副手物品"] }, -- 熊T
+                ["DRUID" .. "3"]       = { G["布甲"], G["锁甲"], G["板甲"], G["盾牌"], G["圣契"], G["图腾"], G["魔印"], G["副手物品"] }, -- 猫D
+                ["DRUID" .. "4"]       = { G["布甲"], G["锁甲"], G["板甲"], G["盾牌"], G["圣契"], G["图腾"], G["魔印"] }, -- ND
+                ["ROGUE" .. "1"]       = { G["布甲"], G["锁甲"], G["板甲"], G["盾牌"], G["圣契"], G["神像"], G["图腾"], G["魔印"], G["副手物品"] }, -- DZ
+                ["WARLOCK" .. "1"]     = { G["皮甲"], G["锁甲"], G["板甲"], G["盾牌"], G["圣契"], G["神像"], G["图腾"], G["魔印"] }, -- SS
+                ["MAGE" .. "1"]        = { G["皮甲"], G["锁甲"], G["板甲"], G["盾牌"], G["圣契"], G["神像"], G["图腾"], G["魔印"] }, -- FS
+                ["PRIEST" .. "1"]      = { G["皮甲"], G["锁甲"], G["板甲"], G["盾牌"], G["圣契"], G["神像"], G["图腾"], G["魔印"] }, -- MS
+                ["PRIEST" .. "2"]      = { G["皮甲"], G["锁甲"], G["板甲"], G["盾牌"], G["圣契"], G["神像"], G["图腾"], G["魔印"] }, -- AM
 
-                -- 1 布甲	
-                -- 2 皮甲
-                -- 3 锁甲
-                -- 4 板甲	
-                -- 6 盾牌
-                -- 7 圣契
-                -- 8 神像	
-                -- 9 图腾	
-                -- 10 魔印	
+
+                ["MONK" .. "1"] = { G["布甲"], G["锁甲"], G["板甲"], G["盾牌"], G["神像"], G["圣契"], G["图腾"], G["魔印"], G["副手物品"] }, -- 熊T
+                ["MONK" .. "2"] = { G["布甲"], G["锁甲"], G["板甲"], G["盾牌"], G["神像"], G["圣契"], G["图腾"], G["魔印"] }, -- ND
+                ["MONK" .. "3"] = { G["布甲"], G["锁甲"], G["板甲"], G["盾牌"], G["神像"], G["圣契"], G["图腾"], G["魔印"], G["副手物品"] }, -- 猫D
+            }
+        elseif BG.IsMOP then
+            BG.FilterClassItemDB.Armor = {
+                { name = "1", value = L["布甲"], onenter = L["全部布甲会被过滤（披风除外，否则本来合适你的披风也可能会被过滤）"] },
+                { name = "2", value = L["皮甲"] },
+                { name = "3", value = L["锁甲"] },
+                { name = "4", value = L["板甲"] },
+                { name = "6", value = SHIELDSLOT },
+                { name = "0", value = INVTYPE_HOLDABLE },
+            }
+            BG.FilterClassItem_Default.Armor = {
+                ["DEATHKNIGHT" .. "1"] = { G["布甲"], G["皮甲"], G["锁甲"], G["盾牌"], G["副手物品"] }, -- 血DK
+                ["DEATHKNIGHT" .. "2"] = { G["布甲"], G["皮甲"], G["锁甲"], G["盾牌"], G["副手物品"] }, -- DPS
+                ["WARRIOR" .. "1"]     = { G["布甲"], G["皮甲"], G["锁甲"], G["副手物品"] }, -- FZ
+                ["WARRIOR" .. "2"]     = { G["布甲"], G["皮甲"], G["锁甲"], G["盾牌"], G["副手物品"] }, -- DPS
+                ["PALADIN" .. "1"]     = { G["布甲"], G["皮甲"], G["锁甲"], }, -- NQ
+                ["PALADIN" .. "2"]     = { G["布甲"], G["皮甲"], G["锁甲"], G["副手物品"] }, -- FQ
+                ["PALADIN" .. "3"]     = { G["布甲"], G["皮甲"], G["锁甲"], G["盾牌"], G["副手物品"] }, -- CJQ
+                ["HUNTER" .. "1"]      = { G["布甲"], G["皮甲"], G["板甲"], G["盾牌"], G["副手物品"] }, -- LR
+                ["SHAMAN" .. "1"]      = { G["布甲"], G["皮甲"], G["板甲"], }, -- 元素
+                ["SHAMAN" .. "2"]      = { G["布甲"], G["皮甲"], G["板甲"], G["盾牌"], G["副手物品"] }, -- ZQS
+                ["SHAMAN" .. "3"]      = { G["布甲"], G["皮甲"], G["板甲"], }, -- NS
+                ["DRUID" .. "1"]       = { G["布甲"], G["锁甲"], G["板甲"], G["盾牌"], }, -- 咕咕
+                ["DRUID" .. "2"]       = { G["布甲"], G["锁甲"], G["板甲"], G["盾牌"], G["副手物品"] }, -- 熊T
+                ["DRUID" .. "3"]       = { G["布甲"], G["锁甲"], G["板甲"], G["盾牌"], G["副手物品"] }, -- 猫D
+                ["DRUID" .. "4"]       = { G["布甲"], G["锁甲"], G["板甲"], G["盾牌"], }, -- ND
+                ["ROGUE" .. "1"]       = { G["布甲"], G["锁甲"], G["板甲"], G["盾牌"], G["副手物品"] }, -- DZ
+                ["WARLOCK" .. "1"]     = { G["皮甲"], G["锁甲"], G["板甲"], G["盾牌"], }, -- SS
+                ["MAGE" .. "1"]        = { G["皮甲"], G["锁甲"], G["板甲"], G["盾牌"], }, -- FS
+                ["PRIEST" .. "1"]      = { G["皮甲"], G["锁甲"], G["板甲"], G["盾牌"], }, -- MS
+                ["PRIEST" .. "2"]      = { G["皮甲"], G["锁甲"], G["板甲"], G["盾牌"], }, -- AM
+
+
+                ["MONK" .. "1"] = { G["布甲"], G["锁甲"], G["板甲"], G["盾牌"], G["副手物品"] }, -- 熊T
+                ["MONK" .. "2"] = { G["布甲"], G["锁甲"], G["板甲"], G["盾牌"], }, -- ND
+                ["MONK" .. "3"] = { G["布甲"], G["锁甲"], G["板甲"], G["盾牌"], G["副手物品"] }, -- 猫D
+            }
+        elseif BG.IsRetail then
+            BG.FilterClassItemDB.Armor = {
+                { name = "1", value = L["布甲"], onenter = L["全部布甲会被过滤（披风除外，否则本来合适你的披风也可能会被过滤）"] },
+                { name = "2", value = L["皮甲"] },
+                { name = "3", value = L["锁甲"] },
+                { name = "4", value = L["板甲"] },
+                { name = "6", value = SHIELDSLOT },
+                { name = "0", value = INVTYPE_HOLDABLE },
+            }
+            BG.FilterClassItem_Default.Armor = {
+                ["DEATHKNIGHT" .. "1"] = { G["布甲"], G["皮甲"], G["锁甲"], G["盾牌"], G["副手物品"] }, -- 血DK
+                ["DEATHKNIGHT" .. "2"] = { G["布甲"], G["皮甲"], G["锁甲"], G["盾牌"], G["副手物品"] }, -- DPS
+                ["WARRIOR" .. "1"]     = { G["布甲"], G["皮甲"], G["锁甲"], G["副手物品"] }, -- FZ
+                ["WARRIOR" .. "2"]     = { G["布甲"], G["皮甲"], G["锁甲"], G["盾牌"], G["副手物品"] }, -- DPS
+                ["PALADIN" .. "1"]     = { G["布甲"], G["皮甲"], G["锁甲"], G["魔印"] }, -- NQ
+                ["PALADIN" .. "2"]     = { G["布甲"], G["皮甲"], G["锁甲"], G["副手物品"] }, -- FQ
+                ["PALADIN" .. "3"]     = { G["布甲"], G["皮甲"], G["锁甲"], G["盾牌"], G["副手物品"] }, -- CJQ
+                ["HUNTER" .. "1"]      = { G["布甲"], G["皮甲"], G["板甲"], G["盾牌"], G["副手物品"] }, -- LR
+                ["SHAMAN" .. "1"]      = { G["布甲"], G["皮甲"], G["板甲"], G["魔印"] }, -- 元素
+                ["SHAMAN" .. "2"]      = { G["布甲"], G["皮甲"], G["板甲"], G["盾牌"], G["副手物品"] }, -- ZQS
+                ["SHAMAN" .. "3"]      = { G["布甲"], G["皮甲"], G["板甲"], G["魔印"] }, -- NS
+                ["DRUID" .. "1"]       = { G["布甲"], G["锁甲"], G["板甲"], G["盾牌"], G["魔印"] }, -- 咕咕
+                ["DRUID" .. "2"]       = { G["布甲"], G["锁甲"], G["板甲"], G["盾牌"], G["副手物品"] }, -- 熊T
+                ["DRUID" .. "3"]       = { G["布甲"], G["锁甲"], G["板甲"], G["盾牌"], G["副手物品"] }, -- 猫D
+                ["DRUID" .. "4"]       = { G["布甲"], G["锁甲"], G["板甲"], G["盾牌"], G["魔印"] }, -- ND
+                ["ROGUE" .. "1"]       = { G["布甲"], G["锁甲"], G["板甲"], G["盾牌"], G["副手物品"] }, -- DZ
+                ["WARLOCK" .. "1"]     = { G["皮甲"], G["锁甲"], G["板甲"], G["盾牌"], G["魔印"] }, -- SS
+                ["MAGE" .. "1"]        = { G["皮甲"], G["锁甲"], G["板甲"], G["盾牌"], G["魔印"] }, -- FS
+                ["PRIEST" .. "1"]      = { G["皮甲"], G["锁甲"], G["板甲"], G["盾牌"], G["魔印"] }, -- MS
+                ["PRIEST" .. "2"]      = { G["皮甲"], G["锁甲"], G["板甲"], G["盾牌"], G["魔印"] }, -- AM
+                ["EVOKER" .. "1"]      = { G["布甲"], G["皮甲"], G["板甲"], G["盾牌"], },
+                ["EVOKER" .. "2"]      = { G["布甲"], G["皮甲"], G["板甲"], G["盾牌"], },
+                ["EVOKER" .. "3"]      = { G["布甲"], G["皮甲"], G["板甲"], G["盾牌"], },
+                ["DEMONHUNTER" .. "1"] = { G["布甲"], G["锁甲"], G["板甲"], G["盾牌"], G["副手物品"] },
+                ["DEMONHUNTER" .. "2"] = { G["布甲"], G["锁甲"], G["板甲"], G["盾牌"], G["副手物品"] },
+                ["MONK" .. "1"]        = { G["布甲"], G["锁甲"], G["板甲"], G["盾牌"], G["副手物品"] },
+                ["MONK" .. "2"]        = { G["布甲"], G["锁甲"], G["板甲"], G["盾牌"] },
+                ["MONK" .. "3"]        = { G["布甲"], G["锁甲"], G["板甲"], G["盾牌"], G["副手物品"] },
             }
         end
 
@@ -585,29 +768,6 @@ BG.Init(function()
                     BiaoGe.FilterClassItemDB[RealmID][player][i].Armor[v] = 1
                 end
             end
-        end
-
-        if BG.IsCTM then
-            local _, class = UnitClass("player")
-            BG.Once("FilterClassItem_Armor" .. RealmID .. player, 240615, function()
-                for i = 1, 5 do
-                    if BiaoGe.FilterClassItemDB[RealmID][player][i] and BiaoGe.FilterClassItemDB[RealmID][player][i].Armor then
-                        if class == "DEATHKNIGHT" or class == "WARRIOR" or class == "PALADIN" then
-                            BiaoGe.FilterClassItemDB[RealmID][player][i].Armor[G["布甲"]] = 1
-                            BiaoGe.FilterClassItemDB[RealmID][player][i].Armor[G["皮甲"]] = 1
-                            BiaoGe.FilterClassItemDB[RealmID][player][i].Armor[G["锁甲"]] = 1
-                        elseif class == "HUNTER" or class == "SHAMAN" then
-                            BiaoGe.FilterClassItemDB[RealmID][player][i].Armor[G["布甲"]] = 1
-                            BiaoGe.FilterClassItemDB[RealmID][player][i].Armor[G["皮甲"]] = 1
-                            BiaoGe.FilterClassItemDB[RealmID][player][i].Armor[G["板甲"]] = 1
-                        elseif class == "DRUID" or class == "ROGUE" then
-                            BiaoGe.FilterClassItemDB[RealmID][player][i].Armor[G["布甲"]] = 1
-                            BiaoGe.FilterClassItemDB[RealmID][player][i].Armor[G["锁甲"]] = 1
-                            BiaoGe.FilterClassItemDB[RealmID][player][i].Armor[G["板甲"]] = 1
-                        end
-                    end
-                end
-            end)
         end
     end
     ------------------职业限定------------------
@@ -638,6 +798,14 @@ BG.Init(function()
             ["MAGE" .. "1"]        = { "过滤职业限定" }, -- FS
             ["PRIEST" .. "1"]      = { "过滤职业限定" }, -- MS
             ["PRIEST" .. "2"]      = { "过滤职业限定" }, -- AM
+            ["EVOKER" .. "1"]      = { "过滤职业限定" },
+            ["EVOKER" .. "2"]      = { "过滤职业限定" },
+            ["EVOKER" .. "3"]      = { "过滤职业限定" },
+            ["DEMONHUNTER" .. "1"] = { "过滤职业限定" },
+            ["DEMONHUNTER" .. "2"] = { "过滤职业限定" },
+            ["MONK" .. "1"]        = { "过滤职业限定" },
+            ["MONK" .. "2"]        = { "过滤职业限定" },
+            ["MONK" .. "3"]        = { "过滤职业限定" },
         }
 
         for i = 1, MaxFilter[class] do
@@ -653,47 +821,56 @@ BG.Init(function()
     ------------------坦克特殊过滤------------------
     do
         local type = "Tank"
-        BG.FilterClassItemDB[type] = {
-            { name = "过滤坦克", value = L["过滤没有坦克属性的装备"], },
-        }
+        if BG.IsWLK or BG.IsCTM or BG.IsMOP then
+            BG.FilterClassItemDB[type] = {
+                { name = "过滤坦克", value = L["过滤没有坦克属性的装备"], },
+            }
 
-        BG.FilterClassItem_Default.TankKey = {
-            STAT_CATEGORY_DEFENSE,
-            STAT_PARRY,
-            STAT_DODGE,
-            STAT_BLOCK,
-        }
+            BG.FilterClassItem_Default.TankKey = {
+                STAT_CATEGORY_DEFENSE,
+                STAT_PARRY,
+                STAT_DODGE,
+                STAT_BLOCK,
+            }
 
-        BG.FilterClassItem_Default[type] = {
-            ["DEATHKNIGHT" .. "1"] = { "过滤坦克" }, -- 血DK
-            ["DEATHKNIGHT" .. "2"] = {}, -- DPS
-            ["WARRIOR" .. "1"]     = { "过滤坦克" }, -- FZ
-            ["WARRIOR" .. "2"]     = {}, -- DPS
-            ["PALADIN" .. "1"]     = {}, -- NQ
-            ["PALADIN" .. "2"]     = { "过滤坦克" }, -- FQ
-            ["PALADIN" .. "3"]     = {}, -- CJQ
-            ["HUNTER" .. "1"]      = {}, -- LR
-            ["SHAMAN" .. "1"]      = {}, -- 元素
-            ["SHAMAN" .. "2"]      = {}, -- ZQS
-            ["SHAMAN" .. "3"]      = {}, -- NS
-            ["DRUID" .. "1"]       = {}, -- 咕咕
-            ["DRUID" .. "2"]       = {}, -- 熊T
-            ["DRUID" .. "3"]       = {}, -- 猫D
-            ["DRUID" .. "4"]       = {}, -- ND
-            ["ROGUE" .. "1"]       = {}, -- DZ
-            ["WARLOCK" .. "1"]     = {}, -- SS
-            ["MAGE" .. "1"]        = {}, -- FS
-            ["PRIEST" .. "1"]      = {}, -- MS
-            ["PRIEST" .. "2"]      = {}, -- AM
-        }
+            BG.FilterClassItem_Default[type] = {
+                ["DEATHKNIGHT" .. "1"] = { "过滤坦克" }, -- 血DK
+                ["DEATHKNIGHT" .. "2"] = {}, -- DPS
+                ["WARRIOR" .. "1"]     = { "过滤坦克" }, -- FZ
+                ["WARRIOR" .. "2"]     = {}, -- DPS
+                ["PALADIN" .. "1"]     = {}, -- NQ
+                ["PALADIN" .. "2"]     = { "过滤坦克" }, -- FQ
+                ["PALADIN" .. "3"]     = {}, -- CJQ
+                ["HUNTER" .. "1"]      = {}, -- LR
+                ["SHAMAN" .. "1"]      = {}, -- 元素
+                ["SHAMAN" .. "2"]      = {}, -- ZQS
+                ["SHAMAN" .. "3"]      = {}, -- NS
+                ["DRUID" .. "1"]       = {}, -- 咕咕
+                ["DRUID" .. "2"]       = {}, -- 熊T
+                ["DRUID" .. "3"]       = {}, -- 猫D
+                ["DRUID" .. "4"]       = {}, -- ND
+                ["ROGUE" .. "1"]       = {}, -- DZ
+                ["WARLOCK" .. "1"]     = {}, -- SS
+                ["MAGE" .. "1"]        = {}, -- FS
+                ["PRIEST" .. "1"]      = {}, -- MS
+                ["PRIEST" .. "2"]      = {}, -- AM
+                ["MONK" .. "1"]        = { "过滤坦克" }, -- 酒仙
+                ["MONK" .. "2"]        = {}, -- 织雾
+                ["MONK" .. "3"]        = {}, -- 踏风
+            }
 
-        for i = 1, MaxFilter[class] do
-            if not BiaoGe.FilterClassItemDB[RealmID][player][i][type] then
-                BiaoGe.FilterClassItemDB[RealmID][player][i][type] = {}
+            for i = 1, MaxFilter[class] do
+                if not BiaoGe.FilterClassItemDB[RealmID][player][i][type] then
+                    BiaoGe.FilterClassItemDB[RealmID][player][i][type] = {}
 
-                for k, v in pairs(BG.FilterClassItem_Default[type][class .. i]) do
-                    BiaoGe.FilterClassItemDB[RealmID][player][i][type][v] = 1
+                    for k, v in pairs(BG.FilterClassItem_Default[type][class .. i]) do
+                        BiaoGe.FilterClassItemDB[RealmID][player][i][type][v] = 1
+                    end
                 end
+            end
+        else
+            for i = 1, MaxFilter[class] do
+                BiaoGe.FilterClassItemDB[RealmID][player][i][type] = nil
             end
         end
     end

@@ -334,7 +334,7 @@ L:SetWarningLocalization{
 }
 
 L:SetOptionLocalization{
-	Immune			= "Show warning when Manalde becomes spell or melee immune"
+	Immune			= "Show warning when Malande becomes spell or melee immune"
 }
 
 L:SetMiscLocalization{
@@ -368,8 +368,8 @@ L:SetTimerLocalization{
 L:SetOptionLocalization{
 	WarnHuman		= "Show warning for Human Phase",
 	WarnDemon		= "Show warning for Demon Phase",
-	TimerNextHuman	= "Show time for Next Human Phase",
-	TimerNextDemon	= "Show time for Demon Human Phase",
+	TimerNextHuman	= "Show time for Human Phase",
+	TimerNextDemon	= "Show time for Demon Phase",
 	RangeFrame		= "Show range frame (10 yards) in Phase 3 and 4"
 }
 

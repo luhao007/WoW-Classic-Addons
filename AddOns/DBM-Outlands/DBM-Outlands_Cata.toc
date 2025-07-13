@@ -1,5 +1,5 @@
-## Interface: 30404
-## Version: r8
+## Interface: 30405
+## Version: r10
 
 ## Title: |cffffe00a<|r|cffff7d0aDBM Mod|r|cffffe00a>|r |cff10ff10World Bosses (BC)|r
 ## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r |cFFFFFFFF副本助手|r |cFF69CCF0户外|r |cFF22B14C外域|r

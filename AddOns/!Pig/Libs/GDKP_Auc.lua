@@ -1,7 +1,8 @@
 local addonName, addonTable = ...;
 local L=addonTable.locale
-local _, _, _, tocversion = GetBuildInfo()
 ---
+local sub = _G.string.sub
+local Data = addonTable.Data
 local Create=addonTable.Create
 local PIGFrame=Create.PIGFrame
 local PIGButton=Create.PIGButton
@@ -9,45 +10,45 @@ local PIGFontString=Create.PIGFontString
 local PIGSetFont=Create.PIGSetFont
 local PIGEnter=Create.PIGEnter
 ---
+local AudioData=addonTable.AudioList.Data
 local biaotou,auc_start,auc_end,auc_daoshu,auc_chujia="!Pig_Auc","auc_start","auc_end","auc_daoshu","auc_chujia";
-addonTable.Data.GDKP_Auc={biaotou,auc_start,auc_end,auc_daoshu,auc_chujia}
-local butww = 30
-local GDKP_AucF = CreateFrame("Frame","GDKP_AucFUI",UIParent)
-GDKP_AucF:SetSize(butww,butww);
-GDKP_AucF:SetPoint("CENTER",UIParent,"CENTER",-100,-50);
-GDKP_AucF:SetFrameStrata("HIGH")
-GDKP_AucF:Hide()
+Data.GDKP_Auc={biaotou,auc_start,auc_end,auc_daoshu,auc_chujia}
+local UIname,butww = "PIG_GDKPAucUI",30
+Data.UILayout[UIname]={"CENTER","CENTER",-100,-50}
+local GDKPAuc = CreateFrame("Frame",UIname,UIParent)
+GDKPAuc:SetSize(butww,butww);
+GDKPAuc:SetFrameStrata("HIGH")
+GDKPAuc:Hide()
 
-GDKP_AucF.nr=PIGFrame(GDKP_AucF,{"TOPRIGHT",GDKP_AucF,"TOPRIGHT",0,0},{300, 220})
-GDKP_AucF.nr:PIGSetBackdrop(0.8)
-GDKP_AucF.nr:PIGSetMovable(GDKP_AucF)
-GDKP_AucF.nr.aucplayer = PIGFontString(GDKP_AucF.nr,{"TOP", GDKP_AucF.nr, "TOP", -40,-4});
-GDKP_AucF.nr.aucplayer:SetTextColor(1, 0, 1, 1)
-GDKP_AucF.nr.biaoti = PIGFontString(GDKP_AucF.nr,{"LEFT", GDKP_AucF.nr.aucplayer, "RIGHT", 0,0},"正在拍卖");
-GDKP_AucF.nr.aucitem1 = PIGFontString(GDKP_AucF.nr,{"TOP", GDKP_AucF.nr, "TOP", 0,-30},nil,nil,18);
-GDKP_AucF.nr.aucitem2 = PIGFontString(GDKP_AucF.nr,{"TOP", GDKP_AucF.nr, "TOP", 0,-60});
-GDKP_AucF.nr.aucitem2:SetTextColor(1, 1, 1, 1)
-GDKP_AucF.nr.chujiaV = CreateFrame("EditBox", nil, GDKP_AucF.nr, "InputBoxInstructionsTemplate");
-GDKP_AucF.nr.chujiaV:SetSize(94,22);
-GDKP_AucF.nr.chujiaV:SetPoint("TOP", GDKP_AucF.nr, "TOP", 0,-100);
-PIGSetFont(GDKP_AucF.nr.chujiaV,15,"OUTLINE")
-GDKP_AucF.nr.chujiaV:SetJustifyH("CENTER")
-GDKP_AucF.nr.chujiaV:SetMaxLetters(10)
-GDKP_AucF.nr.chujiaV:SetNumeric(true)
-GDKP_AucF.nr.chujiaV:SetAutoFocus(false)
-GDKP_AucF.nr.chujiaV:SetScript("OnEscapePressed", function(self) 
+GDKPAuc.nr=PIGFrame(GDKPAuc,{"TOPRIGHT",GDKPAuc,"TOPRIGHT",0,0},{300, 220})
+GDKPAuc.nr:PIGSetBackdrop(0.8)
+GDKPAuc.nr:PIGSetMovable(GDKPAuc)
+GDKPAuc.nr.aucplayer = PIGFontString(GDKPAuc.nr,{"TOP", GDKPAuc.nr, "TOP", -40,-4});
+GDKPAuc.nr.aucplayer:SetTextColor(1, 0, 1, 1)
+GDKPAuc.nr.biaoti = PIGFontString(GDKPAuc.nr,{"LEFT", GDKPAuc.nr.aucplayer, "RIGHT", 0,0},"正在拍卖");
+GDKPAuc.nr.aucitem1 = PIGFontString(GDKPAuc.nr,{"TOP", GDKPAuc.nr, "TOP", 0,-30},nil,nil,18);
+GDKPAuc.nr.aucitem2 = PIGFontString(GDKPAuc.nr,{"TOP", GDKPAuc.nr, "TOP", 0,-60});
+GDKPAuc.nr.aucitem2:SetTextColor(1, 1, 1, 1)
+GDKPAuc.nr.chujiaV = CreateFrame("EditBox", nil, GDKPAuc.nr, "InputBoxInstructionsTemplate");
+GDKPAuc.nr.chujiaV:SetSize(94,22);
+GDKPAuc.nr.chujiaV:SetPoint("TOP", GDKPAuc.nr, "TOP", 0,-100);
+PIGSetFont(GDKPAuc.nr.chujiaV,15,"OUTLINE")
+GDKPAuc.nr.chujiaV:SetJustifyH("CENTER")
+GDKPAuc.nr.chujiaV:SetMaxLetters(10)
+GDKPAuc.nr.chujiaV:SetNumeric(true)
+GDKPAuc.nr.chujiaV:SetAutoFocus(false)
+GDKPAuc.nr.chujiaV:SetScript("OnEscapePressed", function(self) 
 	local xianjiaV=self:GetNumber()
-	local qipaiV = tonumber(GDKP_AucF.nr.qipai)
+	local qipaiV = tonumber(GDKPAuc.nr.qipai)
 	if xianjiaV<qipaiV then self:SetText(qipaiV) end
 	self:ClearFocus() 
 end);
-GDKP_AucF.nr.chujiaV:SetScript("OnEnterPressed", function(self) 
+GDKPAuc.nr.chujiaV:SetScript("OnEnterPressed", function(self) 
 	local xianjiaV=self:GetNumber()
-	local qipaiV = tonumber(GDKP_AucF.nr.qipai)
+	local qipaiV = tonumber(GDKPAuc.nr.qipai)
 	if xianjiaV<qipaiV then self:SetText(qipaiV) end
 	self:ClearFocus() 
 end);
-local sub = _G.string.sub
 local function jisuanxiaoshudian(danwei,ge,shi,bai,qian)
 	local geshihuazhiVV=danwei
 	if ge~="0" then
@@ -93,73 +94,73 @@ local function zhuanhuanjiaxie(xianjiaV)
 	end
 	return geshihuazhiVV
 end
-GDKP_AucF.nr.chujiaV:SetScript("OnCursorChanged", function(self) 
+GDKPAuc.nr.chujiaV:SetScript("OnCursorChanged", function(self) 
 	self.chujiadaxie:SetText(zhuanhuanjiaxie(self:GetText()))
 end)
-GDKP_AucF.nr.chujiaV.MinB = PIGButton(GDKP_AucF.nr.chujiaV,{"RIGHT",GDKP_AucF.nr.chujiaV,"LEFT",-16,0},{24,24},"_");
-GDKP_AucF.nr.chujiaV.MinB.Text:SetPoint("CENTER", GDKP_AucF.nr.chujiaV.MinB, "CENTER", 1.4,14);
-PIGSetFont(GDKP_AucF.nr.chujiaV.MinB.Text,30)
-GDKP_AucF.nr.chujiaV.MinB:SetScript("OnMouseDown", function(self)
+GDKPAuc.nr.chujiaV.MinB = PIGButton(GDKPAuc.nr.chujiaV,{"RIGHT",GDKPAuc.nr.chujiaV,"LEFT",-16,0},{24,24},"_");
+GDKPAuc.nr.chujiaV.MinB.Text:SetPoint("CENTER", GDKPAuc.nr.chujiaV.MinB, "CENTER", 1.4,14);
+PIGSetFont(GDKPAuc.nr.chujiaV.MinB.Text,30)
+GDKPAuc.nr.chujiaV.MinB:SetScript("OnMouseDown", function(self)
 	if self:IsEnabled() then
 		self.Text:SetPoint("CENTER", 2.9,12.5);
 	end
 end);
-GDKP_AucF.nr.chujiaV.MinB:SetScript("OnMouseUp", function(self)
+GDKPAuc.nr.chujiaV.MinB:SetScript("OnMouseUp", function(self)
 	if self:IsEnabled() then
 		self.Text:SetPoint("CENTER", 1.4,14);
 	end
 end);
-GDKP_AucF.nr.chujiaV.MaxB = PIGButton(GDKP_AucF.nr.chujiaV,{"LEFT",GDKP_AucF.nr.chujiaV,"RIGHT",12,0},{24,24},"+"); 
-PIGSetFont(GDKP_AucF.nr.chujiaV.MaxB.Text,30)
-GDKP_AucF.nr.chujiaV.MinB:SetScript("OnClick", function(self)
-	local xianjiaV=GDKP_AucF.nr.chujiaV:GetNumber()
-	local qipaiV = tonumber(GDKP_AucF.nr.qipai)
-	local danciV = tonumber(GDKP_AucF.nr.danci)
+GDKPAuc.nr.chujiaV.MaxB = PIGButton(GDKPAuc.nr.chujiaV,{"LEFT",GDKPAuc.nr.chujiaV,"RIGHT",12,0},{24,24},"+"); 
+PIGSetFont(GDKPAuc.nr.chujiaV.MaxB.Text,30)
+GDKPAuc.nr.chujiaV.MinB:SetScript("OnClick", function(self)
+	local xianjiaV=GDKPAuc.nr.chujiaV:GetNumber()
+	local qipaiV = tonumber(GDKPAuc.nr.qipai)
+	local danciV = tonumber(GDKPAuc.nr.danci)
 	local NEWxianjiaV=xianjiaV-danciV
 	if NEWxianjiaV<qipaiV then
-		GDKP_AucF.nr.chujiaV:SetText(qipaiV);
+		GDKPAuc.nr.chujiaV:SetText(qipaiV);
 	else
-		GDKP_AucF.nr.chujiaV:SetText(NEWxianjiaV-danciV);
+		GDKPAuc.nr.chujiaV:SetText(NEWxianjiaV-danciV);
 	end
 end);
-GDKP_AucF.nr.chujiaV.MaxB:SetScript("OnClick", function(self)
-	local xianjiaV=GDKP_AucF.nr.chujiaV:GetNumber()
-	local danciV = tonumber(GDKP_AucF.nr.danci)
+GDKPAuc.nr.chujiaV.MaxB:SetScript("OnClick", function(self)
+	local xianjiaV=GDKPAuc.nr.chujiaV:GetNumber()
+	local danciV = tonumber(GDKPAuc.nr.danci)
 	local NEWxianjiaV=xianjiaV+danciV
 	if string.len(NEWxianjiaV)<=9 then
-		GDKP_AucF.nr.chujiaV:SetText(NEWxianjiaV);
+		GDKPAuc.nr.chujiaV:SetText(NEWxianjiaV);
 	end
 end);
-GDKP_AucF.nr.chujiaV.chujiadaxie = PIGFontString(GDKP_AucF.nr.chujiaV,{"TOP", GDKP_AucF.nr.chujiaV, "BOTTOM", 0,-2});
-GDKP_AucF.nr.chujiabut10 = PIGButton(GDKP_AucF.nr,{"BOTTOM", GDKP_AucF.nr, "BOTTOM", -60,54},{80,24},"10倍加价");
-GDKP_AucF.nr.chujiabut10:SetScript("OnClick", function(self)
-	local xianjiaV=GDKP_AucF.nr.chujiaV:GetNumber()
-	local danciV = tonumber(GDKP_AucF.nr.danci)
+GDKPAuc.nr.chujiaV.chujiadaxie = PIGFontString(GDKPAuc.nr.chujiaV,{"TOP", GDKPAuc.nr.chujiaV, "BOTTOM", 0,-2});
+GDKPAuc.nr.chujiabut10 = PIGButton(GDKPAuc.nr,{"BOTTOM", GDKPAuc.nr, "BOTTOM", -60,54},{80,24},"10倍加价");
+GDKPAuc.nr.chujiabut10:SetScript("OnClick", function(self)
+	local xianjiaV=GDKPAuc.nr.chujiaV:GetNumber()
+	local danciV = tonumber(GDKPAuc.nr.danci)
 	local NEWxianjiaV=xianjiaV+danciV*10
 	if string.len(NEWxianjiaV)<=9 then
-		GDKP_AucF.nr.chujiaV:SetText(NEWxianjiaV);
+		GDKPAuc.nr.chujiaV:SetText(NEWxianjiaV);
 	end
 end);
-GDKP_AucF.nr.chujiabut20 = PIGButton(GDKP_AucF.nr,{"BOTTOM", GDKP_AucF.nr, "BOTTOM", 60,54},{80,24},"20倍加价");
-GDKP_AucF.nr.chujiabut20:SetScript("OnClick", function(self)
-	local xianjiaV=GDKP_AucF.nr.chujiaV:GetNumber()
-	local danciV = tonumber(GDKP_AucF.nr.danci)
+GDKPAuc.nr.chujiabut20 = PIGButton(GDKPAuc.nr,{"BOTTOM", GDKPAuc.nr, "BOTTOM", 60,54},{80,24},"20倍加价");
+GDKPAuc.nr.chujiabut20:SetScript("OnClick", function(self)
+	local xianjiaV=GDKPAuc.nr.chujiaV:GetNumber()
+	local danciV = tonumber(GDKPAuc.nr.danci)
 	local NEWxianjiaV=xianjiaV+danciV*20
 	if string.len(NEWxianjiaV)<=9 then
-		GDKP_AucF.nr.chujiaV:SetText(NEWxianjiaV);
+		GDKPAuc.nr.chujiaV:SetText(NEWxianjiaV);
 	end
 end);
-GDKP_AucF.nr.chujiabut = PIGButton(GDKP_AucF.nr,{"BOTTOM", GDKP_AucF.nr, "BOTTOM", 0,18},{80,24},"出价");
-GDKP_AucF.nr.chujiabut.tishi = CreateFrame("Frame", nil, GDKP_AucF.nr.chujiabut);
-GDKP_AucF.nr.chujiabut.tishi:SetSize(26,26);
-GDKP_AucF.nr.chujiabut.tishi:SetPoint("LEFT", GDKP_AucF.nr.chujiabut, "RIGHT", 4,0);
-GDKP_AucF.nr.chujiabut.tishi.Tex = GDKP_AucF.nr.chujiabut.tishi:CreateTexture(nil, "BORDER");
-GDKP_AucF.nr.chujiabut.tishi.Tex:SetTexture("interface/helpframe/helpicon-reportabuse.blp");
-GDKP_AucF.nr.chujiabut.tishi.Tex:SetAllPoints(GDKP_AucF.nr.chujiabut.tishi)
-PIGEnter(GDKP_AucF.nr.chujiabut.tishi,"重要提示：","|cffFF0000请及早出价，以免网络延迟造成的出价失败|r")
-GDKP_AucF.nr.chujiabut:SetScript("OnClick",function(self)
-	local chujiajiaV=GDKP_AucF.nr.chujiaV:GetNumber()
-	local chujiajianxie=zhuanhuanjiaxie(GDKP_AucF.nr.chujiaV:GetText())
+GDKPAuc.nr.chujiabut = PIGButton(GDKPAuc.nr,{"BOTTOM", GDKPAuc.nr, "BOTTOM", 0,18},{80,24},"出价");
+GDKPAuc.nr.chujiabut.tishi = CreateFrame("Frame", nil, GDKPAuc.nr.chujiabut);
+GDKPAuc.nr.chujiabut.tishi:SetSize(26,26);
+GDKPAuc.nr.chujiabut.tishi:SetPoint("LEFT", GDKPAuc.nr.chujiabut, "RIGHT", 4,0);
+GDKPAuc.nr.chujiabut.tishi.Tex = GDKPAuc.nr.chujiabut.tishi:CreateTexture(nil, "BORDER");
+GDKPAuc.nr.chujiabut.tishi.Tex:SetTexture("interface/helpframe/helpicon-reportabuse.blp");
+GDKPAuc.nr.chujiabut.tishi.Tex:SetAllPoints(GDKPAuc.nr.chujiabut.tishi)
+PIGEnter(GDKPAuc.nr.chujiabut.tishi,"重要提示：","|cffFF0000请及早出价，以免网络延迟造成的出价失败|r")
+GDKPAuc.nr.chujiabut:SetScript("OnClick",function(self)
+	local chujiajiaV=GDKPAuc.nr.chujiaV:GetNumber()
+	local chujiajianxie=zhuanhuanjiaxie(GDKPAuc.nr.chujiaV:GetText())
 	if chujiajiaV<10000 then
 		PIGSendChatRaidParty("出价:"..chujiajiaV)
 	else
@@ -167,103 +168,97 @@ GDKP_AucF.nr.chujiabut:SetScript("OnClick",function(self)
 	end
 	PIGSendAddonRaidParty(biaotou,auc_chujia.."&"..chujiajiaV)
 end)
-GDKP_AucF.Min = CreateFrame("Button",nil,GDKP_AucF, "TruncatedButtonTemplate"); 
-GDKP_AucF.Min:SetNormalTexture("interface/chatframe/ui-chaticon-minimize-up.blp");
-GDKP_AucF.Min:SetPushedTexture("interface/chatframe/ui-chaticon-minimize-down.blp")
-GDKP_AucF.Min:SetHighlightTexture("interface/buttons/ui-checkbox-highlight.blp");
-GDKP_AucF.Min:SetSize(butww,butww);
-GDKP_AucF.Min:SetPoint("TOPRIGHT",GDKP_AucF,"TOPRIGHT",0,0);
-GDKP_AucF.Min:SetFrameLevel(10)
-GDKP_AucF.Min:RegisterForDrag("LeftButton")
-GDKP_AucF.Min:SetScript("OnDragStart",function()
-	GDKP_AucF:StartMoving()
+GDKPAuc.Min = CreateFrame("Button",nil,GDKPAuc, "TruncatedButtonTemplate"); 
+GDKPAuc.Min:SetNormalTexture("interface/chatframe/ui-chaticon-minimize-up.blp");
+GDKPAuc.Min:SetPushedTexture("interface/chatframe/ui-chaticon-minimize-down.blp")
+GDKPAuc.Min:SetHighlightTexture("interface/buttons/ui-checkbox-highlight.blp");
+GDKPAuc.Min:SetSize(butww,butww);
+GDKPAuc.Min:SetPoint("TOPRIGHT",GDKPAuc,"TOPRIGHT",0,0);
+GDKPAuc.Min:SetFrameLevel(10)
+GDKPAuc.Min:RegisterForDrag("LeftButton")
+GDKPAuc.Min:SetScript("OnDragStart",function()
+	GDKPAuc:StartMoving()
 end)
-GDKP_AucF.Min:SetScript("OnDragStop",function()
-	GDKP_AucF:StopMovingOrSizing()
+GDKPAuc.Min:SetScript("OnDragStop",function()
+	GDKPAuc:StopMovingOrSizing()
 end)
-GDKP_AucF.Min.Height = GDKP_AucF.Min:CreateTexture(nil, "OVERLAY");
-GDKP_AucF.Min.Height:SetAtlas("bags-newitem")
-GDKP_AucF.Min.Height:SetSize(butww-1,butww-1);
-GDKP_AucF.Min.Height:SetPoint("CENTER",0,0);
-GDKP_AucF.Min.Height:Hide()
-GDKP_AucF.Min.ShowHide=false
-GDKP_AucF.Min.xulie=0
-local function tishishanshuo()
-	if GDKP_AucF:IsShown() and not GDKP_AucF.nr:IsShown() then
-		if GDKP_AucF.Min.xulie==1 then
-			GDKP_AucF.Min.xulie=0
-			GDKP_AucF.Min.Height:Hide()
-		else
-			GDKP_AucF.Min.xulie=1
-			GDKP_AucF.Min.Height:Show()
-		end
-		if GDKP_AucF.Min.ShowHide then
-			C_Timer.After(1,tishishanshuo)
-		end
-	end
-end
-local function HidepaimaiUI()
-	GDKP_AucF.nr:Hide();
-	GDKP_AucF.Min.Height:Show()
-	GDKP_AucF.Min:SetNormalTexture("interface/chatframe/ui-chaticon-maximize-up.blp");
-	GDKP_AucF.Min:SetPushedTexture("interface/chatframe/ui-chaticon-maximize-down.blp")
-	if not GDKP_AucF.Min.ShowHide then
-		GDKP_AucF.Min.ShowHide=true
-		tishishanshuo()
-	end
-end
-GDKP_AucF:SetScript("OnShow", function(self)
-	tishishanshuo()
-	C_Timer.After(300,function() self:Hide() end)
-end);
-GDKP_AucF.Min:SetScript("OnClick", function (self)
-	if GDKP_AucF.nr:IsShown() then
-		HidepaimaiUI()
+GDKPAuc.Min.Height = GDKPAuc.Min:CreateTexture(nil, "OVERLAY");
+GDKPAuc.Min.Height:SetAtlas("bags-newitem")
+GDKPAuc.Min.Height:SetSize(butww-1,butww-1);
+GDKPAuc.Min.Height:SetPoint("CENTER",0,0);
+GDKPAuc.Min.Height:Hide()
+GDKPAuc.Min.Height.animationGroup = GDKPAuc.Min.Height:CreateAnimationGroup()
+GDKPAuc.Min.Height.animationGroup:SetLooping("REPEAT")
+local fade = GDKPAuc.Min.Height.animationGroup:CreateAnimation("Alpha")
+fade:SetFromAlpha(1)
+fade:SetToAlpha(0)
+fade:SetDuration(0.1)
+fade:SetStartDelay(0.5)
+fade:SetEndDelay(0.5)
+function GDKPAuc:PlayAnimation()
+	if GDKPAuc.nr:IsShown() then
+		GDKPAuc.Min.Height:Hide()
+		GDKPAuc.Min.Height.animationGroup:Stop()
+		GDKPAuc.Min:SetNormalTexture("interface/chatframe/ui-chaticon-minimize-up.blp");
+		GDKPAuc.Min:SetPushedTexture("interface/chatframe/ui-chaticon-minimize-down.blp")
 	else
-		GDKP_AucF.nr:Show();
-		self.Height:Hide()
-		GDKP_AucF.Min:SetNormalTexture("interface/chatframe/ui-chaticon-minimize-up.blp");
-		GDKP_AucF.Min:SetPushedTexture("interface/chatframe/ui-chaticon-minimize-down.blp")
-		GDKP_AucF.Min.ShowHide=false
-	end	
+		GDKPAuc.Min.Height:Show()
+		GDKPAuc.Min.Height.animationGroup:Play()
+		GDKPAuc.Min:SetNormalTexture("interface/chatframe/ui-chaticon-maximize-up.blp");
+		GDKPAuc.Min:SetPushedTexture("interface/chatframe/ui-chaticon-maximize-down.blp")
+	end
+end
+GDKPAuc:SetScript("OnShow", function(self)
+	if self.OffUItime then self.OffUItime:Cancel() end
+	self.OffUItime=C_Timer.NewTimer(300,function() self:Hide() end)
+	GDKPAuc:PlayAnimation()
 end);
-GDKP_AucF.nr.p = PIGButton(GDKP_AucF.nr,{"BOTTOMLEFT", GDKP_AucF.nr, "BOTTOMLEFT", 20,18},{24,24},"P");
-GDKP_AucF.nr.p:SetScript("OnClick",function(self)
+GDKPAuc.Min:SetScript("OnClick", function (self)
+	if GDKPAuc.nr:IsShown() then
+		GDKPAuc.nr:Hide();
+	else
+		GDKPAuc.nr:Show();
+	end
+	GDKPAuc:PlayAnimation()
+end);
+GDKPAuc.nr.p = PIGButton(GDKPAuc.nr,{"BOTTOMLEFT", GDKPAuc.nr, "BOTTOMLEFT", 20,18},{24,24},"P");
+GDKPAuc.nr.p:SetScript("OnClick",function(self)
 	PIGSendChatRaidParty("出价: P")
-	HidepaimaiUI()
 end)
 ---
 C_ChatInfo.RegisterAddonMessagePrefix(biaotou)
-GDKP_AucF:RegisterEvent("GROUP_ROSTER_UPDATE");
-GDKP_AucF:RegisterEvent("CHAT_MSG_ADDON");
-GDKP_AucF:SetScript("OnEvent",function(self, event, arg1, arg2, arg3, arg4, arg5)
-	if event=="GROUP_ROSTER_UPDATE" then
+GDKPAuc:RegisterEvent("PLAYER_LOGIN")
+GDKPAuc:RegisterEvent("GROUP_ROSTER_UPDATE");
+GDKPAuc:RegisterEvent("CHAT_MSG_ADDON");
+GDKPAuc:SetScript("OnEvent",function(self, event, arg1, arg2, arg3, arg4, arg5)
+	if event=="PLAYER_LOGIN" then
+		Create.PIG_SetPoint(UIname)
+	elseif event=="GROUP_ROSTER_UPDATE" then
 		C_Timer.After(1,function()
 			if not IsInGroup() then self:Hide() end
 		end)
-	end
-	if event=="CHAT_MSG_ADDON" and arg1 == biaotou then
+	elseif event=="CHAT_MSG_ADDON" and arg1 == biaotou then
 		local kaishijieshu, neirong = strsplit("&", arg2);
 		if kaishijieshu==auc_daoshu then--倒数结束
 			if neirong=="0" then
-				GDKP_AucF.nr.p:Disable()
-				GDKP_AucF.nr.chujiabut:Disable()
-				PlaySoundFile("Interface/AddOns/"..addonName.."/Libs/ogg/auc_end.ogg", "Master")
+				GDKPAuc.nr.p:Disable()
+				GDKPAuc.nr.chujiabut:Disable()
+				PIG_PlaySoundFile(AudioData.GDKP_End[1])
 			end
 		elseif kaishijieshu==auc_chujia then--拍卖出价
-			GDKP_AucF.nr.chujiaV:SetText(neirong+GDKP_AucF.nr.danci)
+			GDKPAuc.nr.chujiaV:SetText(neirong+GDKPAuc.nr.danci)
 		elseif kaishijieshu==auc_start then--拍卖开始
-			PlaySoundFile("Interface/AddOns/"..addonName.."/Libs/ogg/auc_play.ogg", "Master")	
+			PIG_PlaySoundFile(AudioData.GDKP_Start[1])
 			self:Show()
-			GDKP_AucF.nr.aucplayer:SetText(arg5)
+			GDKPAuc.nr.aucplayer:SetText(arg5)
 			local itemlink,num,qipai,jiajia = strsplit("#", neirong);
-			GDKP_AucF.nr.aucitem1:SetText(itemlink.."×"..num)
-			GDKP_AucF.nr.aucitem2:SetText("起拍价:|cff00FFFF"..qipai.."|r\n最低加价:|cff00FFFF"..jiajia.."|r")
-			GDKP_AucF.nr.chujiaV:SetText(qipai)
-			GDKP_AucF.nr.qipai=qipai
-			GDKP_AucF.nr.danci=jiajia
-			GDKP_AucF.nr.p:Enable()
-			GDKP_AucF.nr.chujiabut:Enable()
+			GDKPAuc.nr.aucitem1:SetText(itemlink.."×"..num)
+			GDKPAuc.nr.aucitem2:SetText("起拍价:|cff00FFFF"..qipai.."|r\n最低加价:|cff00FFFF"..jiajia.."|r")
+			GDKPAuc.nr.chujiaV:SetText(qipai)
+			GDKPAuc.nr.qipai=qipai
+			GDKPAuc.nr.danci=jiajia
+			GDKPAuc.nr.p:Enable()
+			GDKPAuc.nr.chujiabut:Enable()
 		elseif kaishijieshu==auc_end then--拍卖结束
 			self:Hide()
 		end

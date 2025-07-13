@@ -1,11 +1,11 @@
 class TOC:
 
-    def __init__(self, lines):
+    def __init__(self, lines: list[str]):
         """TOC Handler.
 
         :param lines [str]: lines of the TOC file.
         """
-        self.tags = {}
+        self.tags: dict[str, str] = {}
         for line in lines:
             if line.startswith('## ') and ':' in line:
                 k, value = line[3:].split(':', 1)
@@ -19,7 +19,7 @@ class TOC:
         else:
             self.contents = []
 
-    def tags_to_line(self, tags):
+    def tags_to_line(self, tags: list[str]) -> list[str]:
         return [f'## {tag}: {self.tags[tag]}\n'
                 for tag in tags if tag in self.tags]
 
@@ -46,7 +46,7 @@ class TOC:
         for i in sorted(removes, reverse=True):
             self.contents.pop(i)
 
-    def to_lines(self):
+    def to_lines(self) -> list[str]:
         keys = [['Interface', 'Author', 'Version'],
 
                 # Addon info in list

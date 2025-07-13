@@ -6,12 +6,10 @@ local L = ns.L
 local RR = ns.RR
 local NN = ns.NN
 local RN = ns.RN
-local FrameHide = ns.FrameHide
 local SetClassCFF = ns.SetClassCFF
 local RGB_16 = ns.RGB_16
 
 local Maxb = ns.Maxb
-local Maxi = ns.Maxi
 local HopeMaxn = ns.HopeMaxn
 local HopeMaxb = ns.HopeMaxb
 local HopeMaxi = ns.HopeMaxi
@@ -33,11 +31,6 @@ function BG.SendMsgToRaid(tbl, t)
     end
     return t
 end
-
--- C_Timer.After(i * 0.1,function()-- 每 0.1 秒发送一条消息
---     C_ChatInfo.SendAddonMessage("xY_SYNC", msg, "RAID")
---     print(i)
--- end)
 
 -- 总览和工资
 local function ZongLan(onClick, tbl1, tbl2)
@@ -125,7 +118,7 @@ local function FaKuan(onClick, tbl1, tbl2)
     local yes
     local tbl_boss = {}
     local b = Maxb[FB]
-    for i = 1, Maxi[FB] do
+    for i = 1, BG.GetMaxi(FB, b) do
         local zhuangbei = BG.Frame[FB]["boss" .. b]["zhuangbei" .. i]
         local maijia = BG.Frame[FB]["boss" .. b]["maijia" .. i]
         local jine = BG.Frame[FB]["boss" .. b]["jine" .. i]
@@ -174,7 +167,7 @@ local function ZhiChu(onClick, tbl1, tbl2)
     local yes
     local tbl_boss = {}
     local b = Maxb[FB] + 1
-    for i = 1, Maxi[FB] do
+    for i = 1, BG.GetMaxi(FB, b) do
         local zhuangbei = BG.Frame[FB]["boss" .. b]["zhuangbei" .. i]
         local jine = BG.Frame[FB]["boss" .. b]["jine" .. i]
         if zhuangbei then
@@ -207,6 +200,18 @@ local function ZhiChu(onClick, tbl1, tbl2)
     return tbl1, tbl2
 end
 
+local function HasQianKuan()
+    local FB = BG.FB1
+    for b = 1, Maxb[FB] do
+        for i = 1, BG.GetMaxi(FB, b) do
+            local bt = BG.Frame[FB]["boss" .. b]["qiankuan" .. i]
+            if BG.Frame[FB]["boss" .. b]["qiankuan" .. i] and BiaoGe[FB]["boss" .. b]["qiankuan" .. i] then
+                return true
+            end
+        end
+    end
+end
+
 local function CreateListTable(onClick, tbl1)
     local FB = BG.FB1
     local tbl1 = tbl1 or {}
@@ -224,7 +229,7 @@ local function CreateListTable(onClick, tbl1)
         local yes
         for b = 1, Maxb[FB] do
             local tbl_boss = {}
-            for i = 1, Maxi[FB] do
+            for i = 1, BG.GetMaxi(FB, b) do
                 local zhuangbei = BG.Frame[FB]["boss" .. b]["zhuangbei" .. i]
                 local maijia = BG.Frame[FB]["boss" .. b]["maijia" .. i]
                 local jine = BG.Frame[FB]["boss" .. b]["jine" .. i]
@@ -310,7 +315,7 @@ local function CreateListTable(onClick, tbl1)
         local num = 1
 
         local b = Maxb[FB] + 1
-        for i = 1, Maxi[FB], 1 do
+        for i = 1, BG.GetMaxi(FB, b), 1 do
             local zhuangbei = BG.Frame[FB]["boss" .. b]["zhuangbei" .. i]
             local jine = BG.Frame[FB]["boss" .. b]["jine" .. i]
             if zhuangbei then
@@ -404,12 +409,12 @@ end
 
 local function OnClick(self)
     local FB = BG.FB1
-    FrameHide(0)
+    BG.FrameHide(0)
     if not IsInRaid(1) then
         SendSystemMessage(L["不在团队，无法通报"])
         BG.PlaySound(1)
     else
-        self:SetEnabled(false) -- 点击后按钮变灰2秒
+        self:SetEnabled(false) 
         C_Timer.After(2, function()
             self:SetEnabled(true)
         end)
@@ -433,6 +438,10 @@ local function OnClick(self)
             local _, tbl = ZhiChu(true)
             BG.SendMsgToRaid(tbl, BG.tongBaoSendCD)
         else
+            if HasQianKuan() then
+                BG.PlaySound("qiankuan")
+            end
+
             local text = L["———通报账单———"]
             SendChatMessage(text, "RAID")
 
@@ -574,7 +583,7 @@ end
 ]]
 
 function BG.ZhangDanUI(lastbt)
-    local bt=BG.CreateButton(BG.FBMainFrame)
+    local bt = BG.CreateButton(BG.FBMainFrame)
     bt:SetSize(60, 25)
     bt.jiange = 5
     if lastbt then

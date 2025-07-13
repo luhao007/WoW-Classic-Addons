@@ -57,7 +57,9 @@ lib\Callback.lua
 
 # Base ATT functionalities
 src\base.lua
+src\Commands.lua
 src\Events.lua
+# src\DataHandling.lua
 
 # Not really a lib concept...
 lib\Refresh.lua
@@ -66,8 +68,9 @@ lib\Audio.lua
 # Load localization modules
 locales\Default Locale.lua
 # locales\en.lua
-locales\es.lua
 locales\de.lua
+locales\es.lua
+locales\mx.lua
 locales\fr.lua
 locales\it.lua
 locales\ko.lua
@@ -83,12 +86,14 @@ src\Cache.lua
 src\Modules\RetrievingData.lua
 src\Modules\Collection.lua
 src\Modules\FactionData.lua
+src\Modules\Fill.lua
 src\Modules\Color.lua
 # src\Modules\Costs.lua
 src\Modules\Events.lua
 src\Modules\Filter.lua
 # src\Modules\Inventory.lua
 src\Modules\Model.lua
+# src\Modules\Search.lua
 src\Modules\Social.lua
 src\Modules\Tooltip.lua
 # src\Modules\Upgrade.lua
@@ -102,12 +107,16 @@ db\Presets.lua
 
 # Load object class templates
 src\Classes\base.lua
+src\Classes\Achievement Categories.lua
+src\Classes\Achievement Data.lua
+src\Classes\Achievement.Classic.lua
 # src\Classes\Achievement.lua
 # src\Classes\BattlePet.lua
 src\Classes\CharacterClass.lua
 # src\Classes\Currency.lua
 src\Classes\Difficulty.lua
 src\Classes\Factions.lua
+src\Classes\Guild Achievements.lua
 src\Classes\Quests.lua
 # src\Classes\Item.Retail.lua
 src\Classes\Item.Classic.lua

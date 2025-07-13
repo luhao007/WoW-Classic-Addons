@@ -1,6 +1,6 @@
-## Interface: 30404
+## Interface: 30405
 ## Author: Stanzilla, Semlar
-## Version: 2.1.1
+## Version: 2.1.3
 
 ## Title: Advanced Interface Options
 ## Notes: Restores access to removed interface options in Legion

@@ -1,25 +1,27 @@
 local addonName, addonTable = ...;
-local _, _, _, tocversion = GetBuildInfo()
 local fmod=math.fmod
 local L=addonTable.locale
 local Create=addonTable.Create
 local PIGFrame=Create.PIGFrame
 local PIGEnter=Create.PIGEnter
 local PIGButton = Create.PIGButton
-local PIGQuickBut=Create.PIGQuickBut
 local PIGLine=Create.PIGLine
 local PIGSlider = Create.PIGSlider
 local PIGCheckbutton=Create.PIGCheckbutton
 local PIGCheckbutton_R=Create.PIGCheckbutton_R
 local PIGOptionsList_R=Create.PIGOptionsList_R
 local PIGFontString=Create.PIGFontString
+local PIGDiyBut=Create.PIGDiyBut
+local PIGDiyTex=Create.PIGDiyTex
 ------
-local BusinessInfo=addonTable.BusinessInfo
 local Data=addonTable.Data
+local BusinessInfo=addonTable.BusinessInfo
 local fuFrame,fuFrameBut = BusinessInfo.fuFrame,BusinessInfo.fuFrameBut
+local GetContainerNumSlots = GetContainerNumSlots or C_Container and C_Container.GetContainerNumSlots
+local GetContainerItemInfo = GetContainerItemInfo or C_Container and C_Container.GetContainerItemInfo
+local GetItemInfoInstant=GetItemInfoInstant or C_Item and C_Item.GetItemInfoInstant
 
-local GnName,GnUI,GnIcon,FrameLevel = MINIMAP_TRACKING_MAILBOX.."助手","MailPlus_UI",134939,10
-BusinessInfo.MailPlusData={GnName,GnUI,GnIcon,FrameLevel}
+local GnName = MINIMAP_TRACKING_MAILBOX.."助手"
 ------------
 local PIG_OPEN_ALL_MAIL_MIN_DELAY=1
 function BusinessInfo.MailPlusOptions()
@@ -27,7 +29,7 @@ function BusinessInfo.MailPlusOptions()
 	fuFrame.MailPlus_line = PIGLine(fuFrame,"TOP",-(fuFrame.dangeH*fuFrame.GNNUM))
 	fuFrame.GNNUM=fuFrame.GNNUM+2
 	------
-	local Tooltip = {GnName,"增强你的邮箱界面，方便你查看邮箱物品"};
+	local Tooltip = {GnName,"增强你的邮箱界面，方便你查看邮箱物品/发送邮件"};
 	fuFrame.MailPlus = PIGCheckbutton(fuFrame,{"TOPLEFT",fuFrame.MailPlus_line,"TOPLEFT",20,-30},Tooltip)
 	fuFrame.MailPlus:SetScript("OnClick", function (self)
 		if self:GetChecked() then
@@ -35,7 +37,7 @@ function BusinessInfo.MailPlusOptions()
 			BusinessInfo.MailPlus_ADDUI()
 		else
 			PIGA["MailPlus"]["Open"]=false;
-			Pig_Options_RLtishi_UI:Show()
+			PIG_OptionsUI.RLUI:Show()
 		end
 	end);
 	fuFrame.MailPlus.ScanSliderT = PIGFontString(fuFrame.MailPlus,{"LEFT",fuFrame.MailPlus.Text,"RIGHT",40,0},"批量取件间隔/s")
@@ -44,15 +46,33 @@ function BusinessInfo.MailPlusOptions()
 		PIG_OPEN_ALL_MAIL_MIN_DELAY=arg1
 		PIGA["MailPlus"]["OpenAllCD"]=arg1
 	end)
+	fuFrame.BagOpen = PIGCheckbutton(fuFrame,{"TOPLEFT",fuFrame.MailPlus,"BOTTOMLEFT",0,-20},{"发件时保持背包开启"})
+	fuFrame.BagOpen:SetScript("OnClick", function (self)
+		if self:GetChecked() then
+			PIGA["MailPlus"]["BagOpen"]=true;
+		else
+			PIGA["MailPlus"]["BagOpen"]=nil
+		end
+	end);
 	--------
 	fuFrame:HookScript("OnShow", function (self)
 		self.MailPlus:SetChecked(PIGA["MailPlus"]["Open"])
+		self.BagOpen:SetChecked(PIGA["MailPlus"]["BagOpen"])
 		self.MailPlus.ScanSlider:PIGSetValue(PIGA["MailPlus"]["OpenAllCD"])
 	end);
 	BusinessInfo.MailPlus_ADDUI()
 end
 function BusinessInfo.MailPlus_ADDUI()
 	if not PIGA["MailPlus"]["Open"] then return end
+	if SendMailFrame.coll then return end
+	hooksecurefunc("MailFrameTab_OnClick", function(self, tabID)
+		if tabID == 1 then
+			MailFrame:SetWidth(338)
+		else
+			if not PIGA["MailPlus"]["BagOpen"] then CloseAllBags() end
+			MailFrame:SetWidth(705)
+		end
+	end)
 	----
 	local boxitemdata = {["boxbutNum"]=64,["meihang"]=8}
 	local function ClearBut(lyID)
@@ -60,7 +80,7 @@ function BusinessInfo.MailPlus_ADDUI()
 			InboxFrame.ItemBox.PrevPageBut:Disable();
 			InboxFrame.ItemBox.NextPageBut:Disable();
 			for i=1,boxitemdata.boxbutNum do
-				local itemBut=_G["Mail_InboxBut_"..i]
+				local itemBut=InboxFrame.ItemBox.ButList[i]
 				itemBut:Hide()
 				itemBut.TimeLeft:Hide()
 				itemBut.Num:SetText("")
@@ -122,7 +142,7 @@ function BusinessInfo.MailPlus_ADDUI()
 			for i=1,boxitemdata.boxbutNum do
 				local dangqian = i+kaishixulie-1
 				if mailData[1][dangqian] then
-					local itemBut=_G["Mail_InboxBut_"..i]
+					local itemBut=InboxFrame.ItemBox.ButList[i]
 					itemBut:Show()
 					local itemName,itemLink,itemQuality,itemLevel,itemMinLevel,itemType,itemSubType,itemStackCount,itemEquipLoc,itemTexture,sellPrice,classID=GetItemInfo(mailData[1][dangqian][1]);
 					if not itemLink then
@@ -176,7 +196,7 @@ function BusinessInfo.MailPlus_ADDUI()
 		elseif lyID==3 then
 			for i=1,boxitemdata.boxbutNum do
 				if mailData[2][i] then
-					local itemBut=_G["Mail_InboxBut_"..i]
+					local itemBut=InboxFrame.ItemBox.ButList[i]
 					itemBut:Show()
 					if mailData[2][i][4]<3 then
 						itemBut.TimeLeft:Show()
@@ -213,14 +233,14 @@ function BusinessInfo.MailPlus_ADDUI()
 	----TAB---
 	local SizePointData = {60,25,60,-30}
 	InboxFrame.mulubut = PIGButton(InboxFrame,{"TOPLEFT", InboxFrame, "TOPLEFT", SizePointData[3], SizePointData[4]},{SizePointData[1],SizePointData[2]},"目录",nil,nil,nil,nil,0)
-	InboxFrame.itembut = PIGButton(InboxFrame,{"LEFT", InboxFrame.mulubut, "RIGHT", 10, 0},{SizePointData[1],SizePointData[2]},ITEMS,nil,nil,nil,nil,0)
-	InboxFrame.moneybut = PIGButton(InboxFrame,{"LEFT", InboxFrame.itembut, "RIGHT", 10, 0},{SizePointData[1],SizePointData[2]},MONEY,nil,nil,nil,nil,0)
+	InboxFrame.itembut = PIGButton(InboxFrame,{"LEFT", InboxFrame.mulubut, "RIGHT", 10, 1.6},{SizePointData[1],SizePointData[2]},ITEMS,nil,nil,nil,nil,0)
+	InboxFrame.moneybut = PIGButton(InboxFrame,{"LEFT", InboxFrame.itembut, "RIGHT", 10, 1.6},{SizePointData[1],SizePointData[2]},MONEY,nil,nil,nil,nil,0)
 	if not ElvUI and not NDui then
 		InboxFrame.mulubut:PIGHighlight()
 		InboxFrame.itembut:PIGHighlight()
 		InboxFrame.moneybut:PIGHighlight()
 	end
-	InboxFrame.Delbut = Create.PIGDiyBut(InboxFrame,{"TOPRIGHT",InboxFrame,"TOPRIGHT",-64,-30},{25,nil,25,nil,"bags-button-autosort-up"})
+	InboxFrame.Delbut = PIGDiyBut(InboxFrame,{"TOPRIGHT",InboxFrame,"TOPRIGHT",-64,-30},{25,nil,25,nil,"bags-button-autosort-up"})
 
 	local isTrialOrVeteran = GameLimitedMode_IsActive();
 	InboxFrame.mulubut:SetShown(not isTrialOrVeteran);
@@ -361,17 +381,19 @@ function BusinessInfo.MailPlus_ADDUI()
 	InboxFrame.ItemBox:SetSize(384,512);
 	InboxFrame.ItemBox:SetPoint("TOPLEFT", InboxFrame, "TOPLEFT", 0, 0);
 	InboxFrame.ItemBox.pageNum=1
+	InboxFrame.ItemBox.ButList={}
 	for i=1,boxitemdata.boxbutNum do
 		local itemBut
-		if tocversion<100000 then
-			itemBut = CreateFrame("Button", "Mail_InboxBut_"..i, InboxFrame.ItemBox);
+		if PIG_MaxTocversion() then
+			itemBut = CreateFrame("Button", nil, InboxFrame.ItemBox);
 			itemBut:SetHighlightTexture(130718);
 			itemBut.icon = itemBut:CreateTexture()
 			itemBut.icon:SetAllPoints(itemBut)
 		else
-			itemBut = CreateFrame("ItemButton", "Mail_InboxBut_"..i, InboxFrame.ItemBox);
+			itemBut = CreateFrame("ItemButton", nil, InboxFrame.ItemBox);
 			itemBut.NormalTexture:Hide()
 		end
+		InboxFrame.ItemBox.ButList[i]=itemBut
 		itemBut:SetSize(36,36);
 		itemBut:Hide()
 		itemBut:SetScript("OnLeave", function ()
@@ -383,9 +405,9 @@ function BusinessInfo.MailPlus_ADDUI()
 		else
 			local yushu=fmod(i-1,boxitemdata.meihang)
 			if yushu==0 then
-				itemBut:SetPoint("TOPLEFT",_G["Mail_InboxBut_"..(i-boxitemdata.meihang)],"BOTTOMLEFT",0,-2);
+				itemBut:SetPoint("TOPLEFT",InboxFrame.ItemBox.ButList[i-boxitemdata.meihang],"BOTTOMLEFT",0,-2);
 			else
-				itemBut:SetPoint("LEFT",_G["Mail_InboxBut_"..(i-1)],"RIGHT",3,0);
+				itemBut:SetPoint("LEFT",InboxFrame.ItemBox.ButList[i-1],"RIGHT",3,0);
 			end
 		end
 		itemBut.TimeLeft = itemBut:CreateTexture(nil, "OVERLAY");
@@ -655,418 +677,445 @@ function BusinessInfo.MailPlus_ADDUI()
 			Show_ItemList()
 		end
 	end)
+
 	---发件页===================
-	local collW,collY,collhang_Width, hang_Height = 20,20,200,20
-	SendMailFrame.coll = CreateFrame("Button",nil,SendMailFrame);
-	local coll=SendMailFrame.coll
-	coll:SetSize(collW,collY);
-	coll:SetPoint("TOPRIGHT",SendMailFrame,"TOPRIGHT",-86,0);
-	coll:SetFrameLevel(coll:GetFrameLevel()+500)
-	coll.TexC = coll:CreateTexture();
-	coll.TexC:SetTexture("interface/common/friendship-heart.blp");
-	coll.TexC:SetSize(collW*1.64,collY*1.5);
-	coll.TexC:SetPoint("CENTER",coll,"CENTER",0,-2);
-	coll:SetScript("OnMouseDown", function (self)
-		self.TexC:SetPoint("CENTER",coll,"CENTER",1.5,-3.5);
-	end);
-	coll:SetScript("OnMouseUp", function (self)
-		self.TexC:SetPoint("CENTER",coll,"CENTER",0,-2);
-	end);
-	coll:SetScript("OnClick", function (self)
-		if self.list:IsShown() then
-			self.list:Hide()
-		else
-			self.list:Show()
+	local line_W1,line_W2,collW,collY, hang_Height,collhang_NUM = 206,174,20,20,20,15
+	SendMailFrame.line1 = SendMailFrame:CreateTexture()
+	SendMailFrame.line1:SetTexture("interface/taxiframe/ui-taxi-line.blp")
+	SendMailFrame.line1:SetSize(330,28);
+	SendMailFrame.line1:SetRotation(math.rad(90), {x=0.5, y=0.5})
+	SendMailFrame.line1:SetPoint("LEFT", line_W1-152, 16);
+	SendMailFrame.line2 = SendMailFrame:CreateTexture()
+	SendMailFrame.line2:SetTexture("interface/taxiframe/ui-taxi-line.blp")
+	SendMailFrame.line2:SetSize(330,28);
+	SendMailFrame.line2:SetRotation(math.rad(90), {x=0.5, y=0.5})
+	SendMailFrame.line2:SetPoint("LEFT", line_W1+line_W2-149, 16);
+	----
+	SendMailFrame.recipients=PIGFrame(SendMailFrame,{"LEFT",SendMailFrame,"LEFT",line_W1+15,17},{line_W2,314})
+	if ElvUI or NDui then SendMailFrame.recipients:PIGSetBackdrop(0,1) end
+	SendMailFrame.tishi=PIGDiyTex(SendMailFrame,{"BOTTOMLEFT",SendMailFrame.recipients,"TOPLEFT",4,4},{18,18,26,26,616343})
+	PIGEnter(SendMailFrame.tishi,L["LIB_TIPS"]..": ","\124cff00ff001、发送过的玩家将自动加入近期列表\n"..
+	"2、玩家名"..KEY_BUTTON1..":设为收件人，"..KEY_BUTTON2..":删除(本人角色删除请到信息统计功能)\124r");
+	SendMailFrame.recipients.benrenjuese = PIGCheckbutton(SendMailFrame.recipients,{"LEFT",SendMailFrame.tishi,"RIGHT",2,0},{"本人"},nil,nil,nil,0)
+	SendMailFrame.recipients.qitajuese = PIGCheckbutton(SendMailFrame.recipients,{"LEFT", SendMailFrame.recipients.benrenjuese.Text, "RIGHT", 10, 0},{"近期"},nil,nil,nil,0)
+	SendMailFrame.recipients.selectID=1
+	function SendMailFrame.recipients.xuanzelianxiren()
+		SendMailFrame.recipients.qitajuese:SetChecked(false)
+		SendMailFrame.recipients.benrenjuese:SetChecked(false)
+		if SendMailFrame.recipients.selectID==2 then
+			SendMailFrame.recipients.qitajuese:SetChecked(true)
+		elseif SendMailFrame.recipients.selectID==1 then
+			SendMailFrame.recipients.benrenjuese:SetChecked(true)
 		end
-	end);
-	coll.list=PIGFrame(coll,{"TOPLEFT",SendMailFrame,"TOPRIGHT",-46,0},{collhang_Width,424})
-	coll.list:PIGSetBackdrop(nil,nil,nil,nil,0)
-	coll.list:PIGClose()
-	coll.list.xuanzelaiyuan=1
-	if NDui and NDuiMailBoxScrollFrame then
-		coll.list.yijiazai=false
-		coll.list:HookScript("OnShow", function (self)
-			local NDuilist=NDuiMailBoxScrollFrame:GetParent()
-			if NDuilist:IsShown() then
-				self:SetPoint("TOPLEFT",NDuilist,"TOPRIGHT",2,1);
-			else
-				self:SetPoint("TOPLEFT",SendMailFrame,"TOPRIGHT",-43,1);
-			end
-			if not coll.list.yijiazai then
-				NDuilist:HookScript("OnShow", function (self)
-					coll.list:SetPoint("TOPLEFT",NDuilist,"TOPRIGHT",2,1);
-				end)
-				NDuilist:HookScript("OnHide", function (self)
-					coll.list:SetPoint("TOPLEFT",SendMailFrame,"TOPRIGHT",-43,1);
-				end)
-			end
-		end);
+		SendMailFrame.recipients.Update_hang(SendMailFrame.recipients.Scroll)
 	end
-	coll.list.lineT = PIGLine(coll.list,"TOP",-52,nil,{2,-2},{0.6,0.6,0.6,0.6})
-	coll.list.lineB = PIGLine(coll.list,"BOT",80,nil,{2,-2},{0.6,0.6,0.6,0.6})
-	coll.list.title = PIGFontString(coll.list,{"TOP", coll.list, "TOP", -2, -6},"通讯录","OUTLINE")
-	coll.list.tishi = CreateFrame("Frame", nil, coll.list);
-	coll.list.tishi:SetSize(20,20);
-	coll.list.tishi:SetPoint("TOPLEFT",coll.list,"TOPLEFT",5,-5);
-	coll.list.tishi.Texture = coll.list.tishi:CreateTexture(nil, "BORDER");
-	coll.list.tishi.Texture:SetTexture("interface/common/help-i.blp");
-	coll.list.tishi.Texture:SetSize(30,30);
-	coll.list.tishi.Texture:SetPoint("CENTER");
-	coll.list.tishiNR= "\124cff00ff001、发送过的玩家将自动加入通讯录。\n"..
-	"2、通讯录玩家名"..KEY_BUTTON1..":选择发件人，"..KEY_BUTTON2..":删除。\124r\n"..
-	"\124cff00ff003、本人角色删除请到信息统计功能\124r"
-	PIGEnter(coll.list.tishi,L["LIB_TIPS"]..": ",coll.list.tishiNR);
-	coll.list.benrenjuese = PIGCheckbutton(coll.list,{"TOPLEFT",coll.list,"TOPLEFT",20,-30},{"本人"},nil,nil,nil,0)
-	coll.list.qitajuese = PIGCheckbutton(coll.list,{"LEFT", coll.list.benrenjuese.Text, "RIGHT", 30, 0},{"其他"},nil,nil,nil,0)
-	local function xuanzelianxiren()
-		coll.list.qitajuese:SetChecked(false)
-		coll.list.benrenjuese:SetChecked(false)
-		if coll.list.xuanzelaiyuan==2 then
-			coll.list.qitajuese:SetChecked(true)
-		elseif coll.list.xuanzelaiyuan==1 then
-			coll.list.benrenjuese:SetChecked(true)
-		end
-		coll.list.gengxinlistcoll(coll.list.Scroll)
-	end
-	coll.list.benrenjuese:HookScript("OnClick", function ()
-		coll.list.xuanzelaiyuan=1
-		xuanzelianxiren()
+	SendMailFrame.recipients.benrenjuese:HookScript("OnClick", function ()
+		SendMailFrame.recipients.selectID=1
+		SendMailFrame.recipients.xuanzelianxiren()
 	end);
-	coll.list.qitajuese:HookScript("OnClick", function ()
-		coll.list.xuanzelaiyuan=2
-		xuanzelianxiren()
+	SendMailFrame.recipients.qitajuese:HookScript("OnClick", function ()
+		SendMailFrame.recipients.selectID=2
+		SendMailFrame.recipients.xuanzelianxiren()
 	end);
-	--
-	local collhang_NUM = 14
-	function coll.list.gengxinlistcoll(self)
-		for i = 1, collhang_NUM do
-			local listFGV = _G["Mail_colllistName"..i]
-			listFGV:Hide()
-			listFGV.Faction:Hide()
-			listFGV.Race:Hide()
-			listFGV.Class:Hide()
-			listFGV.level:Hide()
-			listFGV.name:SetTextColor(1, 1, 1, 1);
-	    end
-	    local lianxirendatainfo={}
-	    if coll.list.xuanzelaiyuan==2 then
-			lianxirendatainfo=PIGA["MailPlus"]["Coll"]
-		elseif coll.list.xuanzelaiyuan==1 then
-			local PlayerData = PIGA["StatsInfo"]["Players"]
-			for nameserver,data in pairs(PlayerData) do
-				local name, server = strsplit("-", nameserver);
-				if name~=Pig_OptionsUI.Name and Pig_OptionsUI.Realm==server then
-					table.insert(lianxirendatainfo,{name,data})
-				end
-			end
-		end
-		local zongshuNum=#lianxirendatainfo
-		if zongshuNum>0 then
-			FauxScrollFrame_Update(self, zongshuNum, collhang_NUM, hang_Height);
-			local offset = FauxScrollFrame_GetOffset(self);
-		    for i = 1, collhang_NUM do
-				local AHdangqianH = i+offset;
-				if lianxirendatainfo[AHdangqianH] then
-					local listFGV = _G["Mail_colllistName"..i]
-					listFGV:Show()
-					listFGV:SetID(AHdangqianH);
-					if coll.list.xuanzelaiyuan==2 then
-						listFGV.Sendname=lianxirendatainfo[AHdangqianH]
-						listFGV.name:SetText(lianxirendatainfo[AHdangqianH])
-						listFGV.name:SetPoint("LEFT", listFGV, "LEFT", 4,0);
-					elseif coll.list.xuanzelaiyuan==1 then
-						listFGV.Sendname=lianxirendatainfo[AHdangqianH][1]
-						listFGV.name:SetText(lianxirendatainfo[AHdangqianH][1])
-						listFGV.Faction:Show()
-						listFGV.Race:Show()
-						listFGV.Class:Show()
-						listFGV.level:Show()
-						if lianxirendatainfo[AHdangqianH][2][1]=="Alliance" then
-							listFGV.Faction:SetTexCoord(0,0.5,0,1);
-						elseif lianxirendatainfo[AHdangqianH][2][1]=="Horde" then
-							listFGV.Faction:SetTexCoord(0.5,1,0,1);
-						end
-						listFGV.Race:SetAtlas(lianxirendatainfo[AHdangqianH][2][3]);
-						local className, classFile, classID = PIGGetClassInfo(lianxirendatainfo[AHdangqianH][2][4])
-						listFGV.Class:SetTexCoord(unpack(CLASS_ICON_TCOORDS[classFile]));
-						listFGV.level:SetText("("..lianxirendatainfo[AHdangqianH][2][5]..")");
-						listFGV.name:SetPoint("LEFT", listFGV.level, "RIGHT", 2,0);
-						local color = PIG_CLASS_COLORS[classFile];
-						listFGV.name:SetTextColor(color.r, color.g, color.b, 1);	
-					end
-				end
-			end
-		end
-	end
-	coll.list.Scroll = CreateFrame("ScrollFrame",nil,coll.list, "FauxScrollFrameTemplate");  
-	coll.list.Scroll:SetPoint("TOPLEFT",coll.list,"TOPLEFT",0,-54);
-	coll.list.Scroll:SetPoint("BOTTOMRIGHT",coll.list,"BOTTOMRIGHT",-22,80);
-	coll.list.Scroll.ScrollBar:SetScale(0.8)
-	coll.list.Scroll:SetScript("OnVerticalScroll", function(self, offset)
-	    FauxScrollFrame_OnVerticalScroll(self, offset, hang_Height, coll.list.gengxinlistcoll)
+	SendMailFrame.recipients.Scroll = CreateFrame("ScrollFrame",nil,SendMailFrame.recipients, "FauxScrollFrameTemplate");  
+	SendMailFrame.recipients.Scroll:SetPoint("TOPLEFT",SendMailFrame.recipients,"TOPLEFT",0,0);
+	SendMailFrame.recipients.Scroll:SetPoint("BOTTOMRIGHT",SendMailFrame.recipients,"BOTTOMRIGHT",-17,0);
+	SendMailFrame.recipients.Scroll.ScrollBar:SetScale(0.7)
+	SendMailFrame.recipients.Scroll:SetScript("OnVerticalScroll", function(self, offset)
+	    FauxScrollFrame_OnVerticalScroll(self, offset, hang_Height, SendMailFrame.recipients.Update_hang)
 	end)
-	if NDui then
-		local B = unpack(NDui)
-		B.ReskinScroll(coll.list.Scroll.ScrollBar)
-	elseif ElvUI then
-		local E= unpack(ElvUI)
-		local S = E:GetModule('Skins')
-		S:HandleScrollBar(coll.list.Scroll.ScrollBar)
-	end
+	SendMailFrame.recipients.butList={}
 	for i = 1, collhang_NUM do
-		local colBut = CreateFrame("Button", "Mail_colllistName"..i, coll.list);
-		colBut:SetSize(collhang_Width-26, hang_Height);
+		local colBut = CreateFrame("Button", nil, SendMailFrame.recipients,"BackdropTemplate");
+		SendMailFrame.recipients.butList[i]=colBut
+		colBut:SetBackdrop({bgFile = "interface/chatframe/chatframebackground.blp"});
+		colBut:SetBackdropColor(0.2, 0.2, 0.2, 0.3);
+		colBut:SetSize(line_W2-2, hang_Height);
 		if i==1 then
-			colBut:SetPoint("TOP",coll.list.Scroll,"TOP",5,0);
+			colBut:SetPoint("TOPLEFT",SendMailFrame.recipients.Scroll,"TOPLEFT",1,0);
 		else
-			colBut:SetPoint("TOP",_G["Mail_colllistName"..(i-1)],"BOTTOM",0,-1.5);
+			colBut:SetPoint("TOP",SendMailFrame.recipients.butList[i-1],"BOTTOM",0,-1);
 		end
 		colBut:RegisterForClicks("LeftButtonUp","RightButtonUp")
-		colBut.xuanzhong = colBut:CreateTexture(nil, "BORDER");
-		colBut.xuanzhong:SetTexture("interface/helpframe/helpframebutton-highlight.blp");
-		colBut.xuanzhong:SetTexCoord(0.00,0.00,0.00,0.58,1.00,0.00,1.00,0.58);
-		colBut.xuanzhong:SetAllPoints(colBut)
-		colBut.xuanzhong:SetBlendMode("ADD")
-		colBut.xuanzhong:Hide()
-		if i~=collhang_NUM then
-			colBut.line = colBut:CreateLine()
-			colBut.line:SetColorTexture(0.6,0.6,0.6,0.2)
-			colBut.line:SetThickness(1);
-			colBut.line:SetStartPoint("BOTTOMLEFT",0,0)
-			colBut.line:SetEndPoint("BOTTOMRIGHT",0,0)
-		end
-		colBut.Faction = colBut:CreateTexture();
-		colBut.Faction:SetTexture("interface/glues/charactercreate/ui-charactercreate-factions.blp");
-		colBut.Faction:SetPoint("LEFT", colBut, "LEFT", 0,0);
-		colBut.Faction:SetSize(hang_Height-2,hang_Height-2);
+		colBut.highlight = colBut:CreateTexture(nil, "HIGHLIGHT");
+		colBut.highlight:SetTexture("interface/helpframe/helpframebutton-highlight.blp");
+		colBut.highlight:SetTexCoord(0.00,0.00,0.00,0.58,1.00,0.00,1.00,0.58);
+		colBut.highlight:SetAllPoints(colBut)
+		colBut.highlight:SetBlendMode("ADD")
+		colBut.highlight:SetColorTexture(0.5, 0.5, 0.5, 0.1)
+		colBut.highlight1 = colBut:CreateTexture();
+		colBut.highlight1:SetTexture("interface/helpframe/helpframebutton-highlight.blp");
+		colBut.highlight1:SetTexCoord(0.00,0.00,0.00,0.58,1.00,0.00,1.00,0.58);
+		colBut.highlight1:SetAllPoints(colBut)
+		colBut.highlight1:SetBlendMode("ADD")
+		colBut.highlight1:Hide()
 		colBut.Race = colBut:CreateTexture();
-		colBut.Race:SetPoint("LEFT", colBut.Faction, "RIGHT", 1,0);
+		colBut.Race:SetPoint("LEFT", colBut, "LEFT", 0,0);
 		colBut.Race:SetSize(hang_Height-2,hang_Height-2);
 		colBut.Class = colBut:CreateTexture();
 		colBut.Class:SetTexture("interface/glues/charactercreate/ui-charactercreate-classes.blp")
 		colBut.Class:SetPoint("LEFT", colBut.Race, "RIGHT", 1,0);
 		colBut.Class:SetSize(hang_Height-2,hang_Height-2);
-		colBut.level = PIGFontString(colBut,{"LEFT", colBut.Class, "RIGHT", 2, 0},1)
+		colBut.level = PIGFontString(colBut,{"LEFT", colBut.Class, "RIGHT", 1, 0},1)
 		colBut.level:SetTextColor(1,0.843,0, 1);
-		colBut.name = PIGFontString(colBut,{"LEFT", colBut.level, "LEFT", 2,0},"nil","OUTLINE",13)
-		colBut.name:SetWidth(collhang_Width);
+		colBut.name = PIGFontString(colBut,{"LEFT", colBut.level, "LEFT", 1,0},"","OUTLINE",13)
+		colBut.name:SetWidth(line_W2);
 		colBut.name:SetJustifyH("LEFT");
-		colBut:SetScript("OnEnter", function(self)
-			self.xuanzhong:Show()
-		end);
-		colBut:SetScript("OnLeave", function(self)
-			self.xuanzhong:Hide()
-		end);
+		-- colBut:SetScript("OnEnter", function(self)
+		-- 	self.highlight:Show()
+		-- end);
+		-- colBut:SetScript("OnLeave", function(self)
+		-- 	self.highlight:Hide()
+		-- end);
 		colBut:SetScript("OnClick", function (self,button)
 			if button=="LeftButton" then
 				SendMailNameEditBox:SetText(self.Sendname)
 			else
-				if coll.list.xuanzelaiyuan==2 then
+				if SendMailFrame.recipients.selectID==2 then
 					table.remove(PIGA["MailPlus"]["Coll"],self:GetID())
-					coll.list.gengxinlistcoll(coll.list.Scroll)
+					SendMailFrame.recipients.Update_hang(SendMailFrame.recipients.Scroll)
 				end
 			end
 		end);
 	end
-	-----
-	local function MailPlus_MoneyEdit()
-		if PIGA["MailPlus"]["MoneyEdit"] then
-			hooksecurefunc("MoneyInputFrame_OnTextChanged", function()
-				if not SendMailSubjectEditBox.yishoudong then
-					if not HasSendMailItem(1) then
-						SendMailSubjectEditBox:SetText(GetCoinText(MoneyInputFrame_GetCopper(SendMailMoney)))
-					end
+	function SendMailFrame.recipients.Update_hang(self)
+		for i = 1, collhang_NUM do
+			SendMailFrame.recipients.butList[i]:Hide()
+	    end
+	    local linData={}
+	    if SendMailFrame.recipients.selectID==2 then
+			linData=PIGA["MailPlus"]["Coll"]
+		elseif SendMailFrame.recipients.selectID==1 then
+			local PlayerData = PIGA["StatsInfo"]["Players"]
+			for nameserver,data in pairs(PlayerData) do
+				local name, server = strsplit("-", nameserver);
+				if name~=PIG_OptionsUI.Name and PIG_OptionsUI.Realm==server then
+					table.insert(linData,{name,data})
 				end
-			end)
-			SendMailSubjectEditBox:HookScript("OnEditFocusGained", function(self) 
-				self.yishoudong=true
-			end);
-			SendMailFrame:HookScript("OnShow", function (self)
-				SendMailSubjectEditBox.yishoudong=false
-			end);		
-		end
-	end
-	MailPlus_MoneyEdit()
-	coll.list.MailPlus_MoneyEdit = PIGCheckbutton(coll.list,{"BOTTOMLEFT",coll.list,"BOTTOMLEFT",6,6},{"自动填写标题","邮寄金币当标题为空时自定填写标题"},nil,nil,nil,0)
-	coll.list.MailPlus_MoneyEdit:SetScript("OnClick", function (self)
-		if self:GetChecked() then
-			PIGA["MailPlus"]["MoneyEdit"]=true;
-			MailPlus_MoneyEdit()
-		else
-			PIGA["MailPlus"]["MoneyEdit"]=false;
-		end
-	end);
-	local NDui_BagName,slotnum = Data.NDui_BagName[1],Data.NDui_BagName[2]
-	local ElvUI_BagName = Data.ElvUI_BagName
-	local function GetBagIDFun(self)
-		if NDui_BackpackBag then
-			return self.bagId
-		elseif ElvUI_ContainerFrame then
-			return self.BagID
-		else
-			if self.GetBagID then
-				return self:GetBagID()
-			else
-				return self:GetParent():GetID()
 			end
 		end
-	end
-	local function PIG_UseContainerItem(self)
-		if BankFrame.GetActiveBankType then
-			C_Container.UseContainerItem(GetBagIDFun(self), self:GetID(), nil, BankFrame:GetActiveBankType(), BankFrame:IsShown() and BankFrame.selectedTab == 2);
-		else
-			C_Container.UseContainerItem(GetBagIDFun(self), self:GetID(), nil, BankFrame:IsShown() and (BankFrame.selectedTab == 2));
-		end
-	end
-	local function PIG_UseContainerUI(self,DQitemID)
-		if self then		
-			local itemID=PIGGetContainerItemInfo(GetBagIDFun(self), self:GetID())
-			if itemID then
-				if DQitemID==itemID then
-					PIG_UseContainerItem(self)
+		local zongshuNum=#linData
+		FauxScrollFrame_Update(self, zongshuNum, collhang_NUM, hang_Height);
+		local offset = FauxScrollFrame_GetOffset(self);
+	    for i = 1, collhang_NUM do
+			local AHdangqianH = i+offset;
+			if linData[AHdangqianH] then
+				local listFGV = SendMailFrame.recipients.butList[i]
+				listFGV:Show()
+				listFGV:SetID(AHdangqianH);
+				if SendMailFrame.recipients.selectID==2 then
+					listFGV.Race:Hide()
+					listFGV.Class:Hide()
+					listFGV.level:Hide()
+					listFGV.Sendname=linData[AHdangqianH]
+					listFGV.name:SetText(linData[AHdangqianH])
+					listFGV.name:SetPoint("LEFT", listFGV, "LEFT", 4,0);
+					listFGV.name:SetTextColor(1,1,1,1);
+				elseif SendMailFrame.recipients.selectID==1 then
+					listFGV.Sendname=linData[AHdangqianH][1]
+					listFGV.name:SetText(linData[AHdangqianH][1])
+					listFGV.Race:Show()
+					listFGV.Class:Show()
+					listFGV.level:Show()
+					listFGV.Race:SetAtlas(linData[AHdangqianH][2][3]);
+					local className, classFile, classID = PIGGetClassInfo(linData[AHdangqianH][2][4])
+					listFGV.Class:SetTexCoord(unpack(CLASS_ICON_TCOORDS[classFile]));
+					listFGV.level:SetText("("..linData[AHdangqianH][2][5]..")");
+					listFGV.name:SetPoint("LEFT", listFGV.level, "RIGHT", 2,0);
+					local color = PIG_CLASS_COLORS[classFile];
+					listFGV.name:SetTextColor(color.r, color.g, color.b, 1);	
 				end
 			end
 		end
 	end
-	local function zhixingpiliangFun(framef)
-		framef:HookScript("PreClick",  function (self,button)
-			if SendMailFrame:IsVisible() and IsAltKeyDown() then
-				if button == "LeftButton" then
-					PIG_UseContainerItem(self)
-					SendMailMailButton_OnClick(SendMailMailButton)
-				else
-					local DQitemID=PIGGetContainerItemInfo(GetBagIDFun(self), self:GetID())
-					if DQitemID then
-						PIG_UseContainerItem(self)
-						if NDui then
-							for f=1,slotnum do
-								PIG_UseContainerUI(_G[NDui_BagName..f],DQitemID)
-							end
-						elseif ElvUI_ContainerFrame then
-							for bagx=1,NUM_CONTAINER_FRAMES do
-								for ei=1,#ElvUI_BagName do
-									for solt=1,MAX_CONTAINER_ITEMS do
-										PIG_UseContainerUI(_G[ElvUI_BagName[ei]..bagx.."Slot"..solt],DQitemID)
-									end
-								end
-							end
-						else
-							if GetCVar("combinedBags")=="1" and ContainerFrameCombinedBags then
-								local butnum =#ContainerFrameCombinedBags.Items
-								for ff=1,butnum do
-									PIG_UseContainerUI(ContainerFrameCombinedBags.Items[ff],DQitemID)
-								end
-							else
-								for bagx=1,NUM_CONTAINER_FRAMES do
-									local ContainerF = _G["ContainerFrame"..bagx]
-									if ContainerF then
-										if ContainerF.Items then
-											local butnum =#ContainerF.Items
-											for ff=1,butnum do
-												PIG_UseContainerUI(ContainerF.Items[ff],DQitemID)
-											end
-										else
-											for solt=1,MAX_CONTAINER_ITEMS do
-												PIG_UseContainerUI(_G["ContainerFrame"..bagx.."Item"..solt],DQitemID)
-											end
-										end
-									end
-								end
-							end
-						end
-					end
-				end
-			end
-		end);
-	end
-	local function MailPlus_ALTbatch(self)
-		if PIGA["MailPlus"]["ALTbatch"] then
-			if self.yijiazaiALT then return end
-			self.yijiazaiALT=true
-			if ContainerFrameCombinedBags and ContainerFrameCombinedBags.Items then
-				local butnum =#ContainerFrameCombinedBags.Items
-				for ff=1,butnum do
-					zhixingpiliangFun(ContainerFrameCombinedBags.Items[ff])
-				end
-			end
-			for bagx=1,NUM_CONTAINER_FRAMES do
-				local ContainerF = _G["ContainerFrame"..bagx]
-				if ContainerF then
-					if ContainerF.Items then
-						if ContainerF and ContainerF.Items then
-							local butnum =#ContainerF.Items
-							for ff=1,butnum do
-								zhixingpiliangFun(ContainerF.Items[ff])
-							end
-						end
-					else
-						for solt=1,MAX_CONTAINER_ITEMS do
-							if _G["ContainerFrame"..bagx.."Item"..solt] then
-								zhixingpiliangFun(_G["ContainerFrame"..bagx.."Item"..solt])
-							end
-						end
-					end
-				end
-			end
-			if Pig_OptionsUI.IsOpen_NDui("Bags") then
-				for f=1,slotnum do
-					if _G[NDui_BagName..f] then
-						zhixingpiliangFun(_G[NDui_BagName..f])
-					end
-				end
-			end
-			if Pig_OptionsUI.IsOpen_ElvUI("bags") then
-				for f=1,NUM_CONTAINER_FRAMES do
-					for ff=1,MAX_CONTAINER_ITEMS do
-						for ei=1,#ElvUI_BagName do
-							local bagff = _G[ElvUI_BagName[ei]..f.."Slot"..ff]
-							if bagff then
-								zhixingpiliangFun(bagff)
-							end
-						end
-					end
-				end
-			end
-		end
-	end
-	SendMailFrame:HookScript("OnShow", function (self)
-		MailPlus_ALTbatch(self)
-	end);
-	coll.list.MailPlus_ALTbatch = PIGCheckbutton(coll.list,{"BOTTOMLEFT",coll.list.MailPlus_MoneyEdit,"TOPLEFT",0,6},{"ALT+左键快速/右键批量","按住ALT+左键点击背包物品快速邮寄\nALT+右键选择背包相同物品\n此功能只适配原始/PIG/NDui/ElvUI背包"},nil,nil,nil,0)
-	coll.list.MailPlus_ALTbatch:SetScript("OnClick", function (self)
-		if self:GetChecked() then
-			PIGA["MailPlus"]["ALTbatch"]=true;
-			MailPlus_ALTbatch(SendMailFrame)
-		else
-			PIGA["MailPlus"]["ALTbatch"]=false;
-			Pig_Options_RLtishi_UI:Show()
-		end
-	end);
-	coll.list.MailPlus_lianxuMode = PIGCheckbutton(coll.list,{"BOTTOMLEFT",coll.list.MailPlus_ALTbatch,"TOPLEFT",0,6},{"连寄模式","发件箱未关闭情况下会自动填入上一次收件人"},nil,nil,nil,0)
-	coll.list.MailPlus_lianxuMode:SetScript("OnClick", function (self)
+	SendMailFrame.recipients.lianxuMode = PIGCheckbutton(SendMailFrame.recipients,{"BOTTOMLEFT",SendMailFrame.recipients,"TOPLEFT",60,34},{"连寄","发件箱未关闭情况下会自动填入上一次收件人"},nil,nil,nil,0)
+	SendMailFrame.recipients.lianxuMode:SetScript("OnClick", function (self)
 		if self:GetChecked() then
 			PIGA["MailPlus"]["lianxuMode"]=true;
 		else
 			PIGA["MailPlus"]["lianxuMode"]=false;
 		end
 	end);
-	MailFrame:HookScript("OnEvent", function (self,event)
-		if PIGA["MailPlus"]["lianxuMode"] then
-			if ( event == "MAIL_SEND_SUCCESS" ) then
-				if SendMailFrame.PreviousName then
-					SendMailNameEditBox:SetText(SendMailFrame.PreviousName);
+	SendMailFrame.recipients.MoneyEdit = PIGCheckbutton(SendMailFrame.recipients,{"LEFT",SendMailFrame.recipients.lianxuMode.Text,"RIGHT",6,0},{"自动标题","邮寄金币时自动填入标题"},nil,nil,nil,0)
+	SendMailFrame.recipients.MoneyEdit:SetScript("OnClick", function (self)
+		if self:GetChecked() then
+			PIGA["MailPlus"]["MoneyEdit"]=true;
+		else
+			PIGA["MailPlus"]["MoneyEdit"]=false;
+		end
+		SendMailFrame.recipients._MoneyEdit()
+	end);
+	function SendMailFrame.recipients._MoneyEdit()
+		hooksecurefunc("MoneyInputFrame_OnTextChanged", function()
+			if not PIGA["MailPlus"]["MoneyEdit"] then return end
+			if not SendMailSubjectEditBox.yishoudong then
+				if not HasSendMailItem(1) then
+					SendMailSubjectEditBox:SetText(GetCoinText(MoneyInputFrame_GetCopper(SendMailMoney)))
+				end
+			end
+		end)
+		SendMailSubjectEditBox:HookScript("OnEditFocusGained", function(self) 
+			if not PIGA["MailPlus"]["MoneyEdit"] then return end
+			self.yishoudong=true
+		end);
+		SendMailFrame:HookScript("OnShow", function (self)
+			if not PIGA["MailPlus"]["MoneyEdit"] then return end
+			SendMailSubjectEditBox.yishoudong=false
+		end);
+	end
+	SendMailFrame.recipients._MoneyEdit()
+	SendMailFrame.recipients.ALTbatch = PIGCheckbutton(SendMailFrame.recipients,{"LEFT",SendMailFrame.recipients.MoneyEdit.Text,"RIGHT",6,0},{"快速邮寄","左键批量选择/右键单选\n选择时按住ALT则快速邮寄"},nil,nil,nil,0)
+	SendMailFrame.recipients.ALTbatch:SetScript("OnClick", function (self)
+		if self:GetChecked() then
+			PIGA["MailPlus"]["ALTbatch"]=true;
+		else
+			PIGA["MailPlus"]["ALTbatch"]=false;
+		end
+	end);
+	SendMailFrame.recipients:HookScript("OnShow", function (self)
+		for i=#PIGA["MailPlus"]["Coll"],51,-1 do
+			table.remove(PIGA["MailPlus"]["Coll"],i)
+		end
+		self.xuanzelianxiren()
+		self.MoneyEdit:SetChecked(PIGA["MailPlus"]["MoneyEdit"])
+		self.ALTbatch:SetChecked(PIGA["MailPlus"]["ALTbatch"])
+		self.lianxuMode:SetChecked(PIGA["MailPlus"]["lianxuMode"])
+		self.Update_hang(self.Scroll)
+	end);
+	--
+	local bagData=Data.bagData
+	local lixianNum,meihang,BagdangeW=(#bagData["bagID"])*MAX_CONTAINER_ITEMS,10,20
+	local function But_Click(self)
+		if BankFrame.GetActiveBankType then
+			C_Container.UseContainerItem(self.BagID, self.SlotID, nil, BankFrame:GetActiveBankType(), BankFrame:IsShown() and BankFrame.selectedTab == 2);
+		else
+			C_Container.UseContainerItem(self.BagID, self.SlotID, nil, BankFrame:IsShown() and (BankFrame.selectedTab == 2));
+		end
+	end
+	local function PIG_allbagSet(DQitemID)
+		for i=1,lixianNum do
+			local itemBut = SendMailFrame.ItemList.butList[i]
+			if itemBut:IsShown() then
+				local itemID=PIGGetContainerItemInfo(itemBut.BagID, itemBut.SlotID)
+				if itemID then
+					if DQitemID==itemID then
+						But_Click(itemBut)
+					end
+				end
+			end
+		end
+	end
+	SendMailFrame.ItemList=PIGFrame(SendMailFrame)
+	SendMailFrame.ItemList:SetPoint("TOPLEFT",SendMailFrame,"TOPLEFT",line_W1+line_W2+18,-82);
+	SendMailFrame.ItemList:SetPoint("BOTTOMLEFT",SendMailFrame,"BOTTOMLEFT",line_W1+line_W2+18,116);
+	SendMailFrame.ItemList:SetWidth(300);
+	if ElvUI or NDui then SendMailFrame.ItemList:PIGSetBackdrop(0,1) end
+	--
+	SendMailFrame.ItemList.Delbut = Create.PIGDiyBut(SendMailFrame.ItemList,{"TOPRIGHT",SendMailFrame.ItemList,"TOPRIGHT",-4,24},{20,nil,20,nil,"common-icon-undo"})
+	SendMailFrame.ItemList.Delbut:Disable()
+	PIGEnter(SendMailFrame.ItemList.Delbut,"清空已选")
+	SendMailFrame.ItemList.Delbut:SetScript("OnClick", function (self,button)
+		for i=1, ATTACHMENTS_MAX_SEND do
+			ClickSendMailItemButton(SendMailFrame.SendMailAttachments[i]:GetID(), true);
+		end
+	end);
+	local NewItemTypeLsit = PIGCopyTable(Data.ItemTypeLsit)
+	table.insert(NewItemTypeLsit,1,{130716,"all",ALL})
+	SendMailFrame.ItemList.typeList={}
+	SendMailFrame.ItemList.filtrate="all"
+	for ib=#NewItemTypeLsit,1,-1 do
+		local savebut = PIGDiyBut(SendMailFrame.ItemList,nil,{20,20,23,23,NewItemTypeLsit[ib][1]})
+		SendMailFrame.ItemList.typeList[ib]=savebut
+		savebut.classData=NewItemTypeLsit[ib][2]
+		if ib==#NewItemTypeLsit then
+			savebut:SetPoint("RIGHT",SendMailFrame.ItemList.Delbut,"LEFT",-10,1);
+		else
+			savebut:SetPoint("RIGHT",SendMailFrame.ItemList.typeList[ib+1],"LEFT",-6,0);
+		end
+		PIGEnter(savebut,savebut,"\124cff00FF00"..NewItemTypeLsit[ib][3].."\124r")
+		savebut:RegisterForClicks("LeftButtonUp","RightButtonUp")
+		savebut.Down = savebut:CreateTexture(nil, "OVERLAY");
+		savebut.Down:SetTexture(130839);
+		savebut.Down:SetAllPoints(savebut)
+		savebut.Down:Hide();
+		savebut:SetScript("OnMouseDown", function (self)
+			self.Down:Show();
+		end);
+		savebut:SetScript("OnMouseUp", function (self)
+			self.Down:Hide();
+		end);
+		savebut.Height = savebut:CreateTexture(nil, "OVERLAY");
+		savebut.Height:SetTexture(902180);--130724
+		savebut.Height:SetPoint("TOPLEFT",savebut,"TOPLEFT",-10,11);
+		savebut.Height:SetPoint("BOTTOMRIGHT",savebut,"BOTTOMRIGHT",11,-10);
+		savebut.Height:Hide()
+		savebut:SetScript("OnClick", function (self)
+			for k,v in pairs(SendMailFrame.ItemList.typeList) do
+				v.Height:Hide()
+			end
+			self.Height:Show()
+			SendMailFrame.ItemList.filtrate=self.classData
+			SendMailFrame.ItemList.Updata_Items()
+		end);
+		if ib==1 then savebut.Height:Show() end
+	end
+	--
+	SendMailFrame.ItemList.butList={}
+	if PIG_MaxTocversion() then
+		SendMailFrame.ItemList.ButTemplate="ItemButtonTemplate"
+	else
+		SendMailFrame.ItemList.ButTemplate="EnchantingItemButtonAnimTemplate"
+	end
+	for i=1,lixianNum do
+		local itemBut = CreateFrame("ItemButton", nil, SendMailFrame.ItemList,SendMailFrame.ItemList.ButTemplate);
+		SendMailFrame.ItemList.butList[i]=itemBut
+		itemBut:SetScale(0.77)
+		if i==1 then
+			itemBut:SetPoint("TOPLEFT",SendMailFrame.ItemList,"TOPLEFT",3,-4);
+		else
+			local yushu=fmod(i-1,meihang)
+			if yushu==0 then
+				if i==101 then
+					itemBut:SetPoint("TOPLEFT",SendMailFrame.ItemList.butList[i-meihang],"BOTTOMLEFT",154,-1.2);
+				else
+					itemBut:SetPoint("TOPLEFT",SendMailFrame.ItemList.butList[i-meihang],"BOTTOMLEFT",0,-1.2);
+				end
+			else
+				itemBut:SetPoint("LEFT",SendMailFrame.ItemList.butList[i-1],"RIGHT",1.6,0);
+			end
+		end
+		itemBut:SetScript("OnEnter", function (self)
+			GameTooltip:ClearLines();
+			GameTooltip:SetOwner(self, "ANCHOR_LEFT");
+			GameTooltip:SetBagItem(self.BagID, self.SlotID);
+			GameTooltip:Show();
+		end);
+		itemBut:SetScript("OnLeave", function ()
+			GameTooltip:ClearLines();
+			GameTooltip:Hide() 
+		end);
+		itemBut.LV = PIGFontString(itemBut,{"TOPLEFT", itemBut, "TOPLEFT", 0,0},"","OUTLINE",15)
+		itemBut.selectTex = itemBut:CreateTexture(nil,"OVERLAY");
+		itemBut.selectTex:SetAtlas("ui-lfg-readymark-raid")
+		itemBut.selectTex:SetSize(24,24);
+		itemBut.selectTex:SetPoint("CENTER", 0, 0);
+		itemBut.selectTex:Hide()
+		itemBut:SetScript("OnClick", function (self,button)
+			if button=="LeftButton" then
+				if IsShiftKeyDown() then
+					local editBox = ChatEdit_ChooseBoxForSend();
+					local hasText = editBox:GetText()..self.itemLink
+					if editBox:HasFocus() then
+						editBox:SetText(hasText);
+					else
+						ChatEdit_ActivateChat(editBox)
+						editBox:SetText(hasText);
+					end
+				else
+					But_Click(self)
+					local DQitemID=PIGGetContainerItemInfo(self.BagID, self.SlotID)
+					PIG_allbagSet(DQitemID)
+					if IsAltKeyDown() and PIGA["MailPlus"]["ALTbatch"] then
+						SendMailMailButton_OnClick(SendMailMailButton)
+					end
+				end
+			else
+				But_Click(self)
+				if IsAltKeyDown() and PIGA["MailPlus"]["ALTbatch"] then
+					SendMailMailButton_OnClick(SendMailMailButton)
+				end
+			end
+		end)
+	end
+	function SendMailFrame.ItemList.Updata_Items()
+		for i=1,lixianNum do
+			SendMailFrame.ItemList.butList[i]:Hide()
+		end
+		SendMailFrame.ItemList.Delbut:Disable()
+		SendMailFrame.ItemList.index=0
+		for bag=1,#bagData["bagID"] do
+			for slot=1,GetContainerNumSlots(bagData["bagID"][bag]) do
+				local itemID, itemLink, icon, stackCount, quality, noValue, lootable, locked, isBound=PIGGetContainerItemInfo(bagData["bagID"][bag], slot);
+				if itemID and not isBound then
+					local pigmail_additemS = {false,0}
+					if SendMailFrame.ItemList.filtrate=="all" then
+						pigmail_additemS[1]=true
+					else
+						local classID, subclassID = select(6, GetItemInfoInstant(itemLink))
+						for ibi=1,#SendMailFrame.ItemList.filtrate do
+							if SendMailFrame.ItemList.filtrate[ibi][2] then
+								if classID==SendMailFrame.ItemList.filtrate[ibi][1] and subclassID==SendMailFrame.ItemList.filtrate[ibi][2] then
+									pigmail_additemS[1]=true
+								end
+							else
+								if classID==SendMailFrame.ItemList.filtrate[ibi][1] then
+									pigmail_additemS[1]=true
+								end
+							end
+						end
+					end
+					if pigmail_additemS[1] then
+						SendMailFrame.ItemList.index=SendMailFrame.ItemList.index+1
+						local itemBut=SendMailFrame.ItemList.butList[SendMailFrame.ItemList.index]
+						itemBut:Show()
+						if locked then
+							itemBut.icon:SetDesaturated(true)
+							itemBut.selectTex:Show()
+							SendMailFrame.ItemList.Delbut:Enable()
+						else
+							itemBut.icon:SetDesaturated(false)
+							itemBut.selectTex:Hide()
+						end
+						itemBut.BagID=bagData["bagID"][bag]
+						itemBut.SlotID=slot
+						SetItemButtonTexture(itemBut, icon)
+						if stackCount>1 then
+							itemBut.Count:SetText(stackCount)
+							itemBut.Count:Show()
+						else
+							itemBut.Count:SetText("")
+						end
+						if PIGA["BagBank"]["wupinLV"] then
+							if classID==2 or classID==4 then
+								local effectiveILvl = GetDetailedItemLevelInfo(itemLink)	
+								if effectiveILvl and effectiveILvl>0 then
+									itemBut.LV:SetText(effectiveILvl)
+									local quality = C_Item.GetItemQualityByID(itemLink)
+									local r, g, b, hex = GetItemQualityColor(quality)
+									itemBut.LV:SetTextColor(r, g, b, 1);
+								end
+							end
+						end
+					end
+				end
+			end
+		end
+	end
+	SendMailFrame.ItemList:HookScript("OnShow", function (self)
+		self.Updata_Items()
+	end);
+	SendMailFrame.ItemList:RegisterEvent("BAG_UPDATE");
+	SendMailFrame.ItemList:SetScript("OnEvent", function(self,event,arg1)
+		if event=="BAG_UPDATE" and self:IsShown() then
+			if arg1~=-2 then
+				if arg1>=0 and arg1<=bagData["bagIDMax"] then
+					self.Updata_Items()
 				end
 			end
 		end
 	end)
-	--------
-	coll.list:HookScript("OnShow", function (self)
-		self.MailPlus_MoneyEdit:SetChecked(PIGA["MailPlus"]["MoneyEdit"])
-		self.MailPlus_ALTbatch:SetChecked(PIGA["MailPlus"]["ALTbatch"])
-		self.MailPlus_lianxuMode:SetChecked(PIGA["MailPlus"]["lianxuMode"])
-		xuanzelianxiren()
-		self.gengxinlistcoll(coll.list.Scroll)
-	end);
+	MailFrame:HookScript("OnEvent", function (self,event)
+		if event == "MAIL_SEND_SUCCESS" then
+			if PIGA["MailPlus"]["lianxuMode"] then
+				if SendMailFrame.PreviousName then
+					SendMailNameEditBox:SetText(SendMailFrame.PreviousName);
+				end
+			end
+		elseif event == "MAIL_SEND_INFO_UPDATE" then
+			SendMailFrame.ItemList.Updata_Items()
+		end
+	end)
+	--
 	hooksecurefunc("SendMailFrame_SendMail", function()
 		local fjname = SendMailNameEditBox:GetText()
 		if fjname~="" and fjname~=" " then
@@ -1085,8 +1134,54 @@ function BusinessInfo.MailPlus_ADDUI()
 					return
 				end
 			end
-			table.insert(PIGA["MailPlus"]["Coll"],fjname)
-			coll.list.gengxinlistcoll(coll.list.Scroll)
+			table.insert(PIGA["MailPlus"]["Coll"],1,fjname)
+			SendMailFrame.recipients.Update_hang(SendMailFrame.recipients.Scroll)
 		end
+	end)
+	hooksecurefunc("SendMailFrame_Update", function()
+		SendMailHorizontalBarLeft:ClearAllPoints();
+		SendMailHorizontalBarLeft2:ClearAllPoints();
+		SendMailSubjectEditBox:SetWidth(156)
+		SendMailSubjectEditBoxMiddle:SetWidth(154)
+		SendStationeryBackgroundRight:ClearAllPoints();
+		if PIG_MaxTocversion() then
+			SendMailSubjectEditBox:SetPoint("TOPLEFT", "SendMailNameEditBox", "BOTTOMLEFT", -34,0);
+			MailEditBox:SetSize(line_W1-2,174)
+			MailEditBox:SetPoint("TOPLEFT", "SendMailFrame", "TOPLEFT", 10,-86);
+			SendStationeryBackgroundLeft:SetAllPoints(MailEditBox)
+			MailEditBoxScrollBar:SetScale(0.6)
+			MailEditBoxScrollBar.Background:Hide()
+			MailEditBoxScrollBar.Background:ClearAllPoints();
+			MailEditBoxScrollBar:SetPoint("TOPLEFT", MailEditBox, "TOPRIGHT", -24,4);
+			MailEditBoxScrollBar:SetPoint("BOTTOMLEFT", MailEditBox, "BOTTOMRIGHT", -24,-4);
+		else
+			if ElvUI then
+				SendMailSubjectEditBox:SetPoint("TOPLEFT", "SendMailNameEditBox", "BOTTOMLEFT", -30,-6);
+			else
+				SendMailSubjectEditBox:SetPoint("TOPLEFT", "SendMailNameEditBox", "BOTTOMLEFT", -64,0);
+			end
+			SendMailScrollFrame:SetSize(line_W1-2,174)
+			SendMailScrollFrame:SetPoint("TOPLEFT", "SendMailFrame", "TOPLEFT", 10,-86);
+			SendStationeryBackgroundLeft:SetAllPoints(SendMailScrollFrame)
+			SendMailScrollFrame.ScrollBar:SetScale(0.8)
+			SendMailScrollFrame.ScrollBar:SetPoint("TOPLEFT", SendMailScrollFrame, "TOPRIGHT", -10,0);
+			SendMailScrollFrame.ScrollBar:SetPoint("BOTTOMLEFT", SendMailScrollFrame, "BOTTOMRIGHT", -10,-0);
+		end
+		for i=1, ATTACHMENTS_MAX_SEND do
+			SendMailFrame.SendMailAttachments[i]:SetScale(0.8)
+			SendMailFrame.SendMailAttachments[i]:Show();
+			if i>6 then
+				SendMailFrame.SendMailAttachments[i]:SetPoint("TOPLEFT", "SendMailFrame", "BOTTOMLEFT", (i-7)*42+16,268);
+			else
+				SendMailFrame.SendMailAttachments[i]:SetPoint("TOPLEFT", "SendMailFrame", "BOTTOMLEFT", (i-1)*42+16,308);
+			end
+		end
+		SendMailMoneyButton:SetPoint("BOTTOMLEFT", "SendMailFrame", "BOTTOMLEFT", 20,150);
+		SendMailSendMoneyButton:SetPoint("TOPLEFT","SendMailMoney","TOPRIGHT",-184,-26)
+		SendMailCODButton:ClearAllPoints();
+		SendMailCODButton:SetPoint("LEFT","SendMailSendMoneyButtonText","RIGHT",10,0)
+		SendMailCostMoneyFrame:ClearAllPoints();
+		SendMailCostMoneyFrame:SetPoint("BOTTOMLEFT", "SendMailFrame", "BOTTOMLEFT", 270,96)
+		SendMailCancelButton:SetPoint("BOTTOMRIGHT", "SendMailFrame", "BOTTOMRIGHT", 110,92)
 	end)
 end

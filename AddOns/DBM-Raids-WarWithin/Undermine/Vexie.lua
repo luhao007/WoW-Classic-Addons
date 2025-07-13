@@ -1,8 +1,7 @@
-if DBM:GetTOC() < 110100 then return end
-local mod	= DBM:NewMod(2639, "DBM-Raids-WarWithin", 1, 1296)
+local mod	= DBM:NewMod(2639, "DBM-Raids-WarWithin", 2, 1296)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20250323211035")
+mod:SetRevision("20250619040547")
 mod:SetCreatureID(225821, 225822)--Gear Grinder, 225822 Vexie
 mod:SetEncounterID(3009)
 mod:SetHotfixNoticeRev(20250323000000)
@@ -16,7 +15,7 @@ mod:RegisterEventsInCombat(
 	"SPELL_CAST_START 471403 459943 466040 466042 459671 468216 468487 459974 459627 460603 460173",
 --	"SPELL_CAST_SUCCESS",
 	"SPELL_AURA_APPLIED 466615 471500 1216788 466368 465865 460116 468216",
---	"SPELL_AURA_APPLIED_DOSE",
+	"SPELL_AURA_APPLIED_DOSE 465865",
 	"SPELL_AURA_REMOVED 466615 471500 460116 468216",
 	"SPELL_PERIODIC_DAMAGE 459683",
 	"SPELL_PERIODIC_MISSED 459683",
@@ -24,13 +23,7 @@ mod:RegisterEventsInCombat(
 	"UNIT_SPELLCAST_SUCCEEDED boss1"
 )
 
---TODO, possible infoframe for https://www.wowhead.com/ptr-2/spell=473507/soaked-in-oil on mythic difficulty
---TODO, find a way to auto mark bikes?
---TODO, nameplate timer for hotwheels using https://www.wowhead.com/ptr-2/spell=1217853/hot-wheels ? (15)
---TODO, detect bomb targets with target scan of 459974?
---TODO, nameplate aura for passive https://www.wowhead.com/ptr-2/spell=473636/high-maintenance trait?
 --TODO, timer correction for missed interrupts for Tune-Up
---TODO, add https://www.wowhead.com/ptr-2/spell=467776/jobs-done ?
 --[[
 (ability.id = 459943 or ability.id = 459671 or ability.id = 468487 or ability.id = 459627) and type = "begincast"
 or ability.id = 460603 and tyep = "begincast" or ability.id = 466615 and type = "applybuff"
@@ -116,7 +109,7 @@ function mod:SPELL_CAST_START(args)
 		specWarnCallbikers:Show(self.vb.bikersCount)
 		specWarnCallbikers:Play("killmob")
 		timerCallbikersCD:Start("v28-36.4", self.vb.bikersCount+1)
-	elseif spellId == 466040 or spellId == 466042 then
+	elseif (spellId == 466040 or spellId == 466042) and self:AntiSpam(3, 1) then
 		warnBlazeofGlory:Show()
 	elseif spellId == 459671 then
 		self.vb.spewOilCount = self.vb.spewOilCount + 1
@@ -234,7 +227,7 @@ function mod:SPELL_AURA_APPLIED(args)
 		yellIncendiaryFire:Yell()
 	end
 end
---mod.SPELL_AURA_APPLIED_DOSE = mod.SPELL_AURA_APPLIED
+mod.SPELL_AURA_APPLIED_DOSE = mod.SPELL_AURA_APPLIED
 
 function mod:SPELL_AURA_REMOVED(args)
 	local spellId = args.spellId
@@ -272,7 +265,7 @@ function mod:SPELL_AURA_REMOVED(args)
 end
 
 function mod:SPELL_PERIODIC_DAMAGE(_, _, _, _, destGUID, _, _, _, spellId, spellName)
-	if spellId == 459683 and destGUID == UnitGUID("player") and self:AntiSpam(2, 3) then
+	if spellId == 459683 and destGUID == UnitGUID("player") and self:AntiSpam(2, 2) then
 		specWarnGTFO:Show(spellName)
 		specWarnGTFO:Play("watchfeet")
 	end
@@ -282,7 +275,7 @@ mod.SPELL_PERIODIC_MISSED = mod.SPELL_PERIODIC_DAMAGE
 function mod:UNIT_DIED(args)
 	local cid = self:GetCIDFromGUID(args.destGUID)
 	if cid == 225804 then--Geargrinder Biker
-		if self:IsMythic() then
+		if self:IsMythic() and self:AntiSpam(4, 3) and not self:IsTank() then
 			self.vb.soakCount = self.vb.soakCount + 1
 			if not DBM:UnitDebuff("player", 473507) then
 				specWarnOilCanisterSoak:Show(self.vb.soakCount)

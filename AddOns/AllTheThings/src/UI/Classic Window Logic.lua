@@ -1,13 +1,13 @@
 -- App locals
 local appName, app = ...;
 local contains = app.contains;
-local AssignChildren, CloneClassInstance, CloneReference
-	= app.AssignChildren, app.CloneClassInstance, app.CloneReference;
+local AssignChildren, CloneClassInstance, CloneReference, wipearray
+	= app.AssignChildren, app.CloneClassInstance, app.CloneReference, app.wipearray;
 local IsQuestFlaggedCompleted, IsQuestReadyForTurnIn = app.IsQuestFlaggedCompleted, app.IsQuestReadyForTurnIn;
 local DESCRIPTION_SEPARATOR = app.DESCRIPTION_SEPARATOR;
 local GetDeepestRelativeValue = app.GetDeepestRelativeValue;
 local GetProgressTextForRow = app.GetProgressTextForRow;
-local GetRelativeValue = app.GetRelativeValue;
+local GetRelativeField, GetRelativeValue = app.GetRelativeField, app.GetRelativeValue;
 local ResolveSymbolicLink = app.ResolveSymbolicLink;
 local SearchForField = app.SearchForField;
 local MergeObject = app.MergeObject;
@@ -18,6 +18,8 @@ local L = app.L;
 local ipairs, pairs, pcall, tinsert, tremove, math_floor
 	= ipairs, pairs, pcall, tinsert, tremove, math.floor;
 local C_QuestLog_IsOnQuest, GetTimePreciseSec = C_QuestLog.IsOnQuest, GetTimePreciseSec;
+local GetTradeSkillTexture = app.WOWAPI.GetTradeSkillTexture;
+local GetSpellIcon = app.WOWAPI.GetSpellIcon;
 local IsModifierKeyDown = IsModifierKeyDown;
 
 ---@class ATTGameTooltip: GameTooltip
@@ -190,6 +192,33 @@ local function HasExpandedSubgroup(group)
 end
 app.ExpandGroupsRecursively = ExpandGroupsRecursively;
 
+local __Summary = {}
+local function BuildDataSummary(data)
+	-- NOTE: creating a new table is *slightly* (0-0.5%) faster but generates way more garbage memory over time
+	wipearray(__Summary)
+	local requireSkill = data.requireSkill
+	if requireSkill then
+		local profIcon = GetTradeSkillTexture(requireSkill) or GetSpellIcon(requireSkill)
+		if profIcon then
+			__Summary[#__Summary + 1] = "|T"
+			__Summary[#__Summary + 1] = profIcon
+			__Summary[#__Summary + 1] = ":0|t "
+		end
+	end
+	-- TODO: races
+	local specs = data.specs;
+	if specs and #specs > 0 then
+		__Summary[#__Summary + 1] = app.GetSpecsString(specs, false, false)
+	else
+		local classes = data.c
+		if classes and #classes > 0 then
+			__Summary[#__Summary + 1] = app.GetClassesString(classes, false, false)
+		end
+	end
+	__Summary[#__Summary + 1] = GetProgressTextForRow(data) or "---"
+	return app.TableConcat(__Summary, nil, "", "")
+end
+
 local IconPortraitTooltipExtraSettings = {
 	questID = "IconPortraitsForQuests",
 };
@@ -302,7 +331,7 @@ local function SetRowData(self, row, data)
 	end
 
 	-- Update the Summary Text (this will be the thing that updates the most)
-	local summary = data.summary or GetProgressTextForRow(data);
+	local summary = data.summary or BuildDataSummary(data);
 	local oldSummary = row.summaryText;
 	if oldSummary then
 		if summary then
@@ -900,7 +929,7 @@ local function RowOnEnter(self)
 				if #sas > 0 then
 					local bestMatch = nil;
 					for j,sa in ipairs(sas) do
-						if sa.achievementID == sourceAchievementID then
+						if sa.achievementID == sourceAchievementID and sa.key == "achievementID" then
 							if isDebugMode or (app.RecursiveCharacterRequirementsFilter(sa) and not sa.collected) then
 								bestMatch = sa;
 							end
@@ -1459,14 +1488,20 @@ local BuildCategory = function(self, headers, searchResults, inst)
 				headerType = "pvp";
 			elseif GetRelativeValue(o, "isEventCategory") then
 				headerType = "event";
-			elseif GetRelativeValue(o, "isWorldDropCategory") or o.parent.headerID == app.HeaderConstants.COMMON_BOSS_DROPS then
-				headerType = "drop";
-			elseif o.parent.npcID then
-				headerType = GetDeepestRelativeValue(o, "headerID") or o.parent.parent.headerID == app.HeaderConstants.VENDORS and app.HeaderConstants.VENDORS or "drop";
 			elseif GetRelativeValue(o, "isCraftedCategory") then
 				headerType = "crafted";
 			elseif o.parent.achievementID then
 				headerType = app.HeaderConstants.ACHIEVEMENTS;
+			elseif GetRelativeValue(o, "instanceID") then
+				headerType = "raid";
+			elseif GetRelativeValue(o, "isWorldDropCategory") or o.parent.headerID == app.HeaderConstants.COMMON_BOSS_DROPS then
+				headerType = "drop";
+			elseif o.parent.questID then
+				headerType = app.HeaderConstants.QUESTS;
+			elseif GetRelativeField(o.parent, "headerID", app.HeaderConstants.VENDORS) then
+				headerType = app.HeaderConstants.VENDORS;
+			elseif o.parent.npcID then
+				headerType = GetDeepestRelativeValue(o, "headerID") or "drop";
 			else
 				headerType = GetDeepestRelativeValue(o, "headerID") or "drop";
 				if headerType == true then	-- Seriously don't do this...
@@ -1492,6 +1527,10 @@ local BuildCategory = function(self, headers, searchResults, inst)
 	if not header then
 		if headerType == "holiday" then
 			header = app.CreateNPC(app.HeaderConstants.HOLIDAYS);
+		elseif headerType == "raid" then
+			header = {};
+			header.text = GROUP_FINDER;
+			header.icon = app.asset("Category_D&R");
 		elseif headerType == "promo" then
 			header = {};
 			header.text = BATTLE_PET_SOURCE_8;
@@ -1968,6 +2007,10 @@ function app:CreateWindow(suffix, settings)
 			window:RegisterEvent("PET_BATTLE_OPENING_START");
 			window:RegisterEvent("PET_BATTLE_CLOSE");
 		end
+		window.IsDynamicCategory = settings.IsDynamicCategory;
+		window.DynamicCategoryHeader = settings.DynamicCategoryHeader;
+		window.DynamicProfessionID = settings.DynamicProfessionID;
+		window.IsTopLevel = settings.IsTopLevel;
 		if settings.OnInit then
 			settings.OnInit(window, handlers);
 		end
@@ -1985,24 +2028,15 @@ function app:CreateWindow(suffix, settings)
 				end
 			end
 
-			-- Commands are forced lower case.
-			local commandRoot = settings.Commands[settings.RootCommandIndex or 1]:upper();
-			SlashCmdList[commandRoot] = onCommand;
-			local commands, cmd = {}, nil;
-			for i,command in ipairs(settings.Commands) do
-				cmd = command:lower();
-				_G["SLASH_" .. commandRoot .. i] = "/" .. cmd;
-				commands[i] = cmd;
-			end
-			window.Commands = commands;
+			settings.Commands.RootCommandIndex = settings.RootCommandIndex
+			app.AddSlashCommands(settings.Commands, onCommand)
+			window.Commands = settings.Commands;
 			window.HideFromSettings = settings.HideFromSettings;
 			window.SettingsName = settings.SettingsName or window.Suffix;
 		end
 		if settings.TooltipAnchor then
 			window.TooltipAnchor = settings.TooltipAnchor;
 		end
-		window.IsDynamicCategory = settings.IsDynamicCategory;
-		window.IsTopLevel = settings.IsTopLevel;
 		LoadSettingsForWindow(window);
 
 		-- Replace some functions.
@@ -2027,13 +2061,30 @@ end
 function app:GetWindow(suffix)
 	return app.Windows[suffix];
 end
+local function CloneReferenceForBuildRequests(group)
+	local clone = {};
+	if group.g then
+		local g = {};
+		for i,group in ipairs(group.g) do
+			if not group.IgnoreBuildRequests then
+				local child = CloneReferenceForBuildRequests(group);
+				child.parent = clone;
+				tinsert(g, child);
+			end
+		end
+		clone.g = g;
+	end
+	return setmetatable(clone, { __index = group });
+end
 function app:BuildFlatSearchFilteredResponse(groups, filter, t)
 	if groups then
 		for i,group in ipairs(groups) do
-			if filter(group) then
-				tinsert(t, CloneReference(group));
-			elseif group.g then
-				app:BuildFlatSearchFilteredResponse(group.g, filter, t);
+			if not group.IgnoreBuildRequests then
+				if filter(group) then
+					tinsert(t, CloneReferenceForBuildRequests(group));
+				elseif group.g then
+					app:BuildFlatSearchFilteredResponse(group.g, filter, t);
+				end
 			end
 		end
 	end
@@ -2041,11 +2092,13 @@ end
 function app:BuildFlatSearchResponse(groups, field, value, t)
 	if groups then
 		for i,group in ipairs(groups) do
-			local v = group[field];
-			if v and (v == value or (field == "requireSkill" and app.SpellIDToSkillID[app.SpecializationSpellIDs[v] or 0] == value)) then
-				tinsert(t, CloneReference(group));
-			elseif group.g then
-				app:BuildFlatSearchResponse(group.g, field, value, t);
+			if not group.IgnoreBuildRequests then
+				local v = group[field];
+				if v and (v == value or (field == "requireSkill" and app.SpellIDToSkillID[app.SpecializationSpellIDs[v] or 0] == value)) then
+					tinsert(t, CloneReferenceForBuildRequests(group));
+				elseif group.g then
+					app:BuildFlatSearchResponse(group.g, field, value, t);
+				end
 			end
 		end
 	end
@@ -2053,10 +2106,12 @@ end
 function app:BuildFlatSearchResponseForField(groups, field, t)
 	if groups then
 		for i,group in ipairs(groups) do
-			if group[field] then
-				tinsert(t, CloneReference(group));
-			elseif group.g then
-				app:BuildFlatSearchResponseForField(group.g, field, t);
+			if not group.IgnoreBuildRequests then
+				if group[field] then
+					tinsert(t, CloneReferenceForBuildRequests(group));
+				elseif group.g then
+					app:BuildFlatSearchResponseForField(group.g, field, t);
+				end
 			end
 		end
 	end
@@ -2065,14 +2120,16 @@ function app:BuildSearchFilteredResponse(groups, filter)
 	if groups then
 		local t;
 		for i,group in ipairs(groups) do
-			if filter(group) then
-				if not t then t = {}; end
-				tinsert(t, CloneReference(group));
-			else
-				local response = app:BuildSearchFilteredResponse(group.g, filter);
-				if response then
+			if not group.IgnoreBuildRequests then
+				if filter(group) then
 					if not t then t = {}; end
-					tinsert(t, setmetatable({g=response}, { __index = group }));
+					tinsert(t, CloneReferenceForBuildRequests(group));
+				else
+					local response = app:BuildSearchFilteredResponse(group.g, filter);
+					if response then
+						if not t then t = {}; end
+						tinsert(t, setmetatable({g=response}, { __index = group }));
+					end
 				end
 			end
 		end
@@ -2083,15 +2140,17 @@ function app:BuildSearchResponse(groups, field, value)
 	if groups then
 		local t;
 		for i,group in ipairs(groups) do
-			local v = group[field];
-			if v and (v == value or (field == "requireSkill" and app.SpellIDToSkillID[app.SpecializationSpellIDs[v] or 0] == value)) then
-				if not t then t = {}; end
-				tinsert(t, CloneReference(group));
-			else
-				local response = app:BuildSearchResponse(group.g, field, value);
-				if response then
+			if not group.IgnoreBuildRequests then
+				local v = group[field];
+				if v and (v == value or (field == "requireSkill" and app.SpellIDToSkillID[app.SpecializationSpellIDs[v] or 0] == value)) then
 					if not t then t = {}; end
-					tinsert(t, setmetatable({g=response}, { __index = group }));
+					tinsert(t, CloneReferenceForBuildRequests(group));
+				else
+					local response = app:BuildSearchResponse(group.g, field, value);
+					if response then
+						if not t then t = {}; end
+						tinsert(t, setmetatable({g=response}, { __index = group }));
+					end
 				end
 			end
 		end
@@ -2102,14 +2161,16 @@ function app:BuildSearchResponseForField(groups, field)
 	if groups then
 		local t;
 		for i,group in ipairs(groups) do
-			if group[field] then
-				if not t then t = {}; end
-				tinsert(t, CloneReference(group));
-			else
-				local response = app:BuildSearchResponseForField(group.g, field);
-				if response then
+			if not group.IgnoreBuildRequests then
+				if group[field] then
 					if not t then t = {}; end
-					tinsert(t, setmetatable({g=response}, { __index = group }));
+					tinsert(t, CloneReferenceForBuildRequests(group));
+				else
+					local response = app:BuildSearchResponseForField(group.g, field);
+					if response then
+						if not t then t = {}; end
+						tinsert(t, setmetatable({g=response}, { __index = group }));
+					end
 				end
 			end
 		end
@@ -2118,7 +2179,7 @@ function app:BuildSearchResponseForField(groups, field)
 end
 
 -- Dynamic Popouts for Quest Chains and other Groups
-local function OnInitForPopout(self, group)
+local function OnInitForPopout(self, questID, group)
 	if group.questID or group.sourceQuests then
 		local mainQuest = CloneReference(group);
 		if group.parent then mainQuest.sourceParent = group.parent; end
@@ -2346,21 +2407,6 @@ local function OnInitForPopout(self, group)
 		app.Sort(self.data.g, app.SortDefaults.Global)
 	end
 
-	-- If this is an achievement, build the criteria within it if possible.
-	local achievementID = group.achievementID;
-	if achievementID then
-		local searchResults = SearchForField("achievementID", achievementID);
-		if #searchResults > 0 then
-			for i=1,#searchResults,1 do
-				local searchResult = searchResults[i];
-				if searchResult.achievementID == achievementID and searchResult.criteriaID then
-					if not self.data.g then self.data.g = {}; end
-					MergeObject(self.data.g, CloneReference(searchResult));
-				end
-			end
-		end
-	end
-
 	--[[
 	local currencyID = group.currencyID;
 	if currencyID and not self.data.usedtobuy then
@@ -2452,7 +2498,6 @@ local function OnInitForPopout(self, group)
 				["text"] = "Cost",
 				["description"] = "The following contains all of the relevant items or currencies needed to acquire this.",
 				["icon"] = 133785,
-				["OnUpdate"] = app.AlwaysShowUpdate,
 				["g"] = {},
 			};
 			local costItem;
@@ -2524,14 +2569,50 @@ local function OnInitForPopout(self, group)
 			end
 		end
 
-		if not (self.data.ignoreSourceLookup or (self.data.g and #self.data.g > 0)) then
-			local results = app:BuildSearchResponse(app:GetDataCache().g, dataKey, self.data[dataKey]);
+		if not self.data.ignoreSourceLookup then
+			local searchID = self.data[dataKey];
+			if self.data.sym and self.data.sym[1][1] == "partial_achievement" then
+				searchID = self.data.sym[1][2];
+			end
+			local results = app:BuildSearchResponse(app:GetDataCache().g, dataKey, searchID);
 			if results and #results > 0 then
 				if not self.data.g then self.data.g = {}; end
 				for i,result in ipairs(results) do
 					tinsert(self.data.g, result);
 				end
 			end
+		else
+			-- If this is an achievement, build the criteria within it if possible.
+			local achievementID = group.achievementID;
+			if achievementID then
+				local searchResults = SearchForField("achievementID", achievementID);
+				if #searchResults > 0 then
+					for i=1,#searchResults,1 do
+						local searchResult = searchResults[i];
+						if searchResult.achievementID == achievementID and searchResult.criteriaID then
+							if not self.data.g then self.data.g = {}; end
+							MergeObject(self.data.g, CloneReference(searchResult));
+						end
+					end
+				end
+			end
+		end
+	end
+	if group.GetRelatedThings then
+		local relatedThingsGroup = {
+			["text"] = "Related Things",
+			["description"] = "The following contains things that may be related or relevant to the content.",
+			["icon"] = 133785,
+			["g"] = {},
+		};
+		local relatedThings = {};
+		group.GetRelatedThings(group, relatedThings);
+		for i,o in ipairs(relatedThings) do
+			MergeObject(relatedThingsGroup.g, CloneReference(o));
+		end
+		if #relatedThingsGroup.g > 0 then
+			if not self.data.g then self.data.g = {}; end
+			MergeObject(self.data.g, relatedThingsGroup);
 		end
 	end
 
@@ -2568,7 +2649,7 @@ function app:CreateMiniListForGroup(group)
 		AllowCompleteSound = true,
 		--Debugging = true,
 		OnInit = function(self)
-			OnInitForPopout(self, (group.OnPopout and group:OnPopout()) or group);
+			OnInitForPopout(self, questID, (group.OnPopout and group:OnPopout()) or group);
 		end,
 		OnLoad = function(self, settings)
 			self.dynamic = true;

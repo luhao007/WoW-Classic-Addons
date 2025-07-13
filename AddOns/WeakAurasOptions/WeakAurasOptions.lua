@@ -1008,6 +1008,9 @@ end
 local previousFilter;
 local pendingUpdateButtons = {}
 local pendingInstallButtons = {}
+-- 将这些变量暴露给 OptionsPrivate 以便在其他文件中访问
+OptionsPrivate.pendingUpdateButtons = pendingUpdateButtons
+OptionsPrivate.pendingInstallButtons = pendingInstallButtons
 function OptionsPrivate.SortDisplayButtons(filter, overrideReset, id)
   if (OptionsPrivate.Private.IsOptionsProcessingPaused()) then
     return;

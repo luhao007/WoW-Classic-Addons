@@ -1,10 +1,7 @@
-local _, addonTable = ...;
-local _, _, _, tocversion = GetBuildInfo()
+local addonName, addonTable = ...;
 --------
 local Create = addonTable.Create
 local PIGFrame=Create.PIGFrame
-local PIGButton = Create.PIGButton
-local PIGLine=Create.PIGLine
 local PIGQuickBut=Create.PIGQuickBut
 local PIGCheckbutton=Create.PIGCheckbutton
 local PIGCheckbutton_R=Create.PIGCheckbutton_R
@@ -12,18 +9,17 @@ local PIGFontString=Create.PIGFontString
 --==============================
 local Data=addonTable.Data
 local InvSlot=Data.InvSlot
-local ActionBarfun=addonTable.ActionBarfun
-local QuickButF=ActionBarfun.QuickButF
 local GetContainerNumFreeSlots = C_Container.GetContainerNumFreeSlots
 local GetContainerNumSlots = C_Container.GetContainerNumSlots
 local GetContainerItemID = C_Container.GetContainerItemID
 local PickupContainerItem =C_Container.PickupContainerItem
 -----
+local QuickButUI=_G[Data.QuickButUIname]
 QuickButUI.ButList[5]=function()
 	if not PIGA["QuickBut"]["Open"] or not PIGA["QuickBut"]["Equip"] then return end
-	local GnUI = "QkBut_AutoEquip"
-	if _G[GnUI] then return end
-	if tocversion<30000 and not _G["PIG_PaperDollSidebarTab2"] then return end
+	if PIG_MaxTocversion(30000) and not PIGA["FramePlus"]["Character_Shuxing"] then return end
+	if QuickButUI.Equip then return end
+	QuickButUI.Equip=true	
 	---1装备按钮
 	local PIG_EquipmentData = {
 		["anniushu"]=MAX_EQUIPMENT_SETS_PER_PLAYER,
@@ -54,14 +50,16 @@ QuickButUI.ButList[5]=function()
 	AutoEquipList:HookScript("OnLeave", function(self,button)
 		AutoEquipList:Hide()
 	end)
+	AutoEquipList.ButList={}
 	for i=1,PIG_EquipmentData.anniushu do
-		local EquipBut = CreateFrame("Button", "QkBut_AutoEquip_but"..i, AutoEquipList,nil,i)
+		local EquipBut = CreateFrame("Button", nil, AutoEquipList,nil,i)
+		AutoEquipList.ButList[i]=EquipBut
 		EquipBut:SetHighlightTexture(130718);
 		EquipBut:SetSize(butW, butW)
 		EquipBut.BGtex = PIGFrame(EquipBut,{"CENTER",EquipBut,"CENTER",0, 0},{butW, butW})
 		EquipBut.BGtex:PIGSetBackdrop(0.2,0.2)
 		EquipBut.BGtex:SetFrameLevel(EquipBut:GetFrameLevel()-1)
-		if tocversion<20000 then
+		if PIG_MaxTocversion(20000) then
 			EquipBut:SetNormalTexture("interface/timer/bigtimernumbers.blp");
 			EquipBut:GetNormalTexture():SetTexCoord(PIG_EquipmentData.NumTexCoord[i][1],PIG_EquipmentData.NumTexCoord[i][2],PIG_EquipmentData.NumTexCoord[i][3],PIG_EquipmentData.NumTexCoord[i][4]);
 		end
@@ -95,7 +93,7 @@ QuickButUI.ButList[5]=function()
 		end);
 		EquipBut:HookScript("OnClick", function(self,button)
 			PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
-			if tocversion<30000 then
+			if PIG_MaxTocversion(30000) then
 				if button=="LeftButton" then
 					PIG_EquipmentData.Equip_Use(self:GetID())
 				else
@@ -106,11 +104,11 @@ QuickButUI.ButList[5]=function()
 				if erqid and erqid>=0 then
 					local name = C_EquipmentSet.GetEquipmentSetInfo(erqid)
 					if button=="LeftButton" then
-						if InCombatLockdown() then PIGTopMsg:add(CANNOT_UNEQUIP_COMBAT) return end
+						if InCombatLockdown() then PIG_OptionsUI:ErrorMsg(CANNOT_UNEQUIP_COMBAT) return end
 						C_EquipmentSet.UseEquipmentSet(erqid)
-						PIGTopMsg:add("更换<"..name..">配装成功")
+						PIG_OptionsUI:ErrorMsg("更换<"..name..">配装成功")
 						-- if IsShiftKeyDown() then
-						-- 	if tocversion<50000 then
+						-- 	if PIG_MaxTocversion() then
 						-- 		GearManagerDialog_Update();	
 						-- 		local bianjibutid
 						-- 		for ixx=1,PIG_EquipmentData.anniushu do
@@ -148,14 +146,14 @@ QuickButUI.ButList[5]=function()
 					else
 						--C_EquipmentSet.UnassignEquipmentSetSpec(i-1)
 						C_EquipmentSet.SaveEquipmentSet(erqid)
-						PIGTopMsg:add("当前装备已保存到<"..name..">配装")
+						PIG_OptionsUI:ErrorMsg("当前装备已保存到<"..name..">配装")
 					end
 				else
 					if InCombatLockdown() then
-						PIGTopMsg:add(CANNOT_UNEQUIP_COMBAT)
+						PIG_OptionsUI:ErrorMsg(CANNOT_UNEQUIP_COMBAT)
 					else
 						ShowUIPanel(CharacterFrame);
-						if tocversion<50000 then
+						if PIG_MaxTocversion() then
 							GearManagerDialog:Show();
 							GearManagerDialogSaveSet_OnClick()
 						else
@@ -184,12 +182,12 @@ QuickButUI.ButList[5]=function()
 		AutoEquip.tips:ClearAllPoints();
 		if offset1>(WowHeight*0.5) then
 			for i=1,PIG_EquipmentData.anniushu do
-				local fujikj = _G["QkBut_AutoEquip_but"..i]
+				local fujikj = AutoEquipList.ButList[i]
 				fujikj:ClearAllPoints();
 				if i==1 then
 					fujikj:SetPoint("TOPRIGHT",AutoEquipList,"TOPRIGHT",0,-2);
 				else
-					local fujikj_1 = _G["QkBut_AutoEquip_but"..(i-1)]
+					local fujikj_1 = AutoEquipList.ButList[i-1]
 					fujikj:SetPoint("TOPRIGHT",fujikj_1,"BOTTOMRIGHT",0,-2);
 				end
 			end
@@ -197,12 +195,12 @@ QuickButUI.ButList[5]=function()
 			AutoEquip.tips:SetPoint("TOPRIGHT",self,"BOTTOMRIGHT",10,0);
 		else
 			for i=1,PIG_EquipmentData.anniushu do
-				local fujikj = _G["QkBut_AutoEquip_but"..i]
+				local fujikj = AutoEquipList.ButList[i]
 				fujikj:ClearAllPoints();
 				if i==1 then
 					fujikj:SetPoint("BOTTOMRIGHT",AutoEquipList,"BOTTOMRIGHT",0,2);
 				else
-					local fujikj_1 = _G["QkBut_AutoEquip_but"..(i-1)]
+					local fujikj_1 = AutoEquipList.ButList[i-1]
 					fujikj:SetPoint("BOTTOMRIGHT",fujikj_1,"TOPRIGHT",0,2);
 				end
 			end
@@ -222,9 +220,9 @@ QuickButUI.ButList[5]=function()
 		self.tips:Hide()
 		self.cunzainum=0
 		if AutoRuneListUI and AutoRuneListUI:IsShown() then AutoEquip.xuyaoShow=true;AutoRuneListUI:Hide() end
-		if tocversion<30000 then
+		if PIG_MaxTocversion(30000) then
 			for id = 1, PIG_EquipmentData.anniushu do
-				local fujikj = _G["QkBut_AutoEquip_but"..id]
+				local fujikj = AutoEquipList.ButList[id]
 				fujikj.name:SetTextColor(0.8, 0.8, 0.8, 0.8);
 				fujikj.name:SetText(EMPTY);
 				local hangitem = PIGA_Per["QuickBut"]["EquipList"][id]
@@ -246,7 +244,7 @@ QuickButUI.ButList[5]=function()
 			local equipmentSetIDs = C_EquipmentSet.GetEquipmentSetIDs()
 			self.cunzainum=#equipmentSetIDs
 			for id = 1, PIG_EquipmentData.anniushu do
-				local fujikj = _G["QkBut_AutoEquip_but"..id]
+				local fujikj = AutoEquipList.ButList[id]
 				if equipmentSetIDs[id] then
 					fujikj:Show()
 					fujikj.id=equipmentSetIDs[id]
@@ -268,9 +266,9 @@ QuickButUI.ButList[5]=function()
 	end)
 	AutoEquip:HookScript("OnClick", function(self,button)
 		if button=="LeftButton" then
-			PIGTopMsg:add("右键卸下全部有耐久装备\n"..ClickTooltip)
+			PIG_OptionsUI:ErrorMsg("右键卸下全部有耐久装备\n"..ClickTooltip)
 		else
-			if InCombatLockdown() then PIGTopMsg:add(CANNOT_UNEQUIP_COMBAT) return end
+			if InCombatLockdown() then PIG_OptionsUI:ErrorMsg(CANNOT_UNEQUIP_COMBAT) return end
 			PIG_EquipmentData.InventoryNum={}
 			for inv = 1, 19 do
 				if PIG_EquipmentData.zhuangbeixilieID[inv][4] then
@@ -306,9 +304,9 @@ QuickButUI.ButList[5]=function()
 				end
 			end
 			if #PIG_EquipmentData.konggelist<#PIG_EquipmentData.InventoryNum then
-				PIGTopMsg:add(ERR_EQUIPMENT_MANAGER_BAGS_FULL)
+				PIG_OptionsUI:ErrorMsg(ERR_EQUIPMENT_MANAGER_BAGS_FULL)
 			else
-				PIGTopMsg:add("已卸下全部有耐久装备")
+				PIG_OptionsUI:ErrorMsg("已卸下全部有耐久装备")
 			end
 			AutoEquipList:Hide()
 		end

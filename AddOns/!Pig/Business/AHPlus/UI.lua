@@ -1,19 +1,81 @@
 local _, addonTable = ...;
-local _, _, _, tocversion = GetBuildInfo()
 local L=addonTable.locale
 ---
+local Fun=addonTable.Fun
 local Create=addonTable.Create
 local PIGFrame=Create.PIGFrame
-local PIGButton=Create.PIGButton
 local PIGEnter=Create.PIGEnter
-local PIGLine=Create.PIGLine
 local PIGFontString=Create.PIGFontString
 local PIGCheckbutton=Create.PIGCheckbutton
 local Data=addonTable.Data
 local BusinessInfo=addonTable.BusinessInfo
+local GetItemInfo=GetItemInfo or C_Item and C_Item.GetItemInfo
 local IsAddOnLoaded=IsAddOnLoaded or C_AddOns and C_AddOns.IsAddOnLoaded
 local baocunnum = 40
 --------------
+function BusinessInfo.GetCacheDataG(name)
+	local cfdata=PIGA["AHPlus"]["CacheData"]
+	if cfdata[PIG_OptionsUI.Realm] then
+		if name then
+			if cfdata[PIG_OptionsUI.Realm][name] and cfdata[PIG_OptionsUI.Realm][name][2] and cfdata[PIG_OptionsUI.Realm][name][3] then
+				return cfdata[PIG_OptionsUI.Realm][name][2]
+			end
+		else
+			return cfdata[PIG_OptionsUI.Realm]
+		end
+	else
+		if name then
+			if cfdata[name] and cfdata[name][2] and cfdata[name][3] then
+				return cfdata[name][2]
+			end
+		else
+			return cfdata
+		end
+	end
+end
+function BusinessInfo.DEL_OLDdata()
+	local NewData=BusinessInfo.GetCacheDataG()
+	for k,v in pairs(NewData) do
+		if v[2] and v[3] then
+			local itemDataL = v[2]
+			local ItemsNum = #itemDataL;
+			if ItemsNum>baocunnum then
+				for ivb=(ItemsNum-baocunnum),1,-1 do
+					table.remove(itemDataL,ivb)
+				end
+			end
+		else
+			NewData[k]=nil
+		end
+	end
+end
+function BusinessInfo.ADD_Newdata(name,xianjiaV,itemLink,itemID)
+	local NewData=BusinessInfo.GetCacheDataG()
+	if NewData[name] and NewData[name][2] and NewData[name][3] then
+		table.insert(NewData[name][2],{xianjiaV,GetServerTime()})
+	else
+		local itemLinkJJ = Fun.GetItemLinkJJ(itemLink)
+		NewData[name]={itemLinkJJ,{{xianjiaV,GetServerTime()}},itemID}
+	end
+end
+function BusinessInfo.SetTooltipOfflineG(ItemInfo,tooltip)
+	if PIGA["AHPlus"]["Open"] and PIGA["AHPlus"]["AHtooltip"] then
+		if ItemInfo and tooltip == GameTooltip then
+			local itemName,_,_,_,_,_,_,_,_,_,_,_,_,bindType= GetItemInfo(ItemInfo)
+			if itemName and bindType~=1 and bindType~=4 then
+				local NameData = BusinessInfo.GetCacheDataG(itemName)
+				if NameData then
+					local DataNum=#NameData
+					local jiluTime = NameData[DataNum][2] or 1660000000
+					local jiluTime = date("%m-%d %H:%M",jiluTime)
+					tooltip:AddDoubleLine("拍卖("..jiluTime.."):",GetMoneyString(NameData[DataNum][1]),0,1,1,0,1,1)
+				else
+					tooltip:AddDoubleLine("拍卖(尚未缓存)","",0,1,1,0,1,1)
+				end
+			end
+		end
+	end
+end
 function BusinessInfo.ADD_qushi(fujiui,tishi,num)
 	local Nbaocunnum=num or baocunnum
 	local qushi=PIGFrame(fujiui)
@@ -114,7 +176,7 @@ local function zhixingdianjiFUn(framef)
 	end);
 end
 function BusinessInfo.QuicAuc()
-	if tocversion<50000 then
+	if PIG_MaxTocversion() then
 		if PIGA["AHPlus"]["QuicAuc"] then
 			if NDui then
 				local NDui_BagName,slotnum = Data.NDui_BagName[1],Data.NDui_BagName[2]
@@ -147,14 +209,14 @@ function BusinessInfo.QuicAuc()
 	end
 end
 --
-local AuctionFramejiazai = CreateFrame("FRAME")
+local AuctionFramejiazai = CreateFrame("Frame")
 AuctionFramejiazai:SetScript("OnEvent", function(self, event, arg1)
 	if event=="ADDON_LOADED" then
 		if arg1 == "Blizzard_AuctionHouseUI" then
-			BusinessInfo.AHPlus_Mainline(baocunnum)
+			BusinessInfo.AHPlus_Mainline()
 			self:UnregisterEvent("ADDON_LOADED")
 		elseif arg1 == "Blizzard_AuctionUI" then
-			BusinessInfo.AHPlus_Vanilla(baocunnum)
+			BusinessInfo.AHPlus_Vanilla()
 			self:UnregisterEvent("ADDON_LOADED")
 		end
 	end
@@ -163,13 +225,13 @@ end)
 function BusinessInfo.AHPlus_ADDUI()
 	if PIGA["AHPlus"]["Open"] then
 		BusinessInfo.QuicAuc()
-		if tocversion<80000 then
-			PIGA["AHPlus"]["CacheData"][Pig_OptionsUI.Realm]=PIGA["AHPlus"]["CacheData"][Pig_OptionsUI.Realm] or {}
+		if PIG_MaxTocversion(90000) then--9.2.7暗影国度跨服务器包括宝石、草药、合剂、消耗品等。不过，武器和盔甲这类非商品类物品仍然只能在单个服务器内交易，并不会跨服共享
+			PIGA["AHPlus"]["CacheData"][PIG_OptionsUI.Realm]=PIGA["AHPlus"]["CacheData"][PIG_OptionsUI.Realm] or {}
 		end
 		if IsAddOnLoaded("Blizzard_AuctionHouseUI") then
-			BusinessInfo.AHPlus_Mainline(baocunnum)
+			BusinessInfo.AHPlus_Mainline()
 		elseif IsAddOnLoaded("Blizzard_AuctionUI") then
-			BusinessInfo.AHPlus_Vanilla(baocunnum)
+			BusinessInfo.AHPlus_Vanilla()
 		else
 			AuctionFramejiazai:RegisterEvent("ADDON_LOADED")
 		end

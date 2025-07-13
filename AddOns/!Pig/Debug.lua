@@ -3,10 +3,11 @@ local L=addonTable.locale
 local floor =floor
 local Fun=addonTable.Fun
 ----------
+local Data=addonTable.Data
 local Create=addonTable.Create
+local PIGLine=Create.PIGLine
 local PIGEnter=Create.PIGEnter
 local PIGFrame=Create.PIGFrame
-local PIGLine=Create.PIGLine
 local PIGButton = Create.PIGButton
 local PIGDownMenu=Create.PIGDownMenu
 local PIGCheckbutton=Create.PIGCheckbutton
@@ -16,10 +17,11 @@ local PIGFontStringBG=Create.PIGFontStringBG
 --
 local fuFrame = PIGOptionsList(L["DEBUG_TABNAME"],"BOT")
 --------------------------------
+local UIname="PIG_AddOnMemoryCPUUI"
 fuFrame.errorUI = PIGButton(fuFrame,{"TOPLEFT",fuFrame,"TOPLEFT",20,-20},{120,24},L["DEBUG_ERRORLOG"])
 fuFrame.errorUI:SetScript("OnClick", function (self)
-	Pig_OptionsUI:Hide()
-	Bugcollect_UI:Show()
+	PIG_OptionsUI:Hide()
+	PIG_BugcollectUI:Show()
 end);
 --
 fuFrame.tishi =PIGFontString(fuFrame,{"LEFT", fuFrame.errorUI, "RIGHT", 10, 0},L["DEBUG_OPENERRORLOGCMD"].."/per")
@@ -56,28 +58,28 @@ function fuFrame.taintLog:PIGDownMenu_SetValue(value,arg1,arg2)
 	PIGCloseDropDownMenus()
 end
 --內存CPU监控
-fuFrame.OPENJK = PIGButton(fuFrame,{"TOPLEFT",fuFrame,"TOPLEFT",20,-200},{150,24},L["DEBUG_BUTNAME"])
+fuFrame.OPENJK = PIGButton(fuFrame,{"TOPLEFT",fuFrame,"TOPLEFT",20,-160},{150,24},L["DEBUG_BUTNAME"])
 fuFrame.OPENJK:SetScript("OnClick", function (self)
-	Pig_OptionsUI:Hide()
-	PIGAddOnMemoryCPU_UI:Show()
+	PIG_OptionsUI:Hide()
+	_G[UIname]:Show()
 end);
 
-local PIGAddOnMemoryCPU=PIGFrame(UIParent,{"CENTER",UIParent,"CENTER",0,0},{360,494},"PIGAddOnMemoryCPU_UI")
-PIGAddOnMemoryCPU:PIGSetBackdrop()
-PIGAddOnMemoryCPU:PIGSetMovable()
-PIGAddOnMemoryCPU:PIGClose()
-PIGAddOnMemoryCPU:Hide()
-PIGAddOnMemoryCPU.biaoti=PIGFontString(PIGAddOnMemoryCPU,{"TOP", PIGAddOnMemoryCPU, "TOP", 0, -2},L["DEBUG_BUTNAME"])
-PIGAddOnMemoryCPU.NR=PIGFrame(PIGAddOnMemoryCPU)
-PIGAddOnMemoryCPU.NR:SetPoint("TOPLEFT", PIGAddOnMemoryCPU, "TOPLEFT", 0, -20)
-PIGAddOnMemoryCPU.NR:SetPoint("BOTTOMRIGHT", PIGAddOnMemoryCPU, "BOTTOMRIGHT", 0, 0)
-PIGAddOnMemoryCPU.NR:PIGSetBackdrop(0)
-PIGAddOnMemoryCPU.NR.autoRefresh=PIGCheckbutton(PIGAddOnMemoryCPU.NR,{"TOPLEFT",PIGAddOnMemoryCPU.NR,"TOPLEFT",6,-4},{SELF_CAST_AUTO..REFRESH,SELF_CAST_AUTO..REFRESH})
-PIGAddOnMemoryCPU.NR.autoRefresh:SetScale(0.88)
-PIGAddOnMemoryCPU.jishiqi=0
-PIGAddOnMemoryCPU.NR.autoRefresh:SetScript("OnClick", function (self)
+local GnUI=PIGFrame(UIParent,{"CENTER",UIParent,"CENTER",0,0},{360,494},UIname)
+GnUI:PIGSetBackdrop()
+GnUI:PIGSetMovableNoSave()
+GnUI:PIGClose()
+GnUI:Hide()
+GnUI.biaoti=PIGFontString(GnUI,{"TOP", GnUI, "TOP", 0, -2},L["DEBUG_BUTNAME"])
+GnUI.NR=PIGFrame(GnUI)
+GnUI.NR:SetPoint("TOPLEFT", GnUI, "TOPLEFT", 0, -20)
+GnUI.NR:SetPoint("BOTTOMRIGHT", GnUI, "BOTTOMRIGHT", 0, 0)
+GnUI.NR:PIGSetBackdrop(0)
+GnUI.NR.autoRefresh=PIGCheckbutton(GnUI.NR,{"TOPLEFT",GnUI.NR,"TOPLEFT",6,-4},{SELF_CAST_AUTO..REFRESH,SELF_CAST_AUTO..REFRESH})
+GnUI.NR.autoRefresh:SetScale(0.88)
+GnUI.jishiqi=0
+GnUI.NR.autoRefresh:SetScript("OnClick", function (self)
 	if self:GetChecked() then
-		PIGAddOnMemoryCPU:SetScript("OnUpdate", function (self,sss)
+		GnUI:SetScript("OnUpdate", function (self,sss)
 			if self.jishiqi>1 then
 				self.jishiqi=0
 				self.Update_List(self.NR.List.Scroll)
@@ -86,12 +88,12 @@ PIGAddOnMemoryCPU.NR.autoRefresh:SetScript("OnClick", function (self)
 			end
 		end);
 	else
-		PIGAddOnMemoryCPU:SetScript("OnUpdate", nil);
+		GnUI:SetScript("OnUpdate", nil);
 	end
 end);
-PIGAddOnMemoryCPU.NR.CPU_OPEN=PIGCheckbutton(PIGAddOnMemoryCPU.NR,{"LEFT",PIGAddOnMemoryCPU.NR.autoRefresh.Text,"RIGHT",10,0},{"|cffFF0000"..L["DEBUG_CPUUSAGE"].."|r",L["DEBUG_CPUUSAGETIPS"]})
-PIGAddOnMemoryCPU.NR.CPU_OPEN:SetScale(0.88)
-PIGAddOnMemoryCPU.NR.CPU_OPEN:SetScript("OnClick", function (self)
+GnUI.NR.CPU_OPEN=PIGCheckbutton(GnUI.NR,{"LEFT",GnUI.NR.autoRefresh.Text,"RIGHT",10,0},{"|cffFF0000"..L["DEBUG_CPUUSAGE"].."|r",L["DEBUG_CPUUSAGETIPS"]})
+GnUI.NR.CPU_OPEN:SetScale(0.88)
+GnUI.NR.CPU_OPEN:SetScript("OnClick", function (self)
 	if self:GetChecked() then
 		SetCVar("scriptProfile", "1")
 	else
@@ -100,64 +102,64 @@ PIGAddOnMemoryCPU.NR.CPU_OPEN:SetScript("OnClick", function (self)
 	ReloadUI();
 end);
 
-PIGAddOnMemoryCPU.NR.CZ = PIGButton(PIGAddOnMemoryCPU.NR,{"LEFT",PIGAddOnMemoryCPU.NR.CPU_OPEN.Text,"RIGHT",20,0},{50,18},RESET)
-PIGAddOnMemoryCPU.NR.CZ:SetScript("OnClick", function (self)
+GnUI.NR.CZ = PIGButton(GnUI.NR,{"LEFT",GnUI.NR.CPU_OPEN.Text,"RIGHT",20,0},{50,18},RESET)
+GnUI.NR.CZ:SetScript("OnClick", function (self)
 	ResetCPUUsage()
 	-- debugprofilestart()
 	-- debugprofilestop()
-	PIGAddOnMemoryCPU.Update_List(PIGAddOnMemoryCPU.NR.List.Scroll)
+	GnUI.Update_List(GnUI.NR.List.Scroll)
 end);
-PIGAddOnMemoryCPU.NR.COLLECT = PIGButton(PIGAddOnMemoryCPU.NR,{"LEFT",PIGAddOnMemoryCPU.NR.CZ,"RIGHT",20,0},{50,18},L["DEBUG_COLLECT"])
---PIGAddOnMemoryCPU.NR.COLLECT:Disable()
-PIGAddOnMemoryCPU.NR.COLLECT:SetMotionScriptsWhileDisabled(true)
-PIGEnter(PIGAddOnMemoryCPU.NR.COLLECT,L["LIB_TIPS"]..": ",L["DEBUG_COLLECTTIPS"]);
-PIGAddOnMemoryCPU.NR.COLLECT:SetScript("OnClick", function (self)
+GnUI.NR.COLLECT = PIGButton(GnUI.NR,{"LEFT",GnUI.NR.CZ,"RIGHT",20,0},{50,18},L["DEBUG_COLLECT"])
+--GnUI.NR.COLLECT:Disable()
+GnUI.NR.COLLECT:SetMotionScriptsWhileDisabled(true)
+PIGEnter(GnUI.NR.COLLECT,L["LIB_TIPS"]..": ",L["DEBUG_COLLECTTIPS"]);
+GnUI.NR.COLLECT:SetScript("OnClick", function (self)
 	collectgarbage()--回收内存
-	PIGAddOnMemoryCPU.Update_List(PIGAddOnMemoryCPU.NR.List.Scroll)
+	GnUI.Update_List(GnUI.NR.List.Scroll)
 end);
-PIGAddOnMemoryCPU.NR.List=PIGFrame(PIGAddOnMemoryCPU.NR)
-PIGAddOnMemoryCPU.NR.List:SetPoint("TOPLEFT", PIGAddOnMemoryCPU.NR, "TOPLEFT", 0, -22)
-PIGAddOnMemoryCPU.NR.List:SetPoint("BOTTOMRIGHT", PIGAddOnMemoryCPU.NR, "BOTTOMRIGHT", 0, 0)
-PIGAddOnMemoryCPU.NR.List:PIGSetBackdrop(0)
+GnUI.NR.List=PIGFrame(GnUI.NR)
+GnUI.NR.List:SetPoint("TOPLEFT", GnUI.NR, "TOPLEFT", 0, -22)
+GnUI.NR.List:SetPoint("BOTTOMRIGHT", GnUI.NR, "BOTTOMRIGHT", 0, 0)
+GnUI.NR.List:PIGSetBackdrop(0)
 -- 
-local nrww = PIGAddOnMemoryCPU.NR.List:GetWidth()
-PIGAddOnMemoryCPU.sort=21--排序
+local nrww = GnUI.NR.List:GetWidth()
+GnUI.sort=21--排序
 local hang_Height,hang_NUM  = 22, 18;
-PIGAddOnMemoryCPU.NR.List.tet1=PIGFontStringBG(PIGAddOnMemoryCPU.NR.List,{"TOPLEFT", PIGAddOnMemoryCPU.NR.List, "TOPLEFT", 0,-1},L["DEBUG_ADD"],{nrww*0.5,22})
-PIGAddOnMemoryCPU.NR.List.tet2 = PIGButton(PIGAddOnMemoryCPU.NR.List,{"LEFT", PIGAddOnMemoryCPU.NR.List.tet1, "RIGHT", 0,0},{nrww*0.25,22},L["DEBUG_MEMORY"].."(k)")
-PIGAddOnMemoryCPU.NR.List.tet2:PIGSetBackdrop(0.4, 0.2)
-PIGAddOnMemoryCPU.NR.List.tet2:SetScript("OnClick", function ()
-	PIGAddOnMemoryCPU.sort=21
-	PIGAddOnMemoryCPU.Update_List(PIGAddOnMemoryCPU.NR.List.Scroll)
+GnUI.NR.List.tet1=PIGFontStringBG(GnUI.NR.List,{"TOPLEFT", GnUI.NR.List, "TOPLEFT", 0,-1},L["DEBUG_ADD"],{nrww*0.5,22})
+GnUI.NR.List.tet2 = PIGButton(GnUI.NR.List,{"LEFT", GnUI.NR.List.tet1, "RIGHT", 0,0},{nrww*0.25,22},L["DEBUG_MEMORY"].."(k)")
+GnUI.NR.List.tet2:PIGSetBackdrop(0.4, 0.2)
+GnUI.NR.List.tet2:SetScript("OnClick", function ()
+	GnUI.sort=21
+	GnUI.Update_List(GnUI.NR.List.Scroll)
 end);
-PIGAddOnMemoryCPU.NR.List.tet3 = PIGButton(PIGAddOnMemoryCPU.NR.List,{"LEFT", PIGAddOnMemoryCPU.NR.List.tet2, "RIGHT", 0,0},{nrww*0.25,22},"CPU(ms)")
-PIGAddOnMemoryCPU.NR.List.tet3:PIGSetBackdrop(0.4, 0.2)
-PIGAddOnMemoryCPU.NR.List.tet3:SetScript("OnClick", function ()
+GnUI.NR.List.tet3 = PIGButton(GnUI.NR.List,{"LEFT", GnUI.NR.List.tet2, "RIGHT", 0,0},{nrww*0.25,22},"CPU(ms)")
+GnUI.NR.List.tet3:PIGSetBackdrop(0.4, 0.2)
+GnUI.NR.List.tet3:SetScript("OnClick", function ()
 	if GetCVar("scriptProfile")=="1" then
-		PIGAddOnMemoryCPU.sort=31
-		PIGAddOnMemoryCPU.Update_List(PIGAddOnMemoryCPU.NR.List.Scroll)
+		GnUI.sort=31
+		GnUI.Update_List(GnUI.NR.List.Scroll)
 	end
 end);
-PIGAddOnMemoryCPU.NR.List.buttet1=PIGFontStringBG(PIGAddOnMemoryCPU.NR.List,{"BOTTOMLEFT", PIGAddOnMemoryCPU.NR.List, "BOTTOMLEFT", 0,1},"",{nrww*0.5,22})
-PIGAddOnMemoryCPU.NR.List.buttet2=PIGFontStringBG(PIGAddOnMemoryCPU.NR.List,{"LEFT", PIGAddOnMemoryCPU.NR.List.buttet1, "RIGHT", 0,0},"",{nrww*0.25,22})
-PIGAddOnMemoryCPU.NR.List.buttet3=PIGFontStringBG(PIGAddOnMemoryCPU.NR.List,{"LEFT", PIGAddOnMemoryCPU.NR.List.buttet2, "RIGHT", 0,0},"",{nrww*0.25,22})
+GnUI.NR.List.buttet1=PIGFontStringBG(GnUI.NR.List,{"BOTTOMLEFT", GnUI.NR.List, "BOTTOMLEFT", 0,1},"",{nrww*0.5,22})
+GnUI.NR.List.buttet2=PIGFontStringBG(GnUI.NR.List,{"LEFT", GnUI.NR.List.buttet1, "RIGHT", 0,0},"",{nrww*0.25,22})
+GnUI.NR.List.buttet3=PIGFontStringBG(GnUI.NR.List,{"LEFT", GnUI.NR.List.buttet2, "RIGHT", 0,0},"",{nrww*0.25,22})
 
-PIGAddOnMemoryCPU.NR.List.Scroll = CreateFrame("ScrollFrame",nil,PIGAddOnMemoryCPU.NR.List, "FauxScrollFrameTemplate");  
-PIGAddOnMemoryCPU.NR.List.Scroll:SetPoint("TOPLEFT",PIGAddOnMemoryCPU.NR.List,"TOPLEFT",0,-24);
-PIGAddOnMemoryCPU.NR.List.Scroll:SetPoint("BOTTOMRIGHT",PIGAddOnMemoryCPU.NR.List,"BOTTOMRIGHT",-20,23);
-PIGAddOnMemoryCPU.NR.List.Scroll.ScrollBar:SetScale(0.8)
-PIGAddOnMemoryCPU.NR.List.Scroll:SetScript("OnVerticalScroll", function(self, offset)
-    FauxScrollFrame_OnVerticalScroll(self, offset, hang_Height, PIGAddOnMemoryCPU.Update_List)
+GnUI.NR.List.Scroll = CreateFrame("ScrollFrame",nil,GnUI.NR.List, "FauxScrollFrameTemplate");  
+GnUI.NR.List.Scroll:SetPoint("TOPLEFT",GnUI.NR.List,"TOPLEFT",0,-24);
+GnUI.NR.List.Scroll:SetPoint("BOTTOMRIGHT",GnUI.NR.List,"BOTTOMRIGHT",-20,23);
+GnUI.NR.List.Scroll.ScrollBar:SetScale(0.8)
+GnUI.NR.List.Scroll:SetScript("OnVerticalScroll", function(self, offset)
+    FauxScrollFrame_OnVerticalScroll(self, offset, hang_Height, GnUI.Update_List)
 end)
-PIGAddOnMemoryCPU.butlist={}
+GnUI.butlist={}
 for id = 1, hang_NUM do
-	local hang = CreateFrame("Frame", nil, PIGAddOnMemoryCPU.NR.List);
-	PIGAddOnMemoryCPU.butlist[id]=hang
+	local hang = CreateFrame("Frame", nil, GnUI.NR.List);
+	GnUI.butlist[id]=hang
 	hang:SetSize(nrww-20, hang_Height);
 	if id==1 then
-		hang:SetPoint("TOP",PIGAddOnMemoryCPU.NR.List.Scroll,"TOP",0,0);
+		hang:SetPoint("TOP",GnUI.NR.List.Scroll,"TOP",0,0);
 	else
-		hang:SetPoint("TOP",PIGAddOnMemoryCPU.butlist[id-1],"BOTTOM",0,0);
+		hang:SetPoint("TOP",GnUI.butlist[id-1],"BOTTOM",0,0);
 	end
 	hang.tet1 = PIGFontString(hang,{"LEFT", hang, "LEFT", 2,0},"","OUTLINE")
 	hang.tet1:SetSize(nrww*0.5-2,hang_Height)
@@ -173,7 +175,7 @@ for id = 1, hang_NUM do
 	hang.tet3:SetTextColor(1, 1, 1, 0.9); 
 end
 local GetNumAddOns=GetNumAddOns or C_AddOns.GetNumAddOns and C_AddOns.GetNumAddOns
-function PIGAddOnMemoryCPU.Update_List(self)
+function GnUI.Update_List(self)
 	local MemoryCPUData = {
 		["NumAddOns"]=GetNumAddOns(),
 		["NumMemory"]=0,
@@ -193,13 +195,13 @@ function PIGAddOnMemoryCPU.Update_List(self)
 		end
 	end
 	for id=1,hang_NUM do
-		PIGAddOnMemoryCPU.butlist[id]:Hide()
+		GnUI.butlist[id]:Hide()
 	end
-	if PIGAddOnMemoryCPU.sort==21 then
+	if GnUI.sort==21 then
 		table.sort(MemoryCPUData.DATA,function(a,b)
 			return a[2]>b[2]
 		end)
-	elseif PIGAddOnMemoryCPU.sort==31 then
+	elseif GnUI.sort==31 then
 		table.sort(MemoryCPUData.DATA,function(a,b)
 			return a[3]>b[3]
 		end)
@@ -210,38 +212,38 @@ function PIGAddOnMemoryCPU.Update_List(self)
 	for id = 1, hang_NUM do
 		local newID = id+offset
 		if MemoryCPUData.DATA[newID] then
-			local tetf = PIGAddOnMemoryCPU.butlist[id]
+			local tetf = GnUI.butlist[id]
 			tetf:Show()
 			tetf.tet1:SetText(MemoryCPUData.DATA[newID][1]);
 			tetf.tet2:SetText(floor(MemoryCPUData.DATA[newID][2]));
 			tetf.tet3:SetText(floor(MemoryCPUData.DATA[newID][3]*100)*0.01);
 		end
 	end
-	PIGAddOnMemoryCPU.NR.List.buttet1:SetText(hejilist.."/"..MemoryCPUData.NumAddOns);
-	PIGAddOnMemoryCPU.NR.List.buttet2:SetText(floor(MemoryCPUData.NumMemory).."k");
-	PIGAddOnMemoryCPU.NR.List.buttet3:SetText(floor(MemoryCPUData.NumCPU).."ms");
+	GnUI.NR.List.buttet1:SetText(hejilist.."/"..MemoryCPUData.NumAddOns);
+	GnUI.NR.List.buttet2:SetText(floor(MemoryCPUData.NumMemory).."k");
+	GnUI.NR.List.buttet3:SetText(floor(MemoryCPUData.NumCPU).."ms");
 end
-PIGAddOnMemoryCPU:HookScript("OnShow", function (self)
+GnUI:HookScript("OnShow", function (self)
 	if GetCVar("scriptProfile")=="1" then
-		PIGAddOnMemoryCPU.NR.CPU_OPEN:SetChecked(true)
+		GnUI.NR.CPU_OPEN:SetChecked(true)
 	else
-		PIGAddOnMemoryCPU.NR.CPU_OPEN:SetChecked(false)
+		GnUI.NR.CPU_OPEN:SetChecked(false)
 	end
 	self.Update_List(self.NR.List.Scroll)
 end);
 if GetCVar("scriptProfile")=="1" then
-	PIGAddOnMemoryCPU:Show()
+	GnUI:Show()
 	local masg = "你开启了CPU性能分析，请在测试后关闭此选项"
 	UIErrorsFrame:AddMessage(masg, 1, 1, 0, 1.0);
 	PIG_print(masg)
 end
 
 --获取NPC物品
-fuFrame.NPCID = PIGButton(fuFrame,{"TOPLEFT",fuFrame,"TOPLEFT",20,-350},{125,24},L["DEBUG_GETGUIDBUT"])
+fuFrame.NPCID = PIGButton(fuFrame,{"TOPLEFT",fuFrame,"TOPLEFT",20,-220},{125,24},L["DEBUG_GETGUIDBUT"])
 fuFrame.NPCID:SetScript("OnClick", function (self)
 	print(UnitGUID("target"))
 end);
-fuFrame.GetItem = PIGButton(fuFrame,{"LEFT",fuFrame.NPCID,"RIGHT",300,0},{110,24},"获取物品信息")
+fuFrame.GetItem = PIGButton(fuFrame,{"TOPLEFT",fuFrame,"TOPLEFT",230,-300},{110,24},"获取物品信息")
 fuFrame.GetItem:SetScript("OnClick", function (self,button)
 	if button=="LeftButton" then
 		--local itemName,itemLink = GetItemInfo(self.E:GetNumber())
@@ -260,8 +262,6 @@ fuFrame.GetItem.E:SetSize(200,24);
 fuFrame.GetItem.E:SetPoint("RIGHT",fuFrame.GetItem,"LEFT",-4,0);
 fuFrame.GetItem.E:SetFontObject(ChatFontNormal);
 fuFrame.GetItem.E:SetAutoFocus(false);--自动获得焦点
--- fuFrame.GetItem.E:SetMaxLetters(10)--最大输入字符数
--- fuFrame.GetItem.E:SetNumeric(true)--只能输入数字
 -----------------
 fuFrame:SetScript("OnShow", function()
 	if GetCVar("scriptErrors")=="1" then
@@ -282,7 +282,7 @@ fuFrame.New_hong:SetScript("OnClick", function ()
 			if global<120 then
 				CreateMacro(k, v[2], v[1], nil)
 			else
-				PIGTopMsg:add(L["LIB_MACROERR"]);
+				PIG_OptionsUI:ErrorMsg(L["LIB_MACROERR"]);
 			end
 		end
 	end
@@ -294,10 +294,10 @@ fuFrame.tiaoshipeizhi:SetScript("OnClick", function ()
 end)
 local function zairutiaoshiFUN()
 	PIGA=addonTable.Default;
-	addonTable.Config_Set(PIGA,false)
+	Fun.Set_ConfigValue(PIGA,false,0)
 	PIGA_Per=addonTable.Default_Per;
-	addonTable.Config_Set(PIGA_Per,false)
-	Pig_Options_RLtishi_UI:Show()
+	Fun.Set_ConfigValue(PIGA_Per,false,0)
+	PIG_OptionsUI.RLUI:Show()
 end
 StaticPopupDialogs["TIAOSHIPEIZHIQIYONG"] = {
 	text = L["CONFIG_LOADTIPS"].."\n"..L["DEBUG_CONFIGTIPS"],
@@ -310,11 +310,18 @@ StaticPopupDialogs["TIAOSHIPEIZHIQIYONG"] = {
 	whileDead = true,
 	hideOnEscape = true,
 }
-fuFrame.zhuanma = PIGButton(fuFrame,{"BOTTOMLEFT",fuFrame,"BOTTOMLEFT",460,20},{80,24},"Base64")
+fuFrame.zhuanma = PIGButton(fuFrame,{"BOTTOMRIGHT",fuFrame,"BOTTOMRIGHT",0,0},{16,16},"64")
 fuFrame.zhuanma:SetScript("OnClick", function (self)
-	if ExportImport_UI:IsShown() then
-		ExportImport_UI:Hide()
-	else
-		ExportImport_UI:Show()
-	end
+	_G[Data.ExportImportUIname]:Show_HideFun()
 end)
+--屏幕中线
+-- local offsetww = UIParent:GetWidth()*0.5
+-- PIGLine(UIParent,"C")
+-- local ButtoSDn = CreateFrame("Button",nil,UIParent, "UIPanelButtonTemplate,SecureActionButtonTemplate");
+-- ButtoSDn:SetSize(76,25);
+-- ButtoSDn:SetPoint("CENTER",UIParent,"CENTER",4,0);
+-- ButtoSDn:SetText("ASDADA");
+-- ButtoSDn:SetScript("OnClick", function ()
+
+
+-- end);

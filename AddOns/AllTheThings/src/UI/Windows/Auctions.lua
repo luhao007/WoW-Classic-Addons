@@ -173,8 +173,6 @@ app:CreateWindow("Auctions", {
 		end
 		self:RegisterEvent("ADDON_LOADED");
 		self.UpdatePosition = function(self)
-			local width = self:GetWidth();
-			self:ClearAllPoints();
 			local auctionFrame = AuctionHouseFrame or AuctionFrame;
 			if auctionFrame and not auctionFrame.__ATTSETUP then
 				local origHide, origShow = auctionFrame.Hide, auctionFrame.Show;
@@ -201,6 +199,8 @@ app:CreateWindow("Auctions", {
 				end
 			end
 			if auctionFrame and auctionFrame:IsShown() then
+				local width = self:GetWidth();
+				self:ClearAllPoints();
 				self:SetPoint("TOP", auctionFrame, "TOP", 0, -12);
 				self:SetPoint("BOTTOM", auctionFrame, "BOTTOM", 0, 10);
 				if SideDressUpFrame and SideDressUpFrame:IsShown() then
@@ -208,13 +208,14 @@ app:CreateWindow("Auctions", {
 				else
 					self:SetPoint("LEFT", auctionFrame, "RIGHT", 0, 0);
 				end
+				self:SetWidth(width);
 				if app.Settings:GetTooltipSetting("Auto:AuctionList") then
 					self:Show();
 				end
 			else
 				self:Hide();
 			end
-			self:SetWidth(width);
+			
 		end
 		self:SetMovable(false);
 	end,

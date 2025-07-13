@@ -1,0 +1,17 @@
+## Interface: 30405
+## Author: geligasi
+## Version: 1.00
+
+## Title: !Pig_SakuraAudio
+## Notes: |cffFF8C00!Pig Sakura Audio Extension Package|r|n|cff00FF00we already walked too far, down to we had forgotten why embarked|r
+## Title-zhCN: |cFFFFE00A<|r|cFFFFF468功能|r|cFFFFE00A>|r |cFFFFFFFFPig工具箱|r |cFF69CCF0语音包|r |cFF22B14C樱雪|r
+## Notes-zhCN: |cffFF8C00!Pig的樱雪语音扩展包，安装后将替换默认的AI语音|r
+
+## IconTexture: interface/icons/ability_seal.blp
+
+## RequiredDeps: !Pig
+
+## X-Part-Of: !Pig
+
+AudioList.lua
+Options.lua

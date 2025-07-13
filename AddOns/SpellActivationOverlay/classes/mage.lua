@@ -4,7 +4,6 @@ local Module = "mage"
 -- Optimize frequent calls
 local CombatLogGetCurrentEventInfo = CombatLogGetCurrentEventInfo
 local GetSpellInfo = GetSpellInfo
-local GetTalentInfo = GetTalentInfo
 local UnitCanAttack = UnitCanAttack
 local UnitDebuff = UnitDebuff
 local UnitExists = UnitExists
@@ -13,11 +12,15 @@ local UnitHealth = UnitHealth
 
 local clearcastingVariants; -- Lazy init in lazyCreateClearcastingVariants()
 
+local arcaneMissiles = 5143;
+local fireBlast = 2136;
+local frostfireBolt = 44614;
+local infernoBlast = 108853; -- Replaces Fire Blast in Mists of Pandaria
 local pyroblast = 11366; -- Pyroblast, the base Pyro spell
 local pyroblastBang = 92315; -- Pyroblast!, a specific spell for instant Pyro introduced in Cataclysm
 
 local hotStreakSpellID = 48108;
-local heatingUpSpellID = 48107; -- Does not exist in WoW Classic yet
+local heatingUpSpellID = 48107; -- Does not exist in WoW Classic until MoP
 local hotStreakHeatingUpSpellID = hotStreakSpellID+heatingUpSpellID; -- Made up entirely, does not even exist in Retail
 local improvedHotStreakSpellID = 44446; -- Cataclysm talent that trigger Heating Up
 local hotStreakSoDSpellID = 400625;
@@ -31,15 +34,17 @@ local HotStreakHandler = {}
 -- Initialize constants
 HotStreakHandler.init = function(self, talentName)
     local fire_blast = { 2136, 2137, 2138, 8412, 8413, 10197, 10199, 27078, 27079, 42872, 42873 }
+    local fire_blast_sod = { 400618, 400619, 400616, 400620, 400621, 400622, 400623 } -- Improved by Overheat rune
     local fireball = { 133, 143, 145, 3140, 8400, 8401, 8402, 10148, 10149, 10150, 10151, 25306, 27070, 38692, 42832, 42833 }
-    local frostfire_bolt = { 44614, 47610 }
+    local frostfire_bolt = { frostfireBolt, 47610 }
     local frostfire_bolt_sod = { 401502 }
     -- local living_bomb = { 44457, 55359, 55360 } this is the DOT effect, which we do NOT want
     local living_bomb = { 44461, 55361, 55362 }
     -- local living_bomb_sod = { 400613 } this is the DOT effect, which we do NOT want
     local living_bomb_sod = { 401731 }
     local scorch = { 2948, 8444, 8445, 8446, 10205, 10206, 10207, 27073, 27074, 42858, 42859 }
-    local pyroblast_cata = { pyroblast, pyroblastBang }
+    local pyroblast_cata = { pyroblast }
+    local balefire_bolt_sod = { 428878 }
 
     self.spells = {}
     local function addSpellPack(spellPack)
@@ -48,6 +53,7 @@ HotStreakHandler.init = function(self, talentName)
         end
     end
     addSpellPack(fire_blast);
+    addSpellPack(fire_blast_sod);
     addSpellPack(fireball);
     addSpellPack(frostfire_bolt);
     addSpellPack(frostfire_bolt_sod);
@@ -58,6 +64,7 @@ HotStreakHandler.init = function(self, talentName)
         addSpellPack(living_bomb);
         addSpellPack(living_bomb_sod);
     end
+    addSpellPack(balefire_bolt_sod);
 
     local _, _, tab, index = SAO:GetTalentByName(talentName);
     if (tab and index) then
@@ -85,7 +92,7 @@ end
 HotStreakHandler.hasHotStreakTalent = function(self)
     if (SAO.IsSoD()) then
         -- Not really a 'talent' but in Season of Discovery, hot streak comes from a rune
-        return C_Engraving and C_Engraving.IsRuneEquipped(400624);
+        return C_Engraving and C_Engraving.IsRuneEquipped(48202);
     end
 
     -- Talent information could not be retrieved for Hot Streak
@@ -96,7 +103,7 @@ HotStreakHandler.hasHotStreakTalent = function(self)
     -- Talent information must include at least one point in Hot Streak
     -- This may not be accurate, but it's almost impossible to do better
     -- Not to mention, almost no one will play with only 1 or 2 points
-    local rank = select(5, GetTalentInfo(self.talent[1], self.talent[2]));
+    local rank = SAO:GetNbTalentPoints(self.talent[1], self.talent[2]);
     return rank > 0;
 end
 
@@ -189,10 +196,9 @@ local function hotStreakCLEU(self, ...)
             -- Either way, if the Hot Streak buff is deserved, we'll know soon enough with a "SPELL_AURA_APPLIED"
         end
     elseif (HotStreakHandler.state == 'hot_streak') then
-        if (critical and not SAO.IsCata()) then
+        if (critical) then
             -- If crit during a Hot Streak, store this 'charge' to eventually restore it when Pyroblast is cast
             -- This is called "hot streaking heating up", which means Hot Streak has a pending Heating Up effect
-            -- Starting with Cataclysm, this state is no longer possible (tested during Beta - may change in the future)
             HotStreakHandler.state = 'hot_streak_heating_up';
             activateHeatingUp(self, hotStreakHeatingUpSpellID);
             -- Please note this works only because we are fairly certain that SPELL_AURA_APPLIED of a Hot Streak
@@ -246,13 +252,16 @@ local FrozenHandler = {
     deep_freeze = { 44572 }, -- Deep Freeze is both a debuff for 'Frozen' Spell Alert and its own Glowing Button
     deep_freeze_sod = { 428739 }, -- Season of Discovery
     hungering_cold = { 49203 }, -- from Death Knights
+    improved_cone_of_cold = { 83301, 83302 },
+    ring_of_frost = { 82691 },
 
     freezeID = 5276, -- Not really a 'Frozen' spell ID, but the name should help players identify the intent
     freezeTalent = 5276,
     fakeSpellID = 5276+1000000, -- For option testing
 
     saoTexture = "frozen_fingers",
-    saoScaleFactor = (SAO.IsEra() or SAO.IsTBC()) and 1 or 0.75, -- Scaling down on Wrath because of conflict
+    saoPosition = SAO.IsCata() and "Top" or "Top (CW)"; -- Re-orient in Cataclysm because former effect had different orientation
+    saoScaleFactor = (SAO.IsEra() or SAO.IsTBC()) and 1 or 0.75, -- Scaling down on Wrath and Cataclysm because of conflict
 
     -- Constants that will be initialized at init()
     allSpellIDs = {},
@@ -278,11 +287,33 @@ local FrozenHandler = {
         self:addSpellIDCandidates(self.deep_freeze);
         self:addSpellIDCandidates(self.deep_freeze_sod);
         self:addSpellIDCandidates(self.hungering_cold);
+        self:addSpellIDCandidates(self.improved_cone_of_cold);
+        self:addSpellIDCandidates(self.ring_of_frost);
 
         self.freezable = self:isTargetFreezable();
         if (self.freezable and self:isTargetFrozen()) then
             self.frozen = true;
             self:activate();
+        end
+
+        if SAO.IsProject(SAO.ERA + SAO.TBC + SAO.WRATH) then
+            -- Up until Wrath, players could have several versions of the same spell
+            -- So we need to register spells based on their names, not their IDs
+            SAO:RegisterGlowIDs({
+                (GetSpellInfo(self.ice_lance[1])),
+                (GetSpellInfo(self.ice_lance_sod[1])),
+                (GetSpellInfo(self.deep_freeze[1])),
+                (GetSpellInfo(self.deep_freeze_sod[1])),
+            });
+        else
+            --assert(SAO.IsProject(SAO.CATA_AND_ONWARD))
+            -- Starting from Cataclysm, the spell ID is enough to identify the spell
+            SAO:RegisterGlowIDs({
+                self.ice_lance[1],
+                self.ice_lance_sod[1],
+                self.deep_freeze[1],
+                self.deep_freeze_sod[1],
+            });
         end
 
         self.initialized = true;
@@ -407,7 +438,7 @@ local FrozenHandler = {
         local hasSAO = not saoOption or type(saoOption[0]) == "nil" or saoOption[0];
         if (hasSAO) then
             local endTime = self:getEndTime();
-            SAO:ActivateOverlay(0, self.freezeID, SAO.TexName[self.saoTexture], "Top (CW)", self.saoScaleFactor, 255, 255, 255, false, nil, endTime);
+            SAO:ActivateOverlay(0, self.freezeID, SAO.TexName[self.saoTexture], self.saoPosition, self.saoScaleFactor, 255, 255, 255, false, nil, endTime);
         end
 
         -- GABs
@@ -460,7 +491,10 @@ local function customLogin(self, ...)
     -- Must initialize class on PLAYER_LOGIN instead of registerClass
     -- Because we need the talent tree, which is not always available right off the bat
     local hotStreakSpellName;
-    if SAO.IsSoD() then
+    if SAO.IsProject(SAO.MOP_AND_ONWARD) then
+        -- Invalidate hotStreakSpellName to avoid using HotStreakHandler, which is deprecated from Mists of Pandaria
+        hotStreakSpellName = nil;
+    elseif SAO.IsSoD() then
         hotStreakSpellName = GetSpellInfo(hotStreakSoDSpellID);
     elseif SAO.IsCata() then
         hotStreakSpellName = GetSpellInfo(improvedHotStreakSpellID);
@@ -495,8 +529,19 @@ local function unitHealth(self, unitID)
     end
 end
 
+local function unitHealthFrequent(self, unitID)
+    if self:IsResponsiveMode() then
+        unitHealth(self, unitID);
+    end
+end
+
 local function lazyCreateClearcastingVariants(self)
-    if (clearcastingVariants) then
+    if clearcastingVariants then
+        return;
+    end
+
+    if self.IsProject(SAO.MOP_AND_ONWARD) then
+        -- Clearcasting stopped existing since Mists of Pandaria
         return;
     end
 
@@ -517,9 +562,126 @@ local function lazyCreateClearcastingVariants(self)
     });
 end
 
-local function registerClass(self)
-    -- Fire Procs
-    self:RegisterAura("impact", 0, 64343, "lock_and_load", "Top", 1, 255, 255, 255, true, { (GetSpellInfo(2136)) });
+local function useImpact()
+    local impactBuff = 64343;
+    local impactTalent = 11103;
+
+    SAO:CreateEffect(
+        "impact",
+        SAO.WRATH + SAO.CATA,
+        impactBuff,
+        "aura",
+        {
+            talent = impactTalent,
+            requireTalent = true,
+            action = fireBlast,
+            actionUsable = true,
+            overlay = { texture = "lock_and_load", position = "Top" },
+            button = fireBlast,
+        }
+    );
+end
+
+local function useArcaneMissiles()
+    local arcaneMissilesBuff = 79683; -- Cataclysm and MoP require a buff before casting Arcane Missiles
+
+    if SAO.IsCata() then
+        SAO:CreateEffect(
+            "arcane_missiles",
+            SAO.CATA,
+            arcaneMissilesBuff,
+            "aura",
+            {
+                overlay = { texture = "arcane_missiles", position = "Left + Right (Flipped)", scale = 0.6 }, -- Smaller, to avoid overlap with Arcane Potency
+                button = arcaneMissiles,
+                handler = {
+                    -- Force refresh on a regular basis, because the game client does not send the correct SPELL_AURA_REFRESH events
+                    -- We can call refresh() even without an active display; the bucket will send refresh to displays if and only if there is an active one
+                    onRepeat = function(bucket) bucket:refresh(); end,
+                }
+            }
+        );
+    elseif SAO.IsMoP() then
+        local hash0Stacks = SAO:HashNameFromStacks(0);
+        local hash2Stacks = SAO:HashNameFromStacks(2);
+        SAO:CreateEffect(
+            "arcane_missiles",
+            SAO.MOP,
+            arcaneMissilesBuff,
+            "aura",
+            {
+                overlays = {
+                    { stacks = 1, texture = "arcane_missiles", position = "Left", option = false },
+                    { stacks = 2, texture = "arcane_missiles", position = "Left + Right (Flipped)", option = { setupHash = hash0Stacks, testHash = hash2Stacks } },
+                },
+                button = arcaneMissiles,
+            }
+        );
+    end
+end
+
+local function useFingersOfFrost()
+    local fingersOfFrostBuff = 44544;
+    local hash0Stacks = SAO:HashNameFromStacks(0);
+    local hash2Stacks = SAO:HashNameFromStacks(2);
+    SAO:CreateEffect(
+        "fingers_of_frost",
+        SAO.MOP,
+        fingersOfFrostBuff,
+        "aura",
+        {
+            aka = {
+                [SAO.MOP] = 126084, -- Fingers of Frost (second charge)
+            },
+            overlays = { -- Slightly bigger to avoid overlap with Arcane Missiles, and slightly dimmer to compensate
+                { stacks = 1, texture = "frozen_fingers", position = "Left",                   scale = 1.1, color = { 222, 222, 222 }, option = false },
+                { stacks = 2, texture = "frozen_fingers", position = "Left + Right (Flipped)", scale = 1.1, color = { 222, 222, 222 }, option = { setupHash = hash0Stacks, testHash = hash2Stacks } },
+            },
+            -- buttons = { FrozenHandler.ice_lance[1], FrozenHandler.deep_freeze[1], }, -- Already glowing natively
+        }
+    );
+end
+
+local function useBrainFreeze()
+    local brainFreezeBuff = 57761;
+    SAO:CreateEffect(
+        "brain_freeze",
+        SAO.MOP,
+        brainFreezeBuff,
+        "aura",
+        {
+            overlay = { texture = "brain_freeze", position = "Top" },
+            button = frostfireBolt,
+        }
+    );
+end
+
+local function useHeatingUpAndHotStreak()
+    SAO:CreateEffect(
+        "heating_up",
+        SAO.MOP,
+        heatingUpSpellID,
+        "aura",
+        {
+            overlay = { texture = "hot_streak", position = "Left + Right (Flipped)", scale = 0.5 },
+            button = infernoBlast,
+        }
+    );
+
+    SAO:CreateEffect(
+        "hot_streak",
+        SAO.MOP,
+        hotStreakSpellID,
+        "aura",
+        {
+            overlay = { texture = "hot_streak", position = "Left + Right (Flipped)" },
+            button = pyroblast,
+        }
+    );
+end
+
+local function registerFire(self)
+    useImpact();
     if self.IsWrath() then
         self:RegisterAura("firestarter", 0, 54741, "impact", "Top", 0.8, 255, 255, 255, true, { (GetSpellInfo(2120)) }); -- May conflict with Impact location
     end
@@ -527,10 +689,14 @@ local function registerClass(self)
         self:RegisterAura("hot_streak_full", 0, hotStreakSoDSpellID, "hot_streak", "Left + Right (Flipped)", 1, 255, 255, 255, true, { (GetSpellInfo(pyroblast)) });
     elseif self.IsCata() then
         self:RegisterAura("hot_streak_full", 0, hotStreakSpellID, "hot_streak", "Left + Right (Flipped)", 1, 255, 255, 255, true, { pyroblastBang });
+    elseif self.IsMoP() then
+        useHeatingUpAndHotStreak();
     else
         self:RegisterAura("hot_streak_full", 0, hotStreakSpellID, "hot_streak", "Left + Right (Flipped)", 1, 255, 255, 255, true, { (GetSpellInfo(pyroblast)) });
     end
-    self:RegisterAura("hot_streak_half", 0, heatingUpSpellID, "hot_streak", "Left + Right (Flipped)", 0.5, 255, 255, 255, false); -- Does not exist, but define it for option testing
+    if not self.IsMoP() then
+        self:RegisterAura("hot_streak_half", 0, heatingUpSpellID, "hot_streak", "Left + Right (Flipped)", 0.5, 255, 255, 255, false); -- Does not exist, but define it for option testing
+    end
     if not self.IsCata() then
         self:RegisterAura("hot_streak_duo", 0, hotStreakHeatingUpSpellID, "hot_streak", "Left + Right (Flipped)", 0.5, 255, 255, 255, false); -- Does not exist, but define it for option testing
         self:RegisterAura("hot_streak_duo", 0, hotStreakHeatingUpSpellID, "hot_streak", "Left + Right (Flipped)", 1, 255, 255, 255, true); -- Does not exist, but define it for option testing
@@ -538,8 +704,9 @@ local function registerClass(self)
     -- Heating Up (spellID == 48107) doesn't exist in Wrath Classic, so we can't use the above aura
     -- Instead, we track Fire Blast, Fireball, Living Bomb and Scorch non-periodic critical strikes
     -- Please look at HotStreakHandler and customCLEU for more information
+end
 
-    -- Frost Procs
+local function registerFrost(self)
     if self.IsSoD() then
         local iceLanceAndDeepFreezeSoD = { (GetSpellInfo(FrozenHandler.ice_lance_sod[1])), (GetSpellInfo(FrozenHandler.deep_freeze_sod[1])) };
         self:RegisterAura("fingers_of_frost_1_sod", 1, 400670, "frozen_fingers", "Left", 1, 255, 255, 255, true, iceLanceAndDeepFreezeSoD);
@@ -551,25 +718,36 @@ local function registerClass(self)
     elseif self.IsCata() then
         local iceLanceAndDeepFreeze = { (GetSpellInfo(FrozenHandler.ice_lance[1])), (GetSpellInfo(FrozenHandler.deep_freeze[1])) };
          -- Slightly bigger to avoid overlap with Arcane Missiles, and slightly dimmer to compensate
-        self:RegisterAura("fingers_of_frost_1", 1, 44544, "frozen_fingers", "Left", 1.1, 222, 222, 222, true, iceLanceAndDeepFreeze);
-        self:RegisterAura("fingers_of_frost_2", 2, 44544, "frozen_fingers", "Left + Right (Flipped)", 1.1, 222, 222, 222, true, iceLanceAndDeepFreeze);
+        -- self:RegisterAura("fingers_of_frost_0", 0, 44544, "frozen_fingers", "Left (CCW)", 1.1, 222, 222, 222, true, iceLanceAndDeepFreeze);
+        self:RegisterAura("fingers_of_frost_1", 1, 44544, "frozen_fingers", "Left (CCW)", 1.1, 222, 222, 222, true, iceLanceAndDeepFreeze);
+        self:RegisterAura("fingers_of_frost_2", 2, 44544, "frozen_fingers", "Left (CCW)", 1.1, 222, 222, 222, true, iceLanceAndDeepFreeze);
+        self:RegisterAura("fingers_of_frost_2", 2, 44544, "frozen_fingers", "Right (CW)", 1.1, 222, 222, 222, true); -- no need to re-glow iceLanceAndDeepFreeze for right texture
+    elseif self.IsMoP() then
+        useFingersOfFrost();
     end
-    self:RegisterAura("freeze", 0, FrozenHandler.fakeSpellID, FrozenHandler.saoTexture, "Top (CW)", FrozenHandler.saoScaleFactor, 255, 255, 255, false);
+    if not self.IsCata() then
+        self:RegisterAura("freeze", 0, FrozenHandler.fakeSpellID, FrozenHandler.saoTexture, "Top (CW)", FrozenHandler.saoScaleFactor, 255, 255, 255, false);
+    else
+        self:RegisterAura("freeze", 0, FrozenHandler.fakeSpellID, FrozenHandler.saoTexture, "Top", FrozenHandler.saoScaleFactor, 255, 255, 255, false);
+    end
     if self.IsSoD() then
         self:RegisterAura("brain_freeze", 0, 400730, "brain_freeze", "Top", 1, 255, 255, 255, true, { (GetSpellInfo(133)), (GetSpellInfo(412532)), (GetSpellInfo(401502)) });
-    else
-        self:RegisterAura("brain_freeze", 0, 57761, "brain_freeze", "Top", 1, 255, 255, 255, true, { (GetSpellInfo(133)), (GetSpellInfo(44614)) });
+    elseif self.IsWrath() then
+        self:RegisterAura("brain_freeze", 0, 57761, "brain_freeze", "Top", 1, 255, 255, 255, true, { (GetSpellInfo(133)), (GetSpellInfo(frostfireBolt)) });
+    elseif self.IsCata() then
+        self:RegisterAura("brain_freeze", 0, 57761, "brain_freeze", "Top (CW)", 1, 255, 255, 255, true, { (GetSpellInfo(133)), (GetSpellInfo(frostfireBolt)) });
+    elseif self.IsMoP() then
+        useBrainFreeze();
     end
+end
 
-    -- Arcane Procs
+local function registerArcane(self)
+    useArcaneMissiles();
     if self.IsSoD() then
     	-- Blue-ish, slightly smaller, to avoid confusion and overlap with Arcane Blast
         self:RegisterAura("missile_barrage", 0, 400589, "arcane_missiles", "Left + Right (Flipped)", 0.8, 103, 184, 238, true, { (GetSpellInfo(5143)) });
     elseif self.IsWrath() then
         self:RegisterAura("missile_barrage", 0, 44401, "arcane_missiles", "Left + Right (Flipped)", 1, 255, 255, 255, true, { (GetSpellInfo(5143)) });
-    elseif self.IsCata() then
-        -- Smaller, to avoid overlap with Arcane Potency
-        self:RegisterAura("arcane_missiles", 0, 79683, "arcane_missiles", "Left + Right (Flipped)", 0.6, 255, 255, 255, true, { (GetSpellInfo(5143)) });
     end
     if self.IsCata() then
         local arcanePotency1 = 57529;
@@ -589,7 +767,9 @@ local function registerClass(self)
     end
 
     lazyCreateClearcastingVariants(self);
-    self:RegisterAura("clearcasting", 0, 12536, clearcastingVariants.textureFunc, "Left + Right (Flipped)", 1.5, 192, 192, 192, false);
+    if clearcastingVariants then
+        self:RegisterAura("clearcasting", 0, 12536, clearcastingVariants.textureFunc, "Left + Right (Flipped)", 1.5, 192, 192, 192, false);
+    end
 
     if self.IsSoD() then
         local arcaneBlastSoDBuff = 400573;
@@ -607,12 +787,16 @@ local function registerClass(self)
     end
 end
 
+local function registerClass(self)
+    registerArcane(self);
+    registerFire(self);
+    registerFrost(self);
+end
+
 local function loadOptions(self)
 --    local clearcastingTalent = 11213; -- Real talent
     local clearcastingTalent = 12536; -- Use buff instead of talent because everyone knows the buff name
     local clearcastingBuff = 12536;
-
-    local arcaneMissilesBuff = 79683; -- Cataclysm requires a buff before casting Arcane Missiles
 
     local missileBarrageBuff = 44401;
     local missileBarrageTalent = 44404;
@@ -630,9 +814,6 @@ local function loadOptions(self)
     local firestarterBuff = 54741;
     local firestarterTalent = 44442;
 
-    local impactBuff = 64343;
-    local impactTalent = 11103;
-
     local brainFreezeBuff = 57761;
     local brainFreezeTalent = 44546;
     local brainFreezeSoDRune = 400731;
@@ -648,12 +829,9 @@ local function loadOptions(self)
     local missileBarrageSoDRune = 400588;
     local missileBarrageSoDBuff = 400589;
 
-    local arcaneMissiles = 5143;
     local arcaneExplosion = 1449;
     local flamestrike = 2120;
-    local fireBlast = 2136;
     local fireball = 133;
-    local frostfireBolt = 44614;
     local frostfireBoltSoD = 401502;
     local spellfrostBoltSoD = 412532;
     local iceLance = FrozenHandler.ice_lance[1];
@@ -661,27 +839,7 @@ local function loadOptions(self)
     local deepFreeze = FrozenHandler.deep_freeze[1];
     local deepFreezeSoD = FrozenHandler.deep_freeze_sod[1];
 
-    local heatingUpDetails;
-    local locale = GetLocale();
-    if (locale == "deDE") then
-        heatingUpDetails = "Aufwärmen";
-    elseif (locale == "frFR") then
-        heatingUpDetails = "Réchauffement";
-    elseif (locale == "esES" or locale == "esMX") then
-        heatingUpDetails = "Calentamiento"; -- Always use esES because esMX isn't on Wowhead
-    elseif (locale == "ruRU") then
-        heatingUpDetails = "Разогрев";
-    elseif (locale == "itIT") then
-        heatingUpDetails = "Riscaldamento";
-    elseif (locale == "ptBR") then
-        heatingUpDetails = "Aquecendo";
-    elseif (locale == "koKR") then
-        heatingUpDetails = "열기";
-    elseif (locale == "zhCN" or locale == "zhTW") then
-        heatingUpDetails = "热力迸发"; -- Always use zhCN because zhTW isn't on Wowhead
-    else
-        heatingUpDetails = "Heating Up";
-    end
+    local heatingUpDetails = self:translateHeatingUp();
 
     -- local spellName, _, spellIcon = GetSpellInfo(pyroblast);
     -- local hotStreakDetails = string.format(LFG_READY_CHECK_PLAYER_IS_READY, "|T"..spellIcon..":0|t "..spellName):gsub("%.", "");
@@ -695,11 +853,10 @@ local function loadOptions(self)
 
     -- Clearcasting variants
     lazyCreateClearcastingVariants(self);
-
-    self:AddOverlayOption(clearcastingTalent, clearcastingBuff, 0, nil, clearcastingVariants);
-    if self.IsCata() then
-        self:AddOverlayOption(arcaneMissilesBuff, arcaneMissilesBuff);
+    if clearcastingVariants then
+        self:AddOverlayOption(clearcastingTalent, clearcastingBuff, 0, nil, clearcastingVariants);
     end
+
     if self.IsSoD() then
         self:AddOverlayOption(missileBarrageSoDRune, missileBarrageSoDBuff);
     elseif self.IsWrath() then
@@ -707,7 +864,7 @@ local function loadOptions(self)
     end
     if self.IsSoD() then
         self:AddOverlayOption(arcaneBlastSoDBuff, arcaneBlastSoDBuff, 0, oneToThreeStacks, nil, 3); -- setup any stacks, test with 3 stacks
-        self:AddOverlayOption(arcaneBlastSoDBuff, arcaneBlastSoDBuff, 4); -- setup 4 stacks
+        self:AddOverlayOption(arcaneBlastSoDBuff, arcaneBlastSoDBuff, self:HashNameFromStacks(4)); -- setup 4 stacks
     end
     if self.IsCata() then
         self:AddOverlayOption(arcanePotencyTalent, arcanePotencyBuff2, 0, nil, nil, 2); -- setup any stacks, test with 2 stacks
@@ -716,17 +873,14 @@ local function loadOptions(self)
         self:AddOverlayOption(hotStreakSoDRune, heatingUpBuff, 0, heatingUpDetails);
         self:AddOverlayOption(hotStreakSoDRune, hotStreakSoDBuff, 0, hotStreakDetails);
         self:AddOverlayOption(hotStreakSoDRune, hotStreakHeatingUpBuff, 0, hotStreakHeatingUpDetails);
-    elseif self.IsWrath() then
+    elseif self.IsWrath() or self.IsCata() then
         self:AddOverlayOption(hotStreakTalent, heatingUpBuff, 0, heatingUpDetails);
         self:AddOverlayOption(hotStreakTalent, hotStreakBuff, 0, hotStreakDetails);
         self:AddOverlayOption(hotStreakTalent, hotStreakHeatingUpBuff, 0, hotStreakHeatingUpDetails);
-    elseif self.IsCata() then
-        self:AddOverlayOption(hotStreakTalent, heatingUpBuff, 0, heatingUpDetails);
-        self:AddOverlayOption(hotStreakTalent, hotStreakBuff, 0, hotStreakDetails);
-        -- Evidence shows that Hot Streak Heating Up is not possible in Cataclysm
     end
-    self:AddOverlayOption(firestarterTalent, firestarterBuff);
-    self:AddOverlayOption(impactTalent, impactBuff);
+    if self.IsWrath() then
+        self:AddOverlayOption(firestarterTalent, firestarterBuff);
+    end
     if self.IsSoD() then
         self:AddOverlayOption(fingersOfFrostSoDTalent, fingersOfFrostSoDBuff, 0, nil, nil, 2); -- setup any stacks, test with 2 stacks
     elseif self.IsWrath() then
@@ -734,16 +888,13 @@ local function loadOptions(self)
     elseif self.IsCata() then
         self:AddOverlayOption(fingersOfFrostTalent, fingersOfFrostBuffCata, 0, nil, nil, 2); -- setup any stacks, test with 2 stacks
     end
-    self:AddOverlayOption(FrozenHandler.freezeTalent, FrozenHandler.freezeID, 0, nil, nil, nil, FrozenHandler.fakeSpellID);
+    self:AddOverlayOption(FrozenHandler.freezeTalent, FrozenHandler.freezeID, 0, self:translateDebuff(), nil, nil, FrozenHandler.fakeSpellID);
     if self.IsSoD() then
         self:AddOverlayOption(brainFreezeSoDRune, brainFreezeSoDBuff);
-    else
+    elseif self.IsWrath() or self.IsCata() then
         self:AddOverlayOption(brainFreezeTalent, brainFreezeBuff);
     end
 
-    if self.IsCata() then
-        self:AddGlowingOption(arcaneMissilesBuff, arcaneMissilesBuff, arcaneMissiles);
-    end
     if self.IsSoD() then
         self:AddGlowingOption(missileBarrageSoDRune, missileBarrageSoDBuff, arcaneMissiles);
     elseif self.IsWrath() then
@@ -763,14 +914,11 @@ local function loadOptions(self)
     if self.IsWrath() then
         self:AddGlowingOption(firestarterTalent, firestarterBuff, flamestrike);
     end
-    if not self.IsEra() then -- Must exclude this option specifically for Classic Era, because the talent exists in Era but the proc is passive
-        self:AddGlowingOption(impactTalent, impactBuff, fireBlast);
-    end
     if self.IsSoD() then
         self:AddGlowingOption(brainFreezeSoDRune, brainFreezeSoDBuff, fireball);
         self:AddGlowingOption(brainFreezeSoDRune, brainFreezeSoDBuff, spellfrostBoltSoD);
         self:AddGlowingOption(brainFreezeSoDRune, brainFreezeSoDBuff, frostfireBoltSoD);
-    else
+    elseif self.IsWrath() or self.IsCata() then
         self:AddGlowingOption(brainFreezeTalent, brainFreezeBuff, fireball);
         self:AddGlowingOption(brainFreezeTalent, brainFreezeBuff, frostfireBolt);
     end
@@ -782,12 +930,14 @@ local function loadOptions(self)
     elseif self.IsWrath() then
         self:AddGlowingOption(fingersOfFrostTalent, fingersOfFrostBuffWrath, iceLance);
         self:AddGlowingOption(fingersOfFrostTalent, fingersOfFrostBuffWrath, deepFreeze);
-        self:AddGlowingOption(FrozenHandler.freezeTalent, FrozenHandler.freezeID, iceLance);
-        self:AddGlowingOption(FrozenHandler.freezeTalent, FrozenHandler.freezeID, deepFreeze);
     elseif self.IsCata() then
         self:AddGlowingOption(fingersOfFrostTalent, fingersOfFrostBuffCata, iceLance);
         self:AddGlowingOption(fingersOfFrostTalent, fingersOfFrostBuffCata, deepFreeze);
+    end
+    if self.IsProject(SAO.TBC_AND_ONWARD) then
         self:AddGlowingOption(FrozenHandler.freezeTalent, FrozenHandler.freezeID, iceLance);
+    end
+    if self.IsProject(SAO.WRATH_AND_ONWARD) then
         self:AddGlowingOption(FrozenHandler.freezeTalent, FrozenHandler.freezeID, deepFreeze);
     end
 end
@@ -800,6 +950,7 @@ SAO.Class["MAGE"] = {
     ["CHARACTER_POINTS_CHANGED"] = recheckTalents,
     ["PLAYER_TARGET_CHANGED"] = retarget,
     ["UNIT_HEALTH"] = unitHealth,
+    ["UNIT_HEALTH_FREQUENT"] = unitHealthFrequent,
     [SAO.IsWrath() and "PLAYER_TALENT_UPDATE" or "CHARACTER_POINTS_CHANGED"] = recheckTalents, -- Event changed in Wrath
     ["RUNE_UPDATED"] = SAO.IsSoD() and recheckTalents or nil,
 }

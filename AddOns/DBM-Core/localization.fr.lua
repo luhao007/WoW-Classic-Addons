@@ -47,6 +47,7 @@ L.BIGWIGS_ICON_CONFLICT		= L.DBM .. " a détecté que vous avez activé vos icô
 
 L.MOD_AVAILABLE				= "%s est disponible pour ce contenu. Vous pouvez trouver sur Curse, Wago, WowInterface, ou Github."
 L.MOD_MISSING				= "Pas de module de raid"
+L.NOT_INSTALLED				= "Non installé"
 
 L.COMBAT_STARTED				= "%s engagé. Bonne chance et amusez-vous bien ! :)";
 L.COMBAT_STARTED_IN_PROGRESS 	= "Vous êtes engagé dans un combat en cours contre %s. Bonne chance et amusez-vous bien ! :)"
@@ -175,6 +176,7 @@ L.WHISPER_SCENARIO_END_KILL_STATS	= "%s vient de terminer %s ! Ils ont un total 
 L.WHISPER_SCENARIO_END_WIPE		 	= "%s a subi une défaite dans %s"
 L.WHISPER_SCENARIO_END_WIPE_STATS	= "%s a subi une défaite dans %s. Ils ont un total de %d défaites dans cette difficulté."
 
+L.DUNGEONS					= "Donjons : "--prefix for dungeons version check
 L.VERSIONCHECK_HEADER		= "Module de boss - Versions"
 L.VERSIONCHECK_ENTRY		= "%s: %s (%s)"
 L.VERSIONCHECK_ENTRY_TWO	= "%s: %s (%s) & %s (%s)"--Two Boss mods
@@ -554,6 +556,7 @@ L.AUTO_ICONS_OPTION_TARGETS_MELEE_R 	= "Définir des icônes sur les cibles de $
 L.AUTO_ICONS_OPTION_TARGETS_RANGED_A	= "Définir des icônes sur les cibles de $spell:%s avec priorité distance et alphabétique"
 L.AUTO_ICONS_OPTION_TARGETS_RANGED_R 	= "Définir des icônes sur les cibles de $spell:%s avec priorité distance et de la liste de raid"
 L.AUTO_ICONS_OPTION_TARGETS_MRH			= "Définir des icônes sur les cibles de $spell:%s avec priorité mêlée sur distance sur soigneurs et la liste de raid comme solution de repli"
+L.AUTO_ICONS_OPTION_TARGETS_TOH 		= "Définir des icônes sur les cibles de $spell:%s avec priorité tank sur DPS sur soigneur et la liste de raid comme solution de repli"
 L.AUTO_ICONS_OPTION_TARGETS_ALPHA 		= "Définir des icônes sur les cibles de $spell:%s avec priorité alphabétique"
 L.AUTO_ICONS_OPTION_TARGETS_ROSTER 		= "Définir des icônes sur les cibles de $spell:%s avec priorité de la liste de raid"
 L.AUTO_ICONS_OPTION_NPCS				= "Définir des icônes sur $spell:%s"
@@ -687,3 +690,15 @@ L.DBM_INSTALL_PACKAGE_DUNGEON 	= "Paquet de Donjons, Gouffres et Événements"
 
 -- Tests
 L.DBM_TAINTED_BY_TESTS = "DBM a été utilisé en mode test avec distorsion temporelle lors de la session actuelle, il est recommandé de recharger votre interface avant d'utiliser DBM dans un combat de boss réel. Tout devrait fonctionner comme prévu, mais aucune garantie !"
+
+-- Boss tooltip
+L.TOOLTIP_DBM                 = L.DBM .. " infos"
+L.TOOLTIP_ENRAGE_TIMER        = "Chronomètre d'enrage"
+L.TOOLTIP_KILLS               = "Victoires (%s)"
+L.TOOLTIP_WIPES               = "Défaites (%s)"
+L.TOOLTIP_FASTEST             = "Victoire la plus rapide (%s)"
+
+-- Difficulty info not found in normal globals, used by both GUI and tooltip
+L.FOLLOWER							= "Sujet"--i.e. the new dungeon type in 10.2.5. I haven't found a translated string yet
+L.STORY					    		= PLAYER_DIFFICULTY_STORY_RAID or "Histoire"--i.e. the new dungeon type in 11.0.0. I haven't found a translated string yet
+L.DUOS								= "Duos"

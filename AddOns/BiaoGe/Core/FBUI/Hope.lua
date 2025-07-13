@@ -13,13 +13,12 @@ local SetClassCFF = ns.SetClassCFF
 local HopeMaxn = ns.HopeMaxn
 local HopeMaxb = ns.HopeMaxb
 local HopeMaxi = ns.HopeMaxi
-local FrameHide = ns.FrameHide
 local AddTexture = ns.AddTexture
 local GetItemID = ns.GetItemID
 
 local pt = print
 local RealmID = GetRealmID()
-local player = UnitName("player")
+local player = BG.playerName
 
 BG.HopeJingzheng = {}
 
@@ -59,6 +58,16 @@ function BG.HopeUI(FB)
                     version:SetText(L["< |cffFFFFFF10人|r|cffFF0000英雄|r >"])
                 elseif n == 4 then
                     version:SetText(L["< |cffFFFFFF25人|r|cffFF0000英雄|r >"])
+                end
+            elseif BG.IsRetail then
+                if n == 1 then
+                    version:SetText(L["< |cff00D82F随机|r >"])
+                elseif n == 2 then
+                    version:SetText(L["< |cff00BFFF普通|r >"])
+                elseif n == 3 then
+                    version:SetText(L["< |cffFF0000英雄|r >"])
+                elseif n == 4 then
+                    version:SetText(L["< |cffa335ee史诗|r >"])
                 end
             else
                 if n == 1 then
@@ -127,59 +136,57 @@ function BG.HopeUI(FB)
                     BG.LootedText(bt)
 
                     -- 内容改变时
-                    local _, class = UnitClass("player")
-                    local RealmId = GetRealmID()
-                    local player = UnitName("player")
                     bt:SetScript("OnTextChanged", function(self)
                         local itemText = bt:GetText()
                         local itemID = select(1, GetItemInfoInstant(itemText))
-                        local name, link, quality, level, _, _, _, _, _, Texture, _, typeID, _, bindType = GetItemInfo(itemText)
-                        local hard
-                        if link and itemText:find("item:") then
-                            if FB == "ULD" then
-                                for index, value in ipairs(BG.Loot.ULD.Hard10) do
-                                    if itemID == value then
-                                        self:SetText(link .. "H")
-                                        hard = true
-                                    end
-                                end
-                                if not hard then
-                                    for index, value in ipairs(BG.Loot.ULD.Hard25) do
+                        if itemID then
+                            local item = Item:CreateFromItemID(itemID)
+                            item:ContinueOnItemLoad(function()
+                                local name, link, quality, level, _, _, _, _, _, Texture,
+                                _, typeID, _, bindType = GetItemInfo(itemText)
+                                if FB == "ULD" and not itemText:match("H$") then
+                                    local hard
+                                    for index, value in ipairs(BG.Loot.ULD.Hard10) do
                                         if itemID == value then
-                                            self:SetText(link .. "H")
+                                            self:SetText(itemText .. "H")
+                                            hard = true
+                                            break
                                         end
                                     end
+                                    if not hard then
+                                        for index, value in ipairs(BG.Loot.ULD.Hard25) do
+                                            if itemID == value then
+                                                self:SetText(itemText .. "H")
+                                                break
+                                            end
+                                        end
+                                    end
+                                elseif FB == "ICC" and not itemText:match("H$") then
+                                    if itemID == 52030 or itemID == 52029 or itemID == 52028 then
+                                        self:SetText(link .. "H")
+                                    end
                                 end
-                            elseif FB == "ICC" then
-                                if itemID == 52030 or itemID == 52029 or itemID == 52028 then
-                                    self:SetText(link .. "H")
-                                end
-                            end
-                            -- 装备图标
-                            self.icon:SetTexture(Texture)
+                                self.icon:SetTexture(Texture)
+                                BG.BindOnEquip(self, bindType)
+                                BG.LevelText(self, level, typeID)
+                                BG.IsHave(self)
+                            end)
                         else
                             self.icon:SetTexture(nil)
-                        end
-                        if self:GetText() == "" then
-                            BG.HopeFrame[FB]["nandu" .. n]["boss" .. b]["jingzheng" .. i]:Hide()
+                            BG.BindOnEquip(self)
+                            BG.LevelText(self)
+                            BG.IsHave(self)
                         end
 
                         BG.UpdateFilter(self)
-
-                        if bt:GetText() ~= "" then
-                            BiaoGe.Hope[RealmId][player][FB]["nandu" .. n]["boss" .. b]["zhuangbei" .. i] = bt:GetText() -- 储存文本
-                        else
-                            BiaoGe.Hope[RealmId][player][FB]["nandu" .. n]["boss" .. b]["zhuangbei" .. i] = nil
-                        end
-
-                        -- 装绑图标
-                        BG.BindOnEquip(self, bindType)
-                        -- 在按钮右边增加装等显示
-                        BG.LevelText(self, level, typeID)
-                        -- 更新已掉落
                         BG.Update_IsLooted(self)
-                        -- 已拥有图标
-                        BG.IsHave(self)
+
+                        if itemText ~= "" then
+                            BiaoGe.Hope[RealmID][player][FB]["nandu" .. n]["boss" .. b]["zhuangbei" .. i] = itemText
+                        else
+                            BiaoGe.Hope[RealmID][player][FB]["nandu" .. n]["boss" .. b]["zhuangbei" .. i] = nil
+                            BG.HopeFrame[FB]["nandu" .. n]["boss" .. b]["jingzheng" .. i]:Hide()
+                        end
                     end)
                     -- 点击
                     bt:SetScript("OnMouseDown", function(self, enter)
@@ -244,8 +251,8 @@ function BG.HopeUI(FB)
                     bt:SetScript("OnEnter", function(self)
                         BG.HopeFrameDs[FB .. 1]["nandu" .. n]["boss" .. b]["ds" .. i]:Show()
                         if not tonumber(self:GetText()) then
-                            local itemLink = bt:GetText()
-                            local itemID = select(1, GetItemInfoInstant(itemLink))
+                            local link = bt:GetText()
+                            local itemID = select(1, GetItemInfoInstant(link))
                             if itemID then
                                 if BG.ButtonIsInRight(self) then
                                     GameTooltip:SetOwner(self, "ANCHOR_LEFT", 0, 0)
@@ -253,8 +260,7 @@ function BG.HopeUI(FB)
                                     GameTooltip:SetOwner(self, "ANCHOR_RIGHT", 0, 0)
                                 end
                                 GameTooltip:ClearLines()
-                                GameTooltip:SetItemByID(itemID)
-                                GameTooltip:Show()
+                                GameTooltip:SetHyperlink(BG.SetSpecIDToLink(link))
                                 -- BG.SetHistoryMoney(itemID)
 
                                 BG.DressUpLastButton = self
@@ -279,7 +285,7 @@ function BG.HopeUI(FB)
                     end)
                     -- 获得光标时
                     bt:SetScript("OnEditFocusGained", function(self)
-                        FrameHide(1)
+                        BG.FrameHide(1)
                         self:HighlightText()
                         BG.lastfocuszhuangbei = self
                         BG.lastfocus = self
@@ -480,7 +486,7 @@ function BG.HopeUI(FB)
                         GameTooltip:SetOwner(self, "ANCHOR_TOPLEFT", 0, 0)
                         GameTooltip:ClearLines()
                         GameTooltip:AddLine(format(L["当前团队还有 %s 人也许愿该装备！"], self.text:GetText()), 1, 0, 0, true)
-                        GameTooltip:AddLine(L["右键取消提示"], 1, 0.82, 0, true)
+                        GameTooltip:AddLine(AddTexture("RIGHT")..L["取消提示"], 1, 0.82, 0, true)
                         GameTooltip:Show()
                     end)
                     f:SetScript("OnLeave", function(self)
@@ -489,7 +495,7 @@ function BG.HopeUI(FB)
                     -- 单击触发
                     f:SetScript("OnMouseDown", function(self, enter)
                         if enter == "RightButton" then
-                            FrameHide(0)
+                            BG.FrameHide(0)
                             self:Hide()
                         end
                     end)
@@ -693,8 +699,9 @@ function BG.HopeUI(FB)
 
             -- 单击触发
             bt:SetScript("OnClick", function(self)
-                FrameHide(0)
+                BG.FrameHide(0)
                 if not BiaoGe.HopeSendChannel then return end
+                local targetName = BG.GN("t")
                 if BiaoGe.HopeSendChannel == "RAID" then
                     if not IsInRaid(1) then
                         SendSystemMessage(L["不在团队，无法通报"])
@@ -717,33 +724,33 @@ function BG.HopeUI(FB)
                     end
                 end
                 if BiaoGe.HopeSendChannel == "WHISPER" then
-                    if not UnitName("target") then
+                    if not targetName then
                         SendSystemMessage(L["没有目标，无法通报"])
                         BG.PlaySound(1)
                         return
                     end
                 end
 
-                self:SetEnabled(false) -- 点击后按钮变灰2秒
+                self:SetEnabled(false) 
                 C_Timer.After(2, function()
                     bt:SetEnabled(true)
                 end)
                 local channel = BiaoGe.HopeSendChannel
 
                 local text = L["———我的心愿———"]
-                SendChatMessage(text, channel, nil, UnitName("target"))
+                SendChatMessage(text, channel, nil, targetName)
 
                 local tbl = CreateList(n, true)
                 if #tbl == 0 then
                     BG.After(BG.tongBaoSendCD, function()
                         text = L["没有心愿"]
-                        SendChatMessage(text, channel, nil, UnitName("target"))
+                        SendChatMessage(text, channel, nil, targetName)
                     end)
                 else
                     local t = BG.tongBaoSendCD
                     for _, text in ipairs(tbl) do
                         BG.After(t, function()
-                            SendChatMessage(text, channel, nil, UnitName("target"))
+                            SendChatMessage(text, channel, nil, targetName)
                         end)
                         t = t + BG.tongBaoSendCD
                     end
@@ -772,7 +779,7 @@ function BG.HopeUI(FB)
             info.func = function()
                 BiaoGe.HopeSendChannel = channel
                 LibBG:UIDropDownMenu_SetText(dropDown, BG.HopeSendTable[BiaoGe.HopeSendChannel])
-                FrameHide(0)
+                BG.FrameHide(0)
             end
             if BiaoGe.HopeSendChannel == channel then
                 info.checked = true
@@ -788,7 +795,7 @@ function BG.HopeUI(FB)
         LibBG:UIDropDownMenu_SetAnchor(dropDown, 0, 0, "TOP", dropDown, "BOTTOM")
         LibBG:UIDropDownMenu_SetText(dropDown, BG.HopeSendTable[BiaoGe.HopeSendChannel])
         LibBG:UIDropDownMenu_Initialize(dropDown, function(self, level, menuList)
-            FrameHide(0)
+            BG.FrameHide(0)
             AddButton(dropDown, L["团队"], "RAID")
             AddButton(dropDown, L["队伍"], "PARTY")
             AddButton(dropDown, L["公会"], "GUILD")
@@ -823,10 +830,9 @@ end
 BG.RegisterEvent("CHAT_MSG_ADDON", function(self, event, ...)
     local prefix, msg, distType, sender = ...
     if prefix ~= "BiaoGe" then return end
+    sender = BG.GSN(sender)
     if distType == "RAID" then -- 团队消息
-        local sendername = strsplit("-", sender)
-        local playername = UnitName("player")
-        if sendername == playername then return end
+        if sender == player then return end
         if strfind(msg, "^(Hope)") then
             local _, fbitemID = strsplit("-", msg)
             local FB, itemID = strsplit(" ", fbitemID)

@@ -1,6 +1,6 @@
-## Interface: 30404
+## Interface: 30405
 ## Author: foxlit
-## Version: Ånd 5a
+## Version: Ånd 6.2
 
 ## Title: OPie
 ## Notes: Group abilities into rings that appear when you hold down a binding.
@@ -23,6 +23,7 @@ Libs\Evie.lua
 Libs\Niji.lua
 Libs\TaintLess.xml
 Libs\exui\exui.xml
+Libs\BrokenSun.xml
 Libs\ActionBook\ActionBook.xml
 Libs\Mirage.lua
 Libs\TenSettings.lua

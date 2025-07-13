@@ -1,5 +1,5 @@
-## Interface: 30404
-## Version: 2.2.5
+## Interface: 30405
+## Version: 2.3.2
 
 ## Title: MeetingHorn
 ## Title-zhCN: |cFFFFE00A<|r|cFFF48CBA社交|r|cFFFFE00A>|r |cFFFFFFFF集结号|r |cFFFFE00AMeetingHorn|r

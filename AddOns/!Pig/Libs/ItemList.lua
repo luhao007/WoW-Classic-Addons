@@ -1,16 +1,15 @@
 local addonName, addonTable = ...;
 local L=addonTable.locale
-local _, _, _, tocversion = GetBuildInfo()
 local match = _G.string.match
 local find = _G.string.find
 --
 local Create = addonTable.Create
 local PIGFrame=Create.PIGFrame
-local PIGButton=Create.PIGButton
 local PIGFontString=Create.PIGFontString
 local BackdropColor=Create.BackdropColor
 local PIGLine=Create.PIGLine
 local PIGEnter=Create.PIGEnter
+local PIGDiyTex=Create.PIGDiyTex
 ---
 local Data=addonTable.Data
 local InvSlot=Data.InvSlot
@@ -24,36 +23,13 @@ local TalentData=Data.TalentData
 local Fun=addonTable.Fun
 local GetRuneData=Fun.GetRuneData
 local GetItemStats=GetItemStats or C_Item and C_Item.GetItemStats
+local GetItemGem=GetItemGem or C_Item and C_Item.GetItemGem
+local GetItemInfoInstant=GetItemInfoInstant or C_Item and C_Item.GetItemInfoInstant
+local GetDetailedItemLevelInfo=GetDetailedItemLevelInfo or C_Item and C_Item.GetDetailedItemLevelInfo
+local GetSpecialization = GetSpecialization or C_SpecializationInfo and C_SpecializationInfo.GetSpecialization
+local GetSpecializationInfo = GetSpecializationInfo or C_SpecializationInfo and C_SpecializationInfo.GetSpecializationInfo
 -------------
 local ListWWWHHH = {206,425,18,36,6}--3Gembut/4buweiW/5宝石+附魔+符文数
-local function CZ_ItemListinfo(fujikk,Slot,fujiname)
-	fujikk:SetBackdropBorderColor(0.5, 0.5, 0.5,0.5)--部位边框
-	fujikk.t:SetTextColor(0.5, 0.5, 0.5,0.8);--部位名
-	fujikk.itemlink.cunzai=nil
-	fujikk.itemlink:SetWidth(0.1);--link宽
-	fujikk.itemlink.lv:SetText(" ")--物品等级
-	fujikk.itemlink.t:SetText(" ")--物品link
-	for Gemid=1,ListWWWHHH[5] do
-		local Gemui = _G[fujiname.."_"..Slot.."_"..Gemid]
-		Gemui:SetWidth(0.01)
-		Gemui:SetAlpha(0)
-		Gemui:SetBackdropBorderColor(0, 0, 0, 1);
-	end
-	fujikk.itemlink:SetScript("OnEnter",nil);
-	fujikk.itemlink:SetScript("OnDoubleClick",nil)
-end
-local function CZ_taozhuanginfo(self,fujiname)
-	for tid=1,4 do
-		local taoui = _G[fujiname.."_".."tao_"..tid]
-		taoui:SetTextColor(0.5, 0.5, 0.5, 1);
-		if tid==1 then
-			taoui:SetText(string.format(BOSS_BANNER_LOOT_SET,NONE))
-		else
-			taoui:SetText("")
-		end
-	end
-	self:SetHeight(ListWWWHHH[2])
-end
 --获取宝石槽位信息add
 local function PIGGetGemList(Link)
 	local baoshiinfo = {}
@@ -70,28 +46,6 @@ local function PIGGetGemList(Link)
 		end
 	end
     return baoshiinfo
-end
-local function add_GemBut(self,id)
-	local fujiname=self:GetName()
-	local Gembut = CreateFrame("Frame", fujiname.."_"..id, self,"BackdropTemplate");
-	Gembut:SetBackdrop({edgeFile = "Interface/AddOns/"..addonName.."/Libs/Pig_Border.blp", edgeSize = 10});
-	Gembut:SetBackdropBorderColor(0, 0, 0, 1);
-	Gembut:SetSize(ListWWWHHH[3],ListWWWHHH[3]);
-	if id==1 then
-		Gembut:SetPoint("LEFT",self.itemlink,"RIGHT",0,-1);
-	elseif id==6 then
-		Gembut:SetPoint("RIGHT",self,"LEFT",-2.4,-1);
-	else
-		Gembut:SetPoint("LEFT",_G[fujiname.."_"..(id-1)],"RIGHT",1,0);
-	end
-	Gembut.icon = Gembut:CreateTexture();
-	Gembut.icon:SetPoint("TOPLEFT",Gembut,"TOPLEFT",2,-2);
-	Gembut.icon:SetPoint("BOTTOMRIGHT",Gembut,"BOTTOMRIGHT",-2,2);
-	Gembut:SetScript("OnLeave", function ()
-		GameTooltip:ClearLines();
-		GameTooltip:Hide() 
-	end);
-	return Gembut
 end
 local function ShowGemBut(Gemse,GemitemLink,nulltishi)
 	if GemitemLink then
@@ -118,7 +72,7 @@ local function ShowGemBut(Gemse,GemitemLink,nulltishi)
 		else
 			if nulltishi==55655 then
 				GameTooltip:SetSpellByID(55655)
-				GameTooltip:AddLine("|cff00FFFF[!Pig]:|r|cffFF0000"..WAISTSLOT.."未打孔|r")
+				GameTooltip:AddLine("|cff00FFFF["..addonName.."]:|r|cffFF0000"..WAISTSLOT.."未打孔|r")
 			else
 				GameTooltip:AddLine(nulltishi)
 			end
@@ -178,7 +132,7 @@ local function ShowEnchantInfo(EnchantBut,fumoid)
 				GameTooltip:SetHyperlink(ItemLink)
 				GameTooltip:AddLine(ENCHANTS.."ID:"..fumoid..Newdata.laiyuan)
 			else
-				GameTooltip:AddLine("|cff00FFFF[!Pig]:|r"..ENCHANTS.."ID:"..fumoid..ENCHANTS..INFO..UNKNOWN)
+				GameTooltip:AddLine("|cff00FFFF["..addonName.."]:|r"..ENCHANTS.."ID:"..fumoid..ENCHANTS..INFO..UNKNOWN)
 			end
 
 			GameTooltip:Show();
@@ -214,8 +168,8 @@ local function Show_fuwenBut(fuwenIcon,fwshuju)
 	end
 end
 local function Show_fuwenBut_yanchi(Parent,hangUI,fuwenIcon,k)
-	if Pig_OptionsUI.talentData[Parent.cName] and Pig_OptionsUI.talentData[Parent.cName]["R"] and Pig_OptionsUI.talentData[Parent.cName]["R"][2][k] then
-		Show_fuwenBut(fuwenIcon,Pig_OptionsUI.talentData[Parent.cName]["R"][2][k])
+	if PIG_OptionsUI.talentData[Parent.cName] and PIG_OptionsUI.talentData[Parent.cName]["R"] and PIG_OptionsUI.talentData[Parent.cName]["R"][2][k] then
+		Show_fuwenBut(fuwenIcon,PIG_OptionsUI.talentData[Parent.cName]["R"][2][k])
 	else
 		if Parent.fuwenBut_yanchi then Parent.fuwenBut_yanchi:Cancel() end
 		Parent.fuwenBut_yanchi=C_Timer.NewTimer(0.3,function()
@@ -227,10 +181,10 @@ end
 local function GetNewWidthhang(Parent,fujikk)
 	local width = fujikk.itemlink.t:GetStringWidth()+fujikk.itemlink.lv:GetStringWidth()
 	fujikk.itemlink:SetWidth(width);
-	local fangkuangNUM=fujikk.DataInfo.baoshiNUM+fujikk.DataInfo.fumoNum+fujikk.DataInfo.fuwenNum
-	fujikk.DataInfo.hangWWWW = width+fangkuangNUM*(ListWWWHHH[3]+1)+ListWWWHHH[4]+18
-	if fujikk.DataInfo.hangWWWW>Parent.ALLWWWW then
-		Parent.ALLWWWW=fujikk.DataInfo.hangWWWW
+	local fangkuangNUM=fujikk.dataxInfo.baoshiNUM+fujikk.dataxInfo.fumoNum+fujikk.dataxInfo.fuwenNum
+	fujikk.dataxInfo.hangWWWW = width+fangkuangNUM*(ListWWWHHH[3]+1)+ListWWWHHH[4]+18
+	if fujikk.dataxInfo.hangWWWW>Parent.ALLWWWW then
+		Parent.ALLWWWW=fujikk.dataxInfo.hangWWWW
 	end
 	return Parent.ALLWWWW
 end
@@ -266,16 +220,14 @@ local function PIGGetTaozhuang(statsg)
 	end
 	return taozhuainfo
 end
-local Plisttip = CreateFrame("GameTooltip", "Plisttip_UI", UIParent, "GameTooltipTemplate")
-Plisttip:SetOwner(UIParent, "ANCHOR_NONE")
 local function PIGGetItemStats(Parent,soltlink)
 	if not Parent:IsVisible() then return end	
-	if tocversion<50000 then
-		Plisttip:ClearLines();
-		Plisttip:SetHyperlink(soltlink)
+	if PIG_MaxTocversion() then
+		PIG_TooltipUI:ClearLines();
+		PIG_TooltipUI:SetHyperlink(soltlink)
 		local quality = C_Item.GetItemQualityByID(soltlink) or 1
-	    local hangname = Plisttip:GetName()
-	    local txtNum = Plisttip:NumLines()
+	    local hangname = PIG_TooltipUI:GetName()
+	    local txtNum = PIG_TooltipUI:NumLines()
 	    if txtNum then
 	    	for g = 2, txtNum do
 		    	local text = _G[hangname.."TextLeft" .. g]:GetText() or ""
@@ -291,20 +243,20 @@ local function PIGGetItemStats(Parent,soltlink)
 		end
 	end
 end
-local function ShowItemTaozhuang(Parent,Data)
+local function ShowItemTaozhuang(Parent,datax)
 	if Parent.taozhuangTicker then Parent.taozhuangTicker:Cancel() end
 	Parent.taozhuangTicker=C_Timer.NewTimer(0.2,function()
 		Parent.xuhaoID = 0
 		wipe(Parent.allstats)
-		for k,v in pairs(Data) do
-			if tocversion<50000 then
-				Plisttip:ClearLines();
-				Plisttip:SetHyperlink(v)
+		for k,v in pairs(datax) do
+			if PIG_MaxTocversion() then
+				PIG_TooltipUI:ClearLines();
+				PIG_TooltipUI:SetHyperlink(v)
 			else
 				C_TooltipInfo.GetHyperlink(v)
 			end
 		end
-		for k,v in pairs(Data) do
+		for k,v in pairs(datax) do
 			C_Timer.After(0.04*Parent.xuhaoID,function()
 				PIGGetItemStats(Parent,v)
 			end)
@@ -316,7 +268,7 @@ local function ShowItemTaozhuang(Parent,Data)
 			local taozhuang = PIGGetTaozhuang(Parent.allstats)
 			local taozhuangNum = #taozhuang
 			for tid=1,taozhuangNum do
-				local taoui = _G[Parent:GetName().."_".."tao_"..tid]
+				local taoui = Parent.ListTao[tid]--_G[Parent:GetName().."_".."tao_"..tid]
 				taoui:SetText(string.format(BOSS_BANNER_LOOT_SET,taozhuang[tid][1].."("..taozhuang[tid][2].."/"..taozhuang[tid][3]..")"))
 				local r, g, b =GetItemQualityColor(taozhuang[tid][4] or 0)
 				taoui:SetTextColor(r, g, b,1);
@@ -331,16 +283,15 @@ local function ShowItemTaozhuang(Parent,Data)
 		end)
 	end)
 end
-local function ShowItemList(Parent,unit,Data,fuwen)
-	local Parentname = Parent:GetName()
+local function ShowItemList(Parent,unit,datax,fuwen)
 	Parent.zhuangbeiInfo = {["allleve"]=0,["wuqixiuzhengV"]=""}
 	Parent.ALLWWWW=ListWWWHHH[1]
-	for k,v in pairs(Data) do
+	for k,v in pairs(datax) do
 		if k~=4 and k~=19 then
-			local itemLink=Data[k]
+			local itemLink=datax[k]
 			if itemLink then
-				local fujikk = _G[Parentname.."_"..k]
-				fujikk.DataInfo = {["hangWWWW"]=0,["fumoNum"]=0,["fuwenNum"]=1}
+				local fujikk = Parent.ListHang[k]
+				fujikk.dataxInfo = {["hangWWWW"]=0,["fumoNum"]=0,["fuwenNum"]=1}
 				fujikk.t:SetTextColor(0, 1, 1, 0.8);
 				fujikk:SetBackdropBorderColor(0, 1, 1, 0.5)
 				local effectiveILvl, isPreview, baseILvl = GetDetailedItemLevelInfo(itemLink)
@@ -370,21 +321,21 @@ local function ShowItemList(Parent,unit,Data,fuwen)
 	            end)
 	        	---
 				local baoshiinfo=PIGGetGemList(itemLink)
-				if tocversion<50000 and tocversion>29999 and k==6 then table.insert(baoshiinfo,55655) end
+				if PIG_MaxTocversion() and PIG_MaxTocversion(29999,true) and k==6 then table.insert(baoshiinfo,55655) end
 			    local baoshiNUM=#baoshiinfo
-			    fujikk.DataInfo.baoshiNUM=baoshiNUM
-				for Gemi=1,baoshiNUM do
-					local Gemui = _G[Parentname.."_"..k.."_"..Gemi]
+			    fujikk.dataxInfo.baoshiNUM=baoshiNUM
+				for Gemid=1,baoshiNUM do
+					local Gemui = fujikk.ButGem[Gemid]
 					Gemui:SetWidth(ListWWWHHH[3])
 					Gemui:SetAlpha(1)
 					Gemui.getnum=0
-					PIG_SetGemInfo(Gemui,Gemi,baoshiinfo[Gemi],unit,k,itemLink)
+					PIG_SetGemInfo(Gemui,Gemid,baoshiinfo[Gemid],unit,k,itemLink)
 				end
 				---
 				local fumoid = PIGGetEnchantID(itemLink)
-				local Enchantui=_G[Parentname.."_"..k.."_"..5]
+				local Enchantui=fujikk.ButGem[5]
 				if fumoid>0 then
-					fujikk.DataInfo.fumoNum=1
+					fujikk.dataxInfo.fumoNum=1
 					Enchantui:SetWidth(ListWWWHHH[3])
 					Enchantui:SetAlpha(1)
 					Enchantui.icon:SetDesaturated(false)
@@ -426,7 +377,7 @@ local function ShowItemList(Parent,unit,Data,fuwen)
 					end
 				else
 					if EnchantSlot[k] then
-						fujikk.DataInfo.fumoNum=1
+						fujikk.dataxInfo.fumoNum=1
 						local itemID, itemType, itemSubType, itemEquipLoc = GetItemInfoInstant(itemLink)
 						if k==17 and itemEquipLoc=="INVTYPE_HOLDABLE" then 
 						else
@@ -438,7 +389,7 @@ local function ShowItemList(Parent,unit,Data,fuwen)
 							Enchantui:SetScript("OnEnter", function (self)
 								GameTooltip:ClearLines();
 								GameTooltip:SetOwner(self, "ANCHOR_RIGHT",0,0);
-								GameTooltip:AddLine("|cff00FFFF[!Pig]:|r|cffFF0000"..InvSlot["Name"][k][2]..NONE..ENCHANTS.."|r")
+								GameTooltip:AddLine("|cff00FFFF["..addonName.."]:|r|cffFF0000"..InvSlot["Name"][k][2]..NONE..ENCHANTS.."|r")
 								GameTooltip:Show();
 							end);
 						end
@@ -447,7 +398,7 @@ local function ShowItemList(Parent,unit,Data,fuwen)
 				---
 				if C_Engraving and C_Engraving.IsEngravingEnabled() then
 					if EngravingSlot[k] then
-						local fuwenIcon=_G[Parentname.."_"..k.."_"..6]
+						local fuwenIcon=fujikk.ButGem[6]
 						fuwenIcon:SetBackdropBorderColor(0.5, 0.5, 0.5, 1);
 						fuwenIcon:SetWidth(ListWWWHHH[3])
 						fuwenIcon:SetAlpha(1)
@@ -456,12 +407,12 @@ local function ShowItemList(Parent,unit,Data,fuwen)
 						fuwenIcon:SetScript("OnEnter", function (self)
 								GameTooltip:ClearLines();
 								GameTooltip:SetOwner(self, "ANCHOR_RIGHT",0,0);
-								GameTooltip:AddLine("|cff00FFFF[!Pig]:|r|cffFF0000"..InvSlot["Name"][k][2]..NONE..RUNES.."|r")
+								GameTooltip:AddLine("|cff00FFFF["..addonName.."]:|r|cffFF0000"..InvSlot["Name"][k][2]..NONE..RUNES.."|r")
 								GameTooltip:Show();
 							end);
 						if unit=="player" or unit=="lx" then
 							if fuwen[k] then
-								fujikk.DataInfo.fuwenNum=1
+								fujikk.dataxInfo.fuwenNum=1
 								Show_fuwenBut(fuwenIcon,fuwen[k])
 							end
 						else
@@ -480,26 +431,26 @@ local function ShowItemList(Parent,unit,Data,fuwen)
 	if GetAverageItemLevel and unit=="player" then
 		local avgItemLevel, avgItemLevelEquipped, avgItemLevelPvP = GetAverageItemLevel();
 		Parent.pingjunLV_V:SetText(string.format("%.2f",avgItemLevelEquipped))
-	elseif yuanchengCFrame.ZBLsit.itemLV then
-		Parent.pingjunLV_V:SetText(string.format("%.2f",yuanchengCFrame.ZBLsit.itemLV))
+	elseif _G[Data.LongInspectUIUIname].ZBLsit.itemLV then
+		Parent.pingjunLV_V:SetText(string.format("%.2f",_G[Data.LongInspectUIUIname].ZBLsit.itemLV))
 	else
 		local wuqiLV={{0,"null"},{0,"null"},{0,"null"}}
-		if Data[16] then
-			wuqiLV[1][1] = GetDetailedItemLevelInfo(Data[16])
-			local itemID, itemType, itemSubType, itemEquipLoc = GetItemInfoInstant(Data[16])
+		if datax[16] then
+			wuqiLV[1][1] = GetDetailedItemLevelInfo(datax[16])
+			local itemID, itemType, itemSubType, itemEquipLoc = GetItemInfoInstant(datax[16])
 			wuqiLV[1][2]=itemEquipLoc
 		end
-		if Data[17] then
-			wuqiLV[2][1] = GetDetailedItemLevelInfo(Data[17])
-			local itemID, itemType, itemSubType, itemEquipLoc = GetItemInfoInstant(Data[17])
+		if datax[17] then
+			wuqiLV[2][1] = GetDetailedItemLevelInfo(datax[17])
+			local itemID, itemType, itemSubType, itemEquipLoc = GetItemInfoInstant(datax[17])
 			wuqiLV[2][2]=itemEquipLoc
 		end
 		--INVTYPE_2HWEAPON--双手
 		--INVTYPE_WEAPONMAINHAND--主手
 		--INVTYPE_SHIELD--副手
 		--INVTYPE_WEAPON--单手
-		if tocversion<50000 then
-			if Data[18] then wuqiLV[3][1] = GetDetailedItemLevelInfo(Data[18]) end
+		if PIG_MaxTocversion() then
+			if datax[18] then wuqiLV[3][1] = GetDetailedItemLevelInfo(datax[18]) end
 			--新计算方式(主+副手/远程*2取其大者)
 			if wuqiLV[1][1]>0 or wuqiLV[2][1]>0 or wuqiLV[3][1]>0 then
 				if wuqiLV[1][2] == "INVTYPE_2HWEAPON" and wuqiLV[2][2] == "INVTYPE_2HWEAPON" then--泰坦之握双持双手
@@ -579,20 +530,15 @@ local function GetItemMuluData(Parent,unit,ItemData)
 end
 ------
 local function add_ItemList(fujik,miaodian,ziji)
-	local Pname = fujik:GetName()
-	local fujiname = Pname.."_ZBLsit"
-	if ziji then
-		fujiname = Pname.."_ZBLsit_C"
-	end
 	if GearManagerDialog then GearManagerDialog:SetFrameLevel(10) end
-	local ZBLsit = PIGFrame(fujik,nil,{ListWWWHHH[1],ListWWWHHH[2]},fujiname);
-	ZBLsit:PIGSetBackdrop(0.88,nil,nil,nil,0);
-	--
+	local ZBLsit = PIGFrame(fujik,nil,{ListWWWHHH[1],ListWWWHHH[2]});
 	ZBLsit.classes = ZBLsit:CreateTexture();
 	ZBLsit.classes:SetTexture("Interface/TargetingFrame/UI-Classes-Circles");
-	if ElvUI or NDui then
+	if NDui then
+		ZBLsit:PIGSetBackdrop(0.5,nil,nil,nil,0);
 		ZBLsit.LeftJG,ZBLsit.TopJG=4,3 
 	else
+		ZBLsit:PIGSetBackdrop(0.88,nil,nil,nil,0);
 		ZBLsit.LeftJG,ZBLsit.TopJG=6,6
 	end
 	ZBLsit.classes:SetPoint("TOPLEFT",ZBLsit,"TOPLEFT",ZBLsit.LeftJG,-ZBLsit.TopJG);
@@ -617,10 +563,11 @@ local function add_ItemList(fujik,miaodian,ziji)
 	ZBLsit.talent_1v:SetTextColor(1,1,1,1);
 	ZBLsit.talent_1 = PIGFontString(ZBLsit,{"RIGHT",ZBLsit.talent_1v,"LEFT",0,0},SPECIALIZATION..":","OUTLINE");
 	PIGLine(ZBLsit,"TOP",-43-ZBLsit.TopJG,nil,{1,-1},{0.2,0.2,0.2,0.9})
+	ZBLsit.ListHang={}
 	for i=1,#InvSlot["ID"] do
-		local clsit = PIGFrame(ZBLsit,nil,nil,fujiname.."_"..InvSlot["ID"][i]);
+		local clsit = PIGFrame(ZBLsit,nil,{ListWWWHHH[4],ListWWWHHH[3]});
+		ZBLsit.ListHang[InvSlot["ID"][i]]=clsit
 		clsit:PIGSetBackdrop(0)
-		clsit:SetSize(ListWWWHHH[4],ListWWWHHH[3]);
 		if i==1 then
 			if C_Engraving and C_Engraving and C_Engraving.IsEngravingEnabled() then
 				clsit:SetPoint("TOPLEFT",ZBLsit,"TOPLEFT",ListWWWHHH[3]+ZBLsit.LeftJG+3,-54);
@@ -628,10 +575,10 @@ local function add_ItemList(fujik,miaodian,ziji)
 				clsit:SetPoint("TOPLEFT",ZBLsit,"TOPLEFT",ZBLsit.LeftJG,-54);
 			end
 		else
-			if tocversion<50000 then
-				clsit:SetPoint("TOPLEFT",_G[fujiname.."_"..InvSlot["ID"][i-1]],"BOTTOMLEFT",0,-2);
+			if PIG_MaxTocversion(50000) then
+				clsit:SetPoint("TOPLEFT",ZBLsit.ListHang[InvSlot["ID"][i-1]],"BOTTOMLEFT",0,-2);
 			else
-				clsit:SetPoint("TOPLEFT",_G[fujiname.."_"..InvSlot["ID"][i-1]],"BOTTOMLEFT",0,-3.2);
+				clsit:SetPoint("TOPLEFT",ZBLsit.ListHang[InvSlot["ID"][i-1]],"BOTTOMLEFT",0,-3.2);
 			end
 		end
 		clsit.t = PIGFontString(clsit,{"CENTER",0.4,0.6},InvSlot["Name"][InvSlot["ID"][i]][2],"OUTLINE",12)
@@ -646,42 +593,87 @@ local function add_ItemList(fujik,miaodian,ziji)
 			clsit.t:SetTextColor(0, 1, 1, 0.8);
 			clsit:SetBackdropColor(unpack(BackdropColor))
 		end);
+		clsit.ButGem={}
 		for Gemid=1,ListWWWHHH[5] do
-			add_GemBut(clsit,Gemid)
+			local Gembut = CreateFrame("Frame", nil, clsit,"BackdropTemplate");
+			clsit.ButGem[Gemid]=Gembut
+			Gembut:SetBackdrop({edgeFile = "Interface/AddOns/"..addonName.."/Libs/Pig_Border.blp", edgeSize = 10});
+			Gembut:SetBackdropBorderColor(0, 0, 0, 1);
+			Gembut:SetSize(ListWWWHHH[3],ListWWWHHH[3]);
+			if Gemid==1 then
+				Gembut:SetPoint("LEFT",clsit.itemlink,"RIGHT",0,-1);
+			elseif Gemid==6 then
+				Gembut:SetPoint("RIGHT",clsit,"LEFT",-2.4,-1);
+			else
+				Gembut:SetPoint("LEFT",clsit.ButGem[Gemid-1],"RIGHT",1,0);
+			end
+			Gembut.icon = Gembut:CreateTexture();
+			Gembut.icon:SetPoint("TOPLEFT",Gembut,"TOPLEFT",2,-2);
+			Gembut.icon:SetPoint("BOTTOMRIGHT",Gembut,"BOTTOMRIGHT",-2,2);
+			Gembut:SetScript("OnLeave", function ()
+				GameTooltip:ClearLines();
+				GameTooltip:Hide() 
+			end);
+		end
+		function clsit:CZ_ItemListHang()
+			self:SetBackdropBorderColor(0.5, 0.5, 0.5,0.5)--部位边框
+			self.t:SetTextColor(0.5, 0.5, 0.5,0.8);--部位名
+			self.itemlink.cunzai=nil
+			self.itemlink:SetWidth(0.1);--link宽
+			self.itemlink.lv:SetText(" ")--物品等级
+			self.itemlink.t:SetText(" ")--物品link
+			for Gemid=1,ListWWWHHH[5] do
+				local Gemui = clsit.ButGem[Gemid]
+				Gemui:SetWidth(0.01)
+				Gemui:SetAlpha(0)
+				Gemui:SetBackdropBorderColor(0, 0, 0, 1);
+			end
+			self.itemlink:SetScript("OnEnter",nil);
+			self.itemlink:SetScript("OnDoubleClick",nil)
 		end
 	end
 	local Dibuline=PIGLine(ZBLsit,"TOP",-391-ZBLsit.TopJG,nil,{1,-1},{0.2,0.2,0.2,0.9})
+	ZBLsit.ListTao={}
 	for tid=1,6 do
-		local taozhuant = PIGFontString(ZBLsit,nil,"","OUTLINE",nil,fujiname.."_".."tao_"..tid);
+		local taozhuant = PIGFontString(ZBLsit,nil,"","OUTLINE");
+		ZBLsit.ListTao[tid]=taozhuant
 		if tid==1 then
 			taozhuant:SetPoint("TOPLEFT",Dibuline,"BOTTOMLEFT",ZBLsit.LeftJG-3,-4);
 		else
-			taozhuant:SetPoint("TOPLEFT",_G[fujiname.."_".."tao_"..(tid-1)],"BOTTOMLEFT",0,-1);
+			taozhuant:SetPoint("TOPLEFT",ZBLsit.ListTao[tid-1],"BOTTOMLEFT",0,-1);
 		end
 	end
-	if not ziji then
-		TalentData.add_tfui(ZBLsit)
+	if ziji then
+		ZBLsit:SetPoint("TOPLEFT", fujik.ZBLsit, "TOPRIGHT",-1,0);
+		TalentData.add_TalentUI(ZBLsit)
 	end
 	--
-	local FramePlusfun=addonTable.FramePlusfun
 	ZBLsit.allstats={}
 	function ZBLsit:CZ_ItemList()
 		if self.TalentF then self.TalentF:Hide() self.TalentF:CZ_Tianfu() end
 		local Parent=self:GetParent()
-		FramePlusfun.GengxinPoint(Parent)
-		self.WJname:SetText(yuanchengCFrame.fullnameX)
+		addonTable.FramePlusfun.UpdatePoint(Parent)
+		self.WJname:SetText(_G[Data.LongInspectUIUIname].fullnameX)
 		self.pingjunLV_V:SetText("--")
-		yuanchengCFrame.ZBLsit.itemLV=nil
+		_G[Data.LongInspectUIUIname].ZBLsit.itemLV=nil
 		self.classes:SetTexCoord(0,0,0,0);
 		self.talent_1v:SetText("--")
 		self.talentTex:SetTexture(132222);
 		self.talentBut:SetScript("OnClick", nil)
 		local ListName = self:GetName()
 		for i = 1, #InvSlot["ID"] do
-			local fujikk = _G[ListName.."_"..InvSlot["ID"][i]]
-			CZ_ItemListinfo(fujikk,InvSlot["ID"][i],ListName)
+			ZBLsit.ListHang[InvSlot["ID"][i]]:CZ_ItemListHang()
 		end
-		CZ_taozhuanginfo(self,ListName)--CZ套装信息
+		for tid=1,4 do
+			local taoui = ZBLsit.ListTao[tid]
+			taoui:SetTextColor(0.5, 0.5, 0.5, 1);
+			if tid==1 then
+				taoui:SetText(string.format(BOSS_BANNER_LOOT_SET,NONE))
+			else
+				taoui:SetText("")
+			end
+		end
+		self:SetHeight(ListWWWHHH[2])
 	end
 	function ZBLsit:Update_Player(unit,ycdata)
 		self:CZ_ItemList()	
@@ -690,7 +682,7 @@ local function add_ItemList(fujik,miaodian,ziji)
 			["OpenTF"]=function() end,
 		}
 		if unit=="lx" then
-			self.cName=yuanchengCFrame.fullnameX
+			self.cName=_G[Data.LongInspectUIUIname].fullnameX
 			jichuxinxi.Talent=TalentData.GetTianfuIcon_YC(self.zhiye,self.cName,"lx")
 			jichuxinxi.OpenTF=function()
 				PlaySound(SOUNDKIT.IG_CHAT_EMOTE_BUTTON);
@@ -702,7 +694,7 @@ local function add_ItemList(fujik,miaodian,ziji)
 				end
 			end
 		elseif unit=="yc" then
-			self.cName=yuanchengCFrame.fullnameX
+			self.cName=_G[Data.LongInspectUIUIname].fullnameX
 			jichuxinxi.Talent=TalentData.GetTianfuIcon_YC(self.zhiye,self.cName)
 			jichuxinxi.OpenTF=function()
 				PlaySound(SOUNDKIT.IG_CHAT_EMOTE_BUTTON);
@@ -725,7 +717,7 @@ local function add_ItemList(fujik,miaodian,ziji)
 			self.level=Level
 			self.zhiyeID=classId
 			self.zhiye=classFilename
-			if tocversion<50000 then
+			if PIG_MaxTocversion(50000) then
 				jichuxinxi.Talent=TalentData.GetTianfuIcon(IS_guacha,classFilename)
 				jichuxinxi.OpenTF=function()
 					if IS_guacha then
@@ -737,7 +729,7 @@ local function add_ItemList(fujik,miaodian,ziji)
 							self.TalentF:Show_Tianfu(TalentData.GetTianfuNum(true))
 						end
 					else
-						if tocversion<20000 then
+						if PIG_MaxTocversion(20000) then
 							PlayerTalentFrame_LoadUI();
 							if ( PlayerTalentFrame:IsShown() ) then
 								HideUIPanel(PlayerTalentFrame);
@@ -758,22 +750,30 @@ local function add_ItemList(fujik,miaodian,ziji)
 				if IS_guacha then
 					local specID = GetInspectSpecialization(unit)
 					local id, name, description, icon = GetSpecializationInfoByID(specID)
-					jichuxinxi.Talent={name, icon or 132222, 1}
+					jichuxinxi.Talent={name ~= "" and name or NONE, icon or 132222, 1}
 				else
 					local specIndex = GetSpecialization()--当前专精
 					local id, name, description, icon = GetSpecializationInfo(specIndex)
-					jichuxinxi.Talent={name, icon or 132222, 1}
+					jichuxinxi.Talent={name ~= "" and name or NONE, icon or 132222, 1}
 				end
 				jichuxinxi.OpenTF=function()
 					if IS_guacha then
 						if InCombatLockdown() then
 							PlaySound(SOUNDKIT.IG_CHAT_EMOTE_BUTTON);
-							PIGTopMsg:add("请专心战斗");
+							PIG_OptionsUI:ErrorMsg("请专心战斗");
 						else
-							InspectPaperDollFrameTalentsButtonMixin:OnClick()
+							if InspectPaperDollFrameTalentsButtonMixin then
+								InspectPaperDollFrameTalentsButtonMixin:OnClick()
+							else
+								InspectFrameTab3:Click()
+							end
 						end
 					else
-						PlayerSpellsMicroButtonMixin:OnClick()
+						if PlayerSpellsMicroButtonMixin then
+							PlayerSpellsMicroButtonMixin:OnClick()
+						else
+							TalentMicroButton:Click()
+						end
 					end
 				end
 			end
@@ -845,12 +845,12 @@ end
 function Create.PIGItemListUI(laiyuan)
 	if laiyuan.ZBLsit then return end	
 	if laiyuan==PaperDollFrame then
-		laiyuan.ZBLsit = add_ItemList(laiyuan,laiyuan,true)
+		laiyuan.ZBLsit = add_ItemList(laiyuan,laiyuan)
 	elseif laiyuan==InspectFrame then
-		laiyuan.ZBLsit = add_ItemList(laiyuan,laiyuan)
-		laiyuan.ZBLsit_C = add_ItemList(laiyuan,laiyuan.ZBLsit,true)
-	elseif laiyuan==yuanchengCFrame then
-		laiyuan.ZBLsit = add_ItemList(laiyuan,laiyuan)
+		laiyuan.ZBLsit = add_ItemList(laiyuan,laiyuan,true)
+		laiyuan.ZBLsit_C = add_ItemList(laiyuan,laiyuan.ZBLsit)
+	elseif laiyuan==_G[Data.LongInspectUIUIname] then
+		laiyuan.ZBLsit = add_ItemList(laiyuan,laiyuan,true)
 	end
 end
 -- hooksecurefunc("NotifyInspect", function(unit)

@@ -15,17 +15,14 @@ local RGB_16 = ns.RGB_16
 local GetClassRGB = ns.GetClassRGB
 local SetClassCFF = ns.SetClassCFF
 local GetText_T = ns.GetText_T
-local FrameDongHua = ns.FrameDongHua
-local FrameHide = ns.FrameHide
 local AddTexture = ns.AddTexture
 local GetItemID = ns.GetItemID
 
 local Maxb = ns.Maxb
-local Maxi = ns.Maxi
 
 local pt = print
 local RealmId = GetRealmID()
-local player = UnitName("player")
+local player = BG.playerName
 
 BG.Init(function()
     BiaoGe.achievement = BiaoGe.achievement or {}
@@ -321,6 +318,11 @@ BG.Init(function()
             text:SetJustifyH("LEFT")
             text:SetWordWrap(false)
             f.otherText = text
+
+            local tex = f:CreateTexture(nil, "OVERLAY")
+            tex:SetPoint("CENTER", f, "TOPLEFT", 2, -2)
+            tex:SetSize(10, 10)
+            f.icon = tex
         end
 
         for i = 1, 40 do
@@ -332,6 +334,7 @@ BG.Init(function()
         for i, bt in ipairs(BG.AchievementMainFrame.raidFrame.buttons) do
             bt.nameText:Hide()
             bt.otherText:Hide()
+            bt.icon:SetTexture(nil)
             bt.name = nil
         end
         if IsInRaid(1) then
@@ -343,6 +346,15 @@ BG.Init(function()
                         bt.nameText:SetText(SetClassCFF(v.name))
                         bt.nameText:Show()
                         bt.otherText:SetTextColor(1, 1, 1)
+                        if v.rank == 2 then
+                            bt.icon:SetTexture("interface/groupframe/ui-group-leadericon")
+                        elseif v.role == "MAINTANK" then
+                            bt.icon:SetTexture(132064)
+                        elseif v.role == "MAINASSIST" then
+                            bt.icon:SetTexture(132063)
+                        elseif v.rank == 1 then
+                            bt.icon:SetTexture("interface/groupframe/ui-group-assistanticon")
+                        end
                         if not raidAchievement_AllPlayer[v.name] then
                             bt.nameText:SetAlpha(.3)
                             bt.otherText:SetAlpha(.3)
@@ -703,7 +715,7 @@ BG.Init(function()
         local GetComparisonStatistic = GetComparisonStatistic
         local tbl = {}
         local num = 1
-        if name == UnitName("player") then
+        if name == BG.GN() then
             GetAchievementComparisonInfo = GetAchievementInfo
             GetComparisonStatistic = GetStatistic
             num = 4
@@ -755,10 +767,3 @@ BG.Init(function()
         BG.UpdateAchievementFrame()
     end)
 end)
-
--- BG.RegisterEvent("ADDON_LOADED", function(self, event, addonName)
---     if addonName ~= "Blizzard_AchievementUI" then return end
---     hooksecurefunc("AchievementFrameComparison_UpdateStatusBars", function(...)
---         pt(...)
---     end)
--- end)

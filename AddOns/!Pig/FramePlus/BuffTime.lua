@@ -1,5 +1,4 @@
 local _, addonTable = ...;
-local _, _, _, tocversion = GetBuildInfo()
 ---BUFF/DEBUFF框架精确时间========
 local FramePlusfun=addonTable.FramePlusfun
 function FramePlusfun.BuffTime()
@@ -23,7 +22,7 @@ function FramePlusfun.BuffTime()
 		end
 	end
 	--local shangcishuaxinTime = 0
-	if tocversion<100000 then
+	if PIG_MaxTocversion(100000) then
 		hooksecurefunc("AuraButton_UpdateDuration", function(auraButton, timeLeft)
 			auraButton.duration:SetFormattedText(Buff_UpdateTime(timeLeft));
 		end);

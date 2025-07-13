@@ -1,42 +1,27 @@
 local _, addonTable = ...;
-local _, _, _, tocversion = GetBuildInfo()
-local L=addonTable.locale
-local Create=addonTable.Create
-local PIGFrame=Create.PIGFrame
-local PIGButton = Create.PIGButton
-local PIGEnter=Create.PIGEnter
-local PIGLine=Create.PIGLine
-local PIGCheckbutton=Create.PIGCheckbutton
-local PIGOptionsList_RF=Create.PIGOptionsList_RF
-local PIGOptionsList_R=Create.PIGOptionsList_R
-local Show_TabBut_R=Create.Show_TabBut_R
---
-local GetContainerNumSlots = C_Container.GetContainerNumSlots
-local GetContainerItemID = C_Container.GetContainerItemID
-local GetContainerItemLink = C_Container.GetContainerItemLink
-local PickupContainerItem =C_Container.PickupContainerItem
-local UseContainerItem =C_Container.UseContainerItem
-local bagIDMax= addonTable.Data.bagData["bagIDMax"]
---
 local BusinessInfo=addonTable.BusinessInfo
 function BusinessInfo.AutoBuy()
-	local fujiF,fujiTabBut=PIGOptionsList_R(AutoSellBuy_UI.F,"购",50,"Left")
-	local gongnengName = "Buy"
-	BusinessInfo.ADDScroll(fujiF,"购买",gongnengName,17,{true,"AutoSellBuy",gongnengName.."_List"})
-	--------------
-	local function goumaihanshu(i, ii,xuyaogoumaishu,dataY)
-		if xuyaogoumaishu>dataY[i][5] then
-			BuyMerchantItem(ii,dataY[i][5])
-			xuyaogoumaishu=xuyaogoumaishu-dataY[i][5]
-			if xuyaogoumaishu>0 then
-				goumaihanshu(i,ii,xuyaogoumaishu,dataY)
-			end
-		else
-			BuyMerchantItem(ii, xuyaogoumaishu)
-		end
-	end
-	--------------------------------
-	local function jisuanBAGshuliang(QitemID)
+	local L=addonTable.locale
+	local Create=addonTable.Create
+	local PIGButton = Create.PIGButton
+	local PIGEnter=Create.PIGEnter
+	local PIGCheckbutton=Create.PIGCheckbutton
+	local PIGOptionsList_R=Create.PIGOptionsList_R
+	local Show_TabBut_R=Create.Show_TabBut_R
+	--
+	local GetContainerNumSlots = C_Container.GetContainerNumSlots
+	local GetContainerItemID=GetContainerItemID or C_Container and C_Container.GetContainerItemID
+	local GetContainerItemLink = C_Container.GetContainerItemLink
+	local PickupContainerItem =C_Container.PickupContainerItem
+	local UseContainerItem =C_Container.UseContainerItem
+	local bagIDMax= addonTable.Data.bagData["bagIDMax"]
+	---
+	local GnName,GnUI,GnIcon,FrameLevel = unpack(BusinessInfo.AutoSellBuyData)
+	local _GN,_GNE = "购买","Buy"
+	local fujiF,fujiTabBut=PIGOptionsList_R(_G[GnUI].F,"购",50,"Left")
+	BusinessInfo.ADDScroll(fujiF,_GN,_GNE,17,{true,"AutoSellBuy",_GNE.."_List"})
+	-----------
+	local function GetBagItemCount(QitemID)
 		local zongjiBAGitemCount=0
 		for bag = 0, bagIDMax do
 			for slot = 1, GetContainerNumSlots(bag) do
@@ -50,84 +35,93 @@ function BusinessInfo.AutoBuy()
 		end
 		return zongjiBAGitemCount
 	end
-	---------------------------------
-	local function Buy_item()
-		if ( MerchantFrame:IsVisible() and MerchantFrame.selectedTab == 1 ) then
-			local dataY = PIGA_Per["AutoSellBuy"][gongnengName.."_List"]
-			local price_itempriceG=0
-			for i=1,#dataY do
-				local goumaiItem=dataY[i][1]
-				local ItemName=dataY[i][2]--品名
-				local xuyaogoumaishu=dataY[i][4];--预设购买数
-				local yiyoushuliang=jisuanBAGshuliang(goumaiItem);--已有数量
-				local shijigoumai=xuyaogoumaishu-yiyoushuliang;--实际需要补货数量
-				if shijigoumai>0 then
-					local numItems = GetMerchantNumItems();
-					for ii=1,numItems do
-						if goumaiItem==GetMerchantItemID(ii) then
-							local name, texture, price, quantity, numAvailable, isPurchasable, isUsable, extendedCost= GetMerchantItemInfo(ii)
-							price_itempriceG=price_itempriceG+price
-							if numAvailable==(-1) then
-								goumaihanshu(i,ii,shijigoumai,dataY)
-								if PIGA["AutoSellBuy"][gongnengName.."_Tishi"] then
-									PIG_print("|cFF00ff00执行自动补货:|r "..ItemName.." |cFF00ff00补货数量:|r"..shijigoumai);
-								end
+	local function ExecuteBuyFun(datax)
+		if datax[8]>datax[4] then
+			BuyMerchantItem(datax[2],datax[4])
+			datax[8]=datax[8]-datax[4]
+		else
+			BuyMerchantItem(datax[2],datax[8])
+			datax[8]=0
+		end
+		C_Timer.After(0.2,function()
+			if datax[8]>0 then
+				ExecuteBuyFun(datax)
+			else
+				if PIGA["AutoSellBuy"][_GNE.."_Tishi"] then
+					if datax[1] then
+						PIG_print("|cFF00ff00抢购:|r "..datax[7].." |cFF00ff00数量:|r"..datax[3].."|cFF00ff00花费:|r"..GetMoneyString(datax[6]*datax[3]));
+					else
+						PIG_print("|cFF00ff00补货:|r "..datax[7].." |cFF00ff00数量:|r"..datax[3].."|cFF00ff00花费:|r"..GetMoneyString(datax[6]*datax[3]));
+					end
+				end
+			end
+		end)
+	end
+	local function StartBuyItem()
+		if not MerchantFrame:IsVisible() or MerchantFrame.selectedTab ~= 1 then return end
+		local Buydata = PIGA_Per["AutoSellBuy"][_GNE.."_List"]
+		if #Buydata==0 then return end
+		local BuyAllData={cost=0,Data={}}
+		for i=1,#Buydata do
+			local BuyItemID=Buydata[i][1]--ID
+			local SetMaxNum=Buydata[i][4]--设置库存数
+			local duidieNum=Buydata[i][5]--堆叠数
+			for ii=1,GetMerchantNumItems() do
+				if BuyItemID==GetMerchantItemID(ii) then
+					local oldbagNum=GetBagItemCount(BuyItemID);
+					local buyNum=SetMaxNum-oldbagNum;--需要补货数量
+					if buyNum>0 then
+						local link = GetMerchantItemLink(ii)
+						local name, texture, price, quantity, numAvailable= GetMerchantItemInfo(ii)
+						local itemcostG=price/quantity
+						if numAvailable==(-1) then
+							table.insert(BuyAllData.Data,{false,ii,buyNum,duidieNum,BuyItemID,itemcostG,link,buyNum})
+						else
+							if buyNum>numAvailable then
+								table.insert(BuyAllData.Data,{true,ii,numAvailable,duidieNum,BuyItemID,itemcostG,link,numAvailable})
 							else
-								if shijigoumai>numAvailable then
-									BuyMerchantItem(ii,numAvailable)
-									if PIGA["AutoSellBuy"][gongnengName.."_Tishi"] then
-										PIG_print("|cFF00ff00商家物品限购:|r "..ItemName.." |cFF00ff00抢购数量:|r"..numAvailable);
-									end
-								else
-									goumaihanshu(i,ii,shijigoumai,dataY)
-									if PIGA["AutoSellBuy"][gongnengName.."_Tishi"] then
-										PIG_print("|cFF00ff00执行自动补货:|r "..ItemName.." |cFF00ff00补货数量:|r"..shijigoumai);
-									end
-								end
-							end	
+								table.insert(BuyAllData.Data,{false,ii,buyNum,duidieNum,BuyItemID,itemcostG,link,buyNum})
+							end
 						end
 					end
-				end		
-			end
-			if price_itempriceG>0 then
-				PIG_print("|cFF00ff00本次补货花费:|r "..GetMoneyString(price_itempriceG));
-			end
+				end
+			end	
+		end
+		for i=1,#BuyAllData.Data do
+			ExecuteBuyFun(BuyAllData.Data[i])
 		end
 	end
-	----
-	local function Buy_Open()
-		MerchantFrame:HookScript("OnShow",function (self)
-			if PIGA["AutoSellBuy"][gongnengName.."_Open"] then
-				Buy_item()
-			end
-		end);
+	local function StartBuyItem_After()
+		if MerchantFrame.pigfuusell then
+			C_Timer.After(0.1,StartBuyItem_After)
+		else
+			StartBuyItem()
+		end
 	end
-	if PIGA["AutoSellBuy"][gongnengName.."_Open"] then Buy_Open() end
-	fujiF.Buy_Open = PIGCheckbutton(fujiF,{"TOPLEFT",fujiF,"TOPLEFT",20,-10},{"自动购买|cff00FFFF(角色)|r", "打开商人界面自动购买下方列表物品|cff00FFFF(设置为单个角色独享)|r"})
+	MerchantFrame:HookScript("OnShow",function (self)
+		if PIGA["AutoSellBuy"][_GNE.."_Open"] then
+			StartBuyItem_After()
+		end
+	end);
+	fujiF.Buy_Open = PIGCheckbutton(fujiF,{"TOPLEFT",fujiF,"TOPLEFT",20,-10},{"自动".._GN.."|cff00FFFF(角色)|r", "打开商人界面自动".._GN.."下方列表物品|cff00FFFF(设置为单个角色独享)|r"})
 	fujiF.Buy_Open:SetScript("OnClick", function (self)
 		if self:GetChecked() then
-			PIGA["AutoSellBuy"][gongnengName.."_Open"]=true;
+			PIGA["AutoSellBuy"][_GNE.."_Open"]=true;
 		else
-			PIGA["AutoSellBuy"][gongnengName.."_Open"]=false;
+			PIGA["AutoSellBuy"][_GNE.."_Open"]=false;
 		end
 	end);
 	--
-	local function Buy_But_Open()
-		if MerchantFrame.Buy then
-			if PIGA["AutoSellBuy"][gongnengName.."_But"] then
-				MerchantFrame.Buy:Show()
-			else
-				MerchantFrame.Buy:Hide()
-			end
-		else
-			MerchantFrame.Buy = PIGButton(MerchantFrame,{"TOPLEFT",MerchantFrame,"TOPLEFT",120,-30},{50,24},"购买",nil,nil,nil,nil,0)
-			PIGEnter(MerchantFrame.Buy,KEY_BUTTON1.."-购买预设物资\n"..KEY_BUTTON2.."-设置购买清单")
+	local function Add_MerchantBut()
+		if PIGA["AutoSellBuy"][_GNE.."_But"] and not MerchantFrame.Buy then 
+			MerchantFrame.Buy = PIGButton(MerchantFrame,{"TOPLEFT",MerchantFrame,"TOPLEFT",120,-30},{50,24},_GN,nil,nil,nil,nil,0)
+			PIGEnter(MerchantFrame.Buy,KEY_BUTTON1.."-".._GN.."预设物资\n"..KEY_BUTTON2.."-设置".._GN.."清单")
 			MerchantFrame.Buy:SetScript("OnClick", function (self,button)
 				if button=="LeftButton" then
-					Buy_item()
+					StartBuyItem()
 				else
-					AutoSellBuy_UI:Show()
-					Show_TabBut_R(AutoSellBuy_UI.F,fujiF,fujiTabBut)
+					_G[GnUI]:Show()
+					Show_TabBut_R(_G[GnUI].F,fujiF,fujiTabBut)
 				end
 			end)
 			hooksecurefunc("PanelTemplates_SetTab", function(frame, id)
@@ -138,29 +132,32 @@ function BusinessInfo.AutoBuy()
 				end
 			end)
 		end
+		if MerchantFrame.Buy then
+			MerchantFrame.Buy:SetShown(PIGA["AutoSellBuy"][_GNE.."_But"])
+		end
 	end
-	if PIGA["AutoSellBuy"][gongnengName.."_But"] then Buy_But_Open() end
-	fujiF.Buy_But = PIGCheckbutton(fujiF,{"TOPLEFT",fujiF,"TOPLEFT",20,-44},{"购买按钮", "在商人界面增加一个购买按钮(可以点击购买下方列表内的物品)"})
+	Add_MerchantBut()
+	fujiF.Buy_But = PIGCheckbutton(fujiF,{"TOPLEFT",fujiF,"TOPLEFT",20,-44},{_GN.."按钮", "在商人界面增加一个".._GN.."按钮(可以点击".._GN.."下方列表内的物品)"})
 	fujiF.Buy_But:SetScript("OnClick", function (self)
 		if self:GetChecked() then
-			PIGA["AutoSellBuy"][gongnengName.."_But"]=true;	
+			PIGA["AutoSellBuy"][_GNE.."_But"]=true;	
 		else
-			PIGA["AutoSellBuy"][gongnengName.."_But"]=false;
+			PIGA["AutoSellBuy"][_GNE.."_But"]=false;
 		end
-		Buy_But_Open();	
+		Add_MerchantBut();	
 	end);
-	fujiF.Buy_Tishi = PIGCheckbutton(fujiF,{"LEFT",fujiF.Buy_But,"RIGHT",110,0},{"购买记录", "在聊天栏显示购买记录"})
+	fujiF.Buy_Tishi = PIGCheckbutton(fujiF,{"LEFT",fujiF.Buy_But,"RIGHT",110,0},{_GN.."记录", "在聊天栏显示".._GN.."记录"})
 	fujiF.Buy_Tishi:SetScript("OnClick", function (self)
 		if self:GetChecked() then
-			PIGA["AutoSellBuy"][gongnengName.."_Tishi"]=true;
+			PIGA["AutoSellBuy"][_GNE.."_Tishi"]=true;
 		else
-			PIGA["AutoSellBuy"][gongnengName.."_Tishi"]=false;
+			PIGA["AutoSellBuy"][_GNE.."_Tishi"]=false;
 		end
 	end);
 	---	
 	fujiF:HookScript("OnShow", function (self)
-		self.Buy_Open:SetChecked(PIGA["AutoSellBuy"][gongnengName.."_Open"])
-		self.Buy_But:SetChecked(PIGA["AutoSellBuy"][gongnengName.."_But"]);
-		self.Buy_Tishi:SetChecked(PIGA["AutoSellBuy"][gongnengName.."_Tishi"])
+		self.Buy_Open:SetChecked(PIGA["AutoSellBuy"][_GNE.."_Open"])
+		self.Buy_But:SetChecked(PIGA["AutoSellBuy"][_GNE.."_But"]);
+		self.Buy_Tishi:SetChecked(PIGA["AutoSellBuy"][_GNE.."_Tishi"])
 	end);
 end

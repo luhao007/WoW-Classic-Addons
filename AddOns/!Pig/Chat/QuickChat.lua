@@ -1,6 +1,5 @@
 local addonName, addonTable = ...;
 local L=addonTable.locale
-local _, _, _, tocversion = GetBuildInfo()
 ------------
 local Fun=addonTable.Fun
 local GetPIGID=Fun.GetPIGID
@@ -269,15 +268,15 @@ local function ADD_chatbut(fuF,pdtype,name,chatID,Color,pdname)
 end
 ---更新按钮的屏蔽状态
 function QuickChatfun.Update_ChatBut_icon()
-	if QuickChatFFF_UI then
+	if QuickChatfun.TabButUI then
 		local changuipindaoX = {
-			{QuickChatFFF_UI.SAY,"SAY"},
-			{QuickChatFFF_UI.YELL,"YELL"},
-			{QuickChatFFF_UI.PARTY,"PARTY"},
-			{QuickChatFFF_UI.GUILD,"GUILD"},
-			{QuickChatFFF_UI.RAID,"RAID"},
-			{QuickChatFFF_UI.RAID_WARNING,"RAID_WARNING"},
-			{QuickChatFFF_UI.INSTANCE_CHAT,"INSTANCE_CHAT"},
+			{QuickChatfun.TabButUI.SAY,"SAY"},
+			{QuickChatfun.TabButUI.YELL,"YELL"},
+			{QuickChatfun.TabButUI.PARTY,"PARTY"},
+			{QuickChatfun.TabButUI.GUILD,"GUILD"},
+			{QuickChatfun.TabButUI.RAID,"RAID"},
+			{QuickChatfun.TabButUI.RAID_WARNING,"RAID_WARNING"},
+			{QuickChatfun.TabButUI.INSTANCE_CHAT,"INSTANCE_CHAT"},
 		}
 		local changuipindao = {}
 		for i=1,#changuipindaoX do
@@ -300,11 +299,11 @@ function QuickChatfun.Update_ChatBut_icon()
 			{"CHANNEL_4",worldname},
 		}
 		for i=1,#chaozhaopindaoX do
-			if QuickChatFFF_UI[chaozhaopindaoX[i][1]] then
+			if QuickChatfun.TabButUI[chaozhaopindaoX[i][1]] then
 				if PIG_IsShow_CHANNEL(chaozhaopindaoX[i][2]) then
-					QuickChatFFF_UI[chaozhaopindaoX[i][1]].X:Hide();
+					QuickChatfun.TabButUI[chaozhaopindaoX[i][1]].X:Hide();
 				else
-					QuickChatFFF_UI[chaozhaopindaoX[i][1]].X:Show();
+					QuickChatfun.TabButUI[chaozhaopindaoX[i][1]].X:Show();
 				end
 			end
 		end
@@ -313,19 +312,19 @@ end
 ---快捷切换频道按钮位置=======	
 function QuickChatfun.Update_QuickChatPoint(arg1)
 	local arg1=arg1 or PIGA["Chat"]["QuickChat_maodian"]
-	if QuickChatFFF_UI then
-		QuickChatFFF_UI:ClearAllPoints();	
+	if QuickChatfun.TabButUI then
+		QuickChatfun.TabButUI:ClearAllPoints();	
 		if arg1==1 then	
-			QuickChatFFF_UI:SetPoint("BOTTOMLEFT",ChatFrame1,"TOPLEFT",0+PIGA["Chat"]["QuickChat_pianyiX"],28+PIGA["Chat"]["QuickChat_pianyiY"]);
+			QuickChatfun.TabButUI:SetPoint("BOTTOMLEFT",ChatFrame1,"TOPLEFT",0+PIGA["Chat"]["QuickChat_pianyiX"],28+PIGA["Chat"]["QuickChat_pianyiY"]);
 		elseif arg1==2 then
-			QuickChatFFF_UI:SetPoint("TOPLEFT",ChatFrame1,"BOTTOMLEFT",-2+PIGA["Chat"]["QuickChat_pianyiX"],-4+PIGA["Chat"]["QuickChat_pianyiY"]);
+			QuickChatfun.TabButUI:SetPoint("TOPLEFT",ChatFrame1,"BOTTOMLEFT",-2+PIGA["Chat"]["QuickChat_pianyiX"],-4+PIGA["Chat"]["QuickChat_pianyiY"]);
 		end	
 		addonTable.QuickChatfun.Update_editBoxPoint()
 	end
 end
-function QuickChatfun.Open()
+function QuickChatfun.TabBut()
 	if not PIGA["Chat"]["QuickChat"] then return end
-	if QuickChatFFF_UI then return end
+	if QuickChatfun.TabButUI then return end
 	ChatFrame_AddMessageEventFilter("CHAT_MSG_CHANNEL", TihuanBQfun)
 	ChatFrame_AddMessageEventFilter("CHAT_MSG_SAY", TihuanBQfun)
 	ChatFrame_AddMessageEventFilter("CHAT_MSG_YELL", TihuanBQfun)
@@ -345,10 +344,11 @@ function QuickChatfun.Open()
 	ChatFrame_AddMessageEventFilter("CHAT_MSG_COMMUNITIES_CHANNEL", TihuanBQfun)
 	-----------------------
 	local Width = 25
-	local QuickChatFFF = CreateFrame("Frame", "QuickChatFFF_UI", UIParent);
-	QuickChatFFF.Width=Width
-	QuickChatFFF:SetSize(Width,Width);
-	QuickChatFFF:SetFrameStrata("LOW")
+	local QuickTabBut = CreateFrame("Frame", nil, UIParent);
+	QuickChatfun.TabButUI=QuickTabBut
+	QuickTabBut.Width=Width
+	QuickTabBut:SetSize(Width,Width);
+	QuickTabBut:SetFrameStrata("LOW")
 	local function Hidebeijing(editBox)
 		if ( editBox.disableActivate or ( GetCVar("chatStyle") == "classic" and not editBox.isGM ) ) then	
 		else
@@ -363,18 +363,18 @@ function QuickChatfun.Open()
 	hooksecurefunc("ChatEdit_SetLastActiveWindow", function(editBox)
 		Hidebeijing(editBox)
 	end)
-	function QuickChatFFF:PIGEnterAlpha()
+	function QuickTabBut:PIGEnterAlpha()
 		self:SetAlpha(1)
 	end
-	function QuickChatFFF:PIGLeaveAlpha()
+	function QuickTabBut:PIGLeaveAlpha()
 		if PIGA["Chat"]["QuickChat_jianyin"] then self:SetAlpha(0.06) end
 	end
 	local function SetEnterLeave(fuix)
 		fuix:HookScript("OnEnter", function (self)	
-			QuickChatFFF:PIGEnterAlpha()
+			QuickTabBut:PIGEnterAlpha()
 		end);
 		fuix:HookScript("OnLeave", function (self)
-			QuickChatFFF:PIGLeaveAlpha()
+			QuickTabBut:PIGLeaveAlpha()
 		end);
 	end
 	for i = 1, NUM_CHAT_WINDOWS do
@@ -384,21 +384,21 @@ function QuickChatfun.Open()
 		SetEnterLeave(chatTab)
 	end
 	-------
-	QuickChatFFF.biaoqing = ADD_chatbut(QuickChatFFF,"bq")
-	QuickChatFFF.biaoqing.F = CreateFrame("Frame", nil, QuickChatFFF.biaoqing,"BackdropTemplate");
-	QuickChatFFF.biaoqing.F:SetBackdrop( { 
+	QuickTabBut.biaoqing = ADD_chatbut(QuickTabBut,"bq")
+	QuickTabBut.biaoqing.F = CreateFrame("Frame", nil, QuickTabBut.biaoqing,"BackdropTemplate");
+	QuickTabBut.biaoqing.F:SetBackdrop( { 
 		bgFile = "Interface/Tooltips/UI-Tooltip-Background",tile = false, tileSize = 0,
 		edgeFile = "Interface/Tooltips/UI-Tooltip-Border",edgeSize = 8, 
 		insets = { left = 2, right = 2, top = 2, bottom = 2 }});
-	QuickChatFFF.biaoqing.F:SetBackdropBorderColor(0.5, 0.5, 0.5, 0.8);
-	QuickChatFFF.biaoqing.F:SetBackdropColor(0.5, 0.5, 0.5, 0.8);
-	QuickChatFFF.biaoqing.F:SetSize((Width+2)*hangshu+10,Width*6+20);
-	QuickChatFFF.biaoqing.F:SetPoint("BOTTOMLEFT",QuickChatFFF.biaoqing,"TOPLEFT", 0, 0);
-	QuickChatFFF.biaoqing.F:Hide()
-	QuickChatFFF.biaoqing.F:SetFrameStrata("HIGH")
-	QuickChatFFF.biaoqing.F.xiaoshidaojishi = 0;
-	QuickChatFFF.biaoqing.F.zhengzaixianshi = nil;
-	QuickChatFFF.biaoqing.F:SetScript("OnUpdate", function(self, ssss)
+	QuickTabBut.biaoqing.F:SetBackdropBorderColor(0.5, 0.5, 0.5, 0.8);
+	QuickTabBut.biaoqing.F:SetBackdropColor(0.5, 0.5, 0.5, 0.8);
+	QuickTabBut.biaoqing.F:SetSize((Width+2)*hangshu+10,Width*6+20);
+	QuickTabBut.biaoqing.F:SetPoint("BOTTOMLEFT",QuickTabBut.biaoqing,"TOPLEFT", 0, 0);
+	QuickTabBut.biaoqing.F:Hide()
+	QuickTabBut.biaoqing.F:SetFrameStrata("HIGH")
+	QuickTabBut.biaoqing.F.xiaoshidaojishi = 0;
+	QuickTabBut.biaoqing.F.zhengzaixianshi = nil;
+	QuickTabBut.biaoqing.F:SetScript("OnUpdate", function(self, ssss)
 		if self.zhengzaixianshi==nil then
 			return;
 		else
@@ -412,51 +412,53 @@ function QuickChatfun.Open()
 			end
 		end
 	end)
-	QuickChatFFF.biaoqing.F:SetScript("OnEnter", function(self)
+	QuickTabBut.biaoqing.F:SetScript("OnEnter", function(self)
 		self.zhengzaixianshi = nil;
 	end)
-	QuickChatFFF.biaoqing.F:SetScript("OnLeave", function(self)
+	QuickTabBut.biaoqing.F:SetScript("OnLeave", function(self)
 		self.xiaoshidaojishi = 1.5;
 		self.zhengzaixianshi = true;
 	end)
+	QuickTabBut.biaoqing.F.ButList={}
 	for i=1,#biaoqingData do
-		local biaoqinglist = CreateFrame("Button","biaoqing_list"..i,QuickChatFFF.biaoqing.F,nil,i);
+		local biaoqinglist = CreateFrame("Button",nil,QuickTabBut.biaoqing.F,nil,i);
+		QuickTabBut.biaoqing.F.ButList[i]=biaoqinglist
 		biaoqinglist:SetSize(Width,Width);
 		if i==1 then
-			biaoqinglist:SetPoint("TOPLEFT",QuickChatFFF.biaoqing.F,"TOPLEFT", 5, -5);
+			biaoqinglist:SetPoint("TOPLEFT",QuickTabBut.biaoqing.F,"TOPLEFT", 5, -5);
 		elseif i<hangshu+1 then
-			biaoqinglist:SetPoint("LEFT",_G["biaoqing_list"..(i-1)],"RIGHT", 2, 0);
+			biaoqinglist:SetPoint("LEFT",QuickTabBut.biaoqing.F.ButList[i-1],"RIGHT", 2, 0);
 		elseif i==hangshu+1 then
-			biaoqinglist:SetPoint("TOPLEFT",_G["biaoqing_list1"],"BOTTOMLEFT", 0, -2);
+			biaoqinglist:SetPoint("TOPLEFT",QuickTabBut.biaoqing.F.ButList[1],"BOTTOMLEFT", 0, -2);
 		elseif i<hangshu*2+1 then
-			biaoqinglist:SetPoint("LEFT",_G["biaoqing_list"..(i-1)],"RIGHT", 2, 0);
+			biaoqinglist:SetPoint("LEFT",QuickTabBut.biaoqing.F.ButList[i-1],"RIGHT", 2, 0);
 		elseif i==hangshu*2+1 then
-			biaoqinglist:SetPoint("TOPLEFT",_G["biaoqing_list11"],"BOTTOMLEFT", 0, -2);
+			biaoqinglist:SetPoint("TOPLEFT",QuickTabBut.biaoqing.F.ButList[11],"BOTTOMLEFT", 0, -2);
 		elseif i<hangshu*3+1 then
-			biaoqinglist:SetPoint("LEFT",_G["biaoqing_list"..(i-1)],"RIGHT", 2, 0);
+			biaoqinglist:SetPoint("LEFT",QuickTabBut.biaoqing.F.ButList[i-1],"RIGHT", 2, 0);
 		elseif i==hangshu*3+1 then
-			biaoqinglist:SetPoint("TOPLEFT",_G["biaoqing_list21"],"BOTTOMLEFT", 0, -2);
+			biaoqinglist:SetPoint("TOPLEFT",QuickTabBut.biaoqing.F.ButList[21],"BOTTOMLEFT", 0, -2);
 		elseif i<hangshu*4+1 then
-			biaoqinglist:SetPoint("LEFT",_G["biaoqing_list"..(i-1)],"RIGHT", 2, 0);
+			biaoqinglist:SetPoint("LEFT",QuickTabBut.biaoqing.F.ButList[i-1],"RIGHT", 2, 0);
 		elseif i==hangshu*4+1 then
-			biaoqinglist:SetPoint("TOPLEFT",_G["biaoqing_list31"],"BOTTOMLEFT", 0, -2);
+			biaoqinglist:SetPoint("TOPLEFT",QuickTabBut.biaoqing.F.ButList[31],"BOTTOMLEFT", 0, -2);
 		elseif i<hangshu*5+1 then
-			biaoqinglist:SetPoint("LEFT",_G["biaoqing_list"..(i-1)],"RIGHT", 2, 0);
+			biaoqinglist:SetPoint("LEFT",QuickTabBut.biaoqing.F.ButList[i-1],"RIGHT", 2, 0);
 		elseif i==hangshu*5+1 then
-			biaoqinglist:SetPoint("TOPLEFT",_G["biaoqing_list41"],"BOTTOMLEFT", 0, -2);
+			biaoqinglist:SetPoint("TOPLEFT",QuickTabBut.biaoqing.F.ButList[41],"BOTTOMLEFT", 0, -2);
 		elseif i<hangshu*6+1 then
-			biaoqinglist:SetPoint("LEFT",_G["biaoqing_list"..(i-1)],"RIGHT", 2, 0);
+			biaoqinglist:SetPoint("LEFT",QuickTabBut.biaoqing.F.ButList[i-1],"RIGHT", 2, 0);
 		end
 		biaoqinglist.Tex = biaoqinglist:CreateTexture();
 		biaoqinglist.Tex:SetTexture(biaoqingData[i][2]);
 		biaoqinglist.Tex:SetPoint("CENTER",0,0);
 		biaoqinglist.Tex:SetSize(Width,Width);
 		biaoqinglist:SetScript("OnEnter", function()
-			QuickChatFFF.biaoqing.F.zhengzaixianshi=nil
+			QuickTabBut.biaoqing.F.zhengzaixianshi=nil
 		end)
 		biaoqinglist:SetScript("OnLeave", function()
-			QuickChatFFF.biaoqing.F.xiaoshidaojishi = 1.5;
-			QuickChatFFF.biaoqing.F.zhengzaixianshi = true;
+			QuickTabBut.biaoqing.F.xiaoshidaojishi = 1.5;
+			QuickTabBut.biaoqing.F.zhengzaixianshi = true;
 		end)
 		biaoqinglist:SetScript("OnClick", function(self)
 			local editBox = ChatEdit_ChooseBoxForSend();
@@ -467,32 +469,32 @@ function QuickChatfun.Open()
 				ChatEdit_ActivateChat(editBox)
 				editBox:SetText(hasText);
 			end
-			QuickChatFFF.biaoqing.F:Hide();
+			QuickTabBut.biaoqing.F:Hide();
 		end)
 	end
 	--说--
-	QuickChatFFF.SAY = ADD_chatbut(QuickChatFFF,"Mes",L["CHAT_QUKBUTNAME"][1],"s",{1, 1, 1},"SAY")
+	QuickTabBut.SAY = ADD_chatbut(QuickTabBut,"Mes",L["CHAT_QUKBUTNAME"][1],"s",{1, 1, 1},"SAY")
 	--喊--
-	QuickChatFFF.YELL = ADD_chatbut(QuickChatFFF,"Mes",L["CHAT_QUKBUTNAME"][2],"y",{1, 0.25, 0.25},"YELL")
+	QuickTabBut.YELL = ADD_chatbut(QuickTabBut,"Mes",L["CHAT_QUKBUTNAME"][2],"y",{1, 0.25, 0.25},"YELL")
 	--队伍--
-	QuickChatFFF.PARTY = ADD_chatbut(QuickChatFFF,"Mes",L["CHAT_QUKBUTNAME"][3],"p",{0.6667, 0.6667, 1},"PARTY")
+	QuickTabBut.PARTY = ADD_chatbut(QuickTabBut,"Mes",L["CHAT_QUKBUTNAME"][3],"p",{0.6667, 0.6667, 1},"PARTY")
 	--公会--
-	QuickChatFFF.GUILD = ADD_chatbut(QuickChatFFF,"Mes",L["CHAT_QUKBUTNAME"][4],"g",{0.25, 1, 0.25},"GUILD")
+	QuickTabBut.GUILD = ADD_chatbut(QuickTabBut,"Mes",L["CHAT_QUKBUTNAME"][4],"g",{0.25, 1, 0.25},"GUILD")
 	--团队--
-	QuickChatFFF.RAID = ADD_chatbut(QuickChatFFF,"Mes",L["CHAT_QUKBUTNAME"][5],"ra",{1, 0.498, 0},"RAID")
+	QuickTabBut.RAID = ADD_chatbut(QuickTabBut,"Mes",L["CHAT_QUKBUTNAME"][5],"ra",{1, 0.498, 0},"RAID")
 	--团队通知--
-	QuickChatFFF.RAID_WARNING = ADD_chatbut(QuickChatFFF,"Mes",L["CHAT_QUKBUTNAME"][6],"rw",{1, 0.282, 0},"RAID_WARNING")
+	QuickTabBut.RAID_WARNING = ADD_chatbut(QuickTabBut,"Mes",L["CHAT_QUKBUTNAME"][6],"rw",{1, 0.282, 0},"RAID_WARNING")
 	--战场/副本--
-	if tocversion<30000 then
-		QuickChatFFF.INSTANCE_CHAT = ADD_chatbut(QuickChatFFF,"Mes",L["CHAT_QUKBUTNAME"][7],"bg",{1, 0.498, 0},"INSTANCE_CHAT")
+	if PIG_MaxTocversion(30000) then
+		QuickTabBut.INSTANCE_CHAT = ADD_chatbut(QuickTabBut,"Mes",L["CHAT_QUKBUTNAME"][7],"bg",{1, 0.498, 0},"INSTANCE_CHAT")
 	else
-		QuickChatFFF.INSTANCE_CHAT = ADD_chatbut(QuickChatFFF,"Mes",L["CHAT_QUKBUTNAME"][7],"i",{1, 0.498, 0},"INSTANCE_CHAT")
+		QuickTabBut.INSTANCE_CHAT = ADD_chatbut(QuickTabBut,"Mes",L["CHAT_QUKBUTNAME"][7],"i",{1, 0.498, 0},"INSTANCE_CHAT")
 	end
 	--CHANNEL--
-	QuickChatFFF.CHANNEL_1 = ADD_chatbut(QuickChatFFF,"CHANNEL",L["CHAT_QUKBUTNAME"][8],GENERAL,{0.888, 0.668, 0.668})
-	QuickChatFFF.CHANNEL_2 = ADD_chatbut(QuickChatFFF,"CHANNEL",L["CHAT_QUKBUTNAME"][9],TRADE,{0.888, 0.668, 0.668})
-	QuickChatFFF.CHANNEL_3 = ADD_chatbut(QuickChatFFF,"CHANNEL",L["CHAT_QUKBUTNAME"][10],LOOK_FOR_GROUP,{0.888, 0.668, 0.668})
-	QuickChatFFF.CHANNEL_4 = ADD_chatbut(QuickChatFFF,"CHANNEL",L["CHAT_QUKBUTNAME"][11],worldname,{0.888, 0.668, 0.668})
+	QuickTabBut.CHANNEL_1 = ADD_chatbut(QuickTabBut,"CHANNEL",L["CHAT_QUKBUTNAME"][8],GENERAL,{0.888, 0.668, 0.668})
+	QuickTabBut.CHANNEL_2 = ADD_chatbut(QuickTabBut,"CHANNEL",L["CHAT_QUKBUTNAME"][9],TRADE,{0.888, 0.668, 0.668})
+	QuickTabBut.CHANNEL_3 = ADD_chatbut(QuickTabBut,"CHANNEL",L["CHAT_QUKBUTNAME"][10],LOOK_FOR_GROUP,{0.888, 0.668, 0.668})
+	QuickTabBut.CHANNEL_4 = ADD_chatbut(QuickTabBut,"CHANNEL",L["CHAT_QUKBUTNAME"][11],worldname,{0.888, 0.668, 0.668})
 	--
 	QuickChatfun.QuickBut_Keyword()
 	QuickChatfun.QuickBut_Roll()
@@ -503,9 +505,10 @@ function QuickChatfun.Open()
 	C_Timer.After(5,QuickChatfun.Update_ChatBut_icon)
 	C_Timer.After(10,QuickChatfun.Update_ChatBut_icon)
 	--更新尺寸
-	function QuickChatFFF:suofang()
-		QuickChatFFF:SetScale(PIGA["Chat"]["QuickChat_suofang"]);
+	function QuickTabBut:PIGScale()
+		QuickTabBut:SetScale(PIGA["Chat"]["QuickChat_suofang"]);
 		QuickChatfun.Update_QuickChatPoint()
 	end
-	QuickChatFFF:suofang()
+	QuickTabBut:PIGScale()
+	QuickTabBut:PIGLeaveAlpha()
 end

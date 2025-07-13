@@ -1,6 +1,6 @@
 local addonName, addonTable = ...;
-local _, _, _, tocversion = GetBuildInfo()
 local IsAddOnLoaded=IsAddOnLoaded or C_AddOns and C_AddOns.IsAddOnLoaded
+local GetItemInfoInstant=GetItemInfoInstant or C_Item and C_Item.GetItemInfoInstant
 --
 local L=addonTable.locale
 local Fun=addonTable.Fun
@@ -10,15 +10,43 @@ local PIGFrame=Create.PIGFrame
 local PIGButton = Create.PIGButton
 local PIGFontString=Create.PIGFontString
 local PIGOptionsList_R=Create.PIGOptionsList_R
-local PIGOptionsList_RF=Create.PIGOptionsList_RF
 local PIGTabBut=Create.PIGTabBut
 ------
 local BusinessInfo=addonTable.BusinessInfo
-function BusinessInfo.Trade()
-	local StatsInfo = StatsInfo_UI
+local shibaiERR = {
+	ERR_TRADE_BAG,--"你不能交易装有物品的包";
+	ERR_TRADE_BAG_FULL,--"交易失败，你没有足够的物品栏空间。";
+	ERR_TRADE_BLOCKED_S,--"%s要求进行交易，你拒绝了。";
+	ERR_TRADE_BOUND_ITEM,--"你不能交易一件灵魂绑定物品";
+	ERR_TRADE_CANCELLED,--"交易取消。";
+	ERR_TRADE_EQUIPPED_BAG,--"你无法交易已经装备的包裹。";
+	ERR_TRADE_FACTION_SPECIFIC,--"你无法与对立阵营交易阵营特色物品。";
+	ERR_TRADE_GROUND_ITEM,--"你不能交易一件还放在地上的物品。";
+	ERR_TRADE_MAX_COUNT_EXCEEDED,--"你拥有超过一件";
+	ERR_TRADE_NOT_ON_TAPLIST,--"你只能将绑定物品交易给拥有该物品起始拾取资格的玩家。";
+	ERR_TRADE_QUEST_ITEM,--"你不能交易一件任务物品";
+	ERR_TRADE_REQUEST_S,--"%s想要和你进行交易。";
+	ERR_TRADE_SELF,--"你不能与自己交易。";
+	ERR_TRADE_TARGET_BAG_FULL,--"交易失败，交易目标没有足够的物品栏空间。";
+	ERR_TRADE_TARGET_DEAD,--"你不能和已死亡的玩家交易";
+	ERR_TRADE_TARGET_MAX_COUNT_EXCEEDED,--"交易对象已经拥有该类唯一物品。";
+	ERR_TRADE_TARGET_MAX_LIMIT_CATEGORY_COUNT_EXCEEDED_IS,--"你的交易对象只能携带%d个%s";
+	ERR_TRADE_TEMP_ENCHANT_BOUND,--"你不能交易带有临时附魔的物品。";
+	ERR_TRADE_TOO_FAR,--"交易目标太远";
+	ERR_TRADE_WRONG_REALM,--"你只能与来自其它服务器的玩家交易魔法制造的物品";
+}
+local function IsErrTrade(arg2)
+	for k,v in pairs(shibaiERR) do
+		if arg2==v then
+			return true
+		end
+	end
+	return false
+end
+Fun.IsErrTrade=IsErrTrade
+function BusinessInfo.Trade(StatsInfo)
 	local PlayerData = PIGA["StatsInfo"]["Players"]
 	for k,v in pairs(PlayerData) do
-		PIGA["StatsInfo"]["TradeData"][k]=PIGA["StatsInfo"]["TradeData"][k] or {}
 		local shujuyaun=PIGA["StatsInfo"]["TradeData"][k]
 		if #shujuyaun>0 then
 			if #shujuyaun[1]>0 then
@@ -29,37 +57,37 @@ function BusinessInfo.Trade()
 							table.remove(shujuyaun[1],ii);
 							table.remove(shujuyaun[2],ii);
 						end
-				end
-			else
-					
+				end	
 			end
 		end
    	end
 
 	local fujiF,fujiTabBut=PIGOptionsList_R(StatsInfo.F,"交\n易",StatsInfo.butW,"Left")
 	---
-	fujiF.PList=PIGFrame(fujiF)
-	fujiF.PList:PIGSetBackdrop(0)
-	fujiF.PList:SetWidth(190)
-	fujiF.PList:SetPoint("TOPLEFT",fujiF,"TOPLEFT",0,0);
-	fujiF.PList:SetPoint("BOTTOMLEFT",fujiF,"BOTTOMLEFT",0,0);
+	fujiF.List=PIGFrame(fujiF)
+	fujiF.List:PIGSetBackdrop(0)
+	fujiF.List:SetWidth(190)
+	fujiF.List:SetPoint("TOPLEFT",fujiF,"TOPLEFT",0,0);
+	fujiF.List:SetPoint("BOTTOMLEFT",fujiF,"BOTTOMLEFT",0,0);
 	fujiF.SelectName=nil
 	---
-	local P_hang_Height,P_hang_NUM  = 18, 12;
-	fujiF.PList.Scroll = CreateFrame("ScrollFrame",nil,fujiF.PList, "FauxScrollFrameTemplate");  
-	fujiF.PList.Scroll:SetPoint("TOPLEFT",fujiF.PList,"TOPLEFT",2,-2);
-	fujiF.PList.Scroll:SetPoint("BOTTOMRIGHT",fujiF.PList,"BOTTOMRIGHT",-20,2);
-	fujiF.PList.Scroll.ScrollBar:SetScale(0.8)
-	fujiF.PList.Scroll:SetScript("OnVerticalScroll", function(self, offset)
-	    FauxScrollFrame_OnVerticalScroll(self, offset, P_hang_Height, fujiF.gengxin_List)
+	local P_hang_Height,P_hang_NUM  = StatsInfo.hang_Height-2.9, 14;
+	fujiF.List.Scroll = CreateFrame("ScrollFrame",nil,fujiF.List, "FauxScrollFrameTemplate");  
+	fujiF.List.Scroll:SetPoint("TOPLEFT",fujiF.List,"TOPLEFT",2,-2);
+	fujiF.List.Scroll:SetPoint("BOTTOMRIGHT",fujiF.List,"BOTTOMRIGHT",-19,2);
+	fujiF.List.Scroll.ScrollBar:SetScale(0.8)
+	fujiF.List.Scroll:SetScript("OnVerticalScroll", function(self, offset)
+	    FauxScrollFrame_OnVerticalScroll(self, offset, P_hang_Height, fujiF.Update_List)
 	end)
+	fujiF.List.listbut={}
 	for id = 1, P_hang_NUM, 1 do
-		local hang = CreateFrame("Button", "PIG_TradeListP_"..id, fujiF.PList);
-		hang:SetSize(fujiF.PList:GetWidth()-4,P_hang_Height*2+4);
+		local hang = CreateFrame("Button", nil, fujiF.List);
+		fujiF.List.listbut[id]=hang
+		hang:SetSize(fujiF.List:GetWidth()-4,P_hang_Height*2+4);
 		if id==1 then
-			hang:SetPoint("TOPLEFT", fujiF.PList.Scroll, "TOPLEFT", 0, -2);
+			hang:SetPoint("TOPLEFT", fujiF.List, "TOPLEFT", 0, 0);
 		else
-			hang:SetPoint("TOPLEFT", _G["PIG_TradeListP_"..id-1], "BOTTOMLEFT", 0, -2);
+			hang:SetPoint("TOPLEFT", fujiF.List.listbut[id-1], "BOTTOMLEFT", 0, 0);
 		end
 		if id~=P_hang_NUM then
 			hang.line = PIGLine(hang,"BOT",0,nil,nil,{0.3,0.3,0.3,0.6})
@@ -81,7 +109,7 @@ function BusinessInfo.Trade()
 		hang.highlight1:Hide();
 		hang.Faction = hang:CreateTexture();
 		hang.Faction:SetTexture("interface/glues/charactercreate/ui-charactercreate-factions.blp");
-		hang.Faction:SetPoint("TOPLEFT", hang, "TOPLEFT", 0,-2);
+		hang.Faction:SetPoint("TOPLEFT", hang, "TOPLEFT", 3,-2);
 		hang.Faction:SetSize(P_hang_Height,P_hang_Height);
 		hang.Race = hang:CreateTexture();
 		hang.Race:SetPoint("LEFT", hang.Faction, "RIGHT", 1,0);
@@ -96,7 +124,7 @@ function BusinessInfo.Trade()
 		hang.nameDQ:SetTexture("interface/common/indicator-green.blp")
 		hang.nameDQ:SetPoint("LEFT", hang.level, "RIGHT", 1,0);
 		hang.nameDQ:SetSize(P_hang_Height+2,P_hang_Height+2);
-		hang.name = PIGFontString(hang,{"TOPLEFT", hang.Faction, "BOTTOMLEFT", 0, -2},nil,"OUTLINE")
+		hang.name = PIGFontString(hang,{"TOPLEFT", hang.Faction, "BOTTOMLEFT", 0, -1},nil,"OUTLINE")
 		hang:SetScript("OnEnter", function (self)
 			if not self.highlight1:IsShown() then
 				self.highlight:Show();
@@ -110,7 +138,7 @@ function BusinessInfo.Trade()
 			fujiF.SelectName=hang.allname
 			fujiF.SelectTime=1
 			for v=1,P_hang_NUM do
-				local fujix = _G["PIG_TradeListP_"..v]
+				local fujix = fujiF.List.listbut[v]
 				fujix.highlight1:Hide();
 				fujix.highlight:Hide();
 			end
@@ -120,10 +148,10 @@ function BusinessInfo.Trade()
 			fujiF.gengxin_List_NR(fujiF.TradeList.Scroll,true)
 		end)
 	end
-	function fujiF.gengxin_List(self)
+	function fujiF.Update_List()
 		if not fujiF:IsVisible() then return end
 		for id = 1, P_hang_NUM, 1 do
-			local fujik = _G["PIG_TradeListP_"..id]
+			local fujik = fujiF.List.listbut[id]
 			fujik:Hide();
 			fujik.highlight1:Hide();
 			fujik.nameDQ:Hide()
@@ -142,12 +170,13 @@ function BusinessInfo.Trade()
 	   	end
 		local ItemsNum = #cdmulu;
 		if ItemsNum>0 then
-		    FauxScrollFrame_Update(self, ItemsNum, P_hang_NUM, P_hang_Height);
-		    local offset = FauxScrollFrame_GetOffset(self);
+			local ScrollUI = fujiF.List.Scroll
+		    FauxScrollFrame_Update(ScrollUI, ItemsNum, P_hang_NUM, P_hang_Height);
+		    local offset = FauxScrollFrame_GetOffset(ScrollUI);
 		    for id = 1, P_hang_NUM do
 				local dangqian = id+offset;
 				if cdmulu[dangqian] then
-					local fujik = _G["PIG_TradeListP_"..id]
+					local fujik = fujiF.List.listbut[id]
 					fujik:Show();
 					if fujiF.SelectName==cdmulu[dangqian][1] then
 						fujik.highlight1:Show();
@@ -176,8 +205,8 @@ function BusinessInfo.Trade()
 	fujiF.TimeList=PIGFrame(fujiF)
 	fujiF.TimeList:SetWidth(106)
 	fujiF.TimeList:PIGSetBackdrop(0)
-	fujiF.TimeList:SetPoint("TOPLEFT",fujiF.PList,"TOPRIGHT",2,0);
-	fujiF.TimeList:SetPoint("BOTTOMLEFT",fujiF.PList,"BOTTOMRIGHT",0,0);
+	fujiF.TimeList:SetPoint("TOPLEFT",fujiF.List,"TOPRIGHT",2,0);
+	fujiF.TimeList:SetPoint("BOTTOMLEFT",fujiF.List,"BOTTOMRIGHT",0,0);
 	fujiF.SelectTime=nil
 	local T_hang_Height,T_hang_NUM  = 24, 21;
 	fujiF.TimeList.Scroll = CreateFrame("ScrollFrame",nil,fujiF.TimeList, "FauxScrollFrameTemplate");  
@@ -187,13 +216,15 @@ function BusinessInfo.Trade()
 	fujiF.TimeList.Scroll:SetScript("OnVerticalScroll", function(self, offset)
 	    FauxScrollFrame_OnVerticalScroll(self, offset, T_hang_Height, fujiF.gengxin_List_Time)
 	end)
+	fujiF.TimeList.listbut={}
 	for i=1, T_hang_NUM, 1 do
-		local listbut = CreateFrame("Button", "PIG_TradeListTime_"..i,fujiF.TimeList);
+		local listbut = CreateFrame("Button", nil,fujiF.TimeList);
+		fujiF.TimeList.listbut[i]=listbut
 		listbut:SetSize(fujiF.TimeList:GetWidth()-4,T_hang_Height);
 		if i==1 then
 			listbut:SetPoint("TOPLEFT", fujiF.TimeList.Scroll, "TOPLEFT", 0, 0);
 		else
-			listbut:SetPoint("TOPLEFT", _G["PIG_TradeListTime_"..(i-1)], "BOTTOMLEFT", 0, 0);
+			listbut:SetPoint("TOPLEFT", fujiF.TimeList.listbut[i-1], "BOTTOMLEFT", 0, 0);
 		end
 		listbut:Hide()
 		listbut.highlight = listbut:CreateTexture();
@@ -225,7 +256,7 @@ function BusinessInfo.Trade()
 		end);
 		listbut:SetScript("OnClick", function (self)
 			for v=1,T_hang_NUM do
-				local fujix = _G["PIG_TradeListTime_"..v]
+				local fujix =fujiF.TimeList.listbut[v]
 				fujix.highlight1:Hide();
 				fujix.highlight:Hide();
 				fujix.Title:SetTextColor(0,250/255,154/255,1);
@@ -238,7 +269,7 @@ function BusinessInfo.Trade()
 	end
 	function fujiF.gengxin_List_Time(self,chushi)
 		for i = 1, T_hang_NUM do
-			local fuji = _G["PIG_TradeListTime_"..i]
+			local fuji = fujiF.TimeList.listbut[i]
 			fuji:Hide()
 			fuji.Title:SetText("");
 			fuji.Title:SetTextColor(0,250/255,154/255, 1);
@@ -257,7 +288,7 @@ function BusinessInfo.Trade()
 				    for i = 1, T_hang_NUM do
 						local dangqian = (ItemsNum+1)-i-offset;
 						if dangqian>0 then
-							local fuji = _G["PIG_TradeListTime_"..i]
+							local fuji = fujiF.TimeList.listbut[i]
 							fuji:Show()
 							fuji:SetID(dangqian)
 							fuji.Title:SetText(date("%Y-%m-%d",shujuData[dangqian]*86400));
@@ -286,13 +317,15 @@ function BusinessInfo.Trade()
 	fujiF.TradeList.Scroll:SetScript("OnVerticalScroll", function(self, offset)
 	    FauxScrollFrame_OnVerticalScroll(self, offset, N_hang_Height, fujiF.gengxin_List_NR)
 	end)
+	fujiF.TradeList.listbut={}
 	for i=1, N_hang_NUM, 1 do
-		local listbut = CreateFrame("Button", "PIG_TradeListNR_"..i,fujiF.TradeList,"BackdropTemplate");
+		local listbut = CreateFrame("Button", nil,fujiF.TradeList,"BackdropTemplate");
+		fujiF.TradeList.listbut[i]=listbut
 		listbut:SetSize(fujiF.TradeList:GetWidth()-4,N_hang_Height);
 		if i==1 then
 			listbut:SetPoint("TOPLEFT", fujiF.TradeList.Scroll, "TOPLEFT", 1, 0);
 		else
-			listbut:SetPoint("TOPLEFT", _G["PIG_TradeListNR_"..(i-1)], "BOTTOMLEFT", 0, 0);
+			listbut:SetPoint("TOPLEFT", fujiF.TradeList.listbut[i-1], "BOTTOMLEFT", 0, 0);
 		end
 		local tmp1,tmp2 = math.modf(i/2)
 		if tmp2==0 then
@@ -323,16 +356,16 @@ function BusinessInfo.Trade()
 		end);
 		listbut:SetScript("OnClick", function (self)
 			for v=1,N_hang_NUM do
-				local fujix = _G["PIG_TradeListNR_"..v]
+				local fujix = fujiF.TradeList.listbut[v]
 				fujix.highlight1:Hide();
 				fujix.highlight:Hide();
 			end
 			self.highlight1:Show();
 		end)
-		listbut.Title = PIGFontString(listbut,{"TOPLEFT", listbut, "TOPLEFT", 6, -N_hang_Height*0.5+8})
+		listbut.Title = PIGFontString(listbut,{"LEFT", listbut, "LEFT", 2, 0})
 		listbut.Title:SetTextColor(0.9, 0.9, 0.9, 0.9);
 		listbut.Race = listbut:CreateTexture();
-		listbut.Race:SetPoint("TOPLEFT", listbut, "TOPLEFT", 46, -2);
+		listbut.Race:SetPoint("TOPLEFT", listbut, "TOPLEFT", 36, -2);
 		listbut.Race:SetSize(N_hang_Height*0.5-2,N_hang_Height*0.5-2);
 		listbut.Class = listbut:CreateTexture();
 		listbut.Class:SetTexture("interface/glues/charactercreate/ui-charactercreate-classes.blp")
@@ -343,14 +376,10 @@ function BusinessInfo.Trade()
 		listbut.Name = PIGFontString(listbut,{"LEFT", listbut.level, "RIGHT", 0, 0})
 		listbut.MapName = PIGFontString(listbut,{"TOPLEFT", listbut.Race, "BOTTOMLEFT", 0, -3})
 		listbut.MapName:SetTextColor(0.6,0.6,0.6,1);
-		listbut.jiaochuP = PIGFontString(listbut,{"TOPLEFT", listbut, "TOPLEFT", 220, -2},"交出:")
+		listbut.jiaochuP = PIGFontString(listbut,{"TOPLEFT", listbut, "TOPLEFT", 250, -2},"交出:")
 		listbut.jiaochuP:SetTextColor(1,0,0,1);
-		listbut.MoneyP = PIGFontString(listbut,{"TOPRIGHT", listbut, "TOPRIGHT", -30, 0})
-		listbut.MoneyP:SetTextColor(1,0,0,1);
-		listbut.shoudaoP = PIGFontString(listbut,{"TOPLEFT", listbut, "TOPLEFT", 220, -N_hang_Height*0.5-2},"收到:")
+		listbut.shoudaoP = PIGFontString(listbut,{"TOPLEFT", listbut, "TOPLEFT", 250, -N_hang_Height*0.5-2},"收到:")
 		listbut.shoudaoP:SetTextColor(0,1,0,1);
-		listbut.MoneyT = PIGFontString(listbut,{"TOPRIGHT", listbut, "TOPRIGHT", -30, -N_hang_Height*0.5-2})
-		listbut.MoneyT:SetTextColor(0,1,0,1);
 		listbut.itembuttons={}
 		for butid=1,12 do
 			local xitembut = CreateFrame("Button",nil,listbut)
@@ -368,22 +397,20 @@ function BusinessInfo.Trade()
 				GameTooltip:ClearLines();
 				GameTooltip:Hide() 
 			end);
-			if butid<7 then
-				if butid==1 then
-					xitembut:SetPoint("LEFT", listbut.jiaochuP, "RIGHT", 4,-1);
-				else
-					xitembut:SetPoint("LEFT", listbut.jiaochuP, "RIGHT", (N_hang_Height*0.5)*(butid-1)+4,-1);
-				end
+			if butid==1 then
+				xitembut:SetPoint("LEFT", listbut.jiaochuP, "RIGHT", 4,-1);
+			elseif butid==7 then
+				xitembut:SetPoint("LEFT", listbut.shoudaoP, "RIGHT", 4,-1);
 			else
-				if butid==7 then
-					xitembut:SetPoint("LEFT", listbut.shoudaoP, "RIGHT", 4,-1);
-				else
-					xitembut:SetPoint("LEFT", listbut.shoudaoP, "RIGHT", (N_hang_Height*0.5)*(butid-7)+4,-1);
-				end
+				xitembut:SetPoint("LEFT", listbut.itembuttons[butid-1], "RIGHT", 0,0);
 			end
 			xitembut.numItems = PIGFontString(xitembut,{"BOTTOMRIGHT", xitembut, "BOTTOMRIGHT", 0, 0},nil,"OUTLINE",12)
 			xitembut.numItems:SetTextColor(1, 1, 1, 1);
 		end
+		listbut.MoneyP = PIGFontString(listbut,{"LEFT", listbut.itembuttons[6], "RIGHT", 2, 0})
+		listbut.MoneyP:SetTextColor(1,0,0,1);
+		listbut.MoneyT = PIGFontString(listbut,{"LEFT", listbut.itembuttons[12], "RIGHT", 2, 0})
+		listbut.MoneyT:SetTextColor(0,1,0,1);
 	end
 	fujiF.TradeList.hejiF=PIGFrame(fujiF.TradeList,{"BOTTOMLEFT",fujiF.TradeList,"BOTTOMLEFT",0,0})
 	fujiF.TradeList.hejiF:SetPoint("BOTTOMRIGHT",fujiF.TradeList,"BOTTOMRIGHT",0,0);
@@ -416,11 +443,12 @@ function BusinessInfo.Trade()
 	function fujiF.gengxin_List_NR(self,chushi)
 		fujiF.TradeList.hejiF.DELtimeall:Disable()
 		for i = 1, N_hang_NUM do
-			local fuji = _G["PIG_TradeListNR_"..i]
+			local fuji = fujiF.TradeList.listbut[i]
 			fuji:Hide()
 			fuji.Title:SetText("");
 			fuji.highlight1:Hide();
 			for butid=1,12 do
+				fuji.itembuttons[butid]:SetWidth(0.0001)
 				fuji.itembuttons[butid]:Hide()
 			end
 		end
@@ -437,52 +465,58 @@ function BusinessInfo.Trade()
 				    for i = 1, N_hang_NUM do
 						local dangqian = (ItemsNum+1)-i-offset;
 						if shujuData[dangqian] then
-							local fuji = _G["PIG_TradeListNR_"..i]
+							local fuji = fujiF.TradeList.listbut[i]
 							fuji:Show()
 							fuji.Title:SetText(date("%H:%M",shujuData[dangqian]["Time"]));
-							fuji.Race:SetAtlas(shujuData[dangqian]["Race"]);
-							local className, classFile, classID = PIGGetClassInfo(shujuData[dangqian]["Class"])
-							fuji.Class:SetTexCoord(unpack(CLASS_ICON_TCOORDS[classFile]));
-							fuji.level:SetText(shujuData[dangqian]["Level"]);
-							local color = PIG_CLASS_COLORS[classFile];
-							fuji.Name:SetText(shujuData[dangqian]["Name"])
-							fuji.Name:SetTextColor(color.r, color.g, color.b, 1);
-							fuji.MapName:SetText(shujuData[dangqian]["Map"])
-							if shujuData[dangqian]["MoneyP"]>0 then
-								fuji.MoneyP:SetText(GetMoneyString(shujuData[dangqian]["MoneyP"]))
+							if shujuData[dangqian]["Name"]==NONE or shujuData[dangqian]["Class"]==nil or shujuData[dangqian]["Class"]==NONE then
+								fuji.level:SetText("??");fuji.Name:SetText("??");fuji.MapName:SetText("??");fuji.MoneyP:SetText("??");fuji.MoneyT:SetText("??")
 							else
-								fuji.MoneyP:SetText("")
-							end
-							if shujuData[dangqian]["MoneyT"]>0 then
-								fuji.MoneyT:SetText(GetMoneyString(shujuData[dangqian]["MoneyT"]))
-							else
-								fuji.MoneyT:SetText("")
-							end
-							for butid=1,6 do
-								if shujuData[dangqian]["ItemP"][butid]~=NONE then
-									fuji.itembuttons[butid]:Show()
-									local itemID, itemType, itemSubType, itemEquipLoc, icon = GetItemInfoInstant(shujuData[dangqian]["ItemP"][butid][1]) 
-									fuji.itembuttons[butid]:SetNormalTexture(icon)
-									fuji.itembuttons[butid].numItems:SetText(shujuData[dangqian]["ItemP"][butid][2])
-									fuji.itembuttons[butid]:HookScript("OnEnter", function (self)
-										GameTooltip:ClearLines();
-										GameTooltip:SetOwner(self, "ANCHOR_LEFT",0,0);
-										GameTooltip:SetHyperlink(shujuData[dangqian]["ItemP"][butid][1])
-										GameTooltip:Show();
-									end);
+								fuji.Race:SetAtlas(shujuData[dangqian]["Race"]);
+								local className, classFile, classID = PIGGetClassInfo(shujuData[dangqian]["Class"])
+								fuji.Class:SetTexCoord(unpack(CLASS_ICON_TCOORDS[classFile]));
+								fuji.level:SetText(shujuData[dangqian]["Level"]);
+								local color = PIG_CLASS_COLORS[classFile or NONE];
+								fuji.Name:SetText(shujuData[dangqian]["Name"])
+								fuji.Name:SetTextColor(color.r, color.g, color.b, 1);
+								fuji.MapName:SetText(shujuData[dangqian]["Map"])
+								if shujuData[dangqian]["MoneyP"]>0 then
+									fuji.MoneyP:SetText(GetMoneyString(shujuData[dangqian]["MoneyP"]))
+								else
+									fuji.MoneyP:SetText("")
 								end
-								if shujuData[dangqian]["ItemT"][butid]~=NONE then
-									local itemID, itemType, itemSubType, itemEquipLoc, icon = GetItemInfoInstant(shujuData[dangqian]["ItemT"][butid][1]) 
-									local newbutid = butid+6
-									fuji.itembuttons[newbutid]:Show()
-									fuji.itembuttons[newbutid]:SetNormalTexture(icon)
-									fuji.itembuttons[newbutid].numItems:SetText(shujuData[dangqian]["ItemT"][butid][2])
-									fuji.itembuttons[newbutid]:HookScript("OnEnter", function (self)
-										GameTooltip:ClearLines();
-										GameTooltip:SetOwner(self, "ANCHOR_LEFT",0,0);
-										GameTooltip:SetHyperlink(shujuData[dangqian]["ItemT"][butid][1])
-										GameTooltip:Show();
-									end);
+								if shujuData[dangqian]["MoneyT"]>0 then
+									fuji.MoneyT:SetText(GetMoneyString(shujuData[dangqian]["MoneyT"]))
+								else
+									fuji.MoneyT:SetText("")
+								end
+								for butid=1,6 do
+									if shujuData[dangqian]["ItemP"][butid]~=NONE then
+										fuji.itembuttons[butid]:Show()
+										fuji.itembuttons[butid]:SetWidth(N_hang_Height*0.5-2)
+										local itemID, itemType, itemSubType, itemEquipLoc, icon = GetItemInfoInstant(shujuData[dangqian]["ItemP"][butid][1]) 
+										fuji.itembuttons[butid]:SetNormalTexture(icon)
+										fuji.itembuttons[butid].numItems:SetText(shujuData[dangqian]["ItemP"][butid][2])
+										fuji.itembuttons[butid]:HookScript("OnEnter", function (self)
+											GameTooltip:ClearLines();
+											GameTooltip:SetOwner(self, "ANCHOR_LEFT",0,0);
+											GameTooltip:SetHyperlink(shujuData[dangqian]["ItemP"][butid][1])
+											GameTooltip:Show();
+										end);
+									end
+									if shujuData[dangqian]["ItemT"][butid]~=NONE then
+										local itemID, itemType, itemSubType, itemEquipLoc, icon = GetItemInfoInstant(shujuData[dangqian]["ItemT"][butid][1]) 
+										local newbutid = butid+6
+										fuji.itembuttons[newbutid]:Show()
+										fuji.itembuttons[newbutid]:SetWidth(N_hang_Height*0.5-2)
+										fuji.itembuttons[newbutid]:SetNormalTexture(icon)
+										fuji.itembuttons[newbutid].numItems:SetText(shujuData[dangqian]["ItemT"][butid][2])
+										fuji.itembuttons[newbutid]:HookScript("OnEnter", function (self)
+											GameTooltip:ClearLines();
+											GameTooltip:SetOwner(self, "ANCHOR_LEFT",0,0);
+											GameTooltip:SetHyperlink(shujuData[dangqian]["ItemT"][butid][1])
+											GameTooltip:Show();
+										end);
+									end
 								end
 							end
 							---
@@ -494,7 +528,7 @@ function BusinessInfo.Trade()
 	end
 	--
 	fujiF:HookScript("OnShow", function(self)
-		fujiF.gengxin_List(self.PList.Scroll);
+		self.Update_List();
 	end)
 	----
 	local function IsTimeDay(DQday,timelist)
@@ -506,48 +540,15 @@ function BusinessInfo.Trade()
 		return false
 	end
 	local IsFriend=Fun.IsFriend
-	local shibaiERR = {
-		ERR_TRADE_BAG,--"你不能交易装有物品的包";
-		ERR_TRADE_BAG_FULL,--"交易失败，你没有足够的物品栏空间。";
-		ERR_TRADE_BLOCKED_S,--"%s要求进行交易，你拒绝了。";
-		ERR_TRADE_BOUND_ITEM,--"你不能交易一件灵魂绑定物品";
-		ERR_TRADE_CANCELLED,--"交易取消。";
-		ERR_TRADE_EQUIPPED_BAG,--"你无法交易已经装备的包裹。";
-		ERR_TRADE_FACTION_SPECIFIC,--"你无法与对立阵营交易阵营特色物品。";
-		ERR_TRADE_GROUND_ITEM,--"你不能交易一件还放在地上的物品。";
-		ERR_TRADE_MAX_COUNT_EXCEEDED,--"你拥有超过一件";
-		ERR_TRADE_NOT_ON_TAPLIST,--"你只能将绑定物品交易给拥有该物品起始拾取资格的玩家。";
-		ERR_TRADE_QUEST_ITEM,--"你不能交易一件任务物品";
-		ERR_TRADE_REQUEST_S,--"%s想要和你进行交易。";
-		ERR_TRADE_SELF,--"你不能与自己交易。";
-		ERR_TRADE_TARGET_BAG_FULL,--"交易失败，交易目标没有足够的物品栏空间。";
-		ERR_TRADE_TARGET_DEAD,--"你不能和已死亡的玩家交易";
-		ERR_TRADE_TARGET_MAX_COUNT_EXCEEDED,--"交易对象已经拥有该类唯一物品。";
-		ERR_TRADE_TARGET_MAX_LIMIT_CATEGORY_COUNT_EXCEEDED_IS,--"你的交易对象只能携带%d个%s";
-		ERR_TRADE_TEMP_ENCHANT_BOUND,--"你不能交易带有临时附魔的物品。";
-		ERR_TRADE_TOO_FAR,--"交易目标太远";
-		ERR_TRADE_WRONG_REALM,--"你只能与来自其它服务器的玩家交易魔法制造的物品";
-	}
-	local function iserrtishi(arg2)
-		for k,v in pairs(shibaiERR) do
-			if arg2==v then
-				return true
-			end
-		end
-		return false
-	end
 	fujiF:RegisterEvent("UI_INFO_MESSAGE");
 	fujiF:HookScript("OnEvent", function(self,event,arg1,arg2)
 		if event=="UI_INFO_MESSAGE" then
 			if arg2==ERR_TRADE_COMPLETE then
 				local xiaoxiTime=GetServerTime()
 				local MapName=GetZoneText().."-"..GetSubZoneText()
-				local TradeDATA={
-					["Time"]=xiaoxiTime,["Map"]=MapName,["Name"]=TradeFrame.PIG_Data.Name,
-					["Race"]=TradeFrame.PIG_Data.Race,["Class"]=TradeFrame.PIG_Data.Class,["Level"]=TradeFrame.PIG_Data.Level,
-					["MoneyP"]=TradeFrame.PIG_Data.MoneyP,["MoneyT"]=TradeFrame.PIG_Data.MoneyT,
-					["ItemP"]=TradeFrame.PIG_Data.ItemP,["ItemT"]=TradeFrame.PIG_Data.ItemT,
-				}
+				local TradeDATA=PIGCopyTable(TradeFrame.PIG_Data)
+				TradeDATA["Time"]=xiaoxiTime
+				TradeDATA["Map"]=MapName
 				local YYDAY=floor(xiaoxiTime/60/60/24)
 				local shujuyuanPR=PIGA["StatsInfo"]["TradeData"][StatsInfo.allname]
 				if #shujuyuanPR>0 then
@@ -563,26 +564,26 @@ function BusinessInfo.Trade()
 				end
 				
 				local FSmsgT = {"",""}
-				if TradeFrame.PIG_Data.MoneyP>0 then
-					FSmsgT[1]=FSmsgT[1]..(TradeFrame.PIG_Data.MoneyP*0.0001).."G"
+				if TradeDATA.MoneyP>0 then
+					FSmsgT[1]=FSmsgT[1]..(TradeDATA.MoneyP*0.0001).."G"
 				end
 				for i=1,6 do
-					if TradeFrame.PIG_Data.ItemP[i]~=NONE then
-						FSmsgT[1]=FSmsgT[1]..TradeFrame.PIG_Data.ItemP[i][1]
-						if TradeFrame.PIG_Data.ItemP[i][2]>1 then
-							FSmsgT[1]=FSmsgT[1].."×"..TradeFrame.PIG_Data.ItemP[i][2]
+					if TradeDATA.ItemP[i]~=NONE then
+						FSmsgT[1]=FSmsgT[1]..TradeDATA.ItemP[i][1]
+						if TradeDATA.ItemP[i][2]>1 then
+							FSmsgT[1]=FSmsgT[1].."×"..TradeDATA.ItemP[i][2]
 						end
 					end
 				end
 				if FSmsgT[1]~="" then FSmsgT[1]="交出"..FSmsgT[1] end
-				if TradeFrame.PIG_Data.MoneyT>0 then
-					FSmsgT[2]=FSmsgT[2]..(TradeFrame.PIG_Data.MoneyT*0.0001).."G"
+				if TradeDATA.MoneyT>0 then
+					FSmsgT[2]=FSmsgT[2]..(TradeDATA.MoneyT*0.0001).."G"
 				end
 				for i=1,6 do
-					if TradeFrame.PIG_Data.ItemT[i]~=NONE then
-						FSmsgT[2]=FSmsgT[2]..TradeFrame.PIG_Data.ItemT[i][1]
-						if TradeFrame.PIG_Data.ItemT[i][2]>1 then
-							FSmsgT[2]=FSmsgT[2].."×"..TradeFrame.PIG_Data.ItemT[i][2]
+					if TradeDATA.ItemT[i]~=NONE then
+						FSmsgT[2]=FSmsgT[2]..TradeDATA.ItemT[i][1]
+						if TradeDATA.ItemT[i][2]>1 then
+							FSmsgT[2]=FSmsgT[2].."×"..TradeDATA.ItemT[i][2]
 						end
 					end
 				end
@@ -592,11 +593,11 @@ function BusinessInfo.Trade()
 					FSmsgT[2]="收到"..FSmsgT[2]
 				end
 				if FSmsgT[1]~="" or FSmsgT[2]~="" then
-					local msgT = "[!Pig]:与<"..TradeFrame.PIG_Data.Name..">交易成功,"..FSmsgT[1]..FSmsgT[2]
+					local msgT = "[!Pig]:与<"..TradeDATA.Name..">交易成功,"..FSmsgT[1]..FSmsgT[2]
 					if PIGA["StatsInfo"]["TradeTongGao"] then
-						if not IsFriend(TradeFrame.PIG_Data.Name) then
+						if not IsFriend(TradeDATA.Name) then
 							if PIGA["StatsInfo"]["TradeTongGaoChannel"]=="WHISPER" then
-								SendChatMessage(msgT, "WHISPER", nil, TradeFrame.PIG_Data.Name);
+								SendChatMessage(msgT, "WHISPER", nil, TradeDATA.Name);
 							else
 								if HasLFGRestrictions() then
 									SendChatMessage(msgT, "INSTANCE_CHAT");
@@ -610,31 +611,33 @@ function BusinessInfo.Trade()
 						end
 					end
 					if IsAddOnLoaded(L.extLsit[2]) and PIGA["GDKP"]["Rsetting"]["tradetonggao"] then
-						SendChatMessage(msgT, "RAID");
+						if IsInRaid() then
+							SendChatMessage(msgT, "RAID");
+						elseif IsInGroup() then
+							SendChatMessage(msgT, "PARTY");
+						end
 					end
 				end
-			else
-				if iserrtishi(arg2) then
-					local msgT = "[!Pig]:与<"..TradeFrame.PIG_Data.Name..">交易失败,原因:"..arg2
-					if PIGA["StatsInfo"]["TradeTongGao"] then
-						if not IsFriend(TradeFrame.PIG_Data.Name) then
-							if PIGA["StatsInfo"]["TradeTongGaoChannel"]=="WHISPER" then
-								SendChatMessage(msgT, "WHISPER", nil, TradeFrame.PIG_Data.Name);
-							else
-								if HasLFGRestrictions() then
-									SendChatMessage(msgT, "INSTANCE_CHAT");
-								elseif IsInRaid() then
-									SendChatMessage(msgT, "RAID");
-								elseif IsInGroup() then
-									SendChatMessage(msgT, "PARTY");
-								end
-								return
+			elseif IsErrTrade(arg2) and TradeFrame.PIG_Data.Name then
+				local msgT = "[!Pig]:与<"..TradeFrame.PIG_Data.Name..">交易失败,原因:"..arg2
+				if PIGA["StatsInfo"]["TradeTongGao"] then
+					if not IsFriend(TradeFrame.PIG_Data.Name) then
+						if PIGA["StatsInfo"]["TradeTongGaoChannel"]=="WHISPER" then
+							SendChatMessage(msgT, "WHISPER", nil, TradeFrame.PIG_Data.Name);
+						else
+							if HasLFGRestrictions() then
+								SendChatMessage(msgT, "INSTANCE_CHAT");
+							elseif IsInRaid() then
+								SendChatMessage(msgT, "RAID");
+							elseif IsInGroup() then
+								SendChatMessage(msgT, "PARTY");
 							end
+							return
 						end
 					end
-					if IsAddOnLoaded(L.extLsit[2]) and PIGA["GDKP"]["Rsetting"]["tradetonggao"] then
-						SendChatMessage(msgT, "RAID");
-					end
+				end
+				if IsAddOnLoaded(L.extLsit[2]) and PIGA["GDKP"]["Rsetting"]["tradetonggao"] and IsInRaid() then
+					SendChatMessage(msgT, "RAID");
 				end
 			end
 		end

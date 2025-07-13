@@ -1,32 +1,31 @@
 local AddonName, SAO = ...
 
 -- Create a texture variant object
-function SAO.CreateTextureVariants(self, auraID, stacks, values)
+function SAO.CreateTextureVariants(self, auraID, optionIndex, values)
     local textureFunc = function()
-        return self.TexName[self:GetOverlayOptions(auraID)[stacks]];
+        return self.TexName[self:GetOverlayOptions(auraID)[optionIndex]];
     end
 
-    local transformer = function(cb, sb, texture, positions, scale, r, g, b, autoPulse, glowIDs)
+    local textureTestFunc = function(cb, sb)
         if (cb:GetChecked()) then
             -- Checkbox is checked, preview will work well
-            return texture, positions, scale, r, g, b, autoPulse, glowIDs;
+            return nil;
         else
             -- Checkbox is not checked, must force texture otherwise preview will not display anything
             local sbText = sb and UIDropDownMenu_GetText(sb);
             for _, obj in ipairs(values) do
                 if (obj.text == sbText or obj.text == sbText:gsub(":127:127:127|t",":255:255:255|t")) then
-                    texture = self.TexName[obj.value];
-                    break
+                    return self.TexName[obj.value];
                 end
             end
-            return texture, positions, scale, r, g, b, autoPulse, glowIDs;
+            return nil;
         end
     end
 
     local variants = {
         variantType = 'texture',
         textureFunc = textureFunc,
-        transformer = transformer,
+        textureTestFunc = textureTestFunc,
         values = values,
     }
 
@@ -47,7 +46,7 @@ function SAO.TextureVariantValue(self, texture, horizontal, suffix)
 
     local width = horizontal and 6 or 3;
     if (suffix) then
-        width = width+1+#suffix;
+        width = width+1+strlenutf8(suffix);
     end
 
     return {
@@ -58,7 +57,7 @@ function SAO.TextureVariantValue(self, texture, horizontal, suffix)
 end
 
 -- Create a string variant object
-function SAO.CreateStringVariants(self, optionType, optionID, optionSubID, values)
+function SAO.CreateStringVariants(self, optionType, optionID, optionSubID, values) -- @todo use optionIndex
     local getOption = function()
         if optionType == "glow" then
             return self:GetGlowingOptions(optionID)[optionSubID];
@@ -83,7 +82,7 @@ function SAO.StringVariantValue(self, items, valuePrefix, getTextFunc)
 
     if #items == 1 then
         value = tostring(items[1]);
-        text = string.format(RACE_CLASS_ONLY, getTextFunc(items[1]));
+        text = self:OnlyFor(getTextFunc(items[1]));
     elseif #items > 1 then
         for _, item in ipairs(items) do
             value = value == "" and tostring(item) or value.."/"..tostring(item);
@@ -92,7 +91,7 @@ function SAO.StringVariantValue(self, items, valuePrefix, getTextFunc)
         text = text:sub(3);
     end
 
-    local width = ceil(#text*0.4);
+    local width = ceil(strlenutf8(text)*0.4);
 
     return {
         value = valuePrefix..value,
@@ -105,7 +104,8 @@ end
 function SAO.SpecVariantValue(self, specs)
     return self:StringVariantValue(specs, "spec:",
     function(spec)
-        return select(1, GetTalentTabInfo(spec));
+        local selector = self.IsCata() and 2 or 1;
+        return select(selector, GetTalentTabInfo(spec));
     end);
 end
 

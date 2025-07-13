@@ -1,28 +1,41 @@
 local _, addonTable = ...;
-local _, _, _, tocversion = GetBuildInfo()
 local L=addonTable.locale
 local Create=addonTable.Create
-local PIGButton=Create.PIGButton
 local PIGFrame=Create.PIGFrame
+local PIGButton=Create.PIGButton
 local PIGFontString=Create.PIGFontString
+---
+local Data=addonTable.Data
+local GetItemInfoInstant=GetItemInfoInstant or C_Item and C_Item.GetItemInfoInstant
 ---------------
 local FramePlusfun=addonTable.FramePlusfun
 function FramePlusfun.Roll()
-	if tocversion>50000 then return end
+	if PIG_MaxTocversion(50000,true) then return end
 	if not PIGA["FramePlus"]["Roll"] then return end
 	if ElvUI or NDui then return end
 	UIParent:UnregisterEvent("START_LOOT_ROLL")
 	UIParent:UnregisterEvent("CANCEL_LOOT_ROLL")
 	local ActionW = ActionButton1:GetWidth()+2
-	local itemhangW,itemhangH = 260,ActionW
-	local RollFFF = PIGFrame(UIParent,{"CENTER",UIParent,"CENTER",220,20},{itemhangW,12},"PIG_Roll_LsitUI")
+	local UIname,itemhangW,itemhangH = "PIG_RollLsitUI",260,ActionW
+	Data.UILayout[UIname]={"CENTER","CENTER",400,50}
+	FramePlusfun.RollListUIname=UIname
+	local RollFFF = PIGFrame(UIParent,nil,{itemhangW,12},UIname)
 	RollFFF:Hide();
+	Create.PIG_SetPoint(UIname)
 	RollFFF:SetScale(PIGA["FramePlus"]["RollScale"])
-	RollFFF.yidong = PIGFrame(RollFFF,{"LEFT",RollFFF,"LEFT",0,0},{26,12})
+	RollFFF.yidong = PIGButton(RollFFF,{"LEFT",RollFFF,"LEFT",0,0},{26,12},"移动")
 	RollFFF.yidong:PIGSetBackdrop()
-	RollFFF.yidong:PIGSetMovable(RollFFF)
-	RollFFF.yidong.t = PIGFontString(RollFFF.yidong,{"LEFT", RollFFF.yidong, "LEFT", 0, 0}," 移动",nil,9)
-	RollFFF.yidong.t:SetTextColor(0.6, 0.6, 0.6, 0.9);
+	Create.PIGSetMovable(RollFFF.yidong,RollFFF)
+	RollFFF.yidong:NoClickText()
+	RollFFF.yidong.Text:SetFont(ChatFontNormal:GetFont(), 9);
+	RollFFF.yidong.Text:SetTextColor(0.6, 0.6, 0.6, 0.9);
+	--
+	RollFFF.Debug_off = PIGButton(RollFFF,{"LEFT", RollFFF.yidong,"RIGHT",40,0},{100,18},"关闭测试模式")
+	RollFFF.Debug_off:Hide()
+	RollFFF.Debug_off:SetScript("OnClick", function (self)
+		RollFFF:RollDebugUI_OFF()
+	end)
+	---
 	RollFFF.butList={}
 	RollFFF.rollFrames = {};
 	RollFFF.reservedSize = 100;
@@ -336,7 +349,7 @@ function FramePlusfun.Roll()
 				local name, class, rollType, roll, isWinner = C_LootHistory.GetPlayerInfo(historyIndex, playerIndex);
 				if rollType then
 					frame.PlayersList[rollType][playerIndex]={name, class}
-					if name==Pig_OptionsUI.Name or name==Pig_OptionsUI.AllName then
+					if name==PIG_OptionsUI.Name or name==PIG_OptionsUI.AllName then
 						SETbutEnableDisable(frame,false)
 					end
 				end
@@ -398,53 +411,68 @@ function FramePlusfun.Roll()
 	--
 	--LootHistoryFrame:SetWidth(210)
 	local xffggghhh = {13262,7734,22691,11122}
-	function RollFFF:Getceshiwupinxinxi()
+	local function RollGetDebugUIItems()
 		for i=1,#xffggghhh do
 			GetItemInfo(xffggghhh[i])
 		end
-	end
-	function RollFFF:DebugUI()
-		self.ceshi=true
 		for i=1,#xffggghhh do
-			if not RollFFF.butList[i] then add_hang(i) end
-			local itembut=RollFFF.butList[i]
-			SETbutEnableDisable(RollFFF.butList[i],false)
-			itembut.PlayersList={}
-			for i=1,#rollTypelist do
-				itembut.PlayersList[rollTypelist[i]]={}
+			local itemName,itemLink=GetItemInfo(xffggghhh[i])
+			if not itemName  then
+				C_Timer.After(0.4,RollGetDebugUIItems)
+				return
 			end
-			itembut.Need.Count:SetText(0)
-			itembut.Greed.Count:SetText(0)
-			itembut.Pass.Count:SetText(0)
-			itembut.Timer:SetValue(i*14000);
-			local itemName,itemLink,itemQuality,itemLevel,itemMinLevel,itemType,itemSubType,itemStackCount,itemEquipLoc,itemTexture,sellPrice,classID = GetItemInfo(xffggghhh[i])
-			itembut.icon.link=itemLink
-			itembut.icon.tex:SetTexture(itemTexture)
-			if classID==2 or classID==4 then
-				local effectiveILvl = GetDetailedItemLevelInfo(itemLink)
-				itembut.icon.lv:SetText(effectiveILvl);
-				local r, g, b = GetItemQualityColor(itemQuality);
-				itembut.icon.lv:SetTextColor(r, g, b, 1);
-				itembut.name:SetText(itemSubType..itemLink)
-			else
-				itembut.name:SetText(itemLink)
-			end
-			itembut.icon.Count:SetTextColor(1, 1, 1, 1)
-			itembut.icon.Count:SetText(8)
-			itembut:ClearAllPoints();
-			itembut:SetPoint("TOP",RollFFF,"BOTTOM",0,-(itemhangH*(i-1)));
-			itembut:Show()
-		end	
-		if not self:IsShown() then self:Show() end
-		self:SetScale(PIGA["FramePlus"]["RollScale"])
-		if self.ceshiTicker then self.ceshiTicker:Cancel() end
-		self.ceshiTicker=C_Timer.NewTimer(3,function()
-			for k,v in pairs(RollFFF.butList) do
-				v:Hide()
-			end
-			self:Hide()
-			self.ceshi=false
-			PIGSetLootRollIDs()
-		end)
+		end
+		for i=1,#xffggghhh do
+				if not RollFFF.butList[i] then add_hang(i) end
+				local itembut=RollFFF.butList[i]
+				SETbutEnableDisable(RollFFF.butList[i],false)
+				itembut.PlayersList={}
+				for i=1,#rollTypelist do
+					itembut.PlayersList[rollTypelist[i]]={}
+				end
+				itembut.Need.Count:SetText(0)
+				itembut.Greed.Count:SetText(0)
+				itembut.Pass.Count:SetText(0)
+				itembut.Timer:SetValue(i*14000);
+				local itemName,itemLink,itemQuality,itemLevel,itemMinLevel,itemType,itemSubType,itemStackCount,itemEquipLoc,itemTexture,sellPrice,classID = GetItemInfo(xffggghhh[i])
+				itembut.icon.link=itemLink
+				itembut.icon.tex:SetTexture(itemTexture)
+				if classID==2 or classID==4 then
+					local effectiveILvl = GetDetailedItemLevelInfo(itemLink)
+					itembut.icon.lv:SetText(effectiveILvl);
+					local r, g, b = GetItemQualityColor(itemQuality);
+					itembut.icon.lv:SetTextColor(r, g, b, 1);
+					itembut.name:SetText(itemSubType..itemLink)
+				else
+					itembut.name:SetText(itemLink)
+				end
+				itembut.icon.Count:SetTextColor(1, 1, 1, 1)
+				itembut.icon.Count:SetText(8)
+				itembut:ClearAllPoints();
+				itembut:SetPoint("TOP",RollFFF,"BOTTOM",0,-(itemhangH*(i-1)));
+				itembut:Show()
+		end
+	end
+	function FramePlusfun.RollDebugUI(Scale)
+		RollFFF:SetScale(PIGA["FramePlus"]["RollScale"])
+		if not RollFFF:IsShown() then
+			RollFFF.ceshi=true
+			RollFFF:Show()
+			RollFFF.Debug_off:Show()
+			RollGetDebugUIItems()
+		end
+	end
+	function RollFFF:RollDebugUI_OFF()
+		for k,v in pairs(self.butList) do
+			v:Hide()
+		end
+		self:Hide()
+		self.ceshi=false
+		self.Debug_off:Hide()
+		PIGSetLootRollIDs()
+	end
+	function FramePlusfun.RollCZ()
+		Create.PIG_ResPoint(UIname)
+		RollFFF:SetScale(PIGA["FramePlus"]["RollScale"])
 	end
 end

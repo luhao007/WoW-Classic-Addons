@@ -1,569 +1,319 @@
 local addonName, addonTable = ...;
 local L=addonTable.locale
+local Fun=addonTable.Fun
+local Data=addonTable.Data
 local Create = addonTable.Create
 local PIGFrame=Create.PIGFrame
-local PIGLine=Create.PIGLine
 local PIGButton = Create.PIGButton
-local PIGOptionsList=Create.PIGOptionsList
+local PIGCheckbutton=Create.PIGCheckbutton
 local PIGFontString=Create.PIGFontString
-local Fun=addonTable.Fun
+local PIGOptionsList_R=Create.PIGOptionsList_R
 local IsAddOnLoaded=IsAddOnLoaded or C_AddOns and C_AddOns.IsAddOnLoaded
---------------
-local function Config_format(DQPEIZHI,Def)
-	for k,v in pairs(Def) do
-		if DQPEIZHI[k]==nil then
-			DQPEIZHI[k] = Def[k]
-		elseif DQPEIZHI[k]=="OFF" then
-			DQPEIZHI[k]=false
-		elseif type(v)=="table" then
-			if type(DQPEIZHI[k])~="table" then
-				DQPEIZHI[k]=Def[k]
-			end
-			for kk,vv in pairs(v) do
-				if DQPEIZHI[k][kk]==nil then
-					DQPEIZHI[k][kk] = Def[k][kk]
-				elseif DQPEIZHI[k][kk]=="OFF" then
-					DQPEIZHI[k][kk]=false
-				elseif type(vv)=="table" then
-					if type(DQPEIZHI[k][kk])~="table" then
-						DQPEIZHI[k][kk]=Def[k][kk]
-					end
-					for kkk,vvv in pairs(vv) do
-						if DQPEIZHI[k][kk][kkk]==nil then
-							DQPEIZHI[k][kk][kkk] = Def[k][kk][kkk]
-						elseif DQPEIZHI[k][kk][kkk]=="OFF" then
-							DQPEIZHI[k][kk][kkk]=false
-						elseif type(vvv)=="table" then
-							if type(DQPEIZHI[k][kk][kkk])~="table" then
-								DQPEIZHI[k][kk][kkk]=Def[k][kk][kkk]
-							end
-							for kkkk,vvvv in pairs(vvv) do
-								if DQPEIZHI[k][kk][kkk][kkkk]==nil then
-									DQPEIZHI[k][kk][kkk][kkkk] = Def[k][kk][kkk][kkkk]
-								elseif DQPEIZHI[k][kk][kkk][kkkk]=="OFF" then
-									DQPEIZHI[k][kk][kkk][kkkk]=false
-								end
-							end
-						end
-					end
-				end
-			end
-		end
-	end
-	return DQPEIZHI
-end
-Fun.Config_format=Config_format
-local function ISitem(item)
-	if item:match("|cff%w%w%w%w%w%w|Hitem:") then
-		return Fun.GetItemLinkJJ(item)
-	end
-	return item
-end
-function addonTable.Load_Config()
-	PIGA = PIGA or addonTable.Default;
-	PIGA = Config_format(PIGA,addonTable.Default)
-	PIGA_Per = PIGA_Per or addonTable.Default_Per;
-	PIGA_Per = Config_format(PIGA_Per,addonTable.Default_Per)
-	for k,v in pairs(PIGA) do
-		if type(v)=="table" then
-			for kk,vv in pairs(v) do
-				if type(vv)=="table" then
-					for kkk,vvv in pairs(vv) do
-						if type(vvv)=="table" then
-							for kkkk,vvvv in pairs(vvv) do
-								if type(vvvv)=="table" then
-									for kkkkk,vvvvv in pairs(vvvv) do
-										if type(vvvvv)=="string" then
-											PIGA[k][kk][kkk][kkkk][kkkkk]=ISitem(vvvvv)
-										end
-									end
-								elseif type(vvvv)=="string" then
-									PIGA[k][kk][kkk][kkkk]=ISitem(vvvv)
-								end
-							end
-						elseif type(vvv)=="string" then
-							PIGA[k][kk][kkk]=ISitem(vvv)
-						end
-					end
-				elseif type(vv)=="string" then
-					PIGA[k][kk]=ISitem(vv)
-				end
-			end
-		end
-	end
-end
-function addonTable.Set_Name_Realm()
-	local wanjia, realm = UnitFullName("player")
-	local realm = realm or GetRealmName()
-	local className, classFile, classId = UnitClass("player")
-	local raceName, raceFile, raceId = UnitRace("player")
-	Pig_OptionsUI.Name=wanjia or ""
-	Pig_OptionsUI.Realm=realm or ""
-	Pig_OptionsUI.AllName = wanjia.."-"..realm
-	Pig_OptionsUI.ClassData = {["className"]=className,["classFile"]=classFile,["classId"]=classId}
-	Pig_OptionsUI.RaceData = {["raceName"]=raceName,["raceFile"]=raceFile,["raceId"]=raceId}
-	Pig_OptionsUI.AllNameElvUI = format('%s - %s', wanjia, realm)
-	Pig_OptionsUI.IsOpen_ElvUI=function(vf1)
-		if IsAddOnLoaded("ElvUI") then
-			if vf1 then
-				if ElvPrivateDB and ElvPrivateDB["profiles"] then
-					if ElvPrivateDB["profiles"][Pig_OptionsUI.AllNameElvUI] then
-						if ElvPrivateDB["profiles"][Pig_OptionsUI.AllNameElvUI][vf1] then
-							if ElvPrivateDB["profiles"][Pig_OptionsUI.AllNameElvUI][vf1]["enable"]==false then
-								return false
-							end
-						end
-					end
-				end
-				return true
-			else
-				return true
-			end
-		else
-			return false
-		end
-	end
-	Pig_OptionsUI.IsOpen_NDui=function(vf1)
-		if IsAddOnLoaded("NDui") then
-			if vf1 then
-				if NDuiDB and NDuiDB[vf1] then
-					if NDuiDB[vf1]["Enable"] then
-						return true
-					end
-				end
-				return false
-			else
-				return true
-			end
-		else
-			return false
-		end
-	end
-end
----------
-local function Config_Set(cfdata,bool)
-	for k,v in pairs(cfdata) do
-		if type(v)=="boolean" then
-			cfdata[k] = bool
-		elseif type(v)=="table" then
-			for kk,vv in pairs(v) do
-				if type(vv)=="boolean" then
-					if kk~="MinimapBut" then
-						cfdata[k][kk] = bool
-					end
-				elseif type(vv)=="table" then
-					for kkk,vvv in pairs(vv) do
-						if type(vvv)=="boolean" then
-							cfdata[k][kk][kkk] = bool
-						elseif type(vvv)=="table" then
-
-						end
-					end
-				end
-			end
-		end
-	end
-end
-addonTable.Config_Set=Config_Set
+-- --------------
+local PigConfigFun=addonTable.PigConfigFun
+local RTabFrame =PigConfigFun.RTabFrame
+local fujiF,fujiBut =PIGOptionsList_R(RTabFrame,L["CONFIG_DAOCHU"]..L["CONFIG_DAORU"],90)
+fujiF:Show()
+fujiBut:Selected()
 --------
-local Config_index={"Default","Rurutia"}--,"DIY"
-local Config_Data={
-	["Default"]={["zhCN"]=CHAT_DEFAULT},
-	["Rurutia"]={["zhCN"]="露露",["zhTW"]="露露",["enUS"]="Rurutia",},
-	["DIY"]={["zhCN"]="定制",["zhTW"]="定製",["enUS"]="DIY",},
-}
-local function load_Configuration(v)
-	if addonTable[v] then
-		PIGA=addonTable[v];
-		PIGA_Per=addonTable[v.."_Per"];
-		ReloadUI()
-	else
-		local buttxt = Config_Data[v][GetLocale()] or Config_Data[v]["zhCN"]
-		local buttxt = buttxt..L["CONFIG_TABNAME"]
-		PIGTopMsg:add(string.format(ERR_ARENA_TEAM_PLAYER_NOT_FOUND_S,buttxt),"R")
-	end
-end
----------
-local fuFrame = PIGOptionsList(L["CONFIG_TABNAME"])
-local cfbutW=fuFrame:GetWidth()-20
-fuFrame.ConfigButLsit={}
-local function add_Configbut(buttxt,tipstxt)
-	local hang=PIGFrame(fuFrame,nil,{cfbutW,60})
-	hang:PIGSetBackdrop(0.4)
-	hang.button = PIGButton(hang,{"LEFT",hang,"LEFT",10,0},{100,24},buttxt)
-	hang.title = PIGFontString(hang,{"LEFT", hang.button, "RIGHT", 6, 0},tipstxt)
-	hang.title:SetTextColor(0, 1, 0, 1);
-	hang.title:SetJustifyH("LEFT");
-	hang.title:SetWidth(cfbutW-100-20);
-	return hang
-end
-local maxnum = #Config_index
-for id=1,maxnum do
-	local buttxt = Config_Data[Config_index[id]][GetLocale()] or Config_Data[Config_index[id]]["zhCN"]
-	local buttxt = buttxt..L["CONFIG_TABNAME"]
-	local tipstxt=""
-	if id==1 then
-		tipstxt=L["CONFIG_ERRTIPS"]
-	elseif Config_index[id]=="DIY" then
-		tipstxt=L["CONFIG_DIYTIPS"]
-	else
-		tipstxt=L["CONFIG_LOAD"]..buttxt..INFO
-	end
-	local DefaultF = add_Configbut(buttxt,tipstxt)
-	if id==1 then
-		DefaultF:SetPoint("TOPLEFT",fuFrame,"TOPLEFT",10,-10);
-	else
-		DefaultF:SetPoint("TOPLEFT",fuFrame.ConfigButLsit[id-1],"BOTTOMLEFT",0,-20);
-	end
-	fuFrame.ConfigButLsit[id]=DefaultF
-	DefaultF.button:SetScript("OnClick", function ()
-		if Config_index[id]=="DIY" then
-			Pig_OptionsUI:ShowAuthor()
-		else
-			StaticPopup_Show("PEIZHI_ZAIRUQUEREN",buttxt,nil,Config_index[id]);
-		end
-	end);
-end
-StaticPopupDialogs["PEIZHI_ZAIRUQUEREN"] = {
+local cfbutW=fujiF:GetWidth()-20
+local BiaotiName = CHAT_DEFAULT..L["CONFIG_TABNAME"]
+local DefaultF=PIGFrame(fujiF,{"TOPLEFT",fujiF,"TOPLEFT",10,-10},{cfbutW,60})
+DefaultF:PIGSetBackdrop(0.4)
+DefaultF.button = PIGButton(DefaultF,{"LEFT",DefaultF,"LEFT",10,0},{90,24},BiaotiName)
+DefaultF.title = PIGFontString(DefaultF,{"LEFT", DefaultF.button, "RIGHT", 6, 0},L["CONFIG_ERRTIPS"])
+DefaultF.title:SetTextColor(0, 1, 0, 1);
+DefaultF.title:SetJustifyH("LEFT");
+DefaultF.title:SetWidth(cfbutW-120);
+DefaultF.button:SetScript("OnClick", function ()
+	StaticPopup_Show("PIG_CONFIG_ZAIRUQUEREN",BiaotiName,nil,{"Default",BiaotiName});
+end);
+StaticPopupDialogs["PIG_CONFIG_ZAIRUQUEREN"] = {
 	text = L["CONFIG_LOADTIPS"],
 	button1 = YES,
 	button2 = NO,
 	OnAccept = function(self,arg1)
-		load_Configuration(arg1)
+		if addonTable[arg1[1]] then
+			PIGA=addonTable[arg1[1]];
+			PIGA_Per=addonTable[arg1[1].."_Per"];
+			ReloadUI()
+		else
+			PIG_OptionsUI:ErrorMsg(string.format(ERR_ARENA_TEAM_PLAYER_NOT_FOUND_S,arg1[2]),"R")
+		end
 	end,
 	timeout = 0,
 	whileDead = true,
 	hideOnEscape = true,
 }
-
 --导出/导入----------
-local function Replacement_data(newdata,czdata)
-	newdata["Error"]["ErrorDB"]={}
-	newdata["Ver"]={}
-	newdata["Chatjilu"]["WHISPER"]["record"]={}
-	newdata["Chatjilu"]["PARTY"]["record"]={}
-	newdata["Chatjilu"]["GUILD"]["record"]={}
-	newdata["Chatjilu"]["RAID"]["record"]={}
-	newdata["Chatjilu"]["INSTANCE_CHAT"]["record"]={}
-	newdata["AutoSellBuy"]["Sell_List"]={}
-	newdata["AutoSellBuy"]["Sell_Lsit_Filtra"]={}
-	newdata["AutoSellBuy"]["Fen_List"]={}
-	newdata["AutoSellBuy"]["Diuqi_List"]={}
-	newdata["AutoSellBuy"]["Xuan_List"]={}
-	newdata["AutoSellBuy"]["Open_List"]={}
-	newdata["Chatjilu"]["jiluinfo"]={}
-	newdata["AHPlus"]["CacheData"]={}
-	newdata["AHPlus"]["Coll"]={}
-	newdata["MailPlus"]["Coll"]={}
-	newdata["StatsInfo"]["Players"]={}
-	newdata["StatsInfo"]["SkillCD"]={}
-	newdata["StatsInfo"]["FubenCD"]={}
-	newdata["StatsInfo"]["Token"]={}
-	newdata["StatsInfo"]["TradeData"]={}
-	newdata["StatsInfo"]["PlayerSH"]={}
-	newdata["StatsInfo"]["Items"]={}
-	newdata["StatsInfo"]["AHData"]={}
-	if IsAddOnLoaded("!Pig_Tardis") then
-		newdata["Tardis"]["Plane"]["InfoList"]={}
-	end
-	if IsAddOnLoaded("!Pig_GDKP") then
-		newdata["GDKP"]["ItemList"]={}
-		newdata["GDKP"]["History"]={}
-		newdata["GDKP"]["instanceName"]={}
-	end
-	if IsAddOnLoaded("!Pig_Farm") then
+local function Remove_Data(newdata,Per)--剔除数据配置
+	if Per then
+		newdata["AutoSellBuy"]["Buy_List"]=nil
+		newdata["AutoSellBuy"]["Save_List"]=nil
+		newdata["AutoSellBuy"]["Take_List"]=nil
+		--
+		newdata["PigAction"]["ActionData"]=nil
+		newdata["QuickBut"]["ActionData"]=nil
+		newdata["QuickBut"]["EquipList"]=nil
+		newdata["QuickBut"]["TrinketList"]=nil
+		--
 		newdata["Farm"]=nil
-	end
-	return newdata
-end
-fuFrame.daochubut = PIGButton(fuFrame,{"CENTER", fuFrame, "CENTER", -80, -100},{100,24},L["CONFIG_DAOCHU"]..L["CONFIG_TABNAME"])
-fuFrame.daochubut:SetScript("OnClick", function ()
-	PIGA["xxxxxx"]=nil
-	local NewPIGA = PIGCopyTable(PIGA)
-	local NewPIGA = Replacement_data(NewPIGA,addonTable.Default)
-	local NewPIGA = ExportImport_UI.PIGCopyTable_Duplicates(NewPIGA, addonTable.Default)
-	ExportImport_UI:daochuFun(addonName..ADDONS..L["CONFIG_TABNAME"],NewPIGA)
-end);
-fuFrame.daorubut = PIGButton(fuFrame,{"CENTER", fuFrame, "CENTER", 80, -100},{100,24},L["CONFIG_DAORU"]..L["CONFIG_TABNAME"])
-fuFrame.daorubut:SetScript("OnClick", function ()
-	ExportImport_UI:daoruFun(addonName..ADDONS..L["CONFIG_TABNAME"],PIGA)
-end);
-fuFrame.daochubut:Hide();
-fuFrame.daorubut:Hide();
----提示---------------
-fuFrame.tishi = PIGFontString(fuFrame,{"TOPLEFT", fuFrame, "TOPLEFT", 20, -494},"更新提示异常点→")
-fuFrame.GETVER = PIGButton(fuFrame,{"LEFT",fuFrame.tishi,"RIGHT",10,0},{110,20},"重置更新提示")
-fuFrame.GETVER:SetScript("OnClick", function ()
-	PIGA["Ver"]={}
-	Pig_Options_RLtishi_UI:Show()
-end);
-
-----旧版
-local ConfigWWW,ConfigHHH = 800, 600
-local Config_Transfer=PIGFrame(UIParent,{"CENTER",UIParent,"CENTER",0,0},{ConfigWWW,ConfigHHH})
-Config_Transfer:PIGSetBackdrop(1)
-Config_Transfer:PIGSetMovable()
-Config_Transfer:PIGClose()
-Config_Transfer:SetFrameLevel(999);
-Config_Transfer:Hide()
-Config_Transfer.biaoti=PIGFontString(Config_Transfer,{"TOP", Config_Transfer, "TOP", 0, -4})
-PIGLine(Config_Transfer,"TOP",-20,1,{-1,-20})
----
-local julidi,daoruTXT,daochuTXT = -26,L["CONFIG_IMPORT"],L["CONFIG_DERIVE"]
-Config_Transfer.tishitxt = PIGFontString(Config_Transfer,{"TOPLEFT",Config_Transfer,"TOPLEFT",6,julidi-4},daoruTXT)
-Config_Transfer.tishitxt:SetTextColor(0, 1, 0, 1);
-Config_Transfer.daoruBut = PIGButton(Config_Transfer,{"TOPRIGHT",Config_Transfer,"TOPRIGHT",-40,julidi},{140,20},L["CONFIG_DERIVERL"])
-Config_Transfer.daoruBut:Hide();
-Config_Transfer.Line2 =PIGLine(Config_Transfer,"TOP",-50,1,{-1,-50})
---
-Config_Transfer.NR=PIGFrame(Config_Transfer)
-Config_Transfer.NR:SetPoint("TOPLEFT", Config_Transfer.Line2, "TOPLEFT", 4, -4)
-Config_Transfer.NR:SetPoint("BOTTOMRIGHT", Config_Transfer, "BOTTOMRIGHT", -4, 4)
-Config_Transfer.NR:PIGSetBackdrop()
-Config_Transfer.NR.scroll = CreateFrame("ScrollFrame", nil, Config_Transfer.NR, "UIPanelScrollFrameTemplate")
-Config_Transfer.NR.scroll:SetPoint("TOPLEFT", Config_Transfer.NR, "TOPLEFT", 6, -6)
-Config_Transfer.NR.scroll:SetPoint("BOTTOMRIGHT", Config_Transfer.NR, "BOTTOMRIGHT", -26, 6)
-
-Config_Transfer.NR.textArea = CreateFrame("EditBox", nil, Config_Transfer.NR.scroll)
-Config_Transfer.NR.textArea:SetFontObject(ChatFontNormal);
-Config_Transfer.NR.textArea:SetWidth(ConfigWWW-40)
-Config_Transfer.NR.textArea:SetMultiLine(true)
-Config_Transfer.NR.textArea:SetMaxLetters(99999)
-Config_Transfer.NR.textArea:EnableMouse(true)
-Config_Transfer.NR.textArea:SetScript("OnEscapePressed", function(self)
-	self:ClearFocus()
-	Config_Transfer:Hide();
-end)
-Config_Transfer.NR.scroll:SetScrollChild(Config_Transfer.NR.textArea)
-
----以下部分来自ALA大神告诉的AEC3代码
-local strbyte, strchar, gsub, gmatch, format = string.byte, string.char, string.gsub, string.gmatch, string.format
-local assert, error, pcall = assert, function(msg) PIG_print("|cffFF0000"..msg.."|r") end, pcall
-local type, tostring, tonumber = type, tostring, tonumber
-local pairs, select, frexp = pairs, select, math.frexp
-local tconcat = table.concat
-local function SerializeStringHelper(ch)
-	local n = strbyte(ch)
-	if n==30 then
-		return "\126\122"
-	elseif n<=32 then
-		return "\126"..strchar(n+64)
-	elseif n==94 then
-		return "\126\125"
-	elseif n==126 then
-		return "\126\124"
-	elseif n==127 then
-		return "\126\123"
+		-- if IsAddOnLoaded("!Pig_Farm") then
+		-- 	newdata["Farm"]["Fuben_G"]=nil
+		-- 	newdata["Farm"]["Auto_KeyList"]=nil
+		-- 	newdata["Farm"]["Namelist"]=nil
+		-- 	newdata["Farm"]["Timelist"]=nil
+		-- end
 	else
-		assert(false)
+		--非必要信息
+		newdata["Ver"]=nil
+		newdata["Error"]["ErrorDB"]=nil
+		newdata["Hardcore"]["Deaths"]["Player"]=nil
+		newdata["Hardcore"]["Deaths"]["List"]=nil
+		--信息统计
+		newdata["StatsInfo"]["Players"]=nil
+		newdata["StatsInfo"]["PlayerSH"]=nil
+		newdata["StatsInfo"]["InstancesCD"]=nil
+		newdata["StatsInfo"]["SkillData"]=nil
+		newdata["StatsInfo"]["Times"]=nil
+		newdata["StatsInfo"]["Token"]=nil
+		newdata["StatsInfo"]["Items"]=nil
+		newdata["StatsInfo"]["TradeData"]=nil
+		newdata["StatsInfo"]["AHData"]=nil
+		--邮箱
+		newdata["MailPlus"]["Coll"]=nil
+		--售卖助手
+		newdata["AutoSellBuy"]["Diuqi_List"]=nil
+		newdata["AutoSellBuy"]["Sell_List"]=nil
+		newdata["AutoSellBuy"]["Sell_Lsit_Filtra"]=nil
+		newdata["AutoSellBuy"]["Open_List"]=nil
+		newdata["AutoSellBuy"]["Fen_List"]=nil
+		newdata["AutoSellBuy"]["Xuan_List"]=nil
+		--AH
+		newdata["AHPlus"]["CacheData"]=nil
+		newdata["AHPlus"]["Coll"]=nil
+		--聊天
+		newdata["Chat"]["Channel_List"]=nil
+		--聊天记录
+		newdata["Chatjilu"]["WHISPER"]["record"]=nil
+		newdata["Chatjilu"]["PARTY"]["record"]=nil
+		newdata["Chatjilu"]["RAID"]["record"]=nil
+		newdata["Chatjilu"]["GUILD"]["record"]=nil
+		newdata["Chatjilu"]["INSTANCE_CHAT"]["record"]=nil
+		--界面扩展
+		newdata["FramePlus"]["AddonStatus"]=nil
+		--扩展
+		newdata["Tardis"]=nil
+		newdata["GDKP"]=nil
+		newdata["ConfigString"]=nil
+		-- if IsAddOnLoaded("!Pig_Tardis") then
+		-- 	newdata["Tardis"]["Plane"]["InfoList"]=nil
+		-- end
+		-- if IsAddOnLoaded("!Pig_GDKP") then
+		-- 	newdata["GDKP"]["PaichuList"]=nil
+		-- 	newdata["GDKP"]["ItemList"]=nil
+		-- 	newdata["GDKP"]["History"]=nil
+		-- 	newdata["GDKP"]["instanceName"]=nil
+		-- end
 	end
 end
---
-local function SerializeValue(v, res, nres)
-	local t=type(v)
-	if t=="string" then
-		v = gsub(v,"|", "P124")
-		res[nres+1] = "^S"
-		res[nres+2] = gsub(v,"[%c \94\126\127]", SerializeStringHelper)
-		nres=nres+2
-	elseif t=="number" then	
-		local str = tostring(v)
-		if tonumber(str)==v then
-			res[nres+1] = "^N"
-			res[nres+2] = str
-			nres=nres+2
-		elseif v == inf or v == -inf then
-			res[nres+1] = "^N"
-			res[nres+2] = v == inf and serInf or serNegInf
-			nres=nres+2
+local function CZ_ConfigData()
+	local newdata={{},{}}
+	newdata[1] = PIGCopyTable(addonTable.Default)
+	Remove_Data(newdata[1])
+	--Per
+	newdata[2] = PIGCopyTable(addonTable.Default_Per)
+	Remove_Data(newdata[2],true)
+	return newdata[1],newdata[2]
+end
+local function Load_ImportTxt_1(newV,DqCF)
+	for k,v in pairs(newV) do
+		if type(v) == "table" then
+			if type(DqCF[k]) == "table" then
+				Load_ImportTxt_1(v,DqCF[k])
+			else
+				DqCF[k]=v 
+			end
 		else
-			local m,e = frexp(v)
-			res[nres+1] = "^F"
-			res[nres+2] = format("%.0f",m*2^53)	
-			res[nres+4] = tostring(e-53)
-			nres=nres+4
+			DqCF[k]=v
 		end
-	elseif t=="table" then
-		nres=nres+1
-		res[nres] = "^T"
-		for k,v in pairs(v) do
-			nres = SerializeValue(k, res, nres)
-			nres = SerializeValue(v, res, nres)
+	end
+end
+local function LoadSameValue(tabX,tabX_Per)
+	local newtab,newtab_Per=CZ_ConfigData()
+	Load_ImportTxt_1(tabX,newtab)
+	Load_ImportTxt_1(tabX_Per,newtab_Per)
+	return newtab,newtab_Per
+end
+DefaultF.daorubut = PIGButton(DefaultF,{"TOPLEFT",DefaultF,"TOPLEFT",10, -200},{90,24},L["CONFIG_DAORU"]..L["CONFIG_TABNAME"])
+DefaultF.daorubut:SetScript("OnClick", function ()
+	_G[Data.ExportImportUIname]:daoruFun(addonName..ADDONS..L["CONFIG_TABNAME"],LoadSameValue)	
+end);
+local ConfigUIList={--导出UI位置，只加载一次
+	PlayerFrame,
+	TargetFrame,
+	FocusFrame,
+}
+local function is_equal(value1, value2)
+    if type(value1) == "table" and type(value2) == "table" then
+        for k, v in pairs(value1) do
+            if not is_equal(v, value2[k]) then
+                return false
+            end
+        end
+        -- 确保 value2 中没有多余的键
+        for k, _ in pairs(value2) do
+            if value1[k] == nil then
+                return false
+            end
+        end
+        return true
+    else
+        return value1 == value2
+    end
+end
+local function Remove_ExtData(newdata,Per)
+	if DefaultF.I_UnitF:GetChecked() then--获取头像位置信息
+		for k,v in pairs(ConfigUIList) do
+	    	local uiname = v:GetName()
+	    	if uiname then
+	    		newdata["Config_Unit"]=newdata["Config_Unit"] or {}
+	    		if v:IsUserPlaced() then
+		        	local point, relativeTo, relativePoint, offsetX, offsetY = v:GetPoint()
+		       		newdata["Config_Unit"][uiname]={point, relativePoint, offsetX, offsetY}
+		       	else
+		       		newdata["Config_Unit"][uiname]=nil
+		       	end
+		    end
 		end
-		nres=nres+1
-		res[nres] = "^t"
-	elseif t=="boolean" then
-		nres=nres+1
-		if v then
-			res[nres] = "^B"
-		else
-			res[nres] = "^b"
-		end
-	elseif t=="nil" then
-		nres=nres+1
-		res[nres] = "^Z"
+		if next(newdata["Config_Unit"])==nil then newdata["Config_Unit"]=nil end
+	else
+		newdata["Config_Unit"]=nil
+	end
+	if DefaultF.I_ActionBar:GetChecked() then
+		newdata["Config_ActionBar"] = {GetActionBarToggles()}
+	else
+		newdata["Config_ActionBar"]=nil
+	end
+	if not DefaultF.I_Data:GetChecked() then--数据配置
+		Remove_Data(newdata,Per)
+	end
+end
+local function Remove_RepeatValues(NewDataX, moren)
+    for key, value in pairs(moren) do
+        -- 如果 NewDataX 中存在相同的键，并且值相等（包括递归比较）
+        if NewDataX[key] ~= nil and is_equal(NewDataX[key], value) then
+            NewDataX[key] = nil -- 移除该键
+        elseif type(NewDataX[key]) == "table" and type(value) == "table" then
+        	if next(NewDataX[key])==nil and next(value)==nil then
+            	NewDataX[key] = nil
+            else
+	            -- 如果值是表，则递归处理子表
+	            Remove_RepeatValues(NewDataX[key], value)
+	            -- 如果子表变为空
+            	if next(NewDataX[key])==nil and next(value)==nil then
+                	NewDataX[key] = nil
+                end
+	        end
+        end
+    end
+end
+local function PIGCopyTable_Duplicates_1(old,moren,Per)
+	local NewDataX = PIGCopyTable(old)
+	Remove_ExtData(NewDataX,Per)
+	Remove_RepeatValues(NewDataX,moren)
+	return NewDataX
+end
+local function PIGCopyTable_Duplicates()
+	local NewDataX = PIGCopyTable_Duplicates_1(PIGA, addonTable.Default)
+	local NewDataX_Per = PIGCopyTable_Duplicates_1(PIGA_Per, addonTable.Default_Per, true)
+	return NewDataX,NewDataX_Per
+end
+DefaultF.daochubut = PIGButton(DefaultF,{"TOPLEFT",DefaultF.daorubut,"BOTTOMLEFT",0, -20},{90,24},L["CONFIG_DAOCHU"]..L["CONFIG_TABNAME"])
+DefaultF.daochubut:SetScript("OnClick", function ()
+	-- for k,v in pairs(PIGCopyTable_Duplicates_1(PIGA_Per, addonTable.Default_Per, true)) do
+	-- 	--print(k,v)
+	-- 	--if k~="Pig_UI" then
+	-- 		for k1,v1 in pairs(v) do
+	-- 			if type(v1)=="table" then
+	-- 				for k2,v2 in pairs(v1) do
+	-- 					print(k,k1,k2,v2)
+	-- 				end
+				
+	-- 			else
+	-- 				print(k,k1,v1)
+	-- 			end
+	-- 		end
+	-- 	--end
+	-- end
+	_G[Data.ExportImportUIname]:daochuFun(addonName..ADDONS..L["CONFIG_TABNAME"],PIGCopyTable_Duplicates())
+end);
 
-	else
-		error("Unable to serialize the value of the type'"..t.."'")--无法序列化类型的值
-	end
-	return nres
+DefaultF.I_UnitF=PIGCheckbutton(DefaultF,{"LEFT",DefaultF.daochubut,"RIGHT",20, 0},{"导出包含头像位置（自身/目标/焦点）","导出信息将包含头像位置数据，虽然这并不属于插件本身配置信息"})
+DefaultF.I_UnitF:SetChecked(true)
+DefaultF.I_ActionBar=PIGCheckbutton(DefaultF,{"TOPLEFT",DefaultF.I_UnitF,"BOTTOMLEFT",0, -10},{"导出包含动作条启用状态","导出信息将包含各个动作条启用状态，虽然这并不属于插件本身配置信息"})
+DefaultF.I_ActionBar:SetChecked(true)
+DefaultF.I_Chat=PIGCheckbutton(DefaultF,{"TOPLEFT",DefaultF.I_ActionBar,"BOTTOMLEFT",0, -10},{"导出包含聊天栏设置","导出信息将包含聊天栏设置，虽然这并不属于插件本身配置信息"})
+DefaultF.I_Chat:Disable();
+DefaultF.I_Data=PIGCheckbutton(DefaultF,{"TOPLEFT",DefaultF.I_Chat,"BOTTOMLEFT",0, -10},{"导出包含数据(离线银行，聊天记录，售卖信息等)","注意这将导致字符串长度大大增加"})
+DefaultF.I_Data:Disable();
+-----------
+-----============
+local Locale = GetLocale()
+local ShareList={
+	["QFUI"]={
+		["namex"]={["zhCN"]="清风",["zhTW"]="清风",["enUS"]="Qingfeng",}
+	},
+	["Rurutia"]={
+		["namex"]={["zhCN"]="露露",["zhTW"]="露露",["enUS"]="Rurutia",}
+	},
+	["LvSir"]={
+		["namex"]={["zhCN"]="二哈吕老师",["zhTW"]="二哈吕老师",["enUS"]="LvSir",}
+	},
+}
+local function add_ShareUI(shv)
+	local PIGButton = Create.PIGButton
+	local PIGFontString=Create.PIGFontString
+	local PIGOptionsList_R=Create.PIGOptionsList_R
+	local ShareName=ShareList[shv].namex[Locale] or ShareList[shv].namex["zhCN"]
+	local fujiF,fujiBut =PIGOptionsList_R(RTabFrame,ShareName,100)
+	----
+	local cfbutW=fujiF:GetWidth()-20
+	fujiF.title1 = PIGFontString(fujiF,{"TOPLEFT",fujiF,"TOPLEFT",20,-30})
+	fujiF.title1:SetTextColor(0, 1, 0, 1);
+	fujiF.title1:SetJustifyH("LEFT");
+	fujiF.title1:SetWidth(cfbutW);
+	fujiF.title2 = PIGFontString(fujiF,{"TOPLEFT",fujiF,"TOPLEFT",20,-70},"载入状态: ")
+	fujiF.title3 = PIGFontString(fujiF,{"LEFT",fujiF.title2,"RIGHT",4,0})
+	fujiF.button = PIGButton(fujiF,{"TOPLEFT",fujiF,"TOPLEFT",20,-180},{90,24},"重新载入")
+	fujiF.button.title = PIGFontString(fujiF.button,{"LEFT",fujiF.button,"RIGHT",10,0},"如果你因为某些原因丢失分享者配置，请点此重新载入")
+	fujiF.button:SetScript("OnClick", function ()
+		PIGA["Ver"][shv]=nil
+		ReloadUI()
+	end);
+	return fujiF.title1,fujiF.title3,ShareName
 end
----
-local serializeTbl = { "^1" }
-local tconcat = table.concat
-local function Serialize(...)
-	local nres = 1
-	for i=1,select("#", ...) do
-		local v = select(i, ...)
-		nres = SerializeValue(v, serializeTbl, nres)
-	end
-	serializeTbl[nres+1] = "^^"	
-	return tconcat(serializeTbl, "", 1, nres+1)
-end
-local function Config_CHU(self,peizhiInfo)
-	Config_Transfer:Show()
-	Config_Transfer.daoruBut:Hide();
-	Config_Transfer.biaoti:SetText(self:GetText()..L["CONFIG_TABNAME"]);
-	Config_Transfer.tishitxt:SetText(daochuTXT);
-	local text = Serialize(peizhiInfo)
-	Config_Transfer.NR.textArea:SetText(text)
-	Config_Transfer.NR.textArea:HighlightText()
-end
-addonTable.Fun.Config_CHU=Config_CHU
---导入
-local function DeserializeStringHelper(escape)
-	if escape<"~\122" then
-		return strchar(strbyte(escape,2,2)-64)
-	elseif escape=="~\122" then
-		return "\030"
-	elseif escape=="~\123" then
-		return "\127"
-	elseif escape=="~\124" then
-		return "\126"
-	elseif escape=="~\125" then
-		return "\94"
-	end
-	error("DeserializeStringHelper got called for '"..escape.."'?!?")
-end
-local function DeserializeNumberHelper(number)
-	if number == serNegInf or number == serNegInfMac then
-		return -inf
-	elseif number == serInf or number == serInfMac then
-		return inf
-	else
-		return tonumber(number)
-	end
-end
-local function DeserializeValue(iter,single,ctl,data)
-	if not single then
-		ctl,data = iter()
-	end
-	if not ctl then 
-		error("Supplied data misses AceSerializer terminator ('^^')")
-	end	
-	if ctl=="^^" then
+addonTable.ShareConfig = function()
+	for k,v in pairs(addonTable.ShareDB) do
+		local VerTitle,errTitle,ShareName=add_ShareUI(k)
+		local VersionTXT=PIGGetAddOnMetadata(k, "Version")
+		VerTitle:SetText(string.format("检测到你在使用|cff00FFFF<%s>|r的配置分享|cffFFFFFF<版本%s>|r, 将尝试载入此分享作者的专属"..addonName.."配置",ShareName,VersionTXT))
+		local bendijiluV=PIGA["Ver"][k] or 0
+		if tonumber(VersionTXT)>bendijiluV then
+			_G[Data.ExportImportUIname].ClickButFunX=LoadSameValue
+			local errtxt = _G[Data.ExportImportUIname].Is_PIGString(v)
+			if errtxt then
+				errTitle:SetTextColor(1, 0, 0, 1);
+				errTitle:SetText("载入失败,原因:"..errtxt)
+			else
+				PigConfigFun.fuFrameBut.Text:SetText(PigConfigFun.fuFrameBut.Text:GetText().."+|cff00FFFF("..ShareName..")|r")
+				PIGA["Ver"][k]=tonumber(VersionTXT)
+				errTitle:SetText("|cff00FF00成功|r  |cffFFFF00(版本"..VersionTXT.."初次载入)|r")
+			end
+		else
+			PigConfigFun.fuFrameBut.Text:SetText(PigConfigFun.fuFrameBut.Text:GetText().."+|cff00FFFF("..ShareName..")|r")
+			errTitle:SetText("|cff00FF00成功|r  |cffFFFF00(版本"..VersionTXT.."非初次载入，在下一次分享者更新前将不会重复载入)|r")
+		end
 		return
 	end
-	local res
-	if ctl=="^S" then
-		res = gsub(data, "~.", DeserializeStringHelper)
-	elseif ctl=="^N" then
-		res = DeserializeNumberHelper(data)
-		if not res then
-			error("Number of invalid serializations: '"..tostring(data).."'")--无效的序列化的数量
-		end
-	elseif ctl=="^F" then
-		local ctl2,e = iter()
-		if ctl2~="^f" then
-			error("Invalid serialized floating point number expected , not '^f'"..tostring(ctl2).."'")--预期无效的序列化浮点数  not'^f', 
-		end
-		local m=tonumber(data)
-		e=tonumber(e)
-		if not (m and e) then
-			error("Invalid serialized floating-point number, expected mantissa, and exponent'"..tostring(m).."' and '"..tostring(e).."'")--无效的序列化浮点数，期望的尾数和指数
-		end
-		res = m*(2^e)
-	elseif ctl=="^B" then
-		res = true
-	elseif ctl=="^b" then
-		res = false
-	elseif ctl=="^Z" then
-		res = nil
-	elseif ctl=="^T" then
-		res = {}
-		local k,v
-		while true do
-			ctl,data = iter()
-			if ctl=="^t" then break end
-			k = DeserializeValue(iter,true,ctl,data)
-			if k==nil then 
-				error("Invalid AceSerializer format (no end-of-table flag)")--无效的AceSerializer格式(没有表结束标记)
-			end
-			ctl,data = iter()
-			v = DeserializeValue(iter,true,ctl,data)
-			if v==nil then
-				error("Invalid AceSerializer format (no end-of-table flag)")--无效的AceSerializer格式(没有表结束标记)
-			end
-			res[k]=v
-		end
-	else
-		error("Invalid AceSerializer control code"..ctl.."'")--无效的AceSerializer控制代码
-	end
-	if not single then
-		return res,DeserializeValue(iter)
-	else
-		return res
-	end
 end
-local function Deserialize(str)
-	str = gsub(str,"P124", "|")
-	str = gsub(str, "[%c ]", "")
-	local iter = gmatch(str, "(^.)([^^]*)")	
-	local ctl,data = iter()
-	if not ctl or ctl~="^1" then
-		return false, "Unknown data" --未知数据
-	end
-	return pcall(DeserializeValue, iter)
-end
-Config_Transfer.daoruBut:SetScript("OnClick", function(self, button)
-	local tttxt =Config_Transfer.NR.textArea:GetText()
-	local OOKK,dataff =Deserialize(tttxt)
-	if OOKK then
-		local peizhiInfo =self.peizhiInfo
-		local jueseYN, xininfo1, xininfo2, xininfo3, xininfo4 = peizhiInfo[1],peizhiInfo[2],peizhiInfo[3],peizhiInfo[4],peizhiInfo[5];
-		if jueseYN then
-			if xininfo4 then
-				PIGA_Per[xininfo1][xininfo2][xininfo3][xininfo4]=dataff
-			elseif xininfo3 then
-				PIGA_Per[xininfo1][xininfo2][xininfo3]=dataff
-			elseif xininfo2 then
-				PIGA_Per[xininfo1][xininfo2]=dataff
-			elseif xininfo1 then
-				PIGA_Per[xininfo1]=dataff
-			end
-		else
-			if xininfo4 then
-				PIGA[xininfo1][xininfo2][xininfo3][xininfo4]=dataff
-			elseif xininfo3 then
-				PIGA[xininfo1][xininfo2][xininfo3]=dataff
-			elseif xininfo2 then
-				PIGA[xininfo1][xininfo2]=dataff
-			elseif xininfo1 then
-				PIGA[xininfo1]=dataff
-			end
-		end
-		ReloadUI()
-	else
-		message(L["CONFIG_DERIVEERROR"]);
-	end
-end)
-----
-local function Config_RU(self,peizhiInfo)
-	Config_Transfer:Show()
-	Config_Transfer.daoruBut:Show();
-	Config_Transfer.biaoti:SetText(self:GetText()..L["CONFIG_TABNAME"]);
-	Config_Transfer.tishitxt:SetText(daoruTXT);
-	Config_Transfer.NR.textArea:SetText("")
-	Config_Transfer.daoruBut.peizhiInfo=peizhiInfo
-end
-addonTable.Fun.Config_RU=Config_RU

@@ -1,8 +1,7 @@
 local addonName, addonTable = ...;
-local _, _, _, tocversion = GetBuildInfo()
 ---
 local Mapfun=addonTable.Mapfun
-if tocversion<20000 then
+if PIG_MaxTocversion(20000) then
 	Mapfun.zoneData = {
 		-- 东部王国
 		[1416] = { min = 27, max = 39, minFish = "130"},

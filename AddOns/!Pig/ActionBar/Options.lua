@@ -1,10 +1,7 @@
 local addonName, addonTable = ...;
 local L=addonTable.locale
-local _, _, _, tocversion = GetBuildInfo()
 ---
 local Create=addonTable.Create
-local PIGLine=Create.PIGLine
-local PIGButton = Create.PIGButton
 local PIGSlider = Create.PIGSlider
 local PIGCheckbutton=Create.PIGCheckbutton
 local PIGCheckbutton_R=Create.PIGCheckbutton_R
@@ -19,8 +16,7 @@ local ActionBarfun={}
 addonTable.ActionBarfun=ActionBarfun
 local fuFrame,fuFrameBut = PIGOptionsList(L["ACTION_TABNAME"],"TOP")
 --
-local DownY=30
-local RTabFrame =Create.PIGOptionsList_RF(fuFrame,DownY)
+local RTabFrame =Create.PIGOptionsList_RF(fuFrame)
 ActionBarfun.fuFrame=fuFrame
 ActionBarfun.fuFrameBut=fuFrameBut
 ActionBarfun.RTabFrame=RTabFrame
@@ -31,7 +27,19 @@ Actiontabbut:Selected()
 --------
 local function ActionBar_Ranse()
 	if not PIGA["ActionBar"]["Ranse"] then return end
-	if tocversion<50000 then
+	if ActionButton_UpdateRangeIndicator then
+		hooksecurefunc("ActionButton_UpdateRangeIndicator", function(self, checksRange, inRange)
+			if self.action == nil then return end
+			local isUsable, notEnoughMana = IsUsableAction(self.action)
+			if ( checksRange and not inRange ) then
+				_G[self:GetName().."Icon"]:SetVertexColor(0.5, 0.1, 0.1)
+			elseif isUsable ~= true or notEnoughMana == true then
+				_G[self:GetName().."Icon"]:SetVertexColor(0.4, 0.4, 0.4)
+			else
+				_G[self:GetName().."Icon"]:SetVertexColor(1, 1, 1)
+			end
+		end)
+	else
 		hooksecurefunc("ActionButton_OnUpdate", function(self, elapsed)
 			if self.rangeTimer == TOOLTIP_UPDATE_TIME and self.action then
 				local range = false
@@ -45,18 +53,6 @@ local function ActionBar_Ranse()
 				self.range = range
 			end
 		end)
-	else
-		hooksecurefunc("ActionButton_UpdateRangeIndicator", function(self, checksRange, inRange)
-			if self.action == nil then return end
-			local isUsable, notEnoughMana = IsUsableAction(self.action)
-			if ( checksRange and not inRange ) then
-				_G[self:GetName().."Icon"]:SetVertexColor(0.5, 0.1, 0.1)
-			elseif isUsable ~= true or notEnoughMana == true then
-				_G[self:GetName().."Icon"]:SetVertexColor(0.4, 0.4, 0.4)
-			else
-				_G[self:GetName().."Icon"]:SetVertexColor(1, 1, 1)
-			end
-		end)
 	end
 end
 ActionF.Ranse=PIGCheckbutton_R(ActionF,{"技能范围着色","根据技能范围染色动作条按键颜色"})
@@ -66,7 +62,7 @@ ActionF.Ranse:SetScript("OnClick", function (self)
 		ActionBar_Ranse()
 	else
 		PIGA["ActionBar"]["Ranse"]=false;
-		Pig_Options_RLtishi_UI:Show()
+		PIG_OptionsUI.RLUI:Show()
 	end
 end);
 local function ActionCD()
@@ -86,7 +82,7 @@ ActionF.Cooldowns:SetScript("OnClick", function (self)
 	ActionCD()
 end);
 
-if tocversion<20000 then
+if PIG_MaxTocversion(20000) then
 	function ActionBarfun.ActionBar_Cailiao()
 		if not PIGA["ActionBar"]["Cailiao"] then return end
 		local function update_Count(text)
@@ -144,14 +140,16 @@ if tocversion<20000 then
 			ActionBarfun.ActionBar_Cailiao()
 		else
 			PIGA["ActionBar"]["Cailiao"]=false;
-			Pig_Options_RLtishi_UI:Show()
+			PIG_OptionsUI.RLUI:Show()
 		end
 	end)
 end
 ---
 local function ActionBar_PetTishi()
 	if not PIGA["ActionBar"]["PetTishi"] then return end
-	if PETchaofengtishiUI then return end
+	local PetActionBarFrame=PetActionBarFrame or PetActionBar
+	if PetActionBarFrame.yijiazai then return end
+	PetActionBarFrame.yijiazai=true
 	local _, classId = UnitClassBase("player");
 	--职业编号1战士/2圣骑士/3猎人/4盗贼/5牧师/6死亡骑士/7萨满祭司/8法师/9术士/10武僧/11德鲁伊/12恶魔猎手
 	if classId==3 or classId==9 then
@@ -160,7 +158,7 @@ local function ActionBar_PetTishi()
 			local spname= PIGGetSpellInfo(2649)
 			table.insert(chaofengjinengName,spname)
 		elseif classId==9 then
-			if tocversion<80000 then
+			if PIG_MaxTocversion() then
 				local spname= PIGGetSpellInfo(3716)
 				local spname1= PIGGetSpellInfo(33698)
 				--local spname2= PIGGetSpellInfo(17735)
@@ -174,25 +172,23 @@ local function ActionBar_PetTishi()
 		end
 
 		local Width,Height = 30,30;
-		local PETchaofengtishi = CreateFrame("Frame", "PETchaofengtishiUI", PetActionBarFrame);
-		PETchaofengtishi:SetPoint("BOTTOM", PetActionBarFrame, "TOP", 0, 10);
-		PETchaofengtishi:SetSize(Width,Height);
-		PETchaofengtishi.Icon = PETchaofengtishi:CreateTexture(nil, "ARTWORK");
-		PETchaofengtishi.Icon:SetTexture("interface/common/help-i.blp");
-		if tocversion<80000 then
-			PETchaofengtishi.Icon:SetSize(Width*1.6,Height*1.6);
-		else
-			PETchaofengtishi.Icon:SetSize(Width*1.2,Height*1.2);
-		end
-		PETchaofengtishi.Icon:SetPoint("CENTER");
-		PETchaofengtishi:Hide()
-		-----------
 		local tishibiaoti="|cff00FFFF"..addonName..L["ADDON_NAME"]..L["LIB_TIPS"]..": "
-		local PETchaofeng= CreateFrame("Frame");
-		PETchaofeng:RegisterEvent("PLAYER_ENTERING_WORLD")
-		PETchaofeng:RegisterEvent("PET_BAR_UPDATE")
-		PETchaofeng:RegisterUnitEvent("UNIT_AURA","pet");
-		PETchaofeng:SetScript("OnEvent",function(self,event)
+		local PETtips = CreateFrame("Frame", nil, PetActionBarFrame);
+		PETtips:SetPoint("BOTTOM", PetActionBarFrame, "TOP", 0, 10);
+		PETtips:SetSize(Width,Height);
+		PETtips.Icon = PETtips:CreateTexture(nil, "ARTWORK");
+		PETtips.Icon:SetTexture("interface/common/help-i.blp");
+		if PIG_MaxTocversion() then
+			PETtips.Icon:SetSize(Width*1.6,Height*1.6);
+		else
+			PETtips.Icon:SetSize(Width*1.2,Height*1.2);
+		end
+		PETtips.Icon:SetPoint("CENTER");
+		PETtips:Hide()
+		PETtips:RegisterEvent("PLAYER_ENTERING_WORLD")
+		PETtips:RegisterEvent("PET_BAR_UPDATE")
+		PETtips:RegisterUnitEvent("UNIT_AURA","pet");
+		PETtips:SetScript("OnEvent",function(self,event)
 			local hasUI, isHunterPet = HasPetUI()
 			if hasUI then
 				for x=4, 7 do
@@ -202,19 +198,19 @@ local function ActionBar_PetTishi()
 							local inInstance = IsInInstance();
 							if inInstance then
 								if autoCastEnabled or texture==136222 then
-									PETchaofengtishi:Show()
-									PETchaofengtishi:SetPoint("BOTTOM", _G["PetActionButton"..x], "TOP", 0, 0);
-									PIGEnter(PETchaofengtishi,tishibiaoti,"|cffFFFF00副本内开启宠物嘲讽可能干扰坦克仇恨！|r")
+									self:Show()
+									self:SetPoint("BOTTOM", _G["PetActionButton"..x], "TOP", 0, 0);
+									PIGEnter(self,tishibiaoti,"|cffFFFF00副本内开启宠物嘲讽可能干扰坦克仇恨！|r")
 								else
-									PETchaofengtishi:Hide()
+									self:Hide()
 								end
 							else
 								if not autoCastEnabled and texture==236295 then
-									PETchaofengtishi:Show()
-									PETchaofengtishi:SetPoint("BOTTOM", _G["PetActionButton"..x], "TOP", 0, 0);
-									PIGEnter(PETchaofengtishi,tishibiaoti,"|cffFFFF00野外关闭宠物嘲讽可能造成宠物仇恨匮乏！|r")
+									self:Show()
+									self:SetPoint("BOTTOM", _G["PetActionButton"..x], "TOP", 0, 0);
+									PIGEnter(self,tishibiaoti,"|cffFFFF00野外关闭宠物嘲讽可能造成宠物仇恨匮乏！|r")
 								else
-									PETchaofengtishi:Hide()
+									self:Hide()
 								end
 							end
 							return
@@ -233,7 +229,7 @@ ActionF.PetTishi:SetScript("OnClick", function (self)
 		ActionBar_PetTishi()
 	else
 		PIGA["ActionBar"]["PetTishi"]=false;
-		Pig_Options_RLtishi_UI:Show()
+		PIG_OptionsUI.RLUI:Show()
 	end
 end)
 --进入战斗时自动切换到1号动作栏
@@ -257,7 +253,7 @@ ActionF.AutoFanye:SetScript("OnClick", function (self)
 	end
 	ActionBar_AutoFanye()
 end)
-if tocversion<100000 then
+if PIG_MaxTocversion() then
 	local function xianshitutentiao()
 		if InCombatLockdown() then return end
 		MultiCastActionBarFrame_Update(MultiCastActionBarFrame)

@@ -1,6 +1,5 @@
 local addonName, addonTable = ...;
 local L=addonTable.locale
-local _, _, _, tocversion = GetBuildInfo()
 ---
 local Create=addonTable.Create
 local PIGFrame=Create.PIGFrame
@@ -13,6 +12,7 @@ local PIGOptionsList=Create.PIGOptionsList
 local PIGFontString=Create.PIGFontString
 ---
 local BagBankfun={}
+BagBankfun.BagUIName="PIG_CombinedBag"
 addonTable.BagBankfun=BagBankfun
 local GetSortBagsRightToLeft=GetSortBagsRightToLeft or C_Container and C_Container.GetSortBagsRightToLeft
 local GetInsertItemsLeftToRight=GetInsertItemsLeftToRight or C_Container and C_Container.GetInsertItemsLeftToRight
@@ -20,9 +20,24 @@ local SetSortBagsRightToLeft=SetSortBagsRightToLeft or C_Container and C_Contain
 local SetInsertItemsLeftToRight=SetInsertItemsLeftToRight or C_Container and C_Container.SetInsertItemsLeftToRight
 local BagBankF,BagBankFTabBut = PIGOptionsList(L["BAGBANK_TABNAME"],"TOP")
 BagBankF.error = PIGFontString(BagBankF,{"CENTER", BagBankF, "CENTER",0, 50})
-BagBankF.czrl = PIGButton(BagBankF,{"TOP",BagBankF.error,"BOTTOM",0,-10},{230,24})
+BagBankF.error:SetTextColor(1, 0, 0, 1)
+BagBankF.czrl = PIGButton(BagBankF,{"TOP",BagBankF.error,"BOTTOM",0,-10},{280,24})
 BagBankF.czrl:SetScript("OnClick", function(self)
-	C_AddOns.DisableAddOn(self.qitaName)
+	if self.qitaName=="NDui" then
+		NDuiDB["Bags"]=NDuiDB["Bags"] or {}
+		NDuiDB["Bags"]["Enable"]=false
+	elseif self.qitaName=="ElvUI" then
+		local peizName=ElvPrivateDB["profileKeys"][PIG_OptionsUI.AllNameElvUI]
+		if peizName then
+			local peizData=ElvPrivateDB["profiles"][peizName]
+			if peizData then
+				peizData["bags"]=peizData["bags"] or {}
+				peizData["bags"]["enable"]=false
+			end
+		end
+	else
+		C_AddOns.DisableAddOn(self.qitaName)
+	end
 	ReloadUI();
 end)
 ----------
@@ -31,12 +46,32 @@ local IsAddOnLoaded = IsAddOnLoaded or C_AddOns and C_AddOns.IsAddOnLoaded
 local function Other_bag()
 	for i = 1, #BagaddList do
 		local loadedOrLoading, loaded = IsAddOnLoaded(BagaddList[i])
-		if loaded then return true,BagaddList[i] end
+		if loaded then return true,BagaddList[i],"插件"..BagaddList[i] end
+	end
+	if PIG_OptionsUI.IsOpen_NDui("Bags","Enable") then
+		return true,"NDui","NDui背包功能"
+	elseif PIG_OptionsUI.IsOpen_ElvUI() and PIG_OptionsUI.IsOpen_ElvUI("bags","enable") then 
+		return true,"ElvUI","ElvUI背包功能"
 	end
 	return false
 end
-BagBankfun.Other_bag=Other_bag
+local function Other_bagErrtishi()
+	local open,addname,txt=Other_bag()
+	if open then
+		BagBankF.error:SetText("检测到"..txt.."开启，已禁用"..addonName.."背包功能")
+		BagBankF.czrl:SetText("禁用"..txt.."，启用"..addonName.."背包功能")
+		BagBankF.czrl.qitaName=addname
+		return true
+	end
+	return false
+end
 ---
+BagBankfun.BAGmeihangshu=0
+if PIG_MaxTocversion(40000) then
+	BagBankfun.BAGmeihangshu=BagBankfun.BAGmeihangshu+2
+else
+	BagBankfun.BAGmeihangshu=BagBankfun.BAGmeihangshu+4
+end
 BagBankF.Zhenghe = PIGCheckbutton(BagBankF,{"TOPLEFT",BagBankF,"TOPLEFT",20,-20},{"启用背包/银行整合","整合背包/银行包裹到一个界面"})
 BagBankF.Zhenghe:SetScript("OnClick", function (self)
 	if self:GetChecked() then
@@ -46,7 +81,7 @@ BagBankF.Zhenghe:SetScript("OnClick", function (self)
 	else
 		PIGA["BagBank"]["Zhenghe"]=false
 		BagBankF.SetListF:Hide()
-		Pig_Options_RLtishi_UI:Show()
+		PIG_OptionsUI.RLUI:Show()
 	end	
 end);
 --背包剩余-------------
@@ -77,8 +112,7 @@ BagBankF.SetListF:SetPoint("BOTTOMRIGHT",BagBankF,"BOTTOMRIGHT",0,30);
 MainMenuBarBackpackButton:HookScript("OnEvent", function(self,event,arg1)
 	if event=="PLAYER_ENTERING_WORLD" then
 		BagKongyu()
-	end
-	if event=="BAG_UPDATE" then
+	elseif event=="BAG_UPDATE" then
 		if self.pigbagkongyu then
 			gengxinbeibaoshengyugeshu()
 		end
@@ -115,7 +149,7 @@ local BAG_SetList = {
 	{"战利品放入左边包",GetInsertItemsLeftToRight,false},
 	{"反向整理",BagBankfun.GetSortBagsRightToLeft,false},
 }
-if tocversion<100000 then
+if PIG_MaxTocversion() then
 	table.insert(BAG_SetList,4,{"根据品质染色装备边框","wupinRanse",true})
 	table.insert(BAG_SetList,5,{"新物品提示","NewItem",false})
 end
@@ -141,7 +175,7 @@ for i=1,#BAG_SetList do
 				PIGA["BagBank"][BAG_SetList[i][2]]=false
 			end
 			if BAG_SetList[i][3] then
-				Pig_Options_RLtishi_UI:Show()
+				PIG_OptionsUI.RLUI:Show()
 			end
 		end
 	end)
@@ -151,17 +185,13 @@ BagBankF.SetListF.hangNUMTXT = PIGFontString(BagBankF.SetListF,{"TOPLEFT",BagBan
 local BagmeihangN= {8,16,1}
 BagBankF.SetListF.hangNUM = PIGSlider(BagBankF.SetListF,{"LEFT", BagBankF.SetListF.hangNUMTXT,"RIGHT",4,0},BagmeihangN)	
 BagBankF.SetListF.hangNUM.Slider:HookScript("OnValueChanged", function(self, arg1)
-	if tocversion<20000 then
-		if BAGheji_UI then BAGheji_UI.meihang=arg1 end
-    	PIGA["BagBank"]["BAGmeihangshu"] = arg1;
-	elseif tocversion<90000 then
-		if BAGheji_UI then BAGheji_UI.meihang=arg1 end
-		PIGA["BagBank"]["BAGmeihangshu_WLK"] = arg1;
+	PIGA["BagBank"]["BAGmeihangshu"] = arg1-BagBankfun.BAGmeihangshu
+	if PIG_MaxTocversion() then
+		if _G[BagBankfun.BagUIName] then _G[BagBankfun.BagUIName].meihang=arg1 end
 	else
 		ContainerFrameCombinedBags.meihang=arg1
-		PIGA["BagBank"]["BAGmeihangshu_retail"] = arg1;
 	end
-	if BAGheji_UI and BAGheji_UI:IsShown() or ContainerFrameCombinedBags and ContainerFrameCombinedBags:IsShown() then
+	if _G[BagBankfun.BagUIName] and _G[BagBankfun.BagUIName]:IsShown() or ContainerFrameCombinedBags and ContainerFrameCombinedBags:IsShown() then
 		CloseAllBags()
 		OpenAllBags()
 	end
@@ -172,12 +202,12 @@ local BAGsuofangbili = {0.8,1.4,0.01,{["Right"]="%"}}
 BagBankF.SetListF.suofang = PIGSlider(BagBankF.SetListF,{"LEFT", BagBankF.SetListF.suofangTXT,"RIGHT",4,0},BAGsuofangbili)	
 BagBankF.SetListF.suofang.Slider:HookScript("OnValueChanged", function(self, arg1)
 	PIGA["BagBank"]["BAGsuofangBili"] = arg1;
-	if tocversion<100000 then
-		if BAGheji_UI then BAGheji_UI.suofang=arg1 end
+	if PIG_MaxTocversion() then
+		if _G[BagBankfun.BagUIName] then _G[BagBankfun.BagUIName].suofang=arg1 end
 	else
 		ContainerFrameCombinedBags.suofang=arg1
 	end
-	if BAGheji_UI and BAGheji_UI:IsShown() or ContainerFrameCombinedBags and ContainerFrameCombinedBags:IsShown() then
+	if _G[BagBankfun.BagUIName] and _G[BagBankfun.BagUIName]:IsShown() or ContainerFrameCombinedBags and ContainerFrameCombinedBags:IsShown() then
 		CloseAllBags()
 		OpenAllBags()
 	end
@@ -201,23 +231,8 @@ StaticPopupDialogs["HUIFU_DEFAULT_BEIBAOZHENGHE"] = {
 	whileDead = true,
 	hideOnEscape = true,
 }
-BagBankF:HookScript("OnShow", function(self)
-	self.Zhenghe:SetChecked(PIGA["BagBank"]["Zhenghe"])
-	BagBankF.SetListF:Hide()
-	BagBankF.czrl:Show()
-	BagBankF.error:SetText("")
-	if PIGA["BagBank"]["Zhenghe"] then
-		local qitabag,qitaName = Other_bag()
-		if qitabag then
-			BagBankF.error:SetText("检测到背包插件"..qitaName.."，已禁用背包功能")
-			BagBankF.czrl:SetText("禁用"..qitaName.."，启用背包功能")
-			BagBankF.czrl.qitaName=qitaName
-		else
-			BagBankF.czrl:Hide()
-			BagBankF.SetListF:Show()
-		end
-	end
-	self.SetListF.BagKongyu:SetChecked(PIGA["BagBank"]["BagKongyu"])
+BagBankF.SetListF:HookScript("OnShow", function(self)
+	self.BagKongyu:SetChecked(PIGA["BagBank"]["BagKongyu"])
 	for i=1,#BAG_SetList do
 		if BAG_SetList[i][1]=="反向整理" then
 			_G["BAG_SetList"..i]:SetChecked(not BagBankfun.GetSortBagsRightToLeft())
@@ -227,16 +242,25 @@ BagBankF:HookScript("OnShow", function(self)
 			_G["BAG_SetList"..i]:SetChecked(PIGA["BagBank"][BAG_SetList[i][2]])
 		end
 	end
-	BagBankF.SetListF.suofang:PIGSetValue(PIGA["BagBank"]["BAGsuofangBili"])
-	if tocversion<20000 then
-		BagBankF.SetListF.hangNUM:PIGSetValue(PIGA["BagBank"]["BAGmeihangshu"])
-	elseif tocversion<90000 then
-		BagBankF.SetListF.hangNUM:PIGSetValue(PIGA["BagBank"]["BAGmeihangshu_WLK"])
-	else
-		BagBankF.SetListF.hangNUM:PIGSetValue(PIGA["BagBank"]["BAGmeihangshu_retail"])
+	self.suofang:PIGSetValue(PIGA["BagBank"]["BAGsuofangBili"])
+	self.hangNUM:PIGSetValue(PIGA["BagBank"]["BAGmeihangshu"]+BagBankfun.BAGmeihangshu)
+end)
+BagBankF:HookScript("OnShow", function(self)
+	self.SetListF:Hide()
+	self.czrl:Hide()
+	self.Zhenghe:SetChecked(PIGA["BagBank"]["Zhenghe"])
+	if PIGA["BagBank"]["Zhenghe"] then
+		if Other_bagErrtishi() then
+			self.czrl:Show()
+		else
+			self.error:SetText("")
+			self.SetListF:Show()
+		end
 	end
 end)
 --==================================
 addonTable.BagBank = function()
-	BagBankfun.Zhenghe(BagBankF,BagBankFTabBut)
+	if not Other_bag() then
+		BagBankfun.Zhenghe(BagBankF,BagBankFTabBut)
+	end
 end

@@ -10,7 +10,7 @@ L:SetGeneralLocalization{
 }
 
 L:SetMiscLocalization{
-	DBM_KAZZAK_EMOTE_ENRAGE		= "%s becomes enraged!"--Probalby won't be used, at least not long. Once spellid replaces it
+	DBM_KAZZAK_EMOTE_ENRAGE		= "%s впадает в ярость!"
 }
 
 -- Doomwalker
@@ -21,5 +21,5 @@ L:SetGeneralLocalization{
 }
 
 L:SetMiscLocalization{
-	DBM_DOOMW_EMOTE_ENRAGE	= "%s becomes enraged!"--Probalby won't be used, at least not long. Once spellid replaces it
+	DBM_DOOMW_EMOTE_ENRAGE	= "%s впадает в ярость!"
 }

@@ -48,7 +48,7 @@ do
         BG.Loot[FB].H10.boss11                         = { 51813, 51820, 51814, 51811, 51818, 51821, 51817, 51816, 51822, 52027, 52026, 52025, 51819, 51815, 51812 }
         BG.Loot[FB].H10.boss12                         = { 51941, 51939, 51942, 51947, 51944, 51946, 51943, 51945, 51940, 52027, 52026, 52025 }
         BG.Loot[FB].H10.boss13                         = { 54556, 54562, 54561, 54560, 54566, 54558, 54559, 54565, 54564, 54557, 54563, 54567 }
-        BG.Loot[FB].H10.boss14                         = { 50449, 50450, 50451, 50452, 50447, 50453, 50444, 34057, 49908 } --  杂项
+        BG.Loot[FB].H10.boss14                         = { 45038, 50449, 50450, 50451, 50452, 50447, 50453, 50444, 34057, 49908 } --  杂项
         BG.Loot[FB].H10.boss15                         = {}
         BG.Loot[FB].H10.boss15other                    = { 51140, 51131, 51135, 51141, 51155, 51132, 51136, 51142, 51156, 51133, 51137, 51143, 51157, 51134, 51138, 51144, 51158, 51139, 51125, 51159, 51145, 51126, 51185, 51146, 51127, 51186, 51147, 51128, 51187, 51148, 51129, 51188, 51149, 51130, 51189, 51195, 51150, 51196, 51210, 51151, 51197, 51211, 51152, 51198, 51212, 51153, 51199, 51213, 51154, 51200, 51214, 51190, 51201, 51215, 51191, 51202, 51216, 51192, 51203, 51217, 51193, 51204, 51218, 51194, 51219, 51175, 51170, 51176, 51165, 51171, 51177, 51166, 51172, 51178, 51167, 51173, 51179, 51168, 51174, 51180, 51169, 51205, 51181, 51160, 51206, 51182, 51161, 51207, 51183, 51162, 51208, 51184, 51163, 51209, 51164 }
 
@@ -80,9 +80,43 @@ do
         BG.Loot[FB].N10.boss9                          = { 51554, 51552, 51550, 51551, 51386, 51556, 51555, 51548, 51387, 51384, 51385, 51553 }
         BG.Loot[FB].N10.boss10                         = { 51584, 51777, 51585, 51565, 51583, 51566, 51586, 51563, 51564, 51562, 51582, 51561 }
         BG.Loot[FB].N10.boss11                         = { 51790, 51783, 51789, 51792, 51785, 51782, 51786, 51787, 51779, 51784, 51788, 51791 }
-        BG.Loot[FB].N10.boss12                         = { 51801, 51803, 51800, 51795, 51798, 51796, 51799, 51797, 51802 }
+        BG.Loot[FB].N10.boss12                         = { 249819, 249820, 249821, 248753, 248754, 51801, 51803, 51800, 51795, 51798, 51796, 51799, 51797, 51802 }
         BG.Loot[FB].N10.boss13                         = { 53115, 53118, 53114, 53117, 53113, 53119, 53112, 53121, 53111, 53103, 53116, 53110 }
-        BG.Loot[FB].N10.boss14                         = { 50449, 50450, 50451, 50452, 50447, 50453, 50444, 34057, 49908 } --  杂项
+        BG.Loot[FB].N10.boss14                         = { 45038, 50449, 50450, 50451, 50452, 50447, 50453, 50444, 34057, 49908 } --  杂项
+
+        -- 兑换物
+        BG.Loot[FB].ExchangeItems                      = {
+            [50379] = { 50047, 50046, 50049, 50048, },
+        }
+
+        -- 新三本
+        do
+            local Text = "H"
+            local FB_5 = GetRealZoneText(632) .. Text
+            BG.Loot[FB].Team[FB_5] = {
+                [L["布隆亚姆"]] = { 50193, 50197, 50194, 50196, 50191, 50169, },
+                [L["噬魂者"]] = { 50213, 50206, 50212, 50214, 50209, 50208, 50207, 50215, 50211, 50198, 50203, 50210, 43102, },
+                [L["小怪"]] = { 50318, 50315, 50319, 50051, 50050, 50052, 50379, 50047, 50046, 50049, 50048, },
+            }
+
+            local Text = "H"
+            local FB_5 = GetRealZoneText(658) .. Text
+            BG.Loot[FB].Team[FB_5] = {
+                [L["熔炉之主加弗斯特"]] = { 50233, 50234, 50230, 50229, 50228, 50227, },
+                [L["科瑞克"]] = { 50266, 50263, 50264, 50265, 50235, 50262, },
+                [L["领主泰兰努斯"]] = { 50286, 50269, 50270, 50283, 50272, 50285, 50284, 50271, 50259, 50268, 50267, 50273, 43102, },
+                [L["小怪"]] = { 50318, 50315, 50319, 50051, 50050, 50052, 50379, 50047, 50046, 50049, 50048, },
+            }
+
+            local Text = "H"
+            local FB_5 = GetRealZoneText(668) .. Text
+            BG.Loot[FB].Team[FB_5] = {
+                [L["法瑞克"]] = { 50292, 50293, 50295, 50294, 50290, 50291, },
+                [L["玛维恩"]] = { 50298, 50299, 50300, 50297, 50260, 50296, },
+                [L["逃离阿尔萨斯"]] = { 50314, 50312, 50308, 50304, 50311, 50305, 50310, 50313, 50306, 50309, 50302, 50303, 43102, },
+                [L["小怪"]] = { 50318, 50315, 50319, 50051, 50050, 50052, 50379, 50047, 50046, 50049, 50048, },
+            }
+        end
     end
     -- TOC
     do
@@ -391,9 +425,8 @@ do
             -- [  ] = {  },
         }
 
-
         -- 贝塔
-        local B = "β"
+        local B                     = "β"
         do
             -- 古代
             local FB_5 = GetRealZoneText(619) .. B
@@ -401,7 +434,7 @@ do
                 [L["纳多克斯长老"]] = { 45314, 45310, },
                 [L["塔达拉姆王子"]] = { 45321, 46019, },
                 [L["埃曼尼塔"]] = { 45317, 45309, },
-                [L["耶戈达·觅影者"]] = { 45702, 45701, },
+                [L["耶戈达・觅影者"]] = { 45702, 45701, },
                 [L["传令官沃拉兹"]] = { 45696, 45704, 45699,
                     45372, 45386, 45391, 45382, 45417, 45377, 45425, 45361, 45408, 45402, 45431, 45412, 45398, 45336, 45342, 46313, 45365, 45346, 45356, 45373, 45390, 45393, 45385, 45422, 45380, 45428, 45363, 45410, 45404, 45433, 45415, 45400, 45339, 45344, 45359, 45369, 45349, 45352, 45374, 45389, 45395, 45381, 45421, 45375, 45424, 45364, 45411, 45405, 45429, 45413, 45396, 45335, 45340, 45358, 45368, 45348, 45354, 45370, 45387, 45392, 45383, 45419, 45376, 45426, 45360, 45406, 45401, 45430, 45414, 45397, 45337, 45341, 45355, 46131, 45345, 45351, 45371, 45388, 45394, 45384, 45420, 45379, 45427, 45362, 45409, 45403, 45432, 45416, 45399, 45338, 45343, 45357, 45367, 45347, 45353,
                 },
@@ -482,7 +515,7 @@ do
             local FB_5 = GetRealZoneText(578) .. B
             BG.Loot[FB].Team[FB_5] = {
                 [L["审讯者达库斯"]] = { 45997, 45996, },
-                [L["瓦尔洛斯·云击"]] = { 46015, 46014, },
+                [L["瓦尔洛斯・云击"]] = { 46015, 46014, },
                 [L["法师领主伊洛姆"]] = { 46011, 46013, },
                 [L["魔网守护者埃雷苟斯"]] = { 46012, 45873, 45872,
                     45372, 45386, 45391, 45382, 45417, 45377, 45425, 45361, 45408, 45402, 45431, 45412, 45398, 45336, 45342, 46313, 45365, 45346, 45356, 45373, 45390, 45393, 45385, 45422, 45380, 45428, 45363, 45410, 45404, 45433, 45415, 45400, 45339, 45344, 45359, 45369, 45349, 45352, 45374, 45389, 45395, 45381, 45421, 45375, 45424, 45364, 45411, 45405, 45429, 45413, 45396, 45335, 45340, 45358, 45368, 45348, 45354, 45370, 45387, 45392, 45383, 45419, 45376, 45426, 45360, 45406, 45401, 45430, 45414, 45397, 45337, 45341, 45355, 46131, 45345, 45351, 45371, 45388, 45394, 45384, 45420, 45379, 45427, 45362, 45409, 45403, 45432, 45416, 45399, 45338, 45343, 45357, 45367, 45347, 45353,
@@ -513,8 +546,8 @@ do
             -- 乌上
             local FB_5 = GetRealZoneText(575) .. B
             BG.Loot[FB].Team[FB_5] = {
-                [L["席瓦拉·索格蕾"]] = { 45423, 45331, },
-                [L["戈托克·苍蹄"]] = { 45708, 45332, },
+                [L["席瓦拉・索格蕾"]] = { 45423, 45331, },
+                [L["戈托克・苍蹄"]] = { 45708, 45332, },
                 [L["残忍的斯卡迪"]] = { 45712, 45864, },
                 [L["伊米隆国王"]] = { 45866, 45711, 45709,
                     45372, 45386, 45391, 45382, 45417, 45377, 45425, 45361, 45408, 45402, 45431, 45412, 45398, 45336, 45342, 46313, 45365, 45346, 45356, 45373, 45390, 45393, 45385, 45422, 45380, 45428, 45363, 45410, 45404, 45433, 45415, 45400, 45339, 45344, 45359, 45369, 45349, 45352, 45374, 45389, 45395, 45381, 45421, 45375, 45424, 45364, 45411, 45405, 45429, 45413, 45396, 45335, 45340, 45358, 45368, 45348, 45354, 45370, 45387, 45392, 45383, 45419, 45376, 45426, 45360, 45406, 45401, 45430, 45414, 45397, 45337, 45341, 45355, 46131, 45345, 45351, 45371, 45388, 45394, 45384, 45420, 45379, 45427, 45362, 45409, 45403, 45432, 45416, 45399, 45338, 45343, 45357, 45367, 45347, 45353,
@@ -642,7 +675,7 @@ do
                 [L["纳多克斯长老"]] = { 39255, 39249, 39263, },
                 [L["塔达拉姆王子"]] = { 39251, 39247, 39260, },
                 [L["埃曼尼塔"]] = { 39251, 39247, 39260, },
-                [L["耶戈达·觅影者"]] = { 39258, 39246, 39250, },
+                [L["耶戈达・觅影者"]] = { 39258, 39246, 39250, },
                 [L["传令官沃拉兹"]] = { 39417, 43998, 40486, 39531, 39545, 39553, 39561, 39491, 39619, 39625, 39496, 39514, 39521, 39628, 39635, 39640, 39605, 39610, 39578, 39583, 39594, 39602, 39542, 39548, 39556, 39565, 39494, 39621, 39627, 39499, 39518, 39529, 39631, 39637, 39642, 39608, 39613, 39581, 39590, 39596, 39604, 39539, 39546, 39555, 39564, 39493, 39620, 39626, 39498, 39517, 39528, 39630, 39636, 39641, 39607, 39612, 39580, 39589, 39595, 39603, },
             }
             local FB_5 = GetRealZoneText(619) .. H
@@ -650,7 +683,7 @@ do
                 [L["纳多克斯长老"]] = { 37594, 37593, 37592, 37591, },
                 [L["塔达拉姆王子"]] = { 37613, 37614, 37612, 37595, },
                 [L["埃曼尼塔"]] = { 43287, 43286, 43285, 43284, },
-                [L["耶戈达·觅影者"]] = { 43283, 43280, 43282, 43281, },
+                [L["耶戈达・觅影者"]] = { 43283, 43280, 43282, 43281, },
                 [L["传令官沃拉兹"]] = { 37622, 37623, 37620, 37619, 37616, 37618, 37617, 37615, },
                 [L["小怪"]] = { 37625, 37624, },
             }
@@ -778,14 +811,14 @@ do
             local FB_5 = GetRealZoneText(578) .. A
             BG.Loot[FB].Team[FB_5] = {
                 [L["审讯者达库斯"]] = { 39399, 39404, 39408, },
-                [L["瓦尔洛斯·云击"]] = { 39401, 39405, 39409, },
+                [L["瓦尔洛斯・云击"]] = { 39401, 39405, 39409, },
                 [L["法师领主伊洛姆"]] = { 39415, 39311, 39403, },
                 [L["魔网守护者埃雷苟斯"]] = { 40497, 39310, 44659, 44658, 44660, 44657, 39531, 39545, 39553, 39561, 39491, 39619, 39625, 39496, 39514, 39521, 39628, 39635, 39640, 39605, 39610, 39578, 39583, 39594, 39602, 39542, 39548, 39556, 39565, 39494, 39621, 39627, 39499, 39518, 39529, 39631, 39637, 39642, 39608, 39613, 39581, 39590, 39596, 39604, 39539, 39546, 39555, 39564, 39493, 39620, 39626, 39498, 39517, 39528, 39630, 39636, 39641, 39607, 39612, 39580, 39589, 39595, 39603, },
             }
             local FB_5 = GetRealZoneText(578) .. H
             BG.Loot[FB].Team[FB_5] = {
                 [L["审讯者达库斯"]] = { 37258, 37256, 37257, 37255, },
-                [L["瓦尔洛斯·云击"]] = { 37261, 37262, 37263, 37260, },
+                [L["瓦尔洛斯・云击"]] = { 37261, 37262, 37263, 37260, },
                 [L["法师领主伊洛姆"]] = { 37289, 37288, 37195, 37264, },
                 [L["魔网守护者埃雷苟斯"]] = { 37361, 37363, 37362, 37360, 37291, 37294, 37293, 37292, },
                 [L["小怪"]] = { 37366, 37365, 37290, 37364, },
@@ -829,15 +862,15 @@ do
             -- 乌上
             local FB_5 = GetRealZoneText(575) .. A
             BG.Loot[FB].Team[FB_5] = {
-                [L["席瓦拉·索格蕾"]] = { 39299, 39296, 39308, },
-                [L["戈托克·苍蹄"]] = { 39298, 39284, 39295, },
+                [L["席瓦拉・索格蕾"]] = { 39299, 39296, 39308, },
+                [L["戈托克・苍蹄"]] = { 39298, 39284, 39295, },
                 [L["残忍的斯卡迪"]] = { 39297, 39294, 39472, },
                 [L["伊米隆国王"]] = { 39194, 39423, 39421, 39531, 39545, 39553, 39561, 39491, 39619, 39625, 39496, 39514, 39521, 39628, 39635, 39640, 39605, 39610, 39578, 39583, 39594, 39602, 39542, 39548, 39556, 39565, 39494, 39621, 39627, 39499, 39518, 39529, 39631, 39637, 39642, 39608, 39613, 39581, 39590, 39596, 39604, 39539, 39546, 39555, 39564, 39493, 39620, 39626, 39498, 39517, 39528, 39630, 39636, 39641, 39607, 39612, 39580, 39589, 39595, 39603, },
             }
             local FB_5 = GetRealZoneText(575) .. H
             BG.Loot[FB].Team[FB_5] = {
-                [L["席瓦拉·索格蕾"]] = { 37370, 37369, 37368, 37367, },
-                [L["戈托克·苍蹄"]] = { 37374, 37373, 37376, 37371, },
+                [L["席瓦拉・索格蕾"]] = { 37370, 37369, 37368, 37367, },
+                [L["戈托克・苍蹄"]] = { 37374, 37373, 37376, 37371, },
                 [L["残忍的斯卡迪"]] = { 37389, 37379, 37377, 37384, },
                 [L["伊米隆国王"]] = { 37408, 37409, 37407, 37401, 37398, 37395, 37397, 37390, },
                 [L["小怪"]] = { 37587, 37590, 37410, },
@@ -1017,7 +1050,6 @@ do
                 [32405] = { 30015, 30017, 30007, 30018, },
             }
         end
-
         -- BWL
         do
             local FB = "BWL"
@@ -1034,6 +1066,42 @@ do
             -- 兑换物
             BG.Loot[FB].ExchangeItems = {
                 [19003] = { 19383, 19384, 19366, },
+            }
+        end
+        local FB = "TAQ"
+        do
+            BG.Loot[FB].N.boss1 = { 21699, 21814, 21708, 21698, 21705, 21704, 21706, 21702, 21700, 21701, 21707, 21703, 21128, 21237, 21232, 22222 }
+            BG.Loot[FB].N.boss2 = { 21693, 21694, 21697, 21696, 21692, 21695, 21686, 21684, 21683, 21682, 21690, 21689, 21691, 21688, 21687, 21680, 21681, 21685, 21603, 21237, 21232, }
+            BG.Loot[FB].N.boss3 = { 21669, 21678, 21671, 21672, 21674, 21675, 21676, 21668, 21667, 21648, 21670, 21666, 21673, 21237, 21232 }
+            BG.Loot[FB].N.boss4 = { 21665, 21639, 21627, 21663, 21652, 21651, 21645, 21650, 21635, 21664, 21647, 22402, 22396, 21237, 21232 }
+            BG.Loot[FB].N.boss5 = { 21624, 21623, 21626, 21622, 21677, 21625, 22399, 21237, 21232, 20928, 20932 }
+            BG.Loot[FB].N.boss6 = { 21621, 21618, 21619, 21617, 21620, 21616, 21237, 21232, 20932, 20928 }
+            BG.Loot[FB].N.boss7 = { 21602, 21599, 21598, 21600, 21601, 21597, 21608, 21604, 21605, 21609, 21607, 21606, 21679, 21237, 21232, 20930, 20926, 20735, 20726, }
+            BG.Loot[FB].N.boss8 = { 21615, 21611, 23558, 23570, 21610, 23557, 21237, 21232, 20927, 20931 }
+            BG.Loot[FB].N.boss9 = { 22732, 21583, 22731, 22730, 21582, 21586, 21585, 21581, 21596, 21579, 21839, 21126, 21134, 20929, 20933, 21221 }
+            BG.Loot[FB].N.boss10 = { 21838, 21888, 21889, 21856, 21837, 21836, 21891, }
+            BG.Loot[FB].N.boss1other = { 21268, 21273, 21275, 21242, 21244, 21272, 21269, }
+            BG.Loot[FB].N.boss2other = { 21268, 21273, 21275, 21242, 21244, 21272, 21269, }
+            BG.Loot[FB].N.boss3other = { 21268, 21273, 21275, 21242, 21244, 21272, 21269, }
+            BG.Loot[FB].N.boss4other = { 21268, 21273, 21275, 21242, 21244, 21272, 21269, }
+            BG.Loot[FB].N.boss5other = { 21268, 21273, 21275, 21242, 21244, 21272, 21269, 21330, 21333, 21367, 21365, 21361, 21359, 21350, 21349, 21391, 21388, 21376, 21373, 21345, 21344, 21335, 21338, 21354, 21355, }
+            BG.Loot[FB].N.boss6other = { 21268, 21273, 21275, 21242, 21244, 21272, 21269, 21330, 21333, 21367, 21365, 21361, 21359, 21350, 21349, 21391, 21388, 21376, 21373, 21345, 21344, 21335, 21338, 21354, 21355, }
+            BG.Loot[FB].N.boss7other = { 21268, 21273, 21275, 21242, 21244, 21272, 21269, 21387, 21366, 21360, 21372, 21353, 21329, 21348, 21347, 21337, }
+            BG.Loot[FB].N.boss8other = { 21268, 21273, 21275, 21242, 21244, 21272, 21269, 21332, 21362, 21352, 21346, 21390, 21368, 21375, 21336, 21356, }
+            BG.Loot[FB].N.boss9other = { 21712, 21710, 21709, 21331, 21389, 21370, 21364, 21374, 21351, 21343, 21334, 21357, }
+            -- 兑换物
+            BG.Loot[FB].ExchangeItems = {
+                [21237] = { 21268, 21275, 21273, },
+                [21232] = { 21269, 21242, 21272, 21244, },
+                [20928] = { 21349, 21350, 21359, 21333, 21361, 21330, 21367, 21365, },
+                [20932] = { 21338, 21335, 21354, 21344, 21355, 21388, 21345, 21391, 21376, 21373, },
+                [20930] = { 21372, 21353, 21360, 21387, 21366, },
+                [20926] = { 21337, 21347, 21329, 21348, },
+                [20927] = { 21346, 21352, 21332, 21362, },
+                [20931] = { 21336, 21356, 21375, 21390, 21368, },
+                [20929] = { 21364, 21374, 21370, 21331, 21389, },
+                [20933] = { 21357, 21334, 21351, 21343, },
+                [21221] = { 21712, 21709, 21710, },
             }
         end
     end
@@ -1842,254 +1910,254 @@ do
 
         local FB = "TOC"
         if BG.IsAlliance then
-            AddCurrency(FB, 2711, 237064, 50, phase)
-            AddCurrency(FB, 2711, 237044, 30, phase)
-            AddCurrency(FB, 2711, 46961, 30, phase)
-            AddCurrency(FB, 2711, 237061, 50, phase)
-            AddCurrency(FB, 2711, 46970, 30, phase)
-            AddCurrency(FB, 2711, 46972, 38, phase)
-            AddCurrency(FB, 2711, 46976, 30, phase)
-            AddCurrency(FB, 2711, 237062, 60, phase)
-            AddCurrency(FB, 2711, 46985, 38, phase)
-            AddCurrency(FB, 2711, 46988, 38, phase)
-            AddCurrency(FB, 2711, 237052, 38, phase)
-            AddCurrency(FB, 2711, 46994, 76, phase)
-            AddCurrency(FB, 2711, 46996, 50, phase)
-            AddCurrency(FB, 2711, 237054, 38, phase)
-            AddCurrency(FB, 2711, 237051, 38, phase)
-            AddCurrency(FB, 2711, 47041, 38, phase)
-            AddCurrency(FB, 2711, 47042, 30, phase)
-            AddCurrency(FB, 2711, 47043, 30, phase)
-            AddCurrency(FB, 2711, 47053, 30, phase)
-            AddCurrency(FB, 2711, 237046, 30, phase)
-            AddCurrency(FB, 2711, 47055, 30, phase)
-            AddCurrency(FB, 2711, 47056, 30, phase)
-            AddCurrency(FB, 2711, 237065, 76, phase)
-            AddCurrency(FB, 2711, 237045, 30, phase)
-            AddCurrency(FB, 2711, 237056, 38, phase)
-            AddCurrency(FB, 2711, 237050, 38, phase)
-            AddCurrency(FB, 2711, 237048, 30, phase)
-            AddCurrency(FB, 2711, 237060, 50, phase)
-            AddCurrency(FB, 2711, 47080, 38, phase)
-            AddCurrency(FB, 2711, 47081, 38, phase)
-            AddCurrency(FB, 2711, 47089, 30, phase)
-            AddCurrency(FB, 2711, 47090, 38, phase)
-            AddCurrency(FB, 2711, 47092, 38, phase)
-            AddCurrency(FB, 2711, 47093, 30, phase)
-            AddCurrency(FB, 2711, 47104, 50, phase)
-            AddCurrency(FB, 2711, 47105, 30, phase)
-            AddCurrency(FB, 2711, 237055, 38, phase)
-            AddCurrency(FB, 2711, 237053, 38, phase)
-            AddCurrency(FB, 2711, 237047, 30, phase)
-            AddCurrency(FB, 2711, 237067, 76, phase)
-            AddCurrency(FB, 2711, 47115, 38, phase)
-            AddCurrency(FB, 2711, 47116, 30, phase)
-            AddCurrency(FB, 2711, 47138, 30, phase)
-            AddCurrency(FB, 2711, 47139, 30, phase)
-            AddCurrency(FB, 2711, 47140, 38, phase)
-            AddCurrency(FB, 2711, 47141, 30, phase)
-            AddCurrency(FB, 2711, 237063, 50, phase)
-            AddCurrency(FB, 2711, 237042, 30, phase)
-            AddCurrency(FB, 2711, 47150, 38, phase)
-            AddCurrency(FB, 2711, 237049, 30, phase)
-            AddCurrency(FB, 2711, 47152, 38, phase)
-            AddCurrency(FB, 2711, 47182, 38, phase)
-            AddCurrency(FB, 2711, 47183, 30, phase)
-            AddCurrency(FB, 2711, 237059, 60, phase)
-            AddCurrency(FB, 2711, 47194, 38, phase)
-            AddCurrency(FB, 2711, 47195, 38, phase)
-            AddCurrency(FB, 2711, 47203, 30, phase)
-            AddCurrency(FB, 2711, 237043, 30, phase)
-            AddCurrency(FB, 2711, 47225, 30, phase)
-            AddCurrency(FB, 2711, 237066, 76, phase)
+            -- AddCurrency(FB, 2711, 237064, 50, phase)
+            -- AddCurrency(FB, 2711, 237044, 30, phase)
+            -- AddCurrency(FB, 2711, 46961, 30, phase)
+            -- AddCurrency(FB, 2711, 237061, 50, phase)
+            -- AddCurrency(FB, 2711, 46970, 30, phase)
+            -- AddCurrency(FB, 2711, 46972, 38, phase)
+            -- AddCurrency(FB, 2711, 46976, 30, phase)
+            -- AddCurrency(FB, 2711, 237062, 60, phase)
+            -- AddCurrency(FB, 2711, 46985, 38, phase)
+            -- AddCurrency(FB, 2711, 46988, 38, phase)
+            -- AddCurrency(FB, 2711, 237052, 38, phase)
+            -- AddCurrency(FB, 2711, 46994, 76, phase)
+            -- AddCurrency(FB, 2711, 46996, 50, phase)
+            -- AddCurrency(FB, 2711, 237054, 38, phase)
+            -- AddCurrency(FB, 2711, 237051, 38, phase)
+            -- AddCurrency(FB, 2711, 47041, 38, phase)
+            -- AddCurrency(FB, 2711, 47042, 30, phase)
+            -- AddCurrency(FB, 2711, 47043, 30, phase)
+            -- AddCurrency(FB, 2711, 47053, 30, phase)
+            -- AddCurrency(FB, 2711, 237046, 30, phase)
+            -- AddCurrency(FB, 2711, 47055, 30, phase)
+            -- AddCurrency(FB, 2711, 47056, 30, phase)
+            -- AddCurrency(FB, 2711, 237065, 76, phase)
+            -- AddCurrency(FB, 2711, 237045, 30, phase)
+            -- AddCurrency(FB, 2711, 237056, 38, phase)
+            -- AddCurrency(FB, 2711, 237050, 38, phase)
+            -- AddCurrency(FB, 2711, 237048, 30, phase)
+            -- AddCurrency(FB, 2711, 237060, 50, phase)
+            -- AddCurrency(FB, 2711, 47080, 38, phase)
+            -- AddCurrency(FB, 2711, 47081, 38, phase)
+            -- AddCurrency(FB, 2711, 47089, 30, phase)
+            -- AddCurrency(FB, 2711, 47090, 38, phase)
+            -- AddCurrency(FB, 2711, 47092, 38, phase)
+            -- AddCurrency(FB, 2711, 47093, 30, phase)
+            -- AddCurrency(FB, 2711, 47104, 50, phase)
+            -- AddCurrency(FB, 2711, 47105, 30, phase)
+            -- AddCurrency(FB, 2711, 237055, 38, phase)
+            -- AddCurrency(FB, 2711, 237053, 38, phase)
+            -- AddCurrency(FB, 2711, 237047, 30, phase)
+            -- AddCurrency(FB, 2711, 237067, 76, phase)
+            -- AddCurrency(FB, 2711, 47115, 38, phase)
+            -- AddCurrency(FB, 2711, 47116, 30, phase)
+            -- AddCurrency(FB, 2711, 47138, 30, phase)
+            -- AddCurrency(FB, 2711, 47139, 30, phase)
+            -- AddCurrency(FB, 2711, 47140, 38, phase)
+            -- AddCurrency(FB, 2711, 47141, 30, phase)
+            -- AddCurrency(FB, 2711, 237063, 50, phase)
+            -- AddCurrency(FB, 2711, 237042, 30, phase)
+            -- AddCurrency(FB, 2711, 47150, 38, phase)
+            -- AddCurrency(FB, 2711, 237049, 30, phase)
+            -- AddCurrency(FB, 2711, 47152, 38, phase)
+            -- AddCurrency(FB, 2711, 47182, 38, phase)
+            -- AddCurrency(FB, 2711, 47183, 30, phase)
+            -- AddCurrency(FB, 2711, 237059, 60, phase)
+            -- AddCurrency(FB, 2711, 47194, 38, phase)
+            -- AddCurrency(FB, 2711, 47195, 38, phase)
+            -- AddCurrency(FB, 2711, 47203, 30, phase)
+            -- AddCurrency(FB, 2711, 237043, 30, phase)
+            -- AddCurrency(FB, 2711, 47225, 30, phase)
+            -- AddCurrency(FB, 2711, 237066, 76, phase)
 
             -- old
             do
-                -- AddCurrency(FB, 2711, 46958, 50, phase)
-                -- AddCurrency(FB, 2711, 46959, 30, phase)
-                -- AddCurrency(FB, 2711, 46961, 30, phase)
-                -- AddCurrency(FB, 2711, 46963, 50, phase)
-                -- AddCurrency(FB, 2711, 46970, 30, phase)
-                -- AddCurrency(FB, 2711, 46972, 38, phase)
-                -- AddCurrency(FB, 2711, 46976, 30, phase)
-                -- AddCurrency(FB, 2711, 46979, 60, phase)
-                -- AddCurrency(FB, 2711, 46985, 38, phase)
-                -- AddCurrency(FB, 2711, 46988, 38, phase)
-                -- AddCurrency(FB, 2711, 46990, 38, phase)
-                -- AddCurrency(FB, 2711, 46994, 76, phase)
-                -- AddCurrency(FB, 2711, 46996, 50, phase)
-                -- AddCurrency(FB, 2711, 46997, 38, phase)
-                -- AddCurrency(FB, 2711, 46999, 38, phase)
-                -- AddCurrency(FB, 2711, 47041, 38, phase)
-                -- AddCurrency(FB, 2711, 47042, 30, phase)
-                -- AddCurrency(FB, 2711, 47043, 30, phase)
-                -- AddCurrency(FB, 2711, 47053, 30, phase)
-                -- AddCurrency(FB, 2711, 47054, 30, phase)
-                -- AddCurrency(FB, 2711, 47055, 30, phase)
-                -- AddCurrency(FB, 2711, 47056, 30, phase)
-                -- AddCurrency(FB, 2711, 47069, 76, phase)
-                -- AddCurrency(FB, 2711, 47070, 30, phase)
-                -- AddCurrency(FB, 2711, 47071, 38, phase)
-                -- AddCurrency(FB, 2711, 47072, 38, phase)
-                -- AddCurrency(FB, 2711, 47073, 30, phase)
-                -- AddCurrency(FB, 2711, 47079, 50, phase)
-                -- AddCurrency(FB, 2711, 47080, 38, phase)
-                -- AddCurrency(FB, 2711, 47081, 38, phase)
-                -- AddCurrency(FB, 2711, 47089, 30, phase)
-                -- AddCurrency(FB, 2711, 47090, 38, phase)
-                -- AddCurrency(FB, 2711, 47092, 38, phase)
-                -- AddCurrency(FB, 2711, 47093, 30, phase)
-                -- AddCurrency(FB, 2711, 47104, 50, phase)
-                -- AddCurrency(FB, 2711, 47105, 30, phase)
-                -- AddCurrency(FB, 2711, 47106, 38, phase)
-                -- AddCurrency(FB, 2711, 47107, 38, phase)
-                -- AddCurrency(FB, 2711, 47108, 30, phase)
-                -- AddCurrency(FB, 2711, 47114, 76, phase)
-                -- AddCurrency(FB, 2711, 47115, 38, phase)
-                -- AddCurrency(FB, 2711, 47116, 30, phase)
-                -- AddCurrency(FB, 2711, 47138, 30, phase)
-                -- AddCurrency(FB, 2711, 47139, 30, phase)
-                -- AddCurrency(FB, 2711, 47140, 38, phase)
-                -- AddCurrency(FB, 2711, 47141, 30, phase)
-                -- AddCurrency(FB, 2711, 47148, 50, phase)
-                -- AddCurrency(FB, 2711, 47149, 30, phase)
-                -- AddCurrency(FB, 2711, 47150, 38, phase)
-                -- AddCurrency(FB, 2711, 47151, 30, phase)
-                -- AddCurrency(FB, 2711, 47152, 38, phase)
-                -- AddCurrency(FB, 2711, 47182, 38, phase)
-                -- AddCurrency(FB, 2711, 47183, 30, phase)
-                -- AddCurrency(FB, 2711, 47193, 60, phase)
-                -- AddCurrency(FB, 2711, 47194, 38, phase)
-                -- AddCurrency(FB, 2711, 47195, 38, phase)
-                -- AddCurrency(FB, 2711, 47203, 30, phase)
-                -- AddCurrency(FB, 2711, 47223, 30, phase)
-                -- AddCurrency(FB, 2711, 47225, 30, phase)
-                -- AddCurrency(FB, 2711, 47233, 76, phase)
+                AddCurrency(FB, 2711, 46958, 50, phase)
+                AddCurrency(FB, 2711, 46959, 30, phase)
+                AddCurrency(FB, 2711, 46961, 30, phase)
+                AddCurrency(FB, 2711, 46963, 50, phase)
+                AddCurrency(FB, 2711, 46970, 30, phase)
+                AddCurrency(FB, 2711, 46972, 38, phase)
+                AddCurrency(FB, 2711, 46976, 30, phase)
+                AddCurrency(FB, 2711, 46979, 60, phase)
+                AddCurrency(FB, 2711, 46985, 38, phase)
+                AddCurrency(FB, 2711, 46988, 38, phase)
+                AddCurrency(FB, 2711, 46990, 38, phase)
+                AddCurrency(FB, 2711, 46994, 76, phase)
+                AddCurrency(FB, 2711, 46996, 50, phase)
+                AddCurrency(FB, 2711, 46997, 38, phase)
+                AddCurrency(FB, 2711, 46999, 38, phase)
+                AddCurrency(FB, 2711, 47041, 38, phase)
+                AddCurrency(FB, 2711, 47042, 30, phase)
+                AddCurrency(FB, 2711, 47043, 30, phase)
+                AddCurrency(FB, 2711, 47053, 30, phase)
+                AddCurrency(FB, 2711, 47054, 30, phase)
+                AddCurrency(FB, 2711, 47055, 30, phase)
+                AddCurrency(FB, 2711, 47056, 30, phase)
+                AddCurrency(FB, 2711, 47069, 76, phase)
+                AddCurrency(FB, 2711, 47070, 30, phase)
+                AddCurrency(FB, 2711, 47071, 38, phase)
+                AddCurrency(FB, 2711, 47072, 38, phase)
+                AddCurrency(FB, 2711, 47073, 30, phase)
+                AddCurrency(FB, 2711, 47079, 50, phase)
+                AddCurrency(FB, 2711, 47080, 38, phase)
+                AddCurrency(FB, 2711, 47081, 38, phase)
+                AddCurrency(FB, 2711, 47089, 30, phase)
+                AddCurrency(FB, 2711, 47090, 38, phase)
+                AddCurrency(FB, 2711, 47092, 38, phase)
+                AddCurrency(FB, 2711, 47093, 30, phase)
+                AddCurrency(FB, 2711, 47104, 50, phase)
+                AddCurrency(FB, 2711, 47105, 30, phase)
+                AddCurrency(FB, 2711, 47106, 38, phase)
+                AddCurrency(FB, 2711, 47107, 38, phase)
+                AddCurrency(FB, 2711, 47108, 30, phase)
+                AddCurrency(FB, 2711, 47114, 76, phase)
+                AddCurrency(FB, 2711, 47115, 38, phase)
+                AddCurrency(FB, 2711, 47116, 30, phase)
+                AddCurrency(FB, 2711, 47138, 30, phase)
+                AddCurrency(FB, 2711, 47139, 30, phase)
+                AddCurrency(FB, 2711, 47140, 38, phase)
+                AddCurrency(FB, 2711, 47141, 30, phase)
+                AddCurrency(FB, 2711, 47148, 50, phase)
+                AddCurrency(FB, 2711, 47149, 30, phase)
+                AddCurrency(FB, 2711, 47150, 38, phase)
+                AddCurrency(FB, 2711, 47151, 30, phase)
+                AddCurrency(FB, 2711, 47152, 38, phase)
+                AddCurrency(FB, 2711, 47182, 38, phase)
+                AddCurrency(FB, 2711, 47183, 30, phase)
+                AddCurrency(FB, 2711, 47193, 60, phase)
+                AddCurrency(FB, 2711, 47194, 38, phase)
+                AddCurrency(FB, 2711, 47195, 38, phase)
+                AddCurrency(FB, 2711, 47203, 30, phase)
+                AddCurrency(FB, 2711, 47223, 30, phase)
+                AddCurrency(FB, 2711, 47225, 30, phase)
+                AddCurrency(FB, 2711, 47233, 76, phase)
             end
         else
-            AddCurrency(FB, 2711, 237071, 30, phase)
-            AddCurrency(FB, 2711, 47253, 30, phase)
-            AddCurrency(FB, 2711, 237090, 50, phase)
-            AddCurrency(FB, 2711, 47256, 30, phase)
-            AddCurrency(FB, 2711, 47257, 30, phase)
-            AddCurrency(FB, 2711, 47258, 38, phase)
-            AddCurrency(FB, 2711, 237087, 50, phase)
-            AddCurrency(FB, 2711, 237088, 60, phase)
-            AddCurrency(FB, 2711, 47262, 38, phase)
-            AddCurrency(FB, 2711, 47263, 38, phase)
-            AddCurrency(FB, 2711, 237079, 38, phase)
-            AddCurrency(FB, 2711, 47266, 50, phase)
-            AddCurrency(FB, 2711, 47267, 76, phase)
-            AddCurrency(FB, 2711, 237078, 38, phase)
-            AddCurrency(FB, 2711, 237081, 38, phase)
-            AddCurrency(FB, 2711, 47271, 38, phase)
-            AddCurrency(FB, 2711, 47272, 30, phase)
-            AddCurrency(FB, 2711, 47275, 30, phase)
-            AddCurrency(FB, 2711, 47276, 30, phase)
-            AddCurrency(FB, 2711, 47277, 30, phase)
-            AddCurrency(FB, 2711, 237070, 30, phase)
-            AddCurrency(FB, 2711, 47280, 30, phase)
-            AddCurrency(FB, 2711, 237075, 30, phase)
-            AddCurrency(FB, 2711, 237072, 30, phase)
-            AddCurrency(FB, 2711, 237077, 38, phase)
-            AddCurrency(FB, 2711, 237083, 38, phase)
-            AddCurrency(FB, 2711, 237091, 76, phase)
-            AddCurrency(FB, 2711, 47286, 38, phase)
-            AddCurrency(FB, 2711, 237086, 50, phase)
-            AddCurrency(FB, 2711, 47290, 38, phase)
-            AddCurrency(FB, 2711, 47291, 30, phase)
-            AddCurrency(FB, 2711, 47293, 38, phase)
-            AddCurrency(FB, 2711, 47294, 30, phase)
-            AddCurrency(FB, 2711, 47295, 38, phase)
-            AddCurrency(FB, 2711, 237082, 38, phase)
-            AddCurrency(FB, 2711, 47297, 30, phase)
-            AddCurrency(FB, 2711, 237074, 30, phase)
-            AddCurrency(FB, 2711, 237080, 38, phase)
-            AddCurrency(FB, 2711, 47300, 50, phase)
-            AddCurrency(FB, 2711, 237093, 76, phase)
-            AddCurrency(FB, 2711, 47303, 38, phase)
-            AddCurrency(FB, 2711, 47305, 30, phase)
-            AddCurrency(FB, 2711, 47306, 30, phase)
-            AddCurrency(FB, 2711, 47307, 30, phase)
-            AddCurrency(FB, 2711, 47308, 38, phase)
-            AddCurrency(FB, 2711, 47309, 30, phase)
-            AddCurrency(FB, 2711, 47311, 38, phase)
-            AddCurrency(FB, 2711, 47312, 38, phase)
-            AddCurrency(FB, 2711, 237076, 30, phase)
-            AddCurrency(FB, 2711, 237089, 50, phase)
-            AddCurrency(FB, 2711, 237069, 30, phase)
-            AddCurrency(FB, 2711, 47316, 38, phase)
-            AddCurrency(FB, 2711, 47320, 30, phase)
-            AddCurrency(FB, 2711, 47321, 38, phase)
-            AddCurrency(FB, 2711, 237084, 60, phase)
-            AddCurrency(FB, 2711, 47323, 38, phase)
-            AddCurrency(FB, 2711, 47324, 30, phase)
-            AddCurrency(FB, 2711, 237073, 30, phase)
-            AddCurrency(FB, 2711, 47328, 30, phase)
-            AddCurrency(FB, 2711, 237092, 76, phase)
+            -- AddCurrency(FB, 2711, 237071, 30, phase)
+            -- AddCurrency(FB, 2711, 47253, 30, phase)
+            -- AddCurrency(FB, 2711, 237090, 50, phase)
+            -- AddCurrency(FB, 2711, 47256, 30, phase)
+            -- AddCurrency(FB, 2711, 47257, 30, phase)
+            -- AddCurrency(FB, 2711, 47258, 38, phase)
+            -- AddCurrency(FB, 2711, 237087, 50, phase)
+            -- AddCurrency(FB, 2711, 237088, 60, phase)
+            -- AddCurrency(FB, 2711, 47262, 38, phase)
+            -- AddCurrency(FB, 2711, 47263, 38, phase)
+            -- AddCurrency(FB, 2711, 237079, 38, phase)
+            -- AddCurrency(FB, 2711, 47266, 50, phase)
+            -- AddCurrency(FB, 2711, 47267, 76, phase)
+            -- AddCurrency(FB, 2711, 237078, 38, phase)
+            -- AddCurrency(FB, 2711, 237081, 38, phase)
+            -- AddCurrency(FB, 2711, 47271, 38, phase)
+            -- AddCurrency(FB, 2711, 47272, 30, phase)
+            -- AddCurrency(FB, 2711, 47275, 30, phase)
+            -- AddCurrency(FB, 2711, 47276, 30, phase)
+            -- AddCurrency(FB, 2711, 47277, 30, phase)
+            -- AddCurrency(FB, 2711, 237070, 30, phase)
+            -- AddCurrency(FB, 2711, 47280, 30, phase)
+            -- AddCurrency(FB, 2711, 237075, 30, phase)
+            -- AddCurrency(FB, 2711, 237072, 30, phase)
+            -- AddCurrency(FB, 2711, 237077, 38, phase)
+            -- AddCurrency(FB, 2711, 237083, 38, phase)
+            -- AddCurrency(FB, 2711, 237091, 76, phase)
+            -- AddCurrency(FB, 2711, 47286, 38, phase)
+            -- AddCurrency(FB, 2711, 237086, 50, phase)
+            -- AddCurrency(FB, 2711, 47290, 38, phase)
+            -- AddCurrency(FB, 2711, 47291, 30, phase)
+            -- AddCurrency(FB, 2711, 47293, 38, phase)
+            -- AddCurrency(FB, 2711, 47294, 30, phase)
+            -- AddCurrency(FB, 2711, 47295, 38, phase)
+            -- AddCurrency(FB, 2711, 237082, 38, phase)
+            -- AddCurrency(FB, 2711, 47297, 30, phase)
+            -- AddCurrency(FB, 2711, 237074, 30, phase)
+            -- AddCurrency(FB, 2711, 237080, 38, phase)
+            -- AddCurrency(FB, 2711, 47300, 50, phase)
+            -- AddCurrency(FB, 2711, 237093, 76, phase)
+            -- AddCurrency(FB, 2711, 47303, 38, phase)
+            -- AddCurrency(FB, 2711, 47305, 30, phase)
+            -- AddCurrency(FB, 2711, 47306, 30, phase)
+            -- AddCurrency(FB, 2711, 47307, 30, phase)
+            -- AddCurrency(FB, 2711, 47308, 38, phase)
+            -- AddCurrency(FB, 2711, 47309, 30, phase)
+            -- AddCurrency(FB, 2711, 47311, 38, phase)
+            -- AddCurrency(FB, 2711, 47312, 38, phase)
+            -- AddCurrency(FB, 2711, 237076, 30, phase)
+            -- AddCurrency(FB, 2711, 237089, 50, phase)
+            -- AddCurrency(FB, 2711, 237069, 30, phase)
+            -- AddCurrency(FB, 2711, 47316, 38, phase)
+            -- AddCurrency(FB, 2711, 47320, 30, phase)
+            -- AddCurrency(FB, 2711, 47321, 38, phase)
+            -- AddCurrency(FB, 2711, 237084, 60, phase)
+            -- AddCurrency(FB, 2711, 47323, 38, phase)
+            -- AddCurrency(FB, 2711, 47324, 30, phase)
+            -- AddCurrency(FB, 2711, 237073, 30, phase)
+            -- AddCurrency(FB, 2711, 47328, 30, phase)
+            -- AddCurrency(FB, 2711, 237092, 76, phase)
 
             -- old
             do
-                -- AddCurrency(FB, 2711, 47252, 30, phase)
-                -- AddCurrency(FB, 2711, 47253, 30, phase)
-                -- AddCurrency(FB, 2711, 47255, 50, phase)
-                -- AddCurrency(FB, 2711, 47256, 30, phase)
-                -- AddCurrency(FB, 2711, 47257, 30, phase)
-                -- AddCurrency(FB, 2711, 47258, 38, phase)
-                -- AddCurrency(FB, 2711, 47260, 50, phase)
-                -- AddCurrency(FB, 2711, 47261, 60, phase)
-                -- AddCurrency(FB, 2711, 47262, 38, phase)
-                -- AddCurrency(FB, 2711, 47263, 38, phase)
-                -- AddCurrency(FB, 2711, 47265, 38, phase)
-                -- AddCurrency(FB, 2711, 47266, 50, phase)
-                -- AddCurrency(FB, 2711, 47267, 76, phase)
-                -- AddCurrency(FB, 2711, 47268, 38, phase)
-                -- AddCurrency(FB, 2711, 47269, 38, phase)
-                -- AddCurrency(FB, 2711, 47271, 38, phase)
-                -- AddCurrency(FB, 2711, 47272, 30, phase)
-                -- AddCurrency(FB, 2711, 47275, 30, phase)
-                -- AddCurrency(FB, 2711, 47276, 30, phase)
-                -- AddCurrency(FB, 2711, 47277, 30, phase)
-                -- AddCurrency(FB, 2711, 47278, 30, phase)
-                -- AddCurrency(FB, 2711, 47280, 30, phase)
-                -- AddCurrency(FB, 2711, 47281, 30, phase)
-                -- AddCurrency(FB, 2711, 47282, 30, phase)
-                -- AddCurrency(FB, 2711, 47283, 38, phase)
-                -- AddCurrency(FB, 2711, 47284, 38, phase)
-                -- AddCurrency(FB, 2711, 47285, 76, phase)
-                -- AddCurrency(FB, 2711, 47286, 38, phase)
-                -- AddCurrency(FB, 2711, 47287, 50, phase)
-                -- AddCurrency(FB, 2711, 47290, 38, phase)
-                -- AddCurrency(FB, 2711, 47291, 30, phase)
-                -- AddCurrency(FB, 2711, 47293, 38, phase)
-                -- AddCurrency(FB, 2711, 47294, 30, phase)
-                -- AddCurrency(FB, 2711, 47295, 38, phase)
-                -- AddCurrency(FB, 2711, 47296, 38, phase)
-                -- AddCurrency(FB, 2711, 47297, 30, phase)
-                -- AddCurrency(FB, 2711, 47298, 30, phase)
-                -- AddCurrency(FB, 2711, 47299, 38, phase)
-                -- AddCurrency(FB, 2711, 47300, 50, phase)
-                -- AddCurrency(FB, 2711, 47302, 76, phase)
-                -- AddCurrency(FB, 2711, 47303, 38, phase)
-                -- AddCurrency(FB, 2711, 47305, 30, phase)
-                -- AddCurrency(FB, 2711, 47306, 30, phase)
-                -- AddCurrency(FB, 2711, 47307, 30, phase)
-                -- AddCurrency(FB, 2711, 47308, 38, phase)
-                -- AddCurrency(FB, 2711, 47309, 30, phase)
-                -- AddCurrency(FB, 2711, 47311, 38, phase)
-                -- AddCurrency(FB, 2711, 47312, 38, phase)
-                -- AddCurrency(FB, 2711, 47313, 30, phase)
-                -- AddCurrency(FB, 2711, 47314, 50, phase)
-                -- AddCurrency(FB, 2711, 47315, 30, phase)
-                -- AddCurrency(FB, 2711, 47316, 38, phase)
-                -- AddCurrency(FB, 2711, 47320, 30, phase)
-                -- AddCurrency(FB, 2711, 47321, 38, phase)
-                -- AddCurrency(FB, 2711, 47322, 60, phase)
-                -- AddCurrency(FB, 2711, 47323, 38, phase)
-                -- AddCurrency(FB, 2711, 47324, 30, phase)
-                -- AddCurrency(FB, 2711, 47327, 30, phase)
-                -- AddCurrency(FB, 2711, 47328, 30, phase)
-                -- AddCurrency(FB, 2711, 47329, 76, phase)
+                AddCurrency(FB, 2711, 47252, 30, phase)
+                AddCurrency(FB, 2711, 47253, 30, phase)
+                AddCurrency(FB, 2711, 47255, 50, phase)
+                AddCurrency(FB, 2711, 47256, 30, phase)
+                AddCurrency(FB, 2711, 47257, 30, phase)
+                AddCurrency(FB, 2711, 47258, 38, phase)
+                AddCurrency(FB, 2711, 47260, 50, phase)
+                AddCurrency(FB, 2711, 47261, 60, phase)
+                AddCurrency(FB, 2711, 47262, 38, phase)
+                AddCurrency(FB, 2711, 47263, 38, phase)
+                AddCurrency(FB, 2711, 47265, 38, phase)
+                AddCurrency(FB, 2711, 47266, 50, phase)
+                AddCurrency(FB, 2711, 47267, 76, phase)
+                AddCurrency(FB, 2711, 47268, 38, phase)
+                AddCurrency(FB, 2711, 47269, 38, phase)
+                AddCurrency(FB, 2711, 47271, 38, phase)
+                AddCurrency(FB, 2711, 47272, 30, phase)
+                AddCurrency(FB, 2711, 47275, 30, phase)
+                AddCurrency(FB, 2711, 47276, 30, phase)
+                AddCurrency(FB, 2711, 47277, 30, phase)
+                AddCurrency(FB, 2711, 47278, 30, phase)
+                AddCurrency(FB, 2711, 47280, 30, phase)
+                AddCurrency(FB, 2711, 47281, 30, phase)
+                AddCurrency(FB, 2711, 47282, 30, phase)
+                AddCurrency(FB, 2711, 47283, 38, phase)
+                AddCurrency(FB, 2711, 47284, 38, phase)
+                AddCurrency(FB, 2711, 47285, 76, phase)
+                AddCurrency(FB, 2711, 47286, 38, phase)
+                AddCurrency(FB, 2711, 47287, 50, phase)
+                AddCurrency(FB, 2711, 47290, 38, phase)
+                AddCurrency(FB, 2711, 47291, 30, phase)
+                AddCurrency(FB, 2711, 47293, 38, phase)
+                AddCurrency(FB, 2711, 47294, 30, phase)
+                AddCurrency(FB, 2711, 47295, 38, phase)
+                AddCurrency(FB, 2711, 47296, 38, phase)
+                AddCurrency(FB, 2711, 47297, 30, phase)
+                AddCurrency(FB, 2711, 47298, 30, phase)
+                AddCurrency(FB, 2711, 47299, 38, phase)
+                AddCurrency(FB, 2711, 47300, 50, phase)
+                AddCurrency(FB, 2711, 47302, 76, phase)
+                AddCurrency(FB, 2711, 47303, 38, phase)
+                AddCurrency(FB, 2711, 47305, 30, phase)
+                AddCurrency(FB, 2711, 47306, 30, phase)
+                AddCurrency(FB, 2711, 47307, 30, phase)
+                AddCurrency(FB, 2711, 47308, 38, phase)
+                AddCurrency(FB, 2711, 47309, 30, phase)
+                AddCurrency(FB, 2711, 47311, 38, phase)
+                AddCurrency(FB, 2711, 47312, 38, phase)
+                AddCurrency(FB, 2711, 47313, 30, phase)
+                AddCurrency(FB, 2711, 47314, 50, phase)
+                AddCurrency(FB, 2711, 47315, 30, phase)
+                AddCurrency(FB, 2711, 47316, 38, phase)
+                AddCurrency(FB, 2711, 47320, 30, phase)
+                AddCurrency(FB, 2711, 47321, 38, phase)
+                AddCurrency(FB, 2711, 47322, 60, phase)
+                AddCurrency(FB, 2711, 47323, 38, phase)
+                AddCurrency(FB, 2711, 47324, 30, phase)
+                AddCurrency(FB, 2711, 47327, 30, phase)
+                AddCurrency(FB, 2711, 47328, 30, phase)
+                AddCurrency(FB, 2711, 47329, 76, phase)
             end
         end
 
@@ -2170,8 +2238,8 @@ end
 do
     BG.Loot.ICC.Profession = {
         ["锻造"] = { 49903, 49904, 49902, 49907, 49906, 49905, },
-        ["制皮"] = { 49898, 49901, 49899, 49897, 49895, 49896, 49894, },
-        ["裁缝"] = { 49892, 49891, 49900, 49893, 49890, },
+        ["制皮"] = { 49898, 49901, 49899, 49897, 49895, 49896, 49894, 49900, },
+        ["裁缝"] = { 49892, 49891, 49893, 49890, },
     }
     if BG.IsAlliance then
         BG.Loot.TOC.Profession = {
@@ -2190,15 +2258,5 @@ do
         ["锻造"] = { 45561, 45560, 45552, 45551, 45550, 45559, },
         ["制皮"] = { 45563, 45564, 45555, 45565, 45562, 45554, 45553, 45556, },
         ["裁缝"] = { 45566, 45567, 45557, 45558, },
-    }
-end
-
--- 野外任务
-do
-    local FB = "ICC"
-    BG.Loot[FB].Quest.other = {
-        FBname = "",
-        color = "99CCFF",
-        itemID = { 50046, 50047, 50048, 50049 }
     }
 end

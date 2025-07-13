@@ -1,5 +1,4 @@
 local addonName, addonTable = ...;
-local _, _, _, tocversion = GetBuildInfo()
 local Create = addonTable.Create
 local PIGFontString=Create.PIGFontString
 local Mapfun=addonTable.Mapfun
@@ -27,9 +26,9 @@ function Mapfun.WorldMap_XY()
 	WorldMapFrame.xyf:SetSize(340,26);
 	czWeizhi()
 	local mapxydata = {["x"]={4, 0, 14}}
-	if tocversion<30000 then
+	if PIG_MaxTocversion(30000) then
 
-	elseif tocversion<40000 then
+	elseif PIG_MaxTocversion(40000) then
 		mapxydata.x[1]=10
 		mapxydata.x[2]=-1
 		mapxydata.x[3]=13
@@ -62,56 +61,38 @@ function Mapfun.WorldMap_XY()
 		local pos = C_Map.GetPlayerMapPosition(mapinfo,"player");
 		if not pos then return end
 		--local zuobiaoBB = C_Map.GetMapInfo(mapinfo).name, 
-		local zuobiaoXX,zuobiaoYY = math.ceil(pos.x*10000)/100, math.ceil(pos.y*10000)/100
-		WorldMapFrame.xyf.zuobiaoXV:SetText(zuobiaoXX);
-		WorldMapFrame.xyf.zuobiaoYV:SetText(zuobiaoYY);
+		WorldMapFrame.xyf.zuobiaoXV:SetFormattedText("%.1f", pos.x*100);
+		WorldMapFrame.xyf.zuobiaoYV:SetFormattedText("%.1f", pos.y*100);
 		local xxx, yyy = MouseXY()
 		if xxx and yyy then
-			local xxx =math.ceil(xxx*10000)/100
-			local yyy =math.ceil(yyy*10000)/100
-			WorldMapFrame.xyf.shubiaoXV:SetText(xxx);
-			WorldMapFrame.xyf.shubiaoYV:SetText(yyy);
+			WorldMapFrame.xyf.shubiaoXV:SetFormattedText("%.1f", xxx*100);
+			WorldMapFrame.xyf.shubiaoYV:SetFormattedText("%.1f", yyy*100);
 		end
 	end);
 end
 ----
 function Mapfun.WorldMap_Wind()
 	if not PIGA["Map"]["WorldMapWind"] then return end
-	if tocversion<50000 then
+	if PIG_MaxTocversion() then
 		---SetCVar("miniWorldMap", 0)
 		UIPanelWindows["WorldMapFrame"] = nil
 		WorldMapFrame:SetIgnoreParentScale(false)
-		--WorldMapFrame:SetScale(0.9)
 		WorldMapFrame.ScrollContainer.GetCursorPosition = function(f)
 		    local x,y = MapCanvasScrollControllerMixin.GetCursorPosition(f);
-		    --local s = WorldMapFrame:GetScale();
 		    local s = WorldMapFrame:GetScale() * UIParent:GetScale()
 		    return x/s, y/s;
 		end
 		hooksecurefunc(WorldMapFrame.BlackoutFrame, "Show", function()
 			WorldMapFrame.BlackoutFrame:Hide()
 		end)
-		hooksecurefunc(WorldMapFrame, "SynchronizeDisplayState", function(self)
-			if PIGA["BlizzardUI"]["WorldMapFrame"] and PIGA["BlizzardUI"]["WorldMapFrame"]["Point"] then
-				local point, relativeTo, relativePoint, offsetX, offsetY=unpack(PIGA["BlizzardUI"]["WorldMapFrame"]["Point"])
-				self:ClearAllPoints();
-				self:SetPoint(point, relativeTo, relativePoint, offsetX, offsetY);
+		local PIG_SetPoint=Create.PIG_SetPoint
+		hooksecurefunc(WorldMapFrame, "OnFrameSizeChanged", function(self)
+			if PIGA["Blizzard_UI"]["WorldMapFrame"] and PIGA["Blizzard_UI"]["WorldMapFrame"]["Point"] then
+				PIG_SetPoint("WorldMapFrame",true)
 			end
-			if self:IsMaximized() then
-				czWeizhi()
-			else
-				if WorldMapFrame.xyf then WorldMapFrame.xyf:SetPoint("BOTTOM",WorldMapFrame,"BOTTOM",-118,4.4);end
-				if WorldMapTrackQuest then
-					WorldMapTrackQuest:SetPoint("BOTTOMLEFT", WorldMapFrame, "BOTTOMLEFT", 10, 99994);
-				end
-			end
-			self:OnFrameSizeChanged();
 		end)
-	else
-
 	end
 end
-
 ---
 function Mapfun.WorldMap_LVSkill()
 	if not PIGA["Map"]["WorldMapLV"] and not PIGA["Map"]["WorldMapSkill"] then return end

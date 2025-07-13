@@ -1,10 +1,12 @@
-## Interface: 30404
+## Interface: 30405
 ## Author: 苍穹之霜
-## Version: 1.16.3
+## Version: 1.19.5
 
 ## Title: <BiaoGe> |cff00BFFF金团表格|r
 ## Notes: 插件命令：/BiaoGe或/GBG。角色总览命令：/BGR
 ## Title-zhCN: |cFFFFE00A<|r|cFFF48CBA社交|r|cFFFFE00A>|r |cFFFFFFFF金团表格|r |cFFFFE00ABiaoGe|r
+
+## LoadOnDemand: 0
 
 ## SavedVariables: BiaoGe
 

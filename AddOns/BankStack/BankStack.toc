@@ -1,10 +1,12 @@
-## Interface: 30404
+## Interface: 30405
 ## Author: Kemayo
-## Version: v2024.1
+## Version: v2025.2
 
 ## Title: BankStack
 ## Notes: From bags we came, to bank we return
 ## Title-zhCN: |cFFFFE00A<|r|cFFA9D271收藏|r|cFFFFE00A>|r |cFFFFFFFF银行整理|r |cFFFFE00ABankStack|r
+
+## IconTexture: Interface\Icons\INV_Misc_Shovel_01
 
 ## OptionalDeps: Ace3, LibDBIcon-1.0, tekDebug
 ## LoadOnDemand: 0

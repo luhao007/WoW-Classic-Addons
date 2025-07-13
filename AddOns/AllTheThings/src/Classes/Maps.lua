@@ -334,6 +334,10 @@ app.CreateExploration = app.CreateClass(CLASSNAME, KEY, {
 		return ExplorationAreaPositionDB[t.explorationID];
 	end,
 });
+app.AddEventHandler("OnSavedVariablesAvailable", function(currentCharacter, accountWideData)
+	if not currentCharacter[CACHE] then currentCharacter[CACHE] = {} end
+	if not accountWideData[CACHE] then accountWideData[CACHE] = {} end
+end)
 
 -- Reporting
 local AreaIDNameMapper = setmetatable({}, {__index = function(t,key)
@@ -761,7 +765,7 @@ local function HarvestExploration()
 	if app.SetupExplorationEvents then app.SetupExplorationEvents(); end
 
 	-- setup our DB captures
-	local harvest = app.LocalizeGlobal("AllTheThingsHarvestItems", {})
+	local harvest = app.LocalizeGlobal("AllTheThingsHarvestItems", true)
 	harvest.ExplorationAreaPositionDB = ExplorationAreaPositionDB
 	-- ExplorationDB is only used internally while harvesting to populate Exploration headers
 	ExplorationDB =  setmetatable({}, app.MetaTable.AutoTable);
@@ -780,7 +784,7 @@ local function HarvestExploration()
 	for mapID,objects in pairs(app.SearchForFieldContainer("mapID")) do
 		-- only check exploration on Zone maps where we have a raw map listed in ATT
 		local mapInfo = C_Map_GetMapInfo(mapID)
-		if mapInfo and mapInfo.mapType == 3 and C_Map_GetMapArtID(mapID) and app.SearchForObject("mapID",mapID,"key") then
+		if mapInfo and (mapInfo.mapType == 3 or mapInfo.mapType == 6) and C_Map_GetMapArtID(mapID) and app.SearchForObject("mapID",mapID,"key") then
 			app.print("Harvesting Map " .. mapID .. "...");
 			-- Find all points on the grid that have explored an area and make note of them.
 			local ok, any, hits = pcall(GenerateHitsForMap, grid, mapID);
@@ -878,7 +882,7 @@ app.ChatCommands.Add("harvest-map", function(args)
 	local granularity = tonumber(args[3] or 200)
 	local simplify = args[4]
 	-- setup our DB captures
-	local harvest = app.LocalizeGlobal("AllTheThingsHarvestItems", {})
+	local harvest = app.LocalizeGlobal("AllTheThingsHarvestItems", true)
 	harvest.ExplorationAreaPositionDB = ExplorationAreaPositionDB
 	-- ExplorationDB is only used internally while harvesting to populate Exploration headers
 	ExplorationDB =  setmetatable({}, app.MetaTable.AutoTable);
@@ -961,6 +965,7 @@ app.CreateMap = app.CreateClass("Map", "mapID", {
 		t.isMinilistHeader = isHeader
 		return isHeader
 	end,
+	SortType = function(t) return "MapClassSortType" end,
 },
 "WithHeader", {
 	["name"] = function(t)
@@ -975,6 +980,7 @@ app.CreateMap = app.CreateClass("Map", "mapID", {
 	["description"] = function(t)
 		return L.HEADER_DESCRIPTIONS[t.headerID];
 	end,
+	["ShouldShowEventSchedule"] = app.ReturnTrue,
 }, (function(t)
 	local creatureID = t.creatureID or t.npcID;
 	if creatureID and creatureID < 0 then
@@ -1014,8 +1020,7 @@ local instanceFields = {
 		return t.isRaid and ("|c" .. app.Colors.Raid .. t.name .. "|r") or t.name;
 	end,
 	["name"] = function(t)
-		local mapID = t.mapID;
-		return mapID and GetMapName(mapID);
+		return GetMapName(t.mapID);
 	end,
 	["icon"] = function(t)
 		return app.asset("Category_Zones");
@@ -1066,14 +1071,16 @@ if EJ_GetInstanceInfo and app.GameBuildVersion >= 50000 then
 	local function CacheInfo(t, field)
 		local _t, id = cache.GetCached(t);
 		local name, lore, _, _, _, icon, _, link = EJ_GetInstanceInfo(id);
-		_t.name = name;
-		_t.lore = lore;
-		_t.icon = icon;
-		_t.link = link;
+		if name then _t.name = name; end
+		if lore then _t.lore = lore; end
+		if icon then _t.icon = icon; end
+		if link then _t.link = link; end
 		if field then return _t[field]; end
 	end
-	instanceFields.icon = function(t) return cache.GetCachedField(t, "icon", CacheInfo); end;
-	instanceFields.name = function(t) return cache.GetCachedField(t, "name", CacheInfo); end;
+	local oldIconField = instanceFields.icon;
+	local oldNameField = instanceFields.name;
+	instanceFields.icon = function(t) return cache.GetCachedField(t, "icon", CacheInfo) or oldIconField(t); end;
+	instanceFields.name = function(t) return cache.GetCachedField(t, "name", CacheInfo) or oldNameField(t); end;
 	instanceFields.lore = function(t) return cache.GetCachedField(t, "lore", CacheInfo); end;
 	instanceFields.silentLink = function(t) return cache.GetCachedField(t, "link", CacheInfo); end;
 end

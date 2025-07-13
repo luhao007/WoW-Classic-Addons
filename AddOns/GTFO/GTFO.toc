@@ -1,6 +1,6 @@
-## Interface: 30404
+## Interface: 30405
 ## Author: Zensunim of Dragonblight
-## Version: 5.16.3
+## Version: 5.17.4
 
 ## Title: GTFO
 ## Notes: GTFO, you're dying!
@@ -13,11 +13,11 @@
 
 ## SavedVariables: GTFOData
 
-## X-Min-Interface: 110100
-## X-Min-Interface-Classic: 11506
+## X-Min-Interface: 110107
 ## X-Min-Interface-BCC: 20504
 ## X-Min-Interface-Wrath: 30403
 ## X-Min-Interface-Cata: 40402
+## X-Min-Interface-Mists: 50500
 ## X-WoWI-ID: 17996
 ## X-Curse-Project-ID: 20697
 ## X-Wago-ID: PANz0MK4

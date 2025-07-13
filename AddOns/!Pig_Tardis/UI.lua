@@ -1,5 +1,4 @@
 local addonName, addonTable = ...;
-local _, _, _, tocversion = GetBuildInfo()
 local Create, Data, Fun, L= unpack(PIG)
 ---------------------------------
 local PIGFrame=Create.PIGFrame
@@ -22,7 +21,7 @@ function TardisInfo.ADD_UI()
 	local InvF=PIGFrame(UIParent,{"CENTER",UIParent,"CENTER",0,60},{Width, Height},GnUI,true)
 	InvF:PIGSetBackdrop()
 	InvF:PIGClose()
-	InvF:PIGSetMovable()
+	InvF:PIGSetMovableNoSave()
 	InvF.hang_Height,InvF.hang_NUM=25,15
 	InvF.pindao="PIG"
 	InvF.Biaotou=Data.Tardis.Prefix
@@ -56,7 +55,22 @@ function TardisInfo.ADD_UI()
 		ChatFrame_RemoveMessageGroup(DEFAULT_CHAT_FRAME, "CHANNEL")
 		gengxinbut1()
 	end)
-	
+	local InfoMsgList=Data.Tardis.GetMsg
+	function InvF:PIGSendAddonMsg(vfname,fujiF,gnindexID)
+		fujiF.GetBut.PIGID=GetPIGID(pindao)
+		if fujiF.GetBut.PIGID==0 then
+			fujiF.GetBut.err:SetText("请先加入"..pindao.."频道");
+			return
+		end
+		PIGA["Tardis"][vfname]["DaojishiCD"]=GetServerTime();
+		fujiF.JieshouInfoList={};
+		fujiF.GetBut.yanchiNerMsg=nil
+		if PIG_MaxTocversion() then
+			SendChatMessage(InfoMsgList[gnindexID],"CHANNEL",nil,fujiF.GetBut.PIGID)
+		else
+			PIGSendAddonMessage(InvF.Biaotou,InfoMsgList[gnindexID],"CHANNEL",fujiF.GetBut.PIGID)
+		end
+	end
 	--设置-----------------------------
 	InvF.setbut = CreateFrame("Button",nil,InvF, "TruncatedButtonTemplate"); 
 	InvF.setbut:SetNormalTexture("interface/gossipframe/healergossipicon.blp"); 
@@ -75,10 +89,10 @@ function TardisInfo.ADD_UI()
 		self.Down:Hide()
 	end);
 	InvF.setbut:HookScript("OnClick", function (self)
-		if Pig_OptionsUI:IsShown() then
-			Pig_OptionsUI:Hide()
+		if PIG_OptionsUI:IsShown() then
+			PIG_OptionsUI:Hide()
 		else
-			Pig_OptionsUI:Show()
+			PIG_OptionsUI:Show()
 			Create.Show_TabBut(TardisInfo.fuFrame,TardisInfo.fuFrameBut)
 		end
 	end);

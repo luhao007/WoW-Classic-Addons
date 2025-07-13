@@ -1,13 +1,11 @@
 local addonName, addonTable = ...;
 --===============================================
 local Create=addonTable.Create
-local PIGFrame=Create.PIGFrame
-local PIGLine=Create.PIGLine
 local PIGEnter=Create.PIGEnter
 --
 local QuickChatfun=addonTable.QuickChatfun
 function QuickChatfun.QuickBut_Roll()
-	local fuFrame=QuickChatFFF_UI
+	local fuFrame=QuickChatfun.TabButUI
 	local fuWidth = fuFrame.Width
 	local Width,Height = fuWidth,fuWidth
 	local ziframe = {fuFrame:GetChildren()}

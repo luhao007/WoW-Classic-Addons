@@ -1,8 +1,7 @@
-if DBM:GetTOC() < 110100 then return end
-local mod	= DBM:NewMod(2644, "DBM-Raids-WarWithin", 1, 1296)
+local mod	= DBM:NewMod(2644, "DBM-Raids-WarWithin", 2, 1296)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20250328080509")
+mod:SetRevision("20250619040547")
 mod:SetCreatureID(228458)
 mod:SetEncounterID(3014)
 mod:SetHotfixNoticeRev(20250209000000)
@@ -23,13 +22,9 @@ mod:RegisterEventsInCombat(
 	"UNIT_DIED"
 )
 
---TODO, mark token holders with red, blue, orange, and skull?
---TODO, revise audio as needed
---TODO, auto mark bombs with https://www.wowhead.com/ptr-2/spell=461176/reward-flame-and-bomb ?
---TODO, add https://www.wowhead.com/ptr-2/spell=464705/golden-ticket stack tracker? probably not really needed
---TODO, record new payline audio (based on if we can detect it or not)
 --TODO, bait timers and short texts
 --TODO, figure out the lineyou and farfromline overlap since we can't detect debuff and filter farfromline on private aura...
+--TODO, figure out why LFR has some serious timer queue issues where abilities go as much as -30 before being cast.
 --[[
 (ability.id = 472197 or ability.id = 460181 or ability.id = 469993 or ability.id = 460472 or ability.id = 465587 or ability.id = 461060) and type = "begincast"
 or ability.id = 465761 and type = "begincast" or ability.id = 465765 and type = "cast"
@@ -109,7 +104,7 @@ local warnCheatToWin							= mod:NewCountAnnounce(465309, 4)
 local specWarnHotHotHot							= mod:NewSpecialWarningDodge(465322, nil, nil, nil, 2, 2)--Second Cast
 local specWarnScatteredPayout					= mod:NewSpecialWarningSwitch(465580, "Dps", nil, nil, 1, 2)--Third Cast
 
-local timerLinkedMachinesCD						= mod:NewCDCountTimer(25.2, 473195, L.BaitCoil.." %s)", nil, nil, 6)
+local timerLinkedMachinesCD						= mod:NewCDCountTimer(25.2, 473195, L.BaitCoil.." %s", nil, nil, 6)
 local timerLinkedMachinesCast					= mod:NewCastTimer(7.5, 465432, 28405, nil, nil, 5)--Shorttext knockback
 local timerHotHotHotCD							= mod:NewCDCountTimer(25.2, 465322, nil, nil, nil, 6)
 local timerScatteredPayoutCD					= mod:NewCDCountTimer(25.2, 465580, nil, nil, nil, 6)
@@ -151,10 +146,11 @@ function mod:OnCombatStart(delay)
 	end
 end
 
-function mod:OnCombatEnd()
+function mod:OnCombatEnd(_, _, secondRun)
 	if self.Options.NPAuraOnGaze or self.Options.NPAuraOnDLC then
 		DBM.Nameplate:Hide(true, nil, nil, nil, true, true)
 	end
+	if secondRun then self:Stop() end--Stop all timers in a second run of combat end to try and fix bugged timers
 end
 
 function mod:SPELL_CAST_START(args)
@@ -170,10 +166,6 @@ function mod:SPELL_CAST_START(args)
 		else
 			timerSpintoWinCD:Start("v78.6-86.7", self.vb.spinCount+1)
 		end
-		--Stop other timers?
-		--timerPaylineCD:Stop()
-		--timerFoulExhaustCD:Stop()
-		--timerTheBigHitCD:Stop()
 	elseif spellId == 464806 or spellId == 464801 or spellId == 464804 or spellId == 464772 or spellId == 464809 or spellId == 464810 then
 		if spellId == 464806 then
 			warnFlameandCoin:Show(self.vb.spinCount)
@@ -202,7 +194,7 @@ function mod:SPELL_CAST_START(args)
 			elseif self:IsHeroic() or self:IsLFR() then--Heroic/LFR swaps payline and bighit compared to normal
 				timerPaylineCD:Start("v11.1-11.8", self.vb.paylineCount+1)
 				timerFoulExhaustCD:Start("v16.0-16.7", self.vb.foulExhaustCount+1)
-				timerTheBigHitCD:Start("v22.1-23", self.vb.bigHitCount+1)
+				timerTheBigHitCD:Start("v15.3-23", self.vb.bigHitCount+1)
 			else
 				timerTheBigHitCD:Start("v11.9-13.1", self.vb.bigHitCount+1)
 				timerFoulExhaustCD:Start("v16.6-18.9", self.vb.foulExhaustCount+1)
@@ -214,9 +206,9 @@ function mod:SPELL_CAST_START(args)
 				timerFoulExhaustCD:Start("v9.5-9.9", self.vb.foulExhaustCount+1)
 				timerTheBigHitCD:Start("v16.0-16.7", self.vb.bigHitCount+1)
 			elseif self:IsHeroic() or self:IsLFR() then
-				timerPaylineCD:Start("v5.9-7", self.vb.paylineCount+1)
-				timerFoulExhaustCD:Start("v10.7-11.8", self.vb.foulExhaustCount+1)
-				timerTheBigHitCD:Start("v16.8-18", self.vb.bigHitCount+1)
+				timerPaylineCD:Start("v4.6-7", self.vb.paylineCount+1)
+				timerFoulExhaustCD:Start("v10.4-11.8", self.vb.foulExhaustCount+1)
+				timerTheBigHitCD:Start("v16.4-18", self.vb.bigHitCount+1)
 			else
 				timerFoulExhaustCD:Start("v9.5-10.7", self.vb.foulExhaustCount+1)
 				timerTheBigHitCD:Start("v15.5-16.7", self.vb.bigHitCount+1)
@@ -225,14 +217,10 @@ function mod:SPELL_CAST_START(args)
 		end
 	elseif spellId == 464776 then--Fraud Detected
 		warnFraudDetected:Show()
-		--Timers reset
+		--Timers reset, it's a wipe anyways so we don't bother to restart them
 		timerPaylineCD:Stop()
 		timerFoulExhaustCD:Stop()
 		timerTheBigHitCD:Stop()
-		--TODO, FIX ME. these are old PTR values
-		timerPaylineCD:Start(5.7, self.vb.paylineCount+1)
-		timerFoulExhaustCD:Start(10.6, self.vb.foulExhaustCount+1)
-		timerTheBigHitCD:Start(16.6, self.vb.bigHitCount+1)
 	elseif spellId == 472178 then
 		if self:AntiSpam(8, 1) then
 			specWarnBurningBlast:Show()
@@ -314,7 +302,7 @@ function mod:SPELL_CAST_START(args)
 		--new Phase Timers
 		timerFoulExhaustCD:Stop()--Just to cancel run over from the custom 2nd cast between linked and hot
 		--On normal and LFR, it's possible to get two exhausts between linked and hot, if so, we'll get a long timer, else it'll be short one
-		timerFoulExhaustCD:Start((self.vb.secondExhaustOccurred == 2) and 28.8 or self:IsHard() and "v4.6-5.8" or "V3.3-4.4", self.vb.foulExhaustCount+1)
+		timerFoulExhaustCD:Start((self.vb.secondExhaustOccurred == 2) and 28.8 or self:IsHard() and "v4.6-5.8" or "v3.3-4.4", self.vb.foulExhaustCount+1)
 		timerTheBigHitCD:Start(self:IsMythic() and 11.9 or "v4.6-10.7", self.vb.bigHitCount+1)--This one gets a little screwed up
 		timerPaylineCD:Start(self:IsHard() and "v21.6-22.9" or "v15.5-18", self.vb.paylineCount+1)
 		timerScatteredPayoutCD:Start(self:IsEasy() and 29.9 or 25.2, 3)
@@ -327,7 +315,8 @@ function mod:SPELL_CAST_START(args)
 		--new Phase Timers 10.7-14.3
 		timerTheBigHitCD:Start(self:IsHard() and "v3.3-5.8" or "v10.7-14.3", self.vb.bigHitCount+1)
 		--again, on normal if 2 exhausts occured before hot, the it's a longer timer here too, else very short. Heroic and mythic more consistent in their 9-11 sec range
-		timerFoulExhaustCD:Start(self:IsMythic() and "v10.7-11.9" or self:IsHeroic() and "v9.4-10.6" or (self.vb.secondExhaustOccurred == 2) and 26.4 or "V3.3-4.4", self.vb.foulExhaustCount+1)
+		timerFoulExhaustCD:Stop()
+		timerFoulExhaustCD:Start(self:IsMythic() and "v10.7-11.9" or self:IsHeroic() and "v9.4-10.6" or (self.vb.secondExhaustOccurred == 2) and 26.4 or "v3.3-4.4", self.vb.foulExhaustCount+1)
 		timerPaylineCD:Start(21.6, self.vb.paylineCount+1)--Mythic and heroic Unknown
 		timerExplosiveJackpotCD:Start(self:IsEasy() and 29.9 or 25.2, 2)
 	elseif spellId == 465587 then

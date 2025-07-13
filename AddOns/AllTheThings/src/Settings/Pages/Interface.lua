@@ -808,16 +808,15 @@ end)
 checkboxFillDynamicQuests:SetATTTooltip(L.FILL_DYNAMIC_QUESTS_CHECKBOX_TOOLTIP)
 checkboxFillDynamicQuests:AlignBelow(checkboxModelPreview)
 
+-- TODO: remove after a few versions from ATT 4.5
 local checkboxFillNPCData = child:CreateCheckBox(L.FILL_NPC_DATA_CHECKBOX,
 function(self)
-	self:SetChecked(settings:GetTooltipSetting("NPCData:Nested"))
+	self:SetAlpha(0.5)
 end,
 function(self)
-	settings:SetTooltipSetting("NPCData:Nested", self:GetChecked())
-	-- requires re-building of minilist
-	app.LocationTrigger(true)
+	self:SetChecked(false)
 end)
-checkboxFillNPCData:SetATTTooltip(L.FILL_NPC_DATA_CHECKBOX_TOOLTIP)
+checkboxFillNPCData:SetATTTooltip("|cffFF0000This option is deprecated and has been replaced by the 'NPC' Filler on the 'Interface > Fillers' tab|r")
 checkboxFillNPCData:AlignBelow(checkboxFillDynamicQuests)
 
 checkboxNestedQuestChains = child:CreateCheckBox(L.NESTED_QUEST_CHAIN_CHECKBOX,
@@ -844,12 +843,9 @@ checkboxSortByProgress:AlignBelow(checkboxNestedQuestChains or checkboxModelPrev
 local checkboxShowRemainingCount = child:CreateCheckBox(L.SHOW_REMAINING_CHECKBOX,
 function(self)
 	self:SetChecked(settings:GetTooltipSetting("Show:Remaining"))
-	app.Modules.Color.SetShowRemainingText(self:GetChecked());
 end,
 function(self)
 	settings:SetTooltipSetting("Show:Remaining", self:GetChecked())
-	app.Modules.Color.SetShowRemainingText(self:GetChecked());
-	app.CallbackEvent("OnRenderDirty")
 end)
 checkboxShowRemainingCount:SetATTTooltip(L.SHOW_REMAINING_CHECKBOX_TOOLTIP)
 checkboxShowRemainingCount:AlignBelow(checkboxSortByProgress)
@@ -857,12 +853,9 @@ checkboxShowRemainingCount:AlignBelow(checkboxSortByProgress)
 local checkboxShowPercentageCount = child:CreateCheckBox(L.PERCENTAGES_CHECKBOX,
 function(self)
 	self:SetChecked(settings:GetTooltipSetting("Show:Percentage"))
-	app.Modules.Color.SetShowPercentageText(self:GetChecked());
 end,
 function(self)
 	settings:SetTooltipSetting("Show:Percentage", self:GetChecked())
-	app.Modules.Color.SetShowPercentageText(self:GetChecked());
-	app.CallbackEvent("OnRenderDirty")
 end)
 checkboxShowPercentageCount:SetATTTooltip(L.PERCENTAGES_CHECKBOX_TOOLTIP)
 checkboxShowPercentageCount:AlignBelow(checkboxShowRemainingCount)
@@ -898,7 +891,6 @@ sliderPercentagePrecision:SetScript("OnValueChanged", function(self, newValue)
 		return 1
 	end
 	settings:SetTooltipSetting("Precision", newValue)
-	app.CallbackEvent("OnRenderDirty")
 end)
 sliderPercentagePrecision.OnRefresh = function(self)
 	if not settings:GetTooltipSetting("Show:Percentage") then

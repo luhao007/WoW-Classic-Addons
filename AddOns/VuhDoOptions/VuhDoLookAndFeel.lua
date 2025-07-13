@@ -317,7 +317,7 @@ end
 
 --
 function VUHDO_lnfIsLastComboIten()
-	local tFocus = GetMouseFocus();
+	local tFocus = GetMouseFoci()[1];
 	return tFocus ~= nil and tFocus:GetName() == sLastComboItem;
 end
 

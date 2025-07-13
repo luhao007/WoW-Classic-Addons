@@ -11,10 +11,9 @@ local RGB = ns.RGB
 local GetClassRGB = ns.GetClassRGB
 local SetClassCFF = ns.SetClassCFF
 local Maxb = ns.Maxb
-local Maxi = ns.Maxi
 local BossNum = ns.BossNum
-local FrameHide = ns.FrameHide
 local AddTexture = ns.AddTexture
+local GetItemID = ns.GetItemID
 
 local pt = print
 
@@ -28,7 +27,7 @@ local red, greed, blue = 1, 1, 1
 local touming1, touming2 = 0.1, 0.1
 
 ------------------标题------------------
-function BG.ReceiveBiaoTiUI(FB, t, b, bb, i, ii)
+function BG.ReceiveTitleUI(FB, t, b, bb, i, ii)
     local fontsize = 15
     local version = BG["ReceiveFrame" .. FB]:CreateFontString()
     if t == 1 then
@@ -86,7 +85,7 @@ function BG.ReceiveZhuangBeiUI(FB, t, b, bb, i, ii, scrollFrame)
             if BG.zaxiang[FB] and BossNum(FB, b, t) == Maxb[FB] and i == 1 then
                 bt:SetPoint("TOPLEFT", framedown, "BOTTOMLEFT", 0, -20)
             else
-                bt:SetPoint("TOPLEFT", p["preWidget" .. i - 1], "BOTTOMLEFT", 0, -3)
+                bt:SetPoint("TOPLEFT", p["preWidget" .. i - 1], "BOTTOMLEFT", 0, BG.IsBigFB(FB) and 0 or -3)
             end
         end
     end
@@ -103,20 +102,23 @@ function BG.ReceiveZhuangBeiUI(FB, t, b, bb, i, ii, scrollFrame)
     -- 内容改变时
     bt:SetScript("OnTextChanged", function(self)
         local itemText = bt:GetText()
-        local itemID = select(1, GetItemInfoInstant(itemText))
-        local name, link, quality, level, _, _, _, _, _, Texture, _, typeID, _, bindType = GetItemInfo(itemText)
-        if link and itemText:find("item:") then
-            -- 装备图标
-            icon:SetTexture(Texture)
+        local itemID = GetItemID(itemText)
+        if itemID then
+            local item = Item:CreateFromItemID(itemID)
+            item:ContinueOnItemLoad(function()
+                local name, link, quality, level, _, _, _, _, _, Texture,
+                _, typeID, _, bindType = GetItemInfo(itemText)
+                icon:SetTexture(Texture)
+                BG.BindOnEquip(self, bindType)
+                BG.LevelText(self, level, typeID)
+                BG.IsHave(self)
+            end)
         else
             icon:SetTexture(nil)
+            BG.BindOnEquip(self)
+            BG.LevelText(self)
+            BG.IsHave(self)
         end
-        -- 装绑图标
-        BG.BindOnEquip(self, bindType)
-        -- 在按钮右边增加装等显示
-        BG.LevelText(self, level, typeID)
-        -- 已拥有图标
-        BG.IsHave(self)
     end)
     -- 发送装备到聊天输入框
     bt:SetScript("OnMouseDown", function(self, enter)
@@ -129,8 +131,8 @@ function BG.ReceiveZhuangBeiUI(FB, t, b, bb, i, ii, scrollFrame)
     bt:SetScript("OnEnter", function(self)
         BG.ReceiveFrameDs[FB .. 1]["boss" .. BossNum(FB, b, t)]["ds" .. i]:Show()
         if not tonumber(self:GetText()) then
-            local itemLink = bt:GetText()
-            local itemID = select(1, GetItemInfoInstant(itemLink))
+            local link = bt:GetText()
+            local itemID = GetItemID(link)
             if itemID then
                 if BG.ButtonIsInRight(self) then
                     GameTooltip:SetOwner(self, "ANCHOR_LEFT", 0, 0)
@@ -138,8 +140,7 @@ function BG.ReceiveZhuangBeiUI(FB, t, b, bb, i, ii, scrollFrame)
                     GameTooltip:SetOwner(self, "ANCHOR_RIGHT", 0, 0)
                 end
                 GameTooltip:ClearLines()
-                GameTooltip:SetItemByID(itemID);
-                GameTooltip:Show()
+                GameTooltip:SetHyperlink(BG.SetSpecIDToLink(link))
             end
         end
     end)
@@ -222,10 +223,9 @@ end
 
 ------------------击杀用时------------------
 function BG.ReceiveJiShaUI(FB, t, b, bb, i, ii)
-    local text = BG["ReceiveFrame" .. FB]:CreateFontString();
+    local text = BG["ReceiveFrame" .. FB]:CreateFontString()
     local num
-    local color
-    for i = 1, Maxi[FB] do
+    for i = 1, BG.GetMaxi(FB, BossNum(FB, b, t)) do
         if not BG.ReceiveFrame[FB]["boss" .. BossNum(FB, b, t)]["zhuangbei" .. i + 1] then
             num = i
             break
@@ -252,7 +252,7 @@ end
 ------------------支出、总览、工资------------------
 function BG.ReceiveZhiChuZongLanGongZiUI(FB)
     -- 设置支出颜色：绿
-    for i = 1, Maxi[FB], 1 do
+    for i = 1, BG.GetMaxi(FB, Maxb[FB] + 1), 1 do
         if BG.ReceiveFrame[FB]["boss" .. Maxb[FB] + 1]["zhuangbei" .. i] then
             BG.ReceiveFrame[FB]["boss" .. Maxb[FB] + 1]["zhuangbei" .. i]:SetTextColor(RGB("00FF00"))
             BG.ReceiveFrame[FB]["boss" .. Maxb[FB] + 1]["jine" .. i]:SetTextColor(RGB("00FF00"))

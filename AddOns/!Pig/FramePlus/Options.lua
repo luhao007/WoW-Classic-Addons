@@ -1,11 +1,9 @@
 local addonName, addonTable = ...;
 local L=addonTable.locale
-local _, _, _, tocversion = GetBuildInfo()
 ---
 local Create=addonTable.Create
 local PIGFrame=Create.PIGFrame
-local PIGLine=Create.PIGLine
-local PIGButton = Create.PIGButton
+local PIGButton=Create.PIGButton
 local PIGSlider = Create.PIGSlider
 local PIGCheckbutton=Create.PIGCheckbutton
 local PIGCheckbutton_R=Create.PIGCheckbutton_R
@@ -16,10 +14,11 @@ local PIGFontString=Create.PIGFontString
 local PIGFontStringBG=Create.PIGFontStringBG
 --
 local Fun=addonTable.Fun
+local Data=addonTable.Data
 ---
 local fuFrame = PIGOptionsList(L["FRAMEP_TABNAME"],"TOP")
 --
-local RTabFrame =Create.PIGOptionsList_RF(fuFrame,30)
+local RTabFrame =Create.PIGOptionsList_RF(fuFrame)
 --
 local FramePlusfun={}
 addonTable.FramePlusfun=FramePlusfun
@@ -35,7 +34,7 @@ FramePlusF.BuffTime:SetScript("OnClick", function (self)
 		FramePlusfun.BuffTime()
 	else
 		PIGA["FramePlus"]["BuffTime"]=false
-		Pig_Options_RLtishi_UI:Show()
+		PIG_OptionsUI.RLUI:Show()
 	end
 end);
 ----
@@ -46,31 +45,31 @@ FramePlusF.Skill_QKbut:SetScript("OnClick", function (self)
 		FramePlusfun.Skill_QKbut()
 	else
 		PIGA["FramePlus"]["Skill_QKbut"]=false
-		Pig_Options_RLtishi_UI:Show()
+		PIG_OptionsUI.RLUI:Show()
 	end
 end);
 
 ------
-FramePlusF.AddonList = PIGCheckbutton_R(FramePlusF,{"增强插件列表","增强插件列表，让你可以按需开启插件"})
+FramePlusF.AddonList = PIGCheckbutton_R(FramePlusF,{"增强插件列表(插件启用状态保存)","增强插件列表，让你可以按需开启插件"})
 FramePlusF.AddonList:SetScript("OnClick", function (self)
 	if self:GetChecked() then
 		PIGA["FramePlus"]["AddonList"]=true;
 		FramePlusfun.AddonList()
 	else
 		PIGA["FramePlus"]["AddonList"]=false
-		Pig_Options_RLtishi_UI:Show()
+		PIG_OptionsUI.RLUI:Show()
 	end
 end);
-if tocversion<20000 then
+if PIG_MaxTocversion(20000) then
 	local tooltip = "整合追踪类技能，点击小地图追踪技能按钮选择其他追踪技能！";
-	FramePlusF.Zhuizong = PIGCheckbutton_R(FramePlusF,{"整合追踪技能",tooltip})
-	FramePlusF.Zhuizong:SetScript("OnClick", function (self)
+	FramePlusF.Tracking = PIGCheckbutton_R(FramePlusF,{"整合追踪技能",tooltip})
+	FramePlusF.Tracking:SetScript("OnClick", function (self)
 		if self:GetChecked() then
-			PIGA["FramePlus"]["Zhuizong"]=true
-			FramePlusfun.Zhuizong()
+			PIGA["FramePlus"]["Tracking"]=true
+			FramePlusfun.Tracking()
 		else
-			PIGA["FramePlus"]["Zhuizong"]=false
-			Pig_Options_RLtishi_UI:Show()
+			PIGA["FramePlus"]["Tracking"]=false
+			PIG_OptionsUI.RLUI:Show()
 		end
 	end)
 end
@@ -83,12 +82,13 @@ FramePlusF.yidong:SetPoint("BOTTOMRIGHT",FramePlusF,"BOTTOMRIGHT",0,0);
 
 FramePlusF.yidong.BlizzardUI_Move = PIGCheckbutton(FramePlusF.yidong,{"LEFT",FramePlusF.yidong,"LEFT",20,0},{"解锁(移动)系统界面","解锁系统界面，使其可以:\n1.移动:拖动界面标题栏移动\n2.缩放:在需要缩放界面按住Ctrl+Alt滚动鼠标滚轮"})
 FramePlusF.yidong.BlizzardUI_Move:SetScript("OnClick", function (self)
+	if InCombatLockdown() then self:SetChecked(PIGA["FramePlus"]["BlizzardUI_Move"]) PIG_OptionsUI:ErrorMsg(ERR_NOT_IN_COMBAT,"R") return end
 	if self:GetChecked() then
 		PIGA["FramePlus"]["BlizzardUI_Move"]=true;
 		FramePlusfun.BlizzardUI_Move()
 	else
 		PIGA["FramePlus"]["BlizzardUI_Move"]=false
-		Pig_Options_RLtishi_UI:Show()
+		PIG_OptionsUI.RLUI:Show()
 	end
 end);
 FramePlusF.yidong.BlizzardUI_Move.Save = PIGCheckbutton(FramePlusF.yidong,{"LEFT",FramePlusF.yidong.BlizzardUI_Move.Text,"RIGHT",40,0},{"保存移动后位置","保存移动后位置"})
@@ -98,12 +98,6 @@ FramePlusF.yidong.BlizzardUI_Move.Save:SetScript("OnClick", function (self)
 	else
 		PIGA["FramePlus"]["BlizzardUI_Move_Save"]=false
 	end
-end);
-FramePlusF.yidong.BlizzardUI_Move.CZ = PIGButton(FramePlusF.yidong,{"LEFT",FramePlusF.yidong.BlizzardUI_Move.Save.Text,"RIGHT",40,0},{90,22},"重置UI数据")
-FramePlusF.yidong.BlizzardUI_Move.CZ:SetScript("OnClick", function ()
-	PIGA["PigUI"]={}
-	PIGA["BlizzardUI"]={}
-	PIG_print("已重置UI位置和缩放数据")
 end);
 
 FramePlusF.UIWidget = PIGFrame(FramePlusF,{"BOTTOMLEFT",FramePlusF.yidong,"TOPLEFT",0,-1})
@@ -117,7 +111,7 @@ FramePlusF.UIWidget.Open:SetScript("OnClick", function (self)
 		FramePlusfun.UIWidget()
 	else
 		PIGA["FramePlus"]["UIWidget"]=false
-		Pig_Options_RLtishi_UI:Show()
+		PIG_OptionsUI.RLUI:Show()
 	end
 end);
 FramePlusF.UIWidget.pianyiX = PIGSlider(FramePlusF.UIWidget,{"LEFT",FramePlusF.UIWidget.Open.Text,"RIGHT",10,0},{-700,700,1,{["Right"]="X偏移%s"}})
@@ -142,7 +136,7 @@ FramePlusF:HookScript("OnShow", function(self)
 	self.UIWidget.pianyiX:PIGSetValue(PIGA["FramePlus"]["UIWidgetPointX"])
 	self.UIWidget.pianyiY:PIGSetValue(PIGA["FramePlus"]["UIWidgetPointY"])
 	self.AddonList:SetChecked(PIGA["FramePlus"]["AddonList"])
-	if self.Zhuizong then self.Zhuizong:SetChecked(PIGA["FramePlus"]["Zhuizong"]) end
+	if self.Tracking then self.Tracking:SetChecked(PIGA["FramePlus"]["Tracking"]) end
 	self.yidong.BlizzardUI_Move:SetChecked(PIGA["FramePlus"]["BlizzardUI_Move"])
 	self.yidong.BlizzardUI_Move.Save:SetChecked(PIGA["FramePlus"]["BlizzardUI_Move_Save"])
 end)
@@ -156,7 +150,7 @@ FrameExtF.Merchant:SetScript("OnClick", function (self)
 		FramePlusfun.Merchant()
 	else
 		PIGA["FramePlus"]["Merchant"]=false
-		Pig_Options_RLtishi_UI:Show()
+		PIG_OptionsUI.RLUI:Show()
 	end
 end)
 FrameExtF.Friends = PIGCheckbutton_R(FrameExtF,{FRIEND.."界面扩展","扩展"..FRIEND.."界面为两列"})
@@ -166,7 +160,7 @@ FrameExtF.Friends:SetScript("OnClick", function (self)
 		FramePlusfun.Friends()
 	else
 		PIGA["FramePlus"]["Friends"]=false
-		Pig_Options_RLtishi_UI:Show()
+		PIG_OptionsUI.RLUI:Show()
 	end
 end)
 FrameExtF.Macro = PIGCheckbutton_R(FrameExtF,{MACRO.."界面扩展","扩展"..MACRO.."界面为两列"})
@@ -176,12 +170,12 @@ FrameExtF.Macro:SetScript("OnClick", function (self)
 	else
 		PIGA["FramePlus"]["Macro"]=false
 	end
-	Pig_Options_RLtishi_UI:Show()
+	PIG_OptionsUI.RLUI:Show()
 end)
 ---
-if tocversion<50000 then
+if PIG_MaxTocversion() then
 	FrameExtF.Quest = PIGCheckbutton_R(FrameExtF,{"任务界面扩展",""})
-	if tocversion<30000 then
+	if PIG_MaxTocversion(30000) then
 		FrameExtF.Quest.tooltip= "扩展任务界面为两列,左边任务列表，右边任务详情,显示任务等级";
 	else
 		FrameExtF.Quest.tooltip= "任务列表显示任务等级";
@@ -192,7 +186,7 @@ if tocversion<50000 then
 			FramePlusfun.Quest()
 		else
 			PIGA["FramePlus"]["Quest"]=false
-			Pig_Options_RLtishi_UI:Show()
+			PIG_OptionsUI.RLUI:Show()
 		end
 	end);
 	--
@@ -203,12 +197,12 @@ if tocversion<50000 then
 			FramePlusfun.Skill()
 		else
 			PIGA["FramePlus"]["Skill"]=false
-			Pig_Options_RLtishi_UI:Show()
+			PIG_OptionsUI.RLUI:Show()
 		end
 	end)
 	
 	FrameExtF.Talent = PIGCheckbutton_R(FrameExtF,{"天赋界面扩展"," "})
-	if tocversion<30000 then
+	if PIG_MaxTocversion(30000) then
 		FrameExtF.Talent.tooltip= "在一页显示三系天赋";
 	else
 		FrameExtF.Talent.tooltip= "在一页显示三系天赋和雕文";
@@ -219,7 +213,7 @@ if tocversion<50000 then
 			FramePlusfun.Talent()
 		else
 			PIGA["FramePlus"]["Talent"]=false
-			Pig_Options_RLtishi_UI:Show()
+			PIG_OptionsUI.RLUI:Show()
 		end
 	end)
 end
@@ -235,14 +229,14 @@ end)
 --角色信息界面
 local CharacterF =PIGOptionsList_R(RTabFrame,CHARACTER_BUTTON,90)
 ---
-CharacterF.Character_naijiu = PIGCheckbutton_R(CharacterF,{DISPLAY..EQUIPSET_EQUIP..DURABILITY,CHARACTER_BUTTON.."界面显示装备耐久剩余值"})
-CharacterF.Character_naijiu:SetScript("OnClick", function (self)
+CharacterF.Character_Durability = PIGCheckbutton_R(CharacterF,{DISPLAY..EQUIPSET_EQUIP..DURABILITY,CHARACTER_BUTTON.."界面显示装备耐久剩余值"})
+CharacterF.Character_Durability:SetScript("OnClick", function (self)
 	if self:GetChecked() then
-		PIGA["FramePlus"]["Character_naijiu"]=true;
+		PIGA["FramePlus"]["Character_Durability"]=true;
 		FramePlusfun.Character_ADD()
 	else
-		PIGA["FramePlus"]["Character_naijiu"]=false
-		Pig_Options_RLtishi_UI:Show()
+		PIGA["FramePlus"]["Character_Durability"]=false
+		PIG_OptionsUI.RLUI:Show()
 	end
 end)
 CharacterF.Character_ItemLevel = PIGCheckbutton_R(CharacterF,{DISPLAY..STAT_AVERAGE_ITEM_LEVEL,DISPLAY..STAT_AVERAGE_ITEM_LEVEL.."，背包银行物品需要显示装等请在背包内设置"})
@@ -252,7 +246,7 @@ CharacterF.Character_ItemLevel:SetScript("OnClick", function (self)
 		FramePlusfun.Character_ADD()
 	else
 		PIGA["FramePlus"]["Character_ItemLevel"]=false
-		Pig_Options_RLtishi_UI:Show()
+		PIG_OptionsUI.RLUI:Show()
 	end
 end)
 CharacterF.Character_ItemColor = PIGCheckbutton_R(CharacterF,{DISPLAY_BORDERS..PET_BATTLE_STAT_QUALITY,"根据品质染色装备边框"})
@@ -262,7 +256,7 @@ CharacterF.Character_ItemColor:SetScript("OnClick", function (self)
 		FramePlusfun.Character_ADD()
 	else
 		PIGA["FramePlus"]["Character_ItemColor"]=false
-		Pig_Options_RLtishi_UI:Show()
+		PIG_OptionsUI.RLUI:Show()
 	end
 end)
 CharacterF.Character_ItemList = PIGCheckbutton_R(CharacterF,{DISPLAY.."装备列表",CHARACTER_BUTTON.."界面右侧显示装备列表"})
@@ -272,17 +266,17 @@ CharacterF.Character_ItemList:SetScript("OnClick", function (self)
 		FramePlusfun.Character_ADD()
 	else
 		PIGA["FramePlus"]["Character_ItemList"]=false
-		Pig_Options_RLtishi_UI:Show()
+		PIG_OptionsUI.RLUI:Show()
 	end
 end)
 
 --角色信息UI扩展
 local newText=Fun.Delmaohaobiaodain(REPAIR_COST)
-if tocversion<30000 then
+if PIG_MaxTocversion(30000) then
 	CharacterF.Shuxingtishi=CHARACTER_INFO.."扩展("..PAPERDOLL_SIDEBAR_STATS.."/"..EQUIPMENT_MANAGER.."/"..newText.."/"..COMBAT_RATING_NAME6.."说明"..")"
-elseif tocversion<40000 then
+elseif PIG_MaxTocversion(40000) then
 	CharacterF.Shuxingtishi=CHARACTER_INFO.."扩展("..EQUIPMENT_MANAGER.."/"..newText.."/"..COMBAT_RATING_NAME6.."说明"..")"
-elseif tocversion<50000 then
+elseif PIG_MaxTocversion() then
 	CharacterF.Shuxingtishi="常驻"..DISPLAY..PAPERDOLL_SIDEBAR_STATS
 else
 	CharacterF.Shuxingtishi=CHARACTER_INFO..DISPLAY..newText
@@ -294,12 +288,12 @@ CharacterF.Character_Shuxing:SetScript("OnClick", function (self)
 		FramePlusfun.Character_Shuxing()
 	else
 		PIGA["FramePlus"]["Character_Shuxing"]=false
-		Pig_Options_RLtishi_UI:Show()
+		PIG_OptionsUI.RLUI:Show()
 	end
-	QuickButUI.ButList[5]()
+	_G[Data.QuickButUIname].ButList[5]()
 end)
 CharacterF:HookScript("OnShow", function(self)
-	self.Character_naijiu:SetChecked(PIGA["FramePlus"]["Character_naijiu"])
+	self.Character_Durability:SetChecked(PIGA["FramePlus"]["Character_Durability"])
 	self.Character_ItemLevel:SetChecked(PIGA["FramePlus"]["Character_ItemLevel"])
 	self.Character_ItemColor:SetChecked(PIGA["FramePlus"]["Character_ItemColor"])
 	self.Character_ItemList:SetChecked(PIGA["FramePlus"]["Character_ItemList"])
@@ -313,12 +307,12 @@ LootRollF.Loot:SetScript("OnClick", function (self)
 		 FramePlusfun.Loot()
 	else
 		PIGA["FramePlus"]["Loot"]=false
-		Pig_Options_RLtishi_UI:Show()
+		PIG_OptionsUI.RLUI:Show()
 	end
 end)
 ---
 function FramePlusfun.LootMasterErr() end
-if tocversion<50000 then
+if PIG_MaxTocversion() then
 	--修复队长分配错误
 	function FramePlusfun.LootMasterErr()
 		if PIGA["FramePlus"]["LootMasterErr"] then
@@ -336,7 +330,7 @@ if tocversion<50000 then
 			 FramePlusfun.LootMasterErr()
 		else
 			PIGA["FramePlus"]["LootMasterErr"]=false
-			Pig_Options_RLtishi_UI:Show()
+			PIG_OptionsUI.RLUI:Show()
 		end
 	end)
 	LootRollF.Roll = PIGCheckbutton_R( LootRollF,{LOOT_ROLL..UIOPTIONS_MENU.."扩展","合并"..LOOT_ROLL.."物品到一起，并且可以移动"},true)
@@ -346,23 +340,35 @@ if tocversion<50000 then
 			 FramePlusfun.Roll()
 		else
 			PIGA["FramePlus"]["Roll"]=false
-			Pig_Options_RLtishi_UI:Show()
+			PIG_OptionsUI.RLUI:Show()
 		end
 	end)
 	local Scaleinfo = {0.8,2,0.01,{["Right"]="%"}}
+	local function ISopenUI(Funx)
+		if _G[FramePlusfun.RollListUIname] then Funx() end
+	end
 	LootRollF.Roll.SliderT = PIGFontString( LootRollF.Roll,{"LEFT", LootRollF.Roll.Text,"RIGHT",20,0},"缩放")
 	LootRollF.Roll.Slider = PIGSlider(LootRollF.Roll,{"LEFT", LootRollF.Roll.SliderT,"RIGHT",4,0},Scaleinfo)	
 	LootRollF.Roll.Slider.Slider:HookScript("OnValueChanged", function(self, arg1)
-		if InCombatLockdown() then PIGTopMsg:add(ERR_NOT_IN_COMBAT) return end
+		if InCombatLockdown() then PIG_OptionsUI:ErrorMsg(ERR_NOT_IN_COMBAT) return end
 		PIGA["FramePlus"]["RollScale"]=arg1;
-		if PIG_Roll_LsitUI then PIG_Roll_LsitUI:DebugUI() end
+		ISopenUI(FramePlusfun.RollDebugUI)
+	end)
+	LootRollF.Debug = PIGButton(LootRollF,{"LEFT", LootRollF.Roll.Slider,"RIGHT",80,0},{50,22},"测试")
+	LootRollF.Debug:SetScript("OnClick", function (self)
+		ISopenUI(FramePlusfun.RollDebugUI)
+	end)
+	LootRollF.CZ = PIGButton(LootRollF,{"LEFT", LootRollF.Debug,"RIGHT",40,0},{50,22},"重置")
+	LootRollF.CZ:SetScript("OnClick", function (self)
+		PIGA["FramePlus"]["RollScale"]=addonTable.Default["FramePlus"]["RollScale"]
+		LootRollF.Roll.Slider:PIGSetValue(PIGA["FramePlus"]["RollScale"])
+		ISopenUI(FramePlusfun.RollCZ)
 	end)
 end
 LootRollF:HookScript("OnShow", function(self)
 	self.Loot:SetChecked(PIGA["FramePlus"]["Loot"])
 	if self.Roll then
 		if self.Loot.LootMasterErr then self.Loot.LootMasterErr:SetChecked(PIGA["FramePlus"]["LootMasterErr"]) end
-		if PIG_Roll_LsitUI then PIG_Roll_LsitUI:Getceshiwupinxinxi() end
 		self.Roll:SetChecked(PIGA["FramePlus"]["Roll"])  self.Roll.Slider:PIGSetValue(PIGA["FramePlus"]["RollScale"]) 
 	end
 end)
@@ -371,7 +377,7 @@ addonTable.FramePlus = function()
 	FramePlusfun.BuffTime()
 	FramePlusfun.Skill_QKbut()
 	FramePlusfun.UIWidget()
-	FramePlusfun.Zhuizong()
+	FramePlusfun.Tracking()
 	FramePlusfun.AddonList()
 	FramePlusfun.Loot()
 	FramePlusfun.LootMasterErr()

@@ -1,8 +1,10 @@
 local _, addonTable = ...;
 local find = _G.string.find
 local gsub = _G.string.gsub
-local _, _, _, tocversion = GetBuildInfo()
 local TooltipPlusfun=addonTable.TooltipPlusfun
+local GetItemInfo=GetItemInfo or C_Item and C_Item.GetItemInfo
+local GetItemInfoInstant=GetItemInfoInstant or C_Item and C_Item.GetItemInfoInstant
+local GetDetailedItemLevelInfo=GetDetailedItemLevelInfo or C_Item and C_Item.GetDetailedItemLevelInfo
 ---------
 local banbendata = {
 	[0]=EXPANSION_NAME0,[1]=EXPANSION_NAME1,[2]=EXPANSION_NAME2,[3]=EXPANSION_NAME3,[4]=EXPANSION_NAME4,
@@ -53,9 +55,8 @@ end
 local function Tooltip_ItemLV(self,link)
 	if PIGA["Tooltip"]["ItemLevel"] then
 		local effectiveILvl = GetDetailedItemLevelInfo(link)
-
 		if effectiveILvl then
-			if tocversion<50000 then
+			if PIG_MaxTocversion(50000) then
 				local txtUI = _G[self:GetName().."TextLeft2"]
 				local Oldtxt = txtUI:GetText()
 	    		if Oldtxt and Oldtxt~=" " then
@@ -124,53 +125,55 @@ function TooltipPlusfun.InfoPlus()
 		ItemSell_Tooltip(self, questType, index,"QuestLog")
 	end)
 	TooltipPlusfun.Tooltip_ItemSell()
-	if tocversion<50000 then
-		hooksecurefunc("GameTooltip_ShowCompareItem", function(self, anchorFrame)
-			if not PIGA["Tooltip"]["ItemLevel"] then return end
-			local tooltip, anchorFrame, shoppingTooltip1, shoppingTooltip2 = GameTooltip_InitializeComparisonTooltips(self, anchorFrame);
-			local _, link1 = shoppingTooltip1:GetItem()
-			if link1 then
-				local classID=select(12, GetItemInfo(link1))
-				if classID==2 or classID==4 then
-					local txtUI_1 = _G[shoppingTooltip1:GetName().."TextLeft3"]
-					txtUI_1:SetSpacing(2)
-					local Oldtxt1 = txtUI_1:GetText()
-					local effectiveILvl1 = GetDetailedItemLevelInfo(link1)
-					txtUI_1:SetText('|cffffcf00'.."物品等级 "..effectiveILvl1..'|r'.."\n"..Oldtxt1)
-		            --txtUI_1:SetFormattedText('|cffffcf00'.."物品等级 "..effectiveILvl1..'|r'.."\n"..Oldtxt1)
-		            txtUI_1:SetJustifyH("LEFT")
-		            local txtUI_1_r = _G[shoppingTooltip1:GetName().."TextRight3"]
-					txtUI_1_r:SetSpacing(2)
-					local Oldtxt1_r = txtUI_1_r:GetText()
-					if Oldtxt1_r then
-						txtUI_1_r:SetText(' '.."\n"..Oldtxt1_r)
-						--txtUI_1_r:SetFormattedText(' '.."\n"..Oldtxt1_r)
-					end
-		            shoppingTooltip1:Show()
-		        end
-			end
-			local _, link2 = shoppingTooltip2:GetItem()
-			if link2 then
-				local classID=select(12, GetItemInfo(link2))
-				if classID==2 or classID==4 then
-					local txtUI_2 = _G[shoppingTooltip2:GetName().."TextLeft3"]
-					txtUI_2:SetSpacing(2)
-					local Oldtxt2 = txtUI_2:GetText()
-					local effectiveILvl2 = GetDetailedItemLevelInfo(link2)
-					txtUI_2:SetText('|cffffcf00'.."物品等级 "..effectiveILvl2..'|r'.."\n"..Oldtxt2)
-		            --txtUI_2:SetFormattedText('|cffffcf00'.."物品等级 "..effectiveILvl2..'|r'.."\n"..Oldtxt2)
-		            txtUI_2:SetJustifyH("LEFT")
-		            local txtUI_2_r = _G[shoppingTooltip2:GetName().."TextRight3"]
-					txtUI_2_r:SetSpacing(2)
-					local Oldtxt2_r = txtUI_2_r:GetText()
-					if Oldtxt2_r then
-						txtUI_2_r:SetText(' '.."\n"..Oldtxt2_r)
-						--txtUI_2_r:SetFormattedText(' '.."\n"..Oldtxt2_r)
-					end
-		            shoppingTooltip2:Show()
-		        end
-			end
-		end)
+   	if PIG_MaxTocversion() then
+   		if PIG_MaxTocversion(50000) then
+			hooksecurefunc("GameTooltip_ShowCompareItem", function(self, anchorFrame)
+				if not PIGA["Tooltip"]["ItemLevel"] then return end
+				local tooltip, anchorFrame, shoppingTooltip1, shoppingTooltip2 = GameTooltip_InitializeComparisonTooltips(self, anchorFrame);
+				local _, link1 = shoppingTooltip1:GetItem()
+				if link1 then
+					local classID=select(12, GetItemInfo(link1))
+					if classID==2 or classID==4 then
+						local txtUI_1 = _G[shoppingTooltip1:GetName().."TextLeft3"]
+						txtUI_1:SetSpacing(2)
+						local Oldtxt1 = txtUI_1:GetText()
+						local effectiveILvl1 = GetDetailedItemLevelInfo(link1)
+						txtUI_1:SetText('|cffffcf00'.."物品等级 "..effectiveILvl1..'|r'.."\n"..Oldtxt1)
+			            --txtUI_1:SetFormattedText('|cffffcf00'.."物品等级 "..effectiveILvl1..'|r'.."\n"..Oldtxt1)
+			            txtUI_1:SetJustifyH("LEFT")
+			            local txtUI_1_r = _G[shoppingTooltip1:GetName().."TextRight3"]
+						txtUI_1_r:SetSpacing(2)
+						local Oldtxt1_r = txtUI_1_r:GetText()
+						if Oldtxt1_r then
+							txtUI_1_r:SetText(' '.."\n"..Oldtxt1_r)
+							--txtUI_1_r:SetFormattedText(' '.."\n"..Oldtxt1_r)
+						end
+			            shoppingTooltip1:Show()
+			        end
+				end
+				local _, link2 = shoppingTooltip2:GetItem()
+				if link2 then
+					local classID=select(12, GetItemInfo(link2))
+					if classID==2 or classID==4 then
+						local txtUI_2 = _G[shoppingTooltip2:GetName().."TextLeft3"]
+						txtUI_2:SetSpacing(2)
+						local Oldtxt2 = txtUI_2:GetText()
+						local effectiveILvl2 = GetDetailedItemLevelInfo(link2)
+						txtUI_2:SetText('|cffffcf00'.."物品等级 "..effectiveILvl2..'|r'.."\n"..Oldtxt2)
+			            --txtUI_2:SetFormattedText('|cffffcf00'.."物品等级 "..effectiveILvl2..'|r'.."\n"..Oldtxt2)
+			            txtUI_2:SetJustifyH("LEFT")
+			            local txtUI_2_r = _G[shoppingTooltip2:GetName().."TextRight3"]
+						txtUI_2_r:SetSpacing(2)
+						local Oldtxt2_r = txtUI_2_r:GetText()
+						if Oldtxt2_r then
+							txtUI_2_r:SetText(' '.."\n"..Oldtxt2_r)
+							--txtUI_2_r:SetFormattedText(' '.."\n"..Oldtxt2_r)
+						end
+			            shoppingTooltip2:Show()
+			        end
+				end
+			end)
+		end
 		GameTooltip:HookScript("OnTooltipSetItem", function(self)
 			local _, link = self:GetItem()
 			if link then
@@ -195,11 +198,16 @@ function TooltipPlusfun.InfoPlus()
 		end)
 		--处理天赋
 		hooksecurefunc(GameTooltip, "SetTalent", function(self,talentTree,tfID,inspect,pet,Group,...)
-			local _, _, _, _, _, _, _, _, _, _, ctid, tID = GetTalentInfo(talentTree,tfID, inspect,pet,Group)
-			if tID and tID>0 then
-				self:AddDoubleLine("|cffd33c54TalentID:|r "..tID,"")
-			elseif ctid and ctid>0 then
-				self:AddDoubleLine("|cffd33c54TalentID:|r "..ctid,"")
+			if PIG_MaxTocversion(50000) then
+				local _, _, _, _, _, _, _, _, _, _, ctid, tID = GetTalentInfo(talentTree,tfID, inspect,pet,Group)
+				if tID and tID>0 then
+					self:AddDoubleLine("|cffd33c54TalentID:|r "..tID,"")
+				elseif ctid and ctid>0 then
+					self:AddDoubleLine("|cffd33c54TalentID:|r "..ctid,"")
+				end
+			else
+				self:AddDoubleLine("|cffd33c54TalentID:|r "..talentTree,"")
+				--print(GetTalentInfoByID(talentTree))
 			end
 			self:Show()
 		end)
@@ -238,7 +246,7 @@ function TooltipPlusfun.InfoPlus()
 					ItemRefTooltip:Show()
 				end
 			elseif link:find("^item:") then
-				if tocversion<50000 then
+				if PIG_MaxTocversion() then
 					Tooltip_ItemLV(ItemRefTooltip,link)
 				end
 			end

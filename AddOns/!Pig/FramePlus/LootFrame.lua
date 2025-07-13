@@ -1,5 +1,4 @@
 local _, addonTable = ...;
-local _, _, _, tocversion = GetBuildInfo()
 local L=addonTable.locale
 local Create=addonTable.Create
 local PIGButton=Create.PIGButton
@@ -9,12 +8,12 @@ function FramePlusfun.Loot()
 	if not PIGA["FramePlus"]["Loot"] then return end
 	if FramePlusfun.Lootyikaiqi then return end
 	FramePlusfun.Lootyikaiqi=true
-	if tocversion<50000 then
+	if PIG_MaxTocversion(60000) then
 		LootFrame.piglootbut={}
 		local pindaoList = {{L["CHAT_QUKBUTNAME"][5],{1, 0.498, 0},"RAID"},{L["CHAT_QUKBUTNAME"][3],{0.6667, 0.6667, 1},"PARTY"},{L["CHAT_QUKBUTNAME"][7],{1, 0.498, 0},"INSTANCE_CHAT"},{L["CHAT_QUKBUTNAME"][4],{0.25, 1, 0.25},"GUILD"}}
 		for i=1,#pindaoList do
 			local pBut = PIGButton(LootFrame,nil,{22,22},pindaoList[i][1])
-			if tocversion>50000 then
+			if PIG_MaxTocversion(50000,true) then
 				pBut:SetPoint("BOTTOMLEFT",LootFrame,"TOPLEFT",10+(i-1)*27,0);
 			else
 				pBut:SetPoint("TOPLEFT",LootFrame,"TOPLEFT",58+(i-1)*27,-30);

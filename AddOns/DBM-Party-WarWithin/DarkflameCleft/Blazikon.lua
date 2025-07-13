@@ -1,7 +1,7 @@
 local mod	= DBM:NewMod(2559, "DBM-Party-WarWithin", 1, 1210)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20250223095015")
+mod:SetRevision("20250513082122")
 mod:SetCreatureID(208743)
 mod:SetEncounterID(2826)
 mod:SetHotfixNoticeRev(20250222000000)
@@ -39,11 +39,11 @@ local specWarnInciteFlames					= mod:NewSpecialWarningCount(424212, nil, nil, ni
 --local yellExtinguishingGust				= mod:NewShortYell(429113)
 --local specWarnGTFO						= mod:NewSpecialWarningGTFO(372820, nil, nil, nil, 1, 8)
 
-local timerWicklighterBarrageCD				= mod:NewNextCountTimer(60.7, 421817, nil, nil, nil, 3)
-local timerInciteFlamesCD					= mod:NewNextCountTimer(60.7, 424212, nil, nil, nil, 2)
-local timerExtinguishingGustCD				= mod:NewNextCountTimer(60.7, 421910, nil, nil, nil, 3, nil, DBM_COMMON_L.MYTHIC_ICON)
+local timerWicklighterBarrageCD				= mod:NewNextCountTimer(60.3, 421817, nil, nil, nil, 3)
+local timerInciteFlamesCD					= mod:NewNextCountTimer(60.3, 424212, nil, nil, nil, 2)
+local timerExtinguishingGustCD				= mod:NewNextCountTimer(60.3, 421910, nil, nil, nil, 3, nil, DBM_COMMON_L.MYTHIC_ICON)
 local timerEnkindlingInfernoCD				= mod:NewNextCountTimer(30.3, 423109, nil, nil, nil, 2)
-local timerDousingBreathCD					= mod:NewNextCountTimer(60.7, 425394, nil, nil, nil, 2)
+local timerDousingBreathCD					= mod:NewNextCountTimer(60.3, 425394, nil, nil, nil, 2)
 
 mod:AddSetIconOption("IconOnWick", 421817, true, 0, {1, 2, 3})
 mod:AddPrivateAuraSoundOption(423080, true, 429113, 1)
@@ -62,8 +62,8 @@ function mod:OnCombatStart(delay)
 	self.vb.gustCount = 0
 	self.vb.infernoCount = 0
 	self.vb.breathCount = 0
-	timerDousingBreathCD:Start(3.6-delay, 1)
-	timerWicklighterBarrageCD:Start(7.3-delay, 1)
+	timerDousingBreathCD:Start(3.4-delay, 1)
+	timerWicklighterBarrageCD:Start(7.0-delay, 1)
 	timerEnkindlingInfernoCD:Start(20.5-delay, 1)
 	timerExtinguishingGustCD:Start(25.5-delay, 1)
 	timerInciteFlamesCD:Start(37.6-delay, 1)

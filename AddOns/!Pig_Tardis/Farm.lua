@@ -2,7 +2,6 @@ local addonName, addonTable = ...;
 local TardisInfo=addonTable.TardisInfo
 function TardisInfo.Farm(Activate)
 	if not PIGA["Tardis"]["Farm"]["Open"] then return end
-	local _, _, _, tocversion = GetBuildInfo()
 	local Create, Data, Fun, L= unpack(PIG)
 	local PIGFrame=Create.PIGFrame
 	local PIGEnter=Create.PIGEnter
@@ -38,20 +37,7 @@ function TardisInfo.Farm(Activate)
 			fujiF.Update_hang()
 			self:daojishiCDFUN()
 		else
-			self.PIGID=GetPIGID(pindao)
-			if self.PIGID==0 then
-				self.err:SetText("请先加入"..pindao.."频道");
-				return
-			end
-			PIGA["Tardis"]["Farm"]["DaojishiCD"]=GetServerTime();
-			fujiF.JieshouInfoList={};
-			fujiF.yishenqingList={}
-			self.yanchiNerMsg=nil
-			if tocversion<40000 then
-				SendChatMessage(GetInfoMsg,"CHANNEL",nil,self.PIGID)
-			else
-				PIGSendAddonMessage(InvF.Biaotou,GetInfoMsg,"CHANNEL",self.PIGID)
-			end
+			InvF:PIGSendAddonMsg("Farm",fujiF,gnindexID)
 			self:CZdaojishi()
 		end
 	end);
@@ -277,7 +263,7 @@ function TardisInfo.Farm(Activate)
 								hangui.miyu:SetText("等级不符");
 								hangui.LvMinMax:SetTextColor(0.5, 0.5, 0.5, 1)
 							else
-								if ItemsData[dangqian][2]==Pig_OptionsUI.Name then
+								if ItemsData[dangqian][2]==PIG_OptionsUI.Name then
 									hangui.miyu:SetText("自己");
 								else
 									hangui.miyu:Enable()

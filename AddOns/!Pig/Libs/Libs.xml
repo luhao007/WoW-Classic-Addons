@@ -1,4 +1,5 @@
 <Ui>
+	<Script file="AudioList.lua" />
 	<Script file="Fun.lua" />
 	<Script file="ActionFun.lua" />	
 	<Script file="PIGGetItemInfo.lua" />
@@ -14,8 +15,9 @@
 	<Script file="BlizzardUI.lua" />
 	<Script file="ala.lua" />
 	<Script file="TalentData.lua" />
+	<Script file="TalentFun.lua" />
 	<Script file="ItemList.lua" />
-	<Script file="YC_Character.lua" />
+	<Script file="LongInspect.lua" />
 	<Script file="QuickBut.lua" />
 	<Script file="TradeRecords.lua" />
 	<Script file="GDKP_Auc.lua" />

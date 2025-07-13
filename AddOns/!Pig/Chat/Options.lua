@@ -2,12 +2,10 @@ local addonName, addonTable = ...;
 local L=addonTable.locale
 local gsub = _G.string.gsub
 local match = _G.string.match
-local _, _, _, tocversion = GetBuildInfo()
 local Fun=addonTable.Fun
 --------------
 local Create=addonTable.Create
 local PIGFrame=Create.PIGFrame
-local PIGLine=Create.PIGLine
 local PIGButton = Create.PIGButton
 local PIGDownMenu=Create.PIGDownMenu
 local PIGSlider = Create.PIGSlider
@@ -25,8 +23,7 @@ addonTable.QuickChatfun=QuickChatfun
 --------
 local fuFrame = PIGOptionsList(L["CHAT_TABNAME"],"TOP")
 --
-local DownY=30
-local RTabFrame =Create.PIGOptionsList_RF(fuFrame,DownY)
+local RTabFrame =Create.PIGOptionsList_RF(fuFrame)
 QuickChatfun.RTabFrame=RTabFrame
 --
 local ChatF,Chattabbut =PIGOptionsList_R(RTabFrame,L["CHAT_TABNAME1"],70)
@@ -41,7 +38,7 @@ local function guanbiGuolv()
 	-- 	ConsoleExec("portal TW")
 	-- end
 	-- SetCVar("profanityFilter", "0")
-	-- if tocversion>90000 then
+	-- if PIG_MaxTocversion(90000,true) then
 	-- 	local Old_fun = C_BattleNet.GetFriendGameAccountInfo
 	-- 	C_BattleNet.GetFriendGameAccountInfo = function(...)
 	-- 		local gameAccountInfo = Old_fun(...)
@@ -199,7 +196,7 @@ ChatF.LinkShow:SetScript("OnClick", function (self)
 		Chat_LinkShow()
 	else
 		PIGA["Chat"]["LinkShow"]=false;
-		Pig_Options_RLtishi_UI:Show();
+		PIG_OptionsUI.RLUI:Show();
 	end
 end);
 
@@ -242,7 +239,7 @@ local function JoinPIG_D(pindaoName)
 	hooksecurefunc(ChannelFrame.ChannelList, "Update", function()
 		JoinPIG_D_1(pindaoName)
 	end)
-	local pindaojinzhiPPP = CreateFrame("FRAME")
+	local pindaojinzhiPPP = CreateFrame("Frame")
     pindaojinzhiPPP:RegisterEvent("ADDON_LOADED")
     pindaojinzhiPPP:SetScript("OnEvent", function(self, event, arg1)
         if arg1=="Blizzard_Communities" then
@@ -291,8 +288,8 @@ local function ChatFrame_WINDOWS_Size(NewSize)
 	for id=1,NUM_CHAT_WINDOWS,1 do
 		FCF_SetChatWindowFontSize(nil, _G["ChatFrame"..id], NewSize);
 	end
-	if ChatFrame99 then
-		FCF_SetChatWindowFontSize(nil, ChatFrame99, NewSize);
+	if _G["PIG_ChatFrameKeyWord"] then
+		FCF_SetChatWindowFontSize(nil, _G["PIG_ChatFrameKeyWord"], NewSize);
 	end
 	MaxMinBUT_icon()
 end
@@ -381,30 +378,7 @@ ChatF.MinMaxB:SetScript("OnClick", function (self)
 		ChatFrame_MinMaxB_Open();		
 	else
 		PIGA["Chat"]["MinMaxB"]=false;
-		Pig_Options_RLtishi_UI:Show()
-	end
-end);
---显示装备图标
-ChatF.ShowLinkIcon = PIGCheckbutton_R(ChatF,{"物品链接显示图标","聊天栏发送的物品链接会显示图标"})
-ChatF.ShowLinkIcon:SetScript("OnClick", function (self)
-	if self:GetChecked() then
-		PIGA["Chat"]["ShowLinkIcon"]=true;
-	else
-		PIGA["Chat"]["ShowLinkIcon"]=false;
-	end
-end);
---查看远程装备图标
-local tishiSHOW = {
-	RACE..EMBLEM_SYMBOL.."("..INVTYPE_RANGED..INSPECT.."/"..STATUS_TEXT_TARGET..INFO..")",
-	SHOW_PLAYER_NAMES..SHOW..RACE..EMBLEM_SYMBOL.."\n"..KEY_BUTTON1.."-"..INVTYPE_RANGED..INSPECT..STATUS_TEXT_TARGET.."\n"..
-	KEY_BUTTON2.."-"..STATUS_TEXT_TARGET..INFO;
-}
-ChatF.ShowZb = PIGCheckbutton_R(ChatF,tishiSHOW)
-ChatF.ShowZb:SetScript("OnClick", function (self)
-	if self:GetChecked() then
-		PIGA["Chat"]["ShowZb"]=true;
-	else
-		PIGA["Chat"]["ShowZb"]=false;
+		PIG_OptionsUI.RLUI:Show()
 	end
 end);
 ---查询页密语
@@ -484,39 +458,9 @@ ChatF.WhoWhisper:SetScript("OnClick", function (self)
 		PIGA["Chat"]["WhoWhisper"]=true;
 	else
 		PIGA["Chat"]["WhoWhisper"]=false;
-		Pig_Options_RLtishi_UI:Show()
+		PIG_OptionsUI.RLUI:Show()
 	end
 	WhoWhisper_Fun()
-end);
-local Copytisp = SHOW_PLAYER_NAMES..SHOW..CALENDAR_COPY_EVENT..EMBLEM_SYMBOL.."\n"..KEY_BUTTON1.."-"..CALENDAR_COPY_EVENT..STATUS_TEXT_TARGET..CALENDAR_PLAYER_NAME.."\n"..KEY_BUTTON2.."-"..CALENDAR_COPY_EVENT..STATUS_TEXT_TARGET..VOICE_TALKING
-ChatF.FastCopy = PIGCheckbutton_R(ChatF,{CALENDAR_COPY_EVENT..EMBLEM_SYMBOL.."("..CALENDAR_COPY_EVENT..CALENDAR_PLAYER_NAME.."/"..CALENDAR_COPY_EVENT..VOICE_TALKING..")",Copytisp})
-ChatF.FastCopy:SetScript("OnClick", function (self)
-	if self:GetChecked() then
-		PIGA["Chat"]["FastCopy"]=true;
-	else
-		PIGA["Chat"]["FastCopy"]=false;
-	end
-end);
---屏蔽人员进入频道提示
-local function RemTips_Fun()
-	if PIGA["Chat"]["RemTips"] then
-		for i=1,NUM_CHAT_WINDOWS do
-			ChatFrame_RemoveMessageGroup(_G["ChatFrame"..i], "CHANNEL")--屏蔽人员进出频道提示
-		end
-	else
-		for i=1,NUM_CHAT_WINDOWS do
-			ChatFrame_AddMessageGroup(_G["ChatFrame"..i], "CHANNEL")--屏蔽人员进出频道提示
-		end	
-	end
-end	
-ChatF.RemTips = PIGCheckbutton(ChatF,{"BOTTOMLEFT",ChatF,"BOTTOMLEFT",20,18},{"屏蔽人员进出频道提示","屏蔽人员进出频道提示"})
-ChatF.RemTips:SetScript("OnClick", function (self)
-	if self:GetChecked() then
-		PIGA["Chat"]["RemTips"]=true;
-	else
-		PIGA["Chat"]["RemTips"]=false;
-	end
-	RemTips_Fun()
 end);
 ChatF:HookScript("OnShow", function (self)
 	-- if GetLocale() == "zhCN" then
@@ -530,15 +474,37 @@ ChatF:HookScript("OnShow", function (self)
 	self.FontSize:SetChecked(PIGA["Chat"]["FontSize"]);
 	self.FontSize.Down:PIGDownMenu_SetText(PIGA["Chat"]["FontSize_value"].."pt")
 	self.MinMaxB:SetChecked(PIGA["Chat"]["MinMaxB"]);
-	self.ShowZb:SetChecked(PIGA["Chat"]["ShowZb"])
-	self.ShowLinkIcon:SetChecked(PIGA["Chat"]["ShowLinkIcon"])
-	self.RemTips:SetChecked(PIGA["Chat"]["RemTips"])
 	self.WhoWhisper:SetChecked(PIGA["Chat"]["WhoWhisper"])
-	self.FastCopy:SetChecked(PIGA["Chat"]["FastCopy"])
 end);
-----打印自定义
-ChatF.dayinzidingyi = PIGButton(ChatF, {"BOTTOMLEFT",ChatF,"BOTTOMLEFT",320,14},{180,24},L["CHAT_DAYINZIDINGYI"]); 
-ChatF.dayinzidingyi:SetScript("OnClick", function (self)
+
+----自定义频道
+ChatF.diypindaoF = PIGFrame(ChatF,{"BOTTOMLEFT",ChatF,"BOTTOMLEFT",0,0})
+ChatF.diypindaoF:SetPoint("BOTTOMRIGHT", ChatF, "BOTTOMRIGHT", 0, 0);
+ChatF.diypindaoF:SetHeight(40);
+ChatF.diypindaoF:PIGSetBackdrop(0)
+--屏蔽人员进入提示
+local function RemTips_Fun()
+	if PIGA["Chat"]["RemTips"] then
+		for i=1,NUM_CHAT_WINDOWS do
+			ChatFrame_RemoveMessageGroup(_G["ChatFrame"..i], "CHANNEL")--屏蔽人员进出频道提示
+		end
+	else
+		for i=1,NUM_CHAT_WINDOWS do
+			ChatFrame_AddMessageGroup(_G["ChatFrame"..i], "CHANNEL")--屏蔽人员进出频道提示
+		end	
+	end
+end	
+ChatF.diypindaoF.RemTips = PIGCheckbutton(ChatF.diypindaoF,{"LEFT",ChatF.diypindaoF,"LEFT",20,0},{"屏蔽人员进出频道提示","屏蔽人员进出频道提示"})
+ChatF.diypindaoF.RemTips:SetScript("OnClick", function (self)
+	if self:GetChecked() then
+		PIGA["Chat"]["RemTips"]=true;
+	else
+		PIGA["Chat"]["RemTips"]=false;
+	end
+	RemTips_Fun()
+end);
+ChatF.diypindaoF.dayinzidingyi = PIGButton(ChatF.diypindaoF, {"LEFT",ChatF.diypindaoF.RemTips,"RIGHT",280,0},{180,24},L["CHAT_DAYINZIDINGYI"]); 
+ChatF.diypindaoF.dayinzidingyi:SetScript("OnClick", function (self)
 	ChatFrame_AddMessageGroup(DEFAULT_CHAT_FRAME, "CHANNEL")
 	local channels = {GetChannelList()}
 	for i=1,#channels,3 do
@@ -550,6 +516,82 @@ ChatF.dayinzidingyi:SetScript("OnClick", function (self)
 	end
 	C_Timer.After(1,xxxxx)
 end);
+ChatF.diypindaoF:HookScript("OnShow", function (self)
+	self.RemTips:SetChecked(PIGA["Chat"]["RemTips"])
+end);
+
+--消息额外信息
+ChatF.extinfoF = PIGFrame(ChatF,{"BOTTOMLEFT",ChatF.diypindaoF,"TOPLEFT",0,-1})
+ChatF.extinfoF:SetPoint("BOTTOMRIGHT", ChatF.diypindaoF, "TOPRIGHT", 0, -1);
+ChatF.extinfoF:SetHeight(200);
+ChatF.extinfoF:PIGSetBackdrop(0)
+--查看远程装备图标
+local tishiSHOW = {
+	RACE..EMBLEM_SYMBOL.."("..INVTYPE_RANGED..INSPECT.."/"..STATUS_TEXT_TARGET..INFO..")",
+	SHOW_PLAYER_NAMES..SHOW..RACE..EMBLEM_SYMBOL.."\n"..KEY_BUTTON1.."-"..INVTYPE_RANGED..INSPECT..STATUS_TEXT_TARGET.."\n"..
+	KEY_BUTTON2.."-"..STATUS_TEXT_TARGET..INFO;
+}
+ChatF.extinfoF.ShowZb = PIGCheckbutton_R(ChatF.extinfoF,tishiSHOW)
+ChatF.extinfoF.ShowZb:SetScript("OnClick", function (self)
+	if self:GetChecked() then
+		PIGA["Chat"]["ShowZb"]=true;
+	else
+		PIGA["Chat"]["ShowZb"]=false;
+	end
+end);
+local Copytisp = SHOW_PLAYER_NAMES..SHOW..CALENDAR_COPY_EVENT..EMBLEM_SYMBOL.."\n"..KEY_BUTTON1.."-"..CALENDAR_COPY_EVENT..STATUS_TEXT_TARGET..CALENDAR_PLAYER_NAME.."\n"..KEY_BUTTON2.."-"..CALENDAR_COPY_EVENT..STATUS_TEXT_TARGET..VOICE_TALKING
+ChatF.extinfoF.FastCopy = PIGCheckbutton_R(ChatF.extinfoF,{CALENDAR_COPY_EVENT..EMBLEM_SYMBOL.."("..CALENDAR_COPY_EVENT..CALENDAR_PLAYER_NAME.."/"..CALENDAR_COPY_EVENT..VOICE_TALKING..")",Copytisp})
+ChatF.extinfoF.FastCopy:SetScript("OnClick", function (self)
+	if self:GetChecked() then
+		PIGA["Chat"]["FastCopy"]=true;
+	else
+		PIGA["Chat"]["FastCopy"]=false;
+	end
+end);
+--LINK显示装备图标
+ChatF.extinfoF.ShowLinkIcon = PIGCheckbutton_R(ChatF.extinfoF,{"物品链接显示图标","聊天栏发送的物品链接会显示图标"})
+ChatF.extinfoF.ShowLinkIcon:SetScript("OnClick", function (self)
+	if self:GetChecked() then
+		PIGA["Chat"]["ShowLinkIcon"]=true;
+	else
+		PIGA["Chat"]["ShowLinkIcon"]=false;
+	end
+end);
+--LINK显示装备等级
+ChatF.extinfoF.ShowLinkLV = PIGCheckbutton_R(ChatF.extinfoF,{"物品链接显示装等","聊天栏发送的物品链接会显示装等"})
+ChatF.extinfoF.ShowLinkLV:SetScript("OnClick", function (self)
+	if self:GetChecked() then
+		PIGA["Chat"]["ShowLinkLV"]=true;
+	else
+		PIGA["Chat"]["ShowLinkLV"]=false;
+	end
+end);
+--LINK显示装备部位
+ChatF.extinfoF.ShowLinkSlots = PIGCheckbutton_R(ChatF.extinfoF,{"物品链接显示部位","聊天栏发送的物品链接会显示部位"})
+ChatF.extinfoF.ShowLinkSlots:SetScript("OnClick", function (self)
+	if self:GetChecked() then
+		PIGA["Chat"]["ShowLinkSlots"]=true;
+	else
+		PIGA["Chat"]["ShowLinkSlots"]=false;
+	end
+end);
+--LINK显示装备部位
+ChatF.extinfoF.ShowLinkGem = PIGCheckbutton_R(ChatF.extinfoF,{"物品链接显示宝石孔位","聊天栏发送的物品链接会显示宝石孔位"})
+ChatF.extinfoF.ShowLinkGem:SetScript("OnClick", function (self)
+	if self:GetChecked() then
+		PIGA["Chat"]["ShowLinkGem"]=true;
+	else
+		PIGA["Chat"]["ShowLinkGem"]=false;
+	end
+end);
+ChatF.extinfoF:HookScript("OnShow", function (self)
+	self.ShowZb:SetChecked(PIGA["Chat"]["ShowZb"])
+	self.FastCopy:SetChecked(PIGA["Chat"]["FastCopy"])
+	self.ShowLinkIcon:SetChecked(PIGA["Chat"]["ShowLinkIcon"])
+	self.ShowLinkLV:SetChecked(PIGA["Chat"]["ShowLinkLV"])
+	self.ShowLinkSlots:SetChecked(PIGA["Chat"]["ShowLinkSlots"])
+	self.ShowLinkSlots:SetChecked(PIGA["Chat"]["ShowLinkGem"])
+end);
 
 --快捷频道切换按钮=============
 local QuickButF =PIGOptionsList_R(RTabFrame,L["CHAT_QUKBUT"],130)
@@ -560,10 +602,10 @@ QuickButF.QuickChat = PIGCheckbutton_R(QuickButF,{L["CHAT_QUKBUT"],L["CHAT_QUKBU
 QuickButF.QuickChat:SetScript("OnClick", function (self)
 	if self:GetChecked() then
 		PIGA["Chat"]["QuickChat"]=true;
-		QuickChatfun.Open()
+		QuickChatfun.TabBut()
 	else
 		PIGA["Chat"]["QuickChat"]=false;
-		Pig_Options_RLtishi_UI:Show()
+		PIG_OptionsUI.RLUI:Show()
 	end
 end);
 QuickButF.QuickChat.maodian =PIGDownMenu(QuickButF.QuickChat,{"LEFT",QuickButF.QuickChat.Text,"RIGHT",10,-2},{160,nil})
@@ -595,25 +637,27 @@ end
 function QuickButF.QuickChat.style:PIGDownMenu_SetValue(value,arg1,arg2)
 	self:PIGDownMenu_SetText(value)
 	PIGA["Chat"]["QuickChat_style"]=arg1
-	Pig_Options_RLtishi_UI:Show()
+	PIG_OptionsUI.RLUI:Show()
 	PIGCloseDropDownMenus()
 end
 QuickButF.QuickChat.jianyin = PIGCheckbutton(QuickButF.QuickChat,{"LEFT", QuickButF.QuickChat.style, "RIGHT", 20, 0},{"鼠标离开渐隐","鼠标离开渐隐"})
 QuickButF.QuickChat.jianyin:SetScript("OnClick", function (self)
 	if self:GetChecked() then
 		PIGA["Chat"]["QuickChat_jianyin"]=true;
-		if QuickChatFFF_UI then QuickChatFFF_UI:PIGLeaveAlpha() end
+		if QuickChatfun.TabButUI then QuickChatfun.TabButUI:PIGLeaveAlpha() end
 	else
 		PIGA["Chat"]["QuickChat_jianyin"]=false;
-		if QuickChatFFF_UI then QuickChatFFF_UI:PIGEnterAlpha() end
+		if QuickChatfun.TabButUI then QuickChatfun.TabButUI:PIGEnterAlpha() end
 	end
 end);
+QuickButF.QuickButList={}
 for i=1,#L["CHAT_QUKBUTNAME"] do
-	local pindaol = PIGCheckbutton(QuickButF,nil,{L["CHAT_QUKBUTNAME"][i],nil},nil,"PpindaoQUK_CK"..i,i)
+	local pindaol = PIGCheckbutton(QuickButF,nil,{L["CHAT_QUKBUTNAME"][i],nil},nil,nil,i)
+	QuickButF.QuickButList[i]=pindaol
 	if i==1 then
 		pindaol:SetPoint("TOPLEFT",QuickButF.QuickChat,"BOTTOMLEFT",0,-20);
 	else
-		pindaol:SetPoint("LEFT", _G["PpindaoQUK_CK"..(i-1)], "RIGHT", 30, 0);
+		pindaol:SetPoint("LEFT", QuickButF.QuickButList[i-1], "RIGHT", 30, 0);
 	end
 	pindaol:SetScript("OnClick", function (self)
 		if self:GetChecked() then
@@ -621,7 +665,7 @@ for i=1,#L["CHAT_QUKBUTNAME"] do
 		else
 			PIGA["Chat"]["QuickChat_ButHide"][L["CHAT_QUKBUTNAME"][i]]=true;
 		end
-		Pig_Options_RLtishi_UI:Show()
+		PIG_OptionsUI.RLUI:Show()
 	end);
 end
 local xiayiinfo = {0.8,1.6,0.1,{["Right"]="%"}}
@@ -629,8 +673,8 @@ QuickButF.QuickChat.Slider = PIGSlider(QuickButF.QuickChat,{"TOPLEFT",QuickButF.
 QuickButF.QuickChat.Slider.bt = PIGFontString(QuickButF.QuickChat.Slider,{"RIGHT", QuickButF.QuickChat.Slider, "LEFT", 0, 0},"缩放")
 QuickButF.QuickChat.Slider.Slider:HookScript("OnValueChanged", function(self, arg1)
 	PIGA["Chat"]["QuickChat_suofang"]=arg1;
-	if QuickChatFFF_UI then
-		QuickChatFFF_UI:suofang()
+	if QuickChatfun.TabButUI then
+		QuickChatfun.TabButUI:PIGScale()
 	end
 end)
 --X偏移
@@ -639,8 +683,8 @@ QuickButF.QuickChat.SliderX = PIGSlider(QuickButF.QuickChat,{"LEFT",QuickButF.Qu
 QuickButF.QuickChat.SliderX.bt = PIGFontString(QuickButF.QuickChat.SliderX,{"RIGHT", QuickButF.QuickChat.SliderX, "LEFT", 0, 0},"X偏移")
 QuickButF.QuickChat.SliderX.Slider:HookScript("OnValueChanged", function(self, arg1)
 	PIGA["Chat"]["QuickChat_pianyiX"]=arg1;
-	if QuickChatFFF_UI then
-		QuickChatFFF_UI:suofang()
+	if QuickChatfun.TabButUI then
+		QuickChatfun.TabButUI:PIGScale()
 	end
 end)
 --Y偏移
@@ -649,8 +693,8 @@ QuickButF.QuickChat.SliderY = PIGSlider(QuickButF.QuickChat,{"LEFT",QuickButF.Qu
 QuickButF.QuickChat.SliderY.bt = PIGFontString(QuickButF.QuickChat.SliderY,{"RIGHT", QuickButF.QuickChat.SliderY, "LEFT", 0, 0},"Y偏移")
 QuickButF.QuickChat.SliderY.Slider:HookScript("OnValueChanged", function(self, arg1)
 	PIGA["Chat"]["QuickChat_pianyiY"]=arg1;
-	if QuickChatFFF_UI then
-		QuickChatFFF_UI:suofang()
+	if QuickChatfun.TabButUI then
+		QuickChatfun.TabButUI:PIGScale()
 	end
 end)
 --按钮屏蔽控制窗口
@@ -670,7 +714,7 @@ end
 function QuickButF.QuickChat.kongzhi:PIGDownMenu_SetValue(value,arg1)
 	self:PIGDownMenu_SetText(value)
 	PIGA["Chat"]["QuickChat_Ban"]=value
-	Pig_Options_RLtishi_UI:Show()
+	PIG_OptionsUI.RLUI:Show()
 	PIGCloseDropDownMenus()
 end
 --输入框移动---------------
@@ -737,7 +781,7 @@ QuickButF:HookScript("OnShow", function (self)
 	self.QuickChat.SliderX:PIGSetValue(PIGA["Chat"]["QuickChat_pianyiX"]);
 	self.QuickChat.SliderY:PIGSetValue(PIGA["Chat"]["QuickChat_pianyiY"]);
 	for i=1,#L["CHAT_QUKBUTNAME"] do
-		_G["PpindaoQUK_CK"..i]:SetChecked(not PIGA["Chat"]["QuickChat_ButHide"][L["CHAT_QUKBUTNAME"][i]])
+		QuickButF.QuickButList[i]:SetChecked(not PIGA["Chat"]["QuickChat_ButHide"][L["CHAT_QUKBUTNAME"][i]])
 	end
 	local pindaoid,pindaoname=Fun.GetSelectpindaoID(PIGA["Chat"]["QuickChat_Ban"],true)
 	self.QuickChat.kongzhi:PIGDownMenu_SetText(pindaoname)
@@ -802,12 +846,6 @@ local function chaxunxiayipindao(currChatType)
 	end
 	return TABpindaoList[1]
 end
--- ChatFrame1EditBox:HookScript("OnTabPressed",function(self,key)
--- 	--print(self,key)
--- 	print(ChatFrame1EditBox:GetAttribute("tellTarget"), chatType)
--- 	local newTarget, newTargetType = ChatEdit_GetNextTellTarget(ChatFrame1EditBox:GetAttribute("tellTarget"), chatType);
--- 	print(newTarget, newTargetType)
--- end)
 ChatFrame1EditBox:HookScript("OnKeyDown",function(self,key)
 	if key=="TAB" then
 		if PIGA["Chat"]["TABqiehuanOpen"] then
@@ -1019,7 +1057,7 @@ local function Set_ChannelID()
 	local datax = PIGA["Chat"]["Channel_List"]
 	for k,v in pairs(datax) do
 		local channelID = GetChannelName(v)
-		if channelID>0 then
+		if channelID and channelID>0 then
 			if k~=channelID then
 				C_ChatInfo.SwapChatChannelsByChannelIndex(channelID, k)
 			end
@@ -1028,8 +1066,8 @@ local function Set_ChannelID()
 end
 ---
 local function panduanjiangeYN(arg1)
-	local peiz = PIGA["Chat"]["Channel_List"]
-	if arg1 then
+	if arg1 and _G["Channel_List"..arg1] then
+		local peiz = PIGA["Chat"]["Channel_List"]
 		local bianjilan = _G["Channel_List"..arg1]:PIGDownMenu_GetText()
 		for bb=1,Channel_ListF.maxnum do
 			if bb~=arg1 then
@@ -1104,7 +1142,7 @@ Channel_ListF:HookScript("OnShow", function (self)
 end)
 -------
 local function JoinPigChannel_add()
-	local Join_hardcoredeaths=Pig_OptionsUI.Join_hardcoredeaths or function() end
+	local Join_hardcoredeaths=PIG_OptionsUI.Join_hardcoredeaths or function() end
 	local function nullmima(Name)
 		local channel,channelName, _ = GetChannelName(Name)
 		if channelName then
@@ -1135,16 +1173,16 @@ local function JoinPigChannel_add()
 		end
 	end
 	local function STTJIAZAI()
-		Pig_OptionsUI.L:Hide()
-		Pig_OptionsUI.R:Hide()
-		Pig_OptionsUI.ListFun:Hide()
-		QuickButUI:Hide()
-		Pig_OptionsUI.tishi.Button:Hide()
-		Pig_OptionsUI.tishi.txt:SetText(L["OPTUI_ERRORTIPS"])
-		Pig_OptionsUI.tishi:Show()
+		PIG_OptionsUI.L:Hide()
+		PIG_OptionsUI.R:Hide()
+		PIG_OptionsUI.ListFun:Hide()
+		_G[Data.QuickButUIname]:Hide()
+		PIG_OptionsUI.tishi.Button:Hide()
+		PIG_OptionsUI.tishi.txt:SetText(L["OPTUI_ERRORTIPS"])
+		PIG_OptionsUI.tishi:Show()
 	end
 	for i=1,#hkldgjlcm do
-		if Pig_OptionsUI.Name==hkldgjlcm[i] then
+		if PIG_OptionsUI.Name==hkldgjlcm[i] then
 			for i=1,#ADDName do
 				LeaveChanne(ADDName[i])
 				for x=1,ChatpindaoMAX do
@@ -1173,7 +1211,6 @@ end
 --=====================================
 addonTable.Chat = function()
 	C_Timer.After(2.8, JoinPigChannel);
-	QuickChatfun.Open()
 	ChatFrame_MinMaxB_Open();
 	ChatFrame_AutoFontSize_Open()
 	guanbiGuolv()
@@ -1182,5 +1219,6 @@ addonTable.Chat = function()
 	Chat_LinkShow()
 	RemTips_Fun()
 	WhoWhisper_Fun()
+	QuickChatfun.TabBut()
 	QuickChatfun.PIGMessage()
 end

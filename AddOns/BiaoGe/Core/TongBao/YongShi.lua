@@ -7,11 +7,9 @@ local RR = ns.RR
 local NN = ns.NN
 local RN = ns.RN
 local TongBao = ns.TongBao
-local FrameHide = ns.FrameHide
 local RGB = ns.RGB
 
 local Maxb = ns.Maxb
-local Maxi = ns.Maxi
 local HopeMaxn = ns.HopeMaxn
 local HopeMaxb = ns.HopeMaxb
 local HopeMaxi = ns.HopeMaxi
@@ -61,12 +59,12 @@ function BG.YongShiUI(lastbt)
         GameTooltip:SetClampedToScreen(true)
     end)
     bt:SetScript("OnClick", function(self)
-        FrameHide(0)
+        BG.FrameHide(0)
         if not IsInRaid(1) then
             SendSystemMessage(L["不在团队，无法通报"])
             BG.PlaySound(1)
         else
-            self:SetEnabled(false) -- 点击后按钮变灰2秒
+            self:SetEnabled(false) 
             C_Timer.After(2, function()
                 bt:SetEnabled(true)
             end)

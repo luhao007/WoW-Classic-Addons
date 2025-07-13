@@ -18,9 +18,6 @@ L.OTabPlugins						= "Autre"--Scenarios, PVP, Delves (11.x), Solo/Challenge cont
 L.OTabOptions						= "Options"
 L.OTabAbout							= "À propos"
 
-L.FOLLOWER							= "Sujet"--i.e. the new dungeon type in 10.2.5. I haven't found a translated string yet
-L.STORY					    		= "Histoire"--i.e. the new dungeon type in 11.0.0. I haven't found a translated string yet
-
 L.TabCategory_CURRENT_SEASON		= "Saison en cours"
 
 L.TabCategory_OTHER			= "Autres modules"
@@ -115,14 +112,16 @@ L.RecordOnlyBosses					= "Ne pas enregistrer les trash"
 L.DoNotLogLFG						= "Ne pas enregistrer les contenus en file d'attente (Recherche de groupe)"
 --Auto Logging: Recorded Content types
 L.Area_AutoLoggingContent			= "Contenu de l'enregistrement automatique"
-L.LogCurrentMythicRaids				= "Raids mythiques du niveau actuel (ou remix)" --Retail Only
-L.LogCurrentRaids					= "Raids non mythiques du niveau actuel (ou remix) (Héroïque, Normal, et LFR si le filtre Recherche de groupe est désactivé)"
-L.LogTWRaids						= "Raids de Marcheurs du temps ou de Temps de Chromie (n'inclut PAS le remix)" --Retail Only
+L.LogCurrentMythicRaids				= "Raids mythiques du niveau actuel" --Retail Only
+L.LogCurrentRaids					= "Raids non mythiques du niveau actuel (Héroïque, Normal, et LFR si le filtre Recherche de groupe est désactivé)"
+L.LogTWRaids						= "Raids de Marcheurs du temps ou de Temps de Chromie" --Retail Only
 L.LogTrivialRaids					= "Raids triviaux (au-dessous du niveau du personnage)"
-L.LogCurrentMPlus					= "Donjons M+ du niveau actuel (ou remix)" --Retail Only
-L.LogCurrentMythicZero				= "Donjons Mythique 0 du niveau actuel (ou remix)" --Retail Only
-L.LogTWDungeons						= "Donjons de Marcheurs du temps ou de Temps de Chromie (n'inclut PAS le remix)" --Retail Only
+L.LogCurrentMPlus					= "Donjons M+ du niveau actuel" --Retail Only
+L.LogCurrentMythicZero				= "Donjons Mythique 0 du niveau actuel" --Retail Only
+L.LogTWDungeons						= "Donjons de Marcheurs du temps ou de Temps de Chromie" --Retail Only
 L.LogCurrentHeroic					= "Donjons héroïques du niveau actuel (Remarque : si vous faites de l'héroïque via la file d'attente et souhaitez l'enregistrer, désactivez le filtre Recherche de groupe)"
+L.LogDelves							= "Expéditions du niveau actuel"--Retail Only
+L.LogChallenges						= "Défis spéciaux du niveau actuel"--Retail Only
 
 -- Panel: Extra Features
 L.Panel_ExtraFeatures		= "Fonctionnalités supplémentaires"
@@ -157,6 +156,11 @@ L.AutoAcceptFriendInvite	= "Acceptation auto des invitations venant d'un ami"
 L.AutoAcceptGuildInvite		= "Acceptation auto des invitations venant d'un membre de la guilde"
 L.Area_Advanced				= "Options avancées"
 L.FakeBW					= "Prétendre utiliser BigWigs lors des vérifications de versions au lieu de DBM (utile pour les guildes qui forcent l'utilisation de BigWigs)"
+--
+L.Area_Tooltip              = "Intégration à l'infobulle"
+L.EnableTooltip             = "Ajouter les statistiques de DBM aux infobulles des boss pris en charge"
+L.EnableTooltipInCombat     = "Afficher les informations de l'infobulle en combat"
+L.EnableTooltipHeader       = "Inclure l’en-tête DBM dans l’infobulle"
 
 -- Panel: Profiles
 L.Panel_Profile				= "Profils"
@@ -656,6 +660,7 @@ L.ExportTestFailedNonAnonString 	= "AVERTISSEMENT : La chaîne %q semble ne pas 
 L.CreatedTest						= "Test créé avec %d événements en %.1f secondes."
 L.NoLogsFound						= "L'importation de Transcriptor ne contient pas de données de journal."
 L.NoTestDataAvailable				= "Aucune donnée de test disponible"
+L.TestDataLoading					= "Chargement des tests..."
 L.NoLogSelected						= "Échec de la création du test : Aucun journal sélectionné."
 L.LogAlreadyImported				= "Échec de la création du test : Test déjà importé."
 

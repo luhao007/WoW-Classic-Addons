@@ -1,8 +1,12 @@
 # TomTom
 
-## [v4.0.8-release](https://github.com/jnwhiteh/TomTom/tree/v4.0.8-release) (2025-02-26)
-[Full Changelog](https://github.com/jnwhiteh/TomTom/commits/v4.0.8-release) [Previous Releases](https://github.com/jnwhiteh/TomTom/releases)
+## [v4.0.12-release](https://github.com/jnwhiteh/TomTom/tree/v4.0.12-release) (2025-07-03)
+[Full Changelog](https://github.com/jnwhiteh/TomTom/commits/v4.0.12-release) [Previous Releases](https://github.com/jnwhiteh/TomTom/releases)
 
+- Update TOC for Mists  
+- Fix an issue with release  
+- Update for 11.0.7  
+- Update TOC for 11.0.5  
 - Update TOC for 11.1  
 - Update TOC for 11.0.7  
 - Update TOC for classic and cata  
@@ -694,7 +698,3 @@
 - * Updated Astrolabe externals  
 - * Reworking of the Waypoints API... callbacks are broken as a result  
 - * Enable a /way command, fix a bunch of things, control-right click works  
-- * Remove inline groups, which hopefully will motivate me to not let this look stupid  
-- * Working changes to the new AceConfig GUI  
-- * More skeleton work  
-- Added Astrolabe coroutine branch as an external, along with the libs for Ace3Config  

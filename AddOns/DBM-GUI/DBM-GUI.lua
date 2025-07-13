@@ -103,6 +103,8 @@ local challengeModeIds = {
 	[506] = 2661, -- Cinderbrew Meadery
 	[507] = 670, -- Grim Batol
 	[525] = 2773, -- Operation: Floodgate
+	[541] = 725, -- The Stonecore
+	[542] = 2830, -- Eco-Dome Al'dani
 }
 
 do
@@ -795,7 +797,7 @@ function DBM_GUI:CreateBossModTab(addon, panel, subtab)
 	area.frame:SetPoint("TOPLEFT", 10, modProfileArea and -270 or -25)
 
 	local statOrder = {
-		"follower", "story", "lfr", "normal", "normal25", "heroic", "heroic25", "mythic", "challenge", "timewalker"
+		"follower", "story", "lfr", "normal", "normal25", "heroic", "heroic25", "mythic", "challenge", "timewalker", "duos"
 	}
 
 	for _, mod in ipairs(DBM.Mods) do
@@ -863,8 +865,8 @@ function DBM_GUI:CreateBossModTab(addon, panel, subtab)
 			end
 
 			local statTypes = {
-				follower	= L.FOLLOWER,--no PLAYER_DIFFICULTY entry yet
-				story		= L.STORY,--no PLAYER_DIFFICULTY entry yet
+				follower	= DBM_CORE_L.FOLLOWER,--no PLAYER_DIFFICULTY entry yet
+				story		= DBM_CORE_L.STORY,--no PLAYER_DIFFICULTY entry yet
 				lfr25		= PLAYER_DIFFICULTY3,
 				normal		= mod.addon.minExpansion < 5 and not DBM:IsSeasonal("SeasonOfDiscovery") and RAID_DIFFICULTY1 or PLAYER_DIFFICULTY1,
 				normal25	= RAID_DIFFICULTY2,
@@ -872,7 +874,8 @@ function DBM_GUI:CreateBossModTab(addon, panel, subtab)
 				heroic25	= RAID_DIFFICULTY4,
 				mythic		= PLAYER_DIFFICULTY6,
 				challenge	= (mod.addon.minExpansion < 6 and not mod.upgradedMPlus) and CHALLENGE_MODE or PLAYER_DIFFICULTY6 .. "+",
-				timewalker	= PLAYER_DIFFICULTY_TIMEWALKER
+				timewalker	= PLAYER_DIFFICULTY_TIMEWALKER,
+				duos		= DBM_CORE_L.DUOS
 			}
 			if (mod.addon.type == "PARTY" or mod.addon.type == "SCENARIO") or -- Fixes dungeons being labled incorrectly
 				(mod.addon.type == "RAID" and statSplit["timewalker"]) or -- Fixes raids with timewalker being labled incorrectly
@@ -980,8 +983,6 @@ do
 
     local expansions = {"CLASSIC", "BC", "WOTLK", "CATA", "MOP", "WOD", "LEG", "BFA", "SHADOWLANDS", "DRAGONFLIGHT", "WARWITHIN"}
 
-	-- WotLK compat, search for "local C_AddOns" in DBM-Core.lua for more details
-	local IsAddOnLoaded = _G.C_AddOns.IsAddOnLoaded or IsAddOnLoaded ---@diagnostic disable-line:deprecated
 	function DBM_GUI:UpdateModList()
 		for _, addon in ipairs(DBM.AddOns) do
 			if not addon.panel then
@@ -996,7 +997,7 @@ do
 					DBM_GUI.tabs[3].buttons[#DBM_GUI.tabs[3].buttons].hidden = true
 				end
 
-				if not IsAddOnLoaded(addon.modId) then
+				if not C_AddOns.IsAddOnLoaded(addon.modId) then
 					local autoLoadFrame = CreateFrame("Frame", nil, addon.panel.frame)
 					autoLoadFrame:SetScript("OnShow", function()
 						if not addon.attemptedAutoLoad then
@@ -1021,7 +1022,7 @@ do
 				end
 			end
 
-			if addon.panel and addon.subTabs and IsAddOnLoaded(addon.modId) then
+			if addon.panel and addon.subTabs and C_AddOns.IsAddOnLoaded(addon.modId) then
 				if not addon.subPanels then
 					addon.subPanels = {}
 				end

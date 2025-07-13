@@ -1,332 +1,286 @@
 local addonName, addonTable = ...;
-local _, _, _, tocversion = GetBuildInfo()
 -- local fmod=math.fmod
 local match = _G.string.match
 local Fun=addonTable.Fun
 --
 local Create=addonTable.Create
-local PIGLine=Create.PIGLine
 local PIGFrame=Create.PIGFrame
-local PIGButton = Create.PIGButton
 local PIGFontString=Create.PIGFontString
 local PIGOptionsList_R=Create.PIGOptionsList_R
-local PIGOptionsList_RF=Create.PIGOptionsList_RF
 local PIGTabBut=Create.PIGTabBut
+local PIGDiyBut=Create.PIGDiyBut
 ------
 local BusinessInfo=addonTable.BusinessInfo
-function BusinessInfo.AH()
-	local StatsInfo = StatsInfo_UI
-	PIGA["StatsInfo"]["AHData"][Pig_OptionsUI.Realm]=PIGA["StatsInfo"]["AHData"][Pig_OptionsUI.Realm] or {}
+function BusinessInfo.AH(StatsInfo)
 	local fujiF,fujiTabBut=PIGOptionsList_R(StatsInfo.F,"拍\n卖",StatsInfo.butW,"Left")
 	---
-	fujiF.PList=PIGFrame(fujiF)
-	fujiF.PList:PIGSetBackdrop(0)
-	fujiF.PList:SetWidth(540)
-	fujiF.PList:SetPoint("TOPLEFT",fujiF,"TOPLEFT",0,0);
-	fujiF.PList:SetPoint("BOTTOMLEFT",fujiF,"BOTTOMLEFT",0,0);
-	--
 	local hang_Height,hang_NUM  = 23, 16;
-	fujiF.PList.TOP=PIGFrame(fujiF.PList)
-	fujiF.PList.TOP:SetPoint("TOPLEFT",fujiF.PList,"TOPLEFT",0,0);
-	fujiF.PList.TOP:SetPoint("TOPRIGHT",fujiF.PList,"TOPRIGHT",0,0);
-	fujiF.PList.TOP:SetHeight(24)
 	fujiF.ItemSelect=1
+
+	fujiF.L=PIGFrame(fujiF)
+	fujiF.L:PIGSetBackdrop(0)
+	fujiF.L:SetWidth(540)
+	fujiF.L:SetPoint("TOPLEFT",fujiF,"TOPLEFT",0,0);
+	fujiF.L:SetPoint("BOTTOMLEFT",fujiF,"BOTTOMLEFT",0,0);
+	--
+	fujiF.L.NR=PIGFrame(fujiF.L)
+	fujiF.L.NR:SetPoint("TOPLEFT",fujiF.L,"TOPLEFT",4,-30);
+	fujiF.L.NR:SetPoint("BOTTOMRIGHT",fujiF.L,"BOTTOMRIGHT",-4,4);
+	fujiF.L.NR:PIGSetBackdrop(0)
+	fujiF.toptabButList={}
 	local toptablist = {{"Attention","关注"},{"History","搜索"}}
 	for ibut=1,#toptablist do
-		local TabBut = PIGTabBut(fujiF.PList.TOP,{"TOPLEFT",fujiF.PList.TOP,"TOPLEFT",20,-3},{60,22},toptablist[ibut][2])
+		local TabBut = PIGTabBut(fujiF.L.NR,nil,{60,22},toptablist[ibut][2])
+		fujiF.toptabButList[ibut]=TabBut
 		if ibut==1 then
-			TabBut:Selected()
-			TabBut:SetPoint("TOPLEFT",fujiF.PList.TOP,"TOPLEFT",20,-3);
+			TabBut:SetPoint("BOTTOMLEFT",fujiF.L.NR,"TOPLEFT",20,0);
 		else
-			TabBut:SetPoint("TOPLEFT",fujiF.PList.TOP,"TOPLEFT",20+(ibut*80-80),-3);
+			TabBut:SetPoint("LEFT",fujiF.toptabButList[ibut-1],"RIGHT",20,0);
 		end
 		TabBut:HookScript("OnClick", function(self)
 			fujiF.ItemSelect=ibut
-			fujiF.PList:Show_ItemInfo()
+			fujiF:Show_Tab()
 		end)
 	end
-	function fujiF.PList:Show_ItemInfo()
-		local ListBOT = {fujiF.PList.TOP:GetChildren()}
-		for xvb=1, #ListBOT, 1 do
-			ListBOT[xvb]:NotSelected()
-		end
-		ListBOT[fujiF.ItemSelect]:Selected()
-		if fujiF.ItemSelect==1 then
-			fujiF.PList.BOTTOM.biaoti:SetText("点击关注按钮可取消关注")
-			fujiF.PList.BOTTOM.Search:Hide()
-		elseif fujiF.ItemSelect==2 then
-			fujiF.PList.BOTTOM.biaoti:SetText("搜索结果点击关注按钮加入关注")
-			fujiF.PList.BOTTOM.Search:Show()
-		end
-		fujiF.gengxin_List(fujiF.PList.BOTTOM.Scroll)
-	end
-	fujiF.PList.BOTTOM=PIGFrame(fujiF.PList)
-	fujiF.PList.BOTTOM:SetPoint("TOPLEFT",fujiF.PList.TOP,"BOTTOMLEFT",2,-26);
-	fujiF.PList.BOTTOM:SetPoint("BOTTOMRIGHT",fujiF.PList,"BOTTOMRIGHT",-3,3);
-	fujiF.PList.BOTTOM:PIGSetBackdrop(0)
-	fujiF.PList.BOTTOM.err = PIGFontString(fujiF.PList.BOTTOM,{"CENTER", 0,60},"请先缓存拍卖行物品价格","OUTLINE")
-	fujiF.PList.BOTTOM.err:SetTextColor(0, 1, 0, 1);
-	fujiF.PList.BOTTOM.biaoti = PIGFontString(fujiF.PList.BOTTOM,{"BOTTOMLEFT",fujiF.PList.BOTTOM, "TOPLEFT",10,4},"搜索页物品可以加入关注列表","OUTLINE")
-	fujiF.PList.BOTTOM.biaoti:SetTextColor(0, 1, 0, 1);
-	fujiF.PList.BOTTOM.Search = CreateFrame("EditBox", nil, fujiF.PList.BOTTOM, "SearchBoxTemplate");
-	fujiF.PList.BOTTOM.Search:SetSize(260,24);
-	fujiF.PList.BOTTOM.Search:SetPoint("BOTTOMLEFT",fujiF.PList.BOTTOM, "TOPLEFT",240,1);
-	fujiF.PList.BOTTOM.Search:Hide()
-	fujiF.PList.BOTTOM.Search:SetScript("OnTextChanged", function(self)
+	fujiF.L.NR.err = PIGFontString(fujiF.L.NR,{"CENTER", 0,60},"请先缓存拍卖行物品价格","OUTLINE")
+	fujiF.L.NR.err:SetTextColor(0, 1, 0, 1);
+	fujiF.L.NR.biaoti = PIGFontString(fujiF.L.NR,{"TOPLEFT",fujiF.L.NR,"TOPLEFT",10,-4},"点击关注按钮可取消关注","OUTLINE")
+	fujiF.L.NR.biaoti:SetTextColor(0, 1, 0, 1);
+	fujiF.L.NR.Search = CreateFrame("EditBox", nil, fujiF.L.NR, "SearchBoxTemplate");
+	fujiF.L.NR.Search:SetSize(260,24);
+	fujiF.L.NR.Search:SetPoint("LEFT",fujiF.L.NR.biaoti, "RIGHT",8,0);
+	fujiF.L.NR.Search:Hide()
+	fujiF.L.NR.Search:SetScript("OnTextChanged", function(self)
 		SearchBoxTemplate_OnTextChanged(self);
-		fujiF.PList.BOTTOM.SearchName=self:GetText()
-		fujiF.gengxin_List(fujiF.PList.BOTTOM.Scroll);
+		fujiF.SearchName=self:GetText()
+		fujiF.Update_List();
 	end)
-	fujiF.PList.BOTTOM.Search:SetScript("OnEnterPressed", function(self) 
+	fujiF.L.NR.Search:SetScript("OnEnterPressed", function(self) 
 		SearchBoxTemplate_OnTextChanged(self);
-		fujiF.PList.BOTTOM.SearchName=self:GetText()
-		fujiF.gengxin_List(fujiF.PList.BOTTOM.Scroll);
+		fujiF.SearchName=self:GetText()
+		fujiF.Update_List();
 	end)
-	---
-	local biaotiList = {{"关注",2},{"物品名",54},{"缓存单价",-160},{"缓存时间",-34}}
-	for i=1,#biaotiList do
-		local biaotiname = PIGFontString(fujiF.PList.BOTTOM,nil,biaotiList[i][1],"OUTLINE")
-		if i>(#biaotiList-2) then
-			biaotiname:SetPoint("TOPRIGHT",fujiF.PList.BOTTOM,"TOPRIGHT",biaotiList[i][2],-4);
-		else
-			biaotiname:SetPoint("TOPLEFT", fujiF.PList.BOTTOM, "TOPLEFT",biaotiList[i][2], -4);
+	function fujiF:Show_Tab()
+		for ibut=1,#toptablist do
+			self.toptabButList[ibut]:NotSelected()
 		end
-		biaotiname:SetTextColor(1, 1, 0.8, 0.9); 
+		self.toptabButList[self.ItemSelect]:Selected()
+		if self.ItemSelect==1 then
+			self.L.NR.biaoti:SetText("点击关注按钮可取消关注")
+			self.L.NR.Search:Hide()
+		elseif self.ItemSelect==2 then
+			self.L.NR.biaoti:SetText("点击关注按钮加入关注")
+			self.L.NR.Search:Show()
+		end
+		self.Update_List();
 	end
-	fujiF.PList.BOTTOM.Scroll = CreateFrame("ScrollFrame",nil,fujiF.PList.BOTTOM, "FauxScrollFrameTemplate");  
-	fujiF.PList.BOTTOM.Scroll:SetPoint("TOPLEFT",fujiF.PList.BOTTOM,"TOPLEFT",2,-22);
-	fujiF.PList.BOTTOM.Scroll:SetPoint("BOTTOMRIGHT",fujiF.PList.BOTTOM,"BOTTOMRIGHT",-20,2);
-	fujiF.PList.BOTTOM.Scroll.ScrollBar:SetScale(0.8)
-	fujiF.PList.BOTTOM.Scroll:SetScript("OnVerticalScroll", function(self, offset)
-	    FauxScrollFrame_OnVerticalScroll(self, offset, hang_Height, fujiF.gengxin_List)
-	end)
-	local function shezhitishi(uixx,fujiui)
+	function fujiF.SetTipsTxt(uixx,highTex,highSelect)
 		uixx:HookScript("OnEnter", function ()
-			if not fujiui.highlight1:IsShown() then
-				fujiui.highlight:Show();
+			if not highSelect:IsShown() then
+				highTex:Show();
 			end
 		end);
 		uixx:HookScript("OnLeave", function ()
-			fujiui.highlight:Hide();
+			highTex:Hide();
 		end);
 	end
-	local function SelectHang(hangfuji)
-		PlaySound(SOUNDKIT.IG_CHAT_EMOTE_BUTTON);
-		for v=1,hang_NUM do
-			local fujix = _G["PIG_lixianAHList_"..v]
-			fujix.highlight1:Hide();
-			fujix.highlight:Hide();
-		end
-		hangfuji.highlight1:Show();
-		fujiF.PListR.itemicon:SetTexture(hangfuji.itemicon.icon)
-		fujiF.PListR.itemName:SetText(hangfuji.itemicon.link)
-		fujiF.collname=hangfuji.attention.collname
-		fujiF.gengxin_ListLS(fujiF.PListR.TOP.Scroll)
-	end
-	for id = 1, hang_NUM, 1 do
-		local hang = CreateFrame("Button", "PIG_lixianAHList_"..id, fujiF.PList.BOTTOM);
-		hang:SetSize(fujiF.PList.BOTTOM:GetWidth()-4,hang_Height+2);
-		if id==1 then
-			hang:SetPoint("TOPLEFT", fujiF.PList.BOTTOM.Scroll, "TOPLEFT", 0, 0);
+	fujiF.L.NR.BOTTOM=PIGFrame(fujiF.L.NR)
+	fujiF.L.NR.BOTTOM:SetPoint("TOPLEFT",fujiF.L.NR,"TOPLEFT",0,-42);
+	fujiF.L.NR.BOTTOM:SetPoint("BOTTOMRIGHT",fujiF.L.NR,"BOTTOMRIGHT",0,0);
+	fujiF.L.NR.BOTTOM:PIGSetBackdrop(0)
+	-----
+	local biaotiList = {{"关注",2},{"物品名",54},{"缓存单价",-160},{"缓存时间",-34}}
+	for i=1,#biaotiList do
+		local biaotiname = PIGFontString(fujiF.L.NR.BOTTOM,nil,biaotiList[i][1],"OUTLINE")
+		if i>(#biaotiList-2) then
+			biaotiname:SetPoint("BOTTOMRIGHT",fujiF.L.NR.BOTTOM,"TOPRIGHT",biaotiList[i][2],2);
 		else
-			hang:SetPoint("TOPLEFT", _G["PIG_lixianAHList_"..id-1], "BOTTOMLEFT", 0, -2);
+			biaotiname:SetPoint("BOTTOMLEFT", fujiF.L.NR.BOTTOM, "TOPLEFT",biaotiList[i][2], 2);
 		end
-		hang.highlight = hang:CreateTexture();
+		biaotiname:SetTextColor(1, 1, 0.8, 0.9); 
+	end
+	fujiF.L.NR.BOTTOM.Scroll = CreateFrame("ScrollFrame",nil,fujiF.L.NR.BOTTOM, "FauxScrollFrameTemplate");  
+	fujiF.L.NR.BOTTOM.Scroll:SetPoint("TOPLEFT",fujiF.L.NR.BOTTOM,"TOPLEFT",0,-2);
+	fujiF.L.NR.BOTTOM.Scroll:SetPoint("BOTTOMRIGHT",fujiF.L.NR.BOTTOM,"BOTTOMRIGHT",-19,1);
+	fujiF.L.NR.BOTTOM.Scroll.ScrollBar:SetScale(0.8)
+	fujiF.L.NR.BOTTOM.Scroll:SetScript("OnVerticalScroll", function(self, offset)
+	    FauxScrollFrame_OnVerticalScroll(self, offset, hang_Height, fujiF.Update_List)
+	end)
+	fujiF.L.NR.BOTTOM.ButLsit={}
+	for id = 1, hang_NUM, 1 do
+		local hang = CreateFrame("Button", nil, fujiF.L.NR.BOTTOM);
+		fujiF.L.NR.BOTTOM.ButLsit[id]=hang
+		hang:SetSize(fujiF.L.NR.BOTTOM:GetWidth()-4,hang_Height+2);
+		if id==1 then
+			hang:SetPoint("TOPLEFT", fujiF.L.NR.BOTTOM, "TOPLEFT", 0, 0);
+		else
+			hang:SetPoint("TOPLEFT",fujiF.L.NR.BOTTOM.ButLsit[id-1], "BOTTOMLEFT", 0, -2);
+		end
+		hang.highlight = hang:CreateTexture(nil,"HIGHLIGHT");
 		hang.highlight:SetTexture("interface/buttons/ui-listbox-highlight2.blp");
 		hang.highlight:SetBlendMode("ADD")
-		hang.highlight:SetPoint("TOPLEFT", hang, "TOPLEFT", 0,0);
-		hang.highlight:SetPoint("BOTTOMRIGHT", hang, "BOTTOMRIGHT", -10,0);
+		hang.highlight:SetPoint("TOPLEFT", hang, "TOPLEFT", 1,-1);
+		hang.highlight:SetPoint("BOTTOMRIGHT", hang, "BOTTOMRIGHT", -10,1);
 		hang.highlight:SetAlpha(0.4);
 		hang.highlight:SetDrawLayer("BORDER", -2)
-		hang.highlight:Hide();
+		hang.highlight:Hide()
 		hang.highlight1 = hang:CreateTexture();
 		hang.highlight1:SetTexture("interface/buttons/ui-listbox-highlight.blp");
 		hang.highlight1:SetDrawLayer("BORDER", -1)
-		hang.highlight1:SetPoint("TOPLEFT", hang, "TOPLEFT", 0,0);
-		hang.highlight1:SetPoint("BOTTOMRIGHT", hang, "BOTTOMRIGHT", -10,0);
-		hang.highlight1:SetAlpha(0.9);
+		hang.highlight1:SetPoint("TOPLEFT", hang, "TOPLEFT", 1,-1);
+		hang.highlight1:SetPoint("BOTTOMRIGHT", hang, "BOTTOMRIGHT", -10,1);
+		hang.highlight1:SetAlpha(0.8);
 		hang.highlight1:Hide();
-		hang.attention = CreateFrame("Button", nil, hang);
-		hang.attention:SetSize(hang_Height,hang_Height);
-		hang.attention:SetPoint("LEFT", hang, "LEFT", 0,0);
-		shezhitishi(hang.attention,hang)
-		hang.attention.tex = hang.attention:CreateTexture();
-		hang.attention.tex:SetTexture("interface/common/friendship-heart.blp");
-		hang.attention.tex:SetPoint("LEFT", hang.attention, "LEFT", -2,-2);
-		hang.attention.tex:SetSize(hang_Height*1.2,hang_Height*1.2);
+		hang.attention = PIGDiyBut(hang,{"LEFT", hang, "LEFT", 0,0},{hang_Height,hang_Height,hang_Height+3,hang_Height+3,604882,nil,0,-2})
+		fujiF.SetTipsTxt(hang.attention,hang.highlight,hang.highlight1)
 		hang.attention:SetScript("OnClick", function (self)
-			PlaySound(SOUNDKIT.IG_CHAT_EMOTE_BUTTON);
-			if self.collname then
-				if PIGA["StatsInfo"]["AHData"][Pig_OptionsUI.Realm][self.collname] then
-					PIGA["StatsInfo"]["AHData"][Pig_OptionsUI.Realm][self.collname]=nil
+			local collname = self:GetParent().collname
+			if collname then
+				if PIGA["StatsInfo"]["AHData"][collname] then
+					PIGA["StatsInfo"]["AHData"][collname]=nil
 				else
-					PIGA["StatsInfo"]["AHData"][Pig_OptionsUI.Realm][self.collname]=true
+					PIGA["StatsInfo"]["AHData"][collname]=true
 				end
 			end
-			fujiF.gengxin_List(fujiF.PList.BOTTOM.Scroll);
+			fujiF.Update_List()
 		end)
-		hang.itemicon = CreateFrame("Button", nil, hang);
-		hang.itemicon:SetSize(hang_Height,hang_Height);
-		hang.itemicon:SetPoint("LEFT", hang.attention, "RIGHT", 2, 0);
-		hang.itemicon.tex = hang.itemicon:CreateTexture();
-		hang.itemicon.tex:SetPoint("CENTER", 0,0);
-		hang.itemicon.tex:SetSize(hang_Height,hang_Height);
-		hang.itemicon:SetScript("OnEnter", function (self)
+		hang.icon = PIGDiyBut(hang,{"LEFT", hang.attention, "RIGHT", 2, 0},{hang_Height-2,hang_Height-2,hang_Height-2,hang_Height-2})
+		hang.icon:SetScript("OnEnter", function (self)
 			GameTooltip:ClearLines();
 			GameTooltip:SetOwner(self, "ANCHOR_TOPLEFT");
-			GameTooltip:SetHyperlink(self.link);
+			GameTooltip:SetHyperlink(self.itemLink);
 			GameTooltip:Show();
 		end);
-		hang.itemicon:SetScript("OnLeave", function ()
+		hang.icon:SetScript("OnLeave", function ()
 			GameTooltip:ClearLines();
 			GameTooltip:Hide() 
 		end);
-		shezhitishi(hang.itemicon,hang)
-		hang.itemicon:SetScript("OnClick", function (self)
-			SelectHang(hang)
-		end)
-		hang.itemname = PIGFontString(hang,{"LEFT", hang.itemicon, "RIGHT", 2, 0},nil,"OUTLINE")
+		fujiF.SetTipsTxt(hang.icon,hang.highlight,hang.highlight1)
+		hang.name = PIGFontString(hang,{"LEFT", hang.icon, "RIGHT", 2, 0},nil,"OUTLINE")
 		hang.itemG = PIGFontString(hang,{"RIGHT", hang, "RIGHT", biaotiList[3][2], 0},nil,"OUTLINE")
 		hang.itemG:SetTextColor(0, 1, 1, 1); 
 		hang.time = PIGFontString(hang,{"RIGHT", hang, "RIGHT", biaotiList[4][2], 0},nil,"OUTLINE")
 		hang.time:SetTextColor(0.8, 0.8, 0.8, 0.9); 
-		shezhitishi(hang,hang)
+		fujiF.SetTipsTxt(hang,hang.highlight,hang.highlight1)
 		hang:SetScript("OnClick", function (self)
-			SelectHang(self)
+			fujiF.SelectHang(self)
 		end)
-	end
-	local function isEmptyTable(t)
-	    return next(t) == nil
-	end
-	function fujiF.gengxin_List(self,Searchname)
-		if not fujiF.PList:IsVisible() then return end
-		fujiF.PList.BOTTOM.err:Show()
-		for id = 1, hang_NUM, 1 do
-			local fujix = _G["PIG_lixianAHList_"..id]
-			fujix:Hide();
-			fujix.highlight1:Hide();
-			fujix.highlight:Hide();
+		function hang:ShowInfoFun(itemLink, itemQuality, itemLevel, itemMinLevel, itemType, itemSubType, itemStackCount, itemEquipLoc, itemTexture)
+			self.icon.itemLink=itemLink
+			self.icon.icon:SetTexture(itemTexture)
+			self.name:SetText(itemLink)
 		end
-		fujiF.DQShowData = {}
-		if PIGA["AHPlus"]["CacheData"][Pig_OptionsUI.Realm] then
-			fujiF.DQShowData=PIGA["AHPlus"]["CacheData"][Pig_OptionsUI.Realm]
-		else
-			fujiF.DQShowData=PIGA["AHPlus"]["CacheData"]
-		end	
-		if not isEmptyTable(fujiF.DQShowData) then
-			fujiF.PList.BOTTOM.err:Hide()
-			local jieguomulu={};
-			local itemData = fujiF.DQShowData
+	end
+	fujiF:HookScript("OnShow", function(self)
+		self:Show_Tab()
+	end)
+	function fujiF.SelectHang(hangfuji)
+		PlaySound(SOUNDKIT.IG_CHAT_EMOTE_BUTTON);
+		for v=1,hang_NUM do
+			local fujix = fujiF.L.NR.BOTTOM.ButLsit[v]
+			fujix.highlight1:Hide();
+		end
+		hangfuji.highlight1:Show();
+		fujiF.R.SelectItem=hangfuji.collname
+		fujiF.R.itemicon:SetTexture(hangfuji.icon.icon:GetTexture())
+		fujiF.R.itemName:SetText(hangfuji.icon.itemLink)
+		fujiF.Update_Trend()
+	end
+	function fujiF.Update_List()
+		if not fujiF.L.NR:IsVisible() then return end
+		fujiF.L.NR.err:Show()
+		for id = 1, hang_NUM, 1 do
+			local hang = fujiF.L.NR.BOTTOM.ButLsit[id]
+			hang:Hide();
+			hang.highlight1:Hide();
+		end
+		fujiF.DQShowData = {{},{},{}}
+		fujiF.DQShowData[1]= BusinessInfo.GetCacheDataG()
+		fujiF.DQShowData[2]= PIGA["StatsInfo"]["AHData"]
+		if next(fujiF.DQShowData[1]) == nil then return end
+		fujiF.L.NR.err:Hide()
+		for k,v in pairs(fujiF.DQShowData[1]) do
+			fujiF.Isadddata=false
 			if fujiF.ItemSelect==1 then
-				for k,v in pairs(itemData) do
-					if PIGA["StatsInfo"]["AHData"][Pig_OptionsUI.Realm][k] then
-						local itemLinkJJ = Fun.HY_ItemLinkJJ(v[1])
-						GetItemInfo(itemLinkJJ)
-						local zuidanum = #v[2]
-						table.insert(jieguomulu,{itemLinkJJ,v[2][zuidanum][1],v[2][zuidanum][2],k,nil,nil})
-					end
+				if fujiF.DQShowData[2][k] then
+					fujiF.Isadddata=true
 				end
 			elseif fujiF.ItemSelect==2 then
-				if fujiF.PList.BOTTOM.SearchName and fujiF.PList.BOTTOM.SearchName~="" and fujiF.PList.BOTTOM.SearchName~=" " then
-					local msglenS = #fujiF.PList.BOTTOM.SearchName
+				if fujiF.SearchName and fujiF.SearchName~="" and fujiF.SearchName~=" " then
+					--local msglenS = #fujiF.SearchName
 					--if msglenS>3 then--输入字符数大于
-						for k,v in pairs(itemData) do
-							if k:match(fujiF.PList.BOTTOM.SearchName) then
-								local itemLinkJJ = Fun.HY_ItemLinkJJ(v[1])
-								GetItemInfo(itemLinkJJ)
-								local zuidanum = #v[2]
-								table.insert(jieguomulu,{itemLinkJJ,v[2][zuidanum][1],v[2][zuidanum][2],k,nil,nil})
-							end
-						end
-					--end
-				end
-			end
-			fujiF.PList.BOTTOM.changshicishunum=0
-			local function GetItemInfo_yanchi()
-				for i=1,#jieguomulu do
-					local itemName,itemLink = GetItemInfo(jieguomulu[i][1]) 
-					if not itemLink and fujiF.PList.BOTTOM.changshicishunum<10 then
-						fujiF.PList.BOTTOM.changshicishunum=fujiF.PList.BOTTOM.changshicishunum+1
-						C_Timer.After(0.1,GetItemInfo_yanchi)
-						return 
-					end
-				end
-				for i=1,#jieguomulu do
-					local itemName,itemLink,itemQuality,itemLevel,itemMinLevel,itemType,itemSubType,itemStackCount,itemEquipLoc,itemTexture = GetItemInfo(jieguomulu[i][1]) 
-					if itemLink then
-						jieguomulu[i][5]=itemLink
-						jieguomulu[i][6]=itemTexture
-					end
-				end
-				local ItemsNum = #jieguomulu;
-			    FauxScrollFrame_Update(self, ItemsNum, hang_NUM, hang_Height);
-			    local offset = FauxScrollFrame_GetOffset(self);
-			    for id = 1, hang_NUM do
-					local dangqian = id+offset;
-					if jieguomulu[dangqian] then
-						local fujix = _G["PIG_lixianAHList_"..id]
-						fujix:Show();
-						fujix.attention.collname=jieguomulu[dangqian][4]
-						fujix.itemicon.link=jieguomulu[dangqian][5]
-						fujix.itemicon.icon=jieguomulu[dangqian][6]
-						if PIGA["StatsInfo"]["AHData"][Pig_OptionsUI.Realm][jieguomulu[dangqian][4]] then
-							fujix.attention.tex:SetDesaturated(false)
-						else
-							fujix.attention.tex:SetDesaturated(true)
-						end
-						fujix.itemicon.tex:SetTexture(jieguomulu[dangqian][6])
-						fujix.itemname:SetText(jieguomulu[dangqian][5])
-						fujix.itemG:SetText(GetMoneyString(jieguomulu[dangqian][2]))
-						local jiluTime = date("%m-%d %H:%M",jieguomulu[dangqian][3])
-						fujix.time:SetText(jiluTime)
+					if k:match(fujiF.SearchName) then
+						fujiF.Isadddata=true
 					end
 				end
 			end
-			GetItemInfo_yanchi()
+			if fujiF.Isadddata then
+				local MaxNum = #v[2]
+				table.insert(fujiF.DQShowData[3],{k,v[3],v[1],v[2][MaxNum][1],v[2][MaxNum][2]})
+			end
+		end
+		local ItemsNum = #fujiF.DQShowData[3];
+		local ScrollUI=fujiF.L.NR.BOTTOM.Scroll
+	    FauxScrollFrame_Update(ScrollUI, ItemsNum, hang_NUM, hang_Height);
+	    local offset = FauxScrollFrame_GetOffset(ScrollUI);
+	    for id = 1, hang_NUM do
+			local dangqian = id+offset;
+			if fujiF.DQShowData[3][dangqian] then
+				local hang = fujiF.L.NR.BOTTOM.ButLsit[id]
+				hang:Show();
+				hang.collname=fujiF.DQShowData[3][dangqian][1]
+				hang.itemG:SetText(GetMoneyString(fujiF.DQShowData[3][dangqian][4]))
+				local jiluTime = date("%m-%d %H:%M",fujiF.DQShowData[3][dangqian][5])
+				hang.time:SetText(jiluTime)
+				if fujiF.DQShowData[2][fujiF.DQShowData[3][dangqian][1]] then
+					hang.attention.icon:SetDesaturated(false)
+				else
+					hang.attention.icon:SetDesaturated(true)
+				end
+				hang.itemID=fujiF.DQShowData[3][dangqian][2]
+				Fun.HY_ShowItemLink(hang,fujiF.DQShowData[3][dangqian][2],fujiF.DQShowData[3][dangqian][3])
+				
+			end
 		end
 	end
 	--
-	fujiF.PListR=PIGFrame(fujiF)
-	fujiF.PListR:PIGSetBackdrop(0)
-	fujiF.PListR:SetPoint("TOPLEFT",fujiF.PList,"TOPRIGHT",2,-30);
-	fujiF.PListR:SetPoint("BOTTOMRIGHT",fujiF,"BOTTOMRIGHT",-2,3);
-	fujiF.PListR.itemicon = fujiF.PListR:CreateTexture();
-	fujiF.PListR.itemicon:SetPoint("BOTTOMLEFT",fujiF.PListR,"TOPLEFT",6,1);
-	fujiF.PListR.itemicon:SetSize(hang_Height,hang_Height);
-	fujiF.PListR.itemName = PIGFontString(fujiF.PListR,{"LEFT",fujiF.PListR.itemicon,"RIGHT",0,0})
-	fujiF.PListR.itemNamels = PIGFontString(fujiF.PListR,{"LEFT",fujiF.PListR.itemName,"RIGHT",10,0},"历史价格")
-	fujiF.PListR.TOP=PIGFrame(fujiF.PListR)
-	fujiF.PListR.TOP:PIGSetBackdrop(0)
-	fujiF.PListR.TOP:SetPoint("TOPLEFT",fujiF.PListR,"TOPLEFT",0,0);
-	fujiF.PListR.TOP:SetPoint("BOTTOMRIGHT",fujiF.PListR,"BOTTOMRIGHT",0,240);
-	--趋势
-	
-	fujiF.PListR.BOTTOM=PIGFrame(fujiF)
-	fujiF.PListR.BOTTOM:SetPoint("TOPLEFT",fujiF.PListR.TOP,"BOTTOMLEFT",0,0);
-	fujiF.PListR.BOTTOM:SetPoint("BOTTOMRIGHT",fujiF.PListR,"BOTTOMRIGHT",0,0);
-	fujiF.PListR.BOTTOM.qushiF=BusinessInfo.ADD_qushi(fujiF.PListR.BOTTOM)
-
+	local hang_NUMLS=8
+	fujiF.R=PIGFrame(fujiF)
+	fujiF.R:PIGSetBackdrop(0)
+	fujiF.R:SetPoint("TOPLEFT",fujiF.L,"TOPRIGHT",-1,0);
+	fujiF.R:SetPoint("BOTTOMRIGHT",fujiF,"BOTTOMRIGHT",0,0);
+	fujiF.R.itemicon = fujiF.R:CreateTexture();
+	fujiF.R.itemicon:SetPoint("TOPLEFT",fujiF.R,"TOPLEFT",6,-2);
+	fujiF.R.itemicon:SetSize(hang_Height-4,hang_Height-4);
+	fujiF.R.itemName = PIGFontString(fujiF.R,{"LEFT",fujiF.R.itemicon,"RIGHT",0,0})
+	fujiF.R.itemNamels = PIGFontString(fujiF.R,{"LEFT",fujiF.R.itemName,"RIGHT",10,0},"历史价格")
+	fujiF.R.TOP=PIGFrame(fujiF.R)
+	fujiF.R.TOP:PIGSetBackdrop(0)
+	fujiF.R.TOP:SetPoint("TOPLEFT",fujiF.R,"TOPLEFT",0,-40);
+	fujiF.R.TOP:SetPoint("TOPRIGHT",fujiF.R,"TOPRIGHT",0,0);
+	fujiF.R.TOP:SetHeight((hang_Height+2)*hang_NUMLS)
 	local biaotiListLS = {{"缓存单价",-170},{"缓存时间",-36}}
 	for i=1,#biaotiListLS do
-		local biaotiname = PIGFontString(fujiF.PListR.TOP,nil,biaotiListLS[i][1],"OUTLINE")
-		biaotiname:SetPoint("TOPRIGHT", fujiF.PListR.TOP, "TOPRIGHT",biaotiListLS[i][2]-4, -4);
+		local biaotiname = PIGFontString(fujiF.R.TOP,nil,biaotiListLS[i][1],"OUTLINE")
+		biaotiname:SetPoint("BOTTOMRIGHT", fujiF.R.TOP, "TOPRIGHT",biaotiListLS[i][2]-4, 1);
 		biaotiname:SetTextColor(1, 1, 0.8, 0.9); 
 	end
-	fujiF.PListR.TOP.Scroll = CreateFrame("ScrollFrame",nil,fujiF.PListR.TOP, "FauxScrollFrameTemplate");  
-	fujiF.PListR.TOP.Scroll:SetPoint("TOPLEFT",fujiF.PListR.TOP,"TOPLEFT",2,-22);
-	fujiF.PListR.TOP.Scroll:SetPoint("BOTTOMRIGHT",fujiF.PListR.TOP,"BOTTOMRIGHT",-20,2);
-	fujiF.PListR.TOP.Scroll.ScrollBar:SetScale(0.8)
-	fujiF.PListR.TOP.Scroll:SetScript("OnVerticalScroll", function(self, offset)
-	    FauxScrollFrame_OnVerticalScroll(self, offset, hang_Height, fujiF.gengxin_ListLS)
+	fujiF.R.TOP.Scroll = CreateFrame("ScrollFrame",nil,fujiF.R.TOP, "FauxScrollFrameTemplate");  
+	fujiF.R.TOP.Scroll:SetPoint("TOPLEFT",fujiF.R.TOP,"TOPLEFT",2,-2);
+	fujiF.R.TOP.Scroll:SetPoint("BOTTOMRIGHT",fujiF.R.TOP,"BOTTOMRIGHT",-19,2);
+	fujiF.R.TOP.Scroll.ScrollBar:SetScale(0.8)
+	fujiF.R.TOP.Scroll:SetScript("OnVerticalScroll", function(self, offset)
+	    FauxScrollFrame_OnVerticalScroll(self, offset, hang_Height, fujiF.Update_Trend)
 	end)
-	local hang_NUMLS=8
+	fujiF.R.TOP.ButList={}
 	for id = 1, hang_NUMLS, 1 do
-		local hang = CreateFrame("Button", "PIG_lixianAHList_LS_"..id, fujiF.PListR.TOP);
-		hang:SetSize(fujiF.PListR.TOP:GetWidth()-4,hang_Height+2);
+		local hang = CreateFrame("Button", nil, fujiF.R.TOP);
+		fujiF.R.TOP.ButList[id]=hang
+		hang:SetSize(fujiF.R.TOP:GetWidth()-4,hang_Height);
 		if id==1 then
-			hang:SetPoint("TOPLEFT", fujiF.PListR.TOP.Scroll, "TOPLEFT", 0, 0);
+			hang:SetPoint("TOPLEFT", fujiF.R.TOP, "TOPLEFT", 0, 0);
 		else
-			hang:SetPoint("TOPLEFT", _G["PIG_lixianAHList_LS_"..id-1], "BOTTOMLEFT", 0, -2);
+			hang:SetPoint("TOPLEFT", fujiF.R.TOP.ButList[id-1], "BOTTOMLEFT", 0, -2);
 		end
 		hang.highlight = hang:CreateTexture();
 		hang.highlight:SetTexture("interface/buttons/ui-listbox-highlight2.blp");
@@ -341,37 +295,31 @@ function BusinessInfo.AH()
 		hang.time = PIGFontString(hang,{"RIGHT", hang, "RIGHT", biaotiListLS[2][2], 0},nil,"OUTLINE")
 		hang.time:SetTextColor(0.8, 0.8, 0.8, 0.9);
 	end
-	function fujiF.gengxin_ListLS(self)
-		if not fujiF.PListR.TOP:IsVisible() then return end
+	function fujiF.Update_Trend()
+		if not fujiF.R.TOP:IsVisible() then return end
 		for id = 1, hang_NUMLS, 1 do
-			local fujix = _G["PIG_lixianAHList_LS_"..id]
-			fujix:Hide();
+			local fujix = fujiF.R.TOP.ButList[id]:Hide()
 		end
-		fujiF.DQShowData = {}
-		if PIGA["AHPlus"]["CacheData"][Pig_OptionsUI.Realm] then
-			fujiF.DQShowData=PIGA["AHPlus"]["CacheData"][Pig_OptionsUI.Realm]
-		else
-			fujiF.DQShowData=PIGA["AHPlus"]["CacheData"]
-		end
-		local itemData = fujiF.DQShowData[fujiF.collname]
-		local itemDataL = itemData[2]	
-		local ItemsNum = #itemDataL;
-	    FauxScrollFrame_Update(self, ItemsNum, hang_NUMLS, hang_Height);
-	    local offset = FauxScrollFrame_GetOffset(self);
+		local itemData=BusinessInfo.GetCacheDataG(fujiF.R.SelectItem)
+		local ItemsNum = #itemData;
+		local ScrollUI=fujiF.R.TOP.Scroll
+	    FauxScrollFrame_Update(ScrollUI, ItemsNum, hang_NUMLS, hang_Height);
+	    local offset = FauxScrollFrame_GetOffset(ScrollUI);
 	    for id = 1, hang_NUMLS do
 	    	local dangqian = (ItemsNum+1)-id-offset;
-			if itemDataL[dangqian] then
-				local fujix = _G["PIG_lixianAHList_LS_"..id]
+			if itemData[dangqian] then
+				local fujix = fujiF.R.TOP.ButList[id]
 				fujix:Show();
-				fujix.itemG:SetText(GetMoneyString(itemDataL[dangqian][1]))
-				local jiluTime = date("%m-%d %H:%M",itemDataL[dangqian][2])
+				fujix.itemG:SetText(GetMoneyString(itemData[dangqian][1]))
+				local jiluTime = date("%m-%d %H:%M",itemData[dangqian][2])
 				fujix.time:SetText(jiluTime)
 			end
 		end
-		fujiF.PListR.BOTTOM.qushiF.qushitu(itemDataL)
+		fujiF.R.BOTTOM.qushiF.qushitu(itemData)
 	end
-	--
-	fujiF:HookScript("OnShow", function(self)
-		fujiF.gengxin_List(self.PList.BOTTOM.Scroll);
-	end)
+	--趋势
+	fujiF.R.BOTTOM=PIGFrame(fujiF.R)
+	fujiF.R.BOTTOM:SetPoint("TOPLEFT",fujiF.R.TOP,"BOTTOMLEFT",0,0);
+	fujiF.R.BOTTOM:SetPoint("BOTTOMRIGHT",fujiF.R,"BOTTOMRIGHT",0,0);
+	fujiF.R.BOTTOM.qushiF=BusinessInfo.ADD_qushi(fujiF.R.BOTTOM)
 end

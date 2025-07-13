@@ -28,10 +28,13 @@ L["LIB_TIPS"] = "提示";
 L["LIB_PLUS"] = "额外";
 L["LIB_SIZE"] = "尺寸";
 L["LIB_POINT"] = "位置";
+L["LIB_LAYOUT"] = "布局";
+L["LIB_WIDTH"]= "宽度";
+L["LIB_HEIGHT"]= "高度";
 --OptionsUI
 L["OPTUI_SET"] = "设置";
 L["OPTUI_RLUI"] = "重载UI";
-L["OPTUI_RLUITIPS"] = "***配置已更改,请重载UI界面以应用新配置***";
+L["OPTUI_RLUITIPS"] = "***配置已更改,请重载UI以应用新配置***";
 L["OPTUI_ERRORTIPS"] = "***插件加载失败，请重新尝试***";
 --Debug
 L["DEBUG_TABNAME"] = "调试";
@@ -133,9 +136,6 @@ L["CHAT_ZLCKBTIPS"] ="勾选粘连【%s】频道到回车，取消勾选解除�
 L["CHAT_RECHATBUT"]= "重置聊天"..L["OPTUI_SET"];
 L["CHAT_TABNAME5"] = "频道顺序";
 L["CHAT_TABNAME5_XULIE"] = "序列";
-L["CHAT_TABNAME4"] = "布局";
-L["CHAT_ZHUCHATFW"]= "宽度"
-L["CHAT_ZHUCHATFH"]= "高度"
 L["CHAT_MARGIN"]= "修改系统聊天窗口的边距限制"
 L["CHAT_MARGINTIPS"]= "修改系统聊天窗口的边距限制，使之突破移动边距限制";
 L["CHAT_ZHUNAME"]= "主聊天窗口";
@@ -162,8 +162,7 @@ L["ACTION_TABNAME3"] = L["LIB_PLUS"]..ACTIONBARS_LABEL;
 --背包
 L["BAGBANK_TABNAME"] = "背包/银行";
 --界面优化
-L["FRAMEP_TABNAME"] = "界面优化";
-L["FRAMEP_TABNAME1"] = "暴雪界面";
+L["FRAMEP_TABNAME"] = "暴雪界面增强";
 L["FRAMEP_TABNAME2"] = "界面扩展";
 --鼠标提示
 L["TOOLTIP_TABNAME"] = MOUSE_LABEL..L["LIB_TIPS"];

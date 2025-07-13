@@ -6,9 +6,7 @@ local L = ns.L
 local RR = ns.RR
 local NN = ns.NN
 local RN = ns.RN
-local FrameHide = ns.FrameHide
 local Maxb = ns.Maxb
-local Maxi = ns.Maxi
 local HopeMaxn = ns.HopeMaxn
 local HopeMaxb = ns.HopeMaxb
 local HopeMaxi = ns.HopeMaxi
@@ -32,7 +30,7 @@ local function CreateListTable(onClick, tbl1)
     local yes
     for b = 1, Maxb[FB] - 1 do
         local tbl_boss = {}
-        for i = 1, Maxi[FB] do
+        for i = 1, BG.GetMaxi(FB, b) do
             if BG.Frame[FB]["boss" .. b]["zhuangbei" .. i] then
                 if BG.Frame[BG.FB1]["boss" .. b]["zhuangbei" .. i]:GetText() ~= ""
                     and GetItemID(BG.Frame[BG.FB1]["boss" .. b]["zhuangbei" .. i]:GetText())
@@ -130,12 +128,12 @@ function BG.LiuPaiUI(lastbt)
     end)
 
     bt:SetScript("OnClick", function(self)
-        FrameHide(0)
+        BG.FrameHide(0)
         if not IsInRaid(1) then
             SendSystemMessage(L["不在团队，无法通报"])
             BG.PlaySound(1)
         else
-            self:SetEnabled(false) -- 点击后按钮变灰2秒
+            self:SetEnabled(false) 
             C_Timer.After(2, function()
                 bt:SetEnabled(true)
             end)

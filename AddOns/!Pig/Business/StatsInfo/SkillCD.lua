@@ -1,5 +1,4 @@
 local addonName, addonTable = ...;
-local _, _, _, tocversion = GetBuildInfo()
 local L=addonTable.locale
 local Fun=addonTable.Fun
 local Create=addonTable.Create
@@ -20,9 +19,7 @@ local GetContainerItemCooldown=GetContainerItemCooldown or C_Container and C_Con
 local GetSpellInfo=GetSpellInfo or C_Spell and C_Spell.GetSpellInfo
 local GetItemNameByID=GetItemNameByID or C_Item and C_Item.GetItemNameByID
 ---
-function BusinessInfo.SkillCD()
-	local StatsInfo = StatsInfo_UI
-	PIGA["StatsInfo"]["SkillData"][StatsInfo.allname]=PIGA["StatsInfo"]["SkillData"][StatsInfo.allname] or {}
+function BusinessInfo.SkillCD(StatsInfo)
 	local fujiF,fujiTabBut=PIGOptionsList_R(StatsInfo.F,"专\n业",StatsInfo.butW,"Left")
 	fujiF.guolvtype=1
 	local guolvname = {"有CD角色","所有角色","已学专业角色","未学专业角色"}
@@ -37,7 +34,7 @@ function BusinessInfo.SkillCD()
 			end
 			self:Selected()
 			fujiF.guolvtype=i
-			fujiF.Skill.Update_List()
+			fujiF.NR.Update_List()
 		end);
 	end
 	---
@@ -81,18 +78,18 @@ function BusinessInfo.SkillCD()
 	-- {13399,133651,11020},--培植种子
 	-- {21935,135863,17716},--雪王9000型
 	-- {26265,134249,21540},--制造艾露恩之石
-	if tocversion<20000 then
+	if PIG_MaxTocversion(20000) then
 		table.insert(Skill_list[2].IsCD,19566)
 		table.insert(Skill_list[3].IsCD,{11480,11479,17187,17559,17560,17561,17562,17563,17564,17565,17566,25146})
 		table.insert(Skill_list[5].IsCD,18560)
-	elseif tocversion<30000 then
+	elseif PIG_MaxTocversion(30000) then
 		table.insert(Skill_list[2].IsCD,19566)
 		table.insert(Skill_list[3].IsCD,{32766,32765,29688,28566,28567,28568,28569,28580,28581,28582,28583,28584,28585})
 		table.insert(Skill_list[5].IsCD,26751)
 		table.insert(Skill_list[5].IsCD,31373)
 		table.insert(Skill_list[5].IsCD,36686)
 		table.insert(Skill_list[10].IsCD,47280)
-	elseif tocversion<40000 then
+	elseif PIG_MaxTocversion(40000) then
 		table.insert(Skill_list[2].IsCD,19566)
 		table.insert(Skill_list[3].IsCD,60893)
 		table.insert(Skill_list[3].IsCD,{66663,66662,66658,66664,53774,53775,53776,53781,53777,53782,53773,53771,53779,53780,53783,53784})
@@ -206,7 +203,7 @@ function BusinessInfo.SkillCD()
 	end
 	local function GetPlayerSkillInfo()
 		table.clear(Skill_Learned)
-		if tocversion<40000 then
+		if PIG_MaxTocversion(40000) then
 			for skillIndex = 1, GetNumSkillLines() do
 				local skillName, isHeader, isExpanded, skillRank, numTempPoints, skillModifier,skillMaxRank, isAbandonable= GetSkillLineInfo(skillIndex)
 				if isAbandonable then
@@ -251,34 +248,34 @@ function BusinessInfo.SkillCD()
 		end
 	end
 	----
-	local hang_Height,hang_NUM,numButtons  = 19.4, 11, 6;
-	fujiF.Skill=PIGFrame(fujiF)
-	fujiF.Skill:SetPoint("TOPLEFT",fujiF,"TOPLEFT",4,-32);
-	fujiF.Skill:SetPoint("BOTTOMRIGHT",fujiF,"BOTTOMRIGHT",-4,4);
-	fujiF.Skill:PIGSetBackdrop(0)
-	fujiF.Skill.Scroll = CreateFrame("ScrollFrame",nil,fujiF.Skill, "FauxScrollFrameTemplate");  
-	fujiF.Skill.Scroll:SetPoint("TOPLEFT",fujiF.Skill,"TOPLEFT",2,-2);
-	fujiF.Skill.Scroll:SetPoint("BOTTOMRIGHT",fujiF.Skill,"BOTTOMRIGHT",-24,2);
-	fujiF.Skill.Scroll:SetScale(0.8);
-	fujiF.Skill.Scroll:SetScript("OnVerticalScroll", function(self, offset)
-	    FauxScrollFrame_OnVerticalScroll(self, offset, hang_Height, fujiF.Skill.Update_List)
+	local hang_Height,hang_NUM,numButtons  = StatsInfo.hang_Height, 11, 6;
+	fujiF.NR=PIGFrame(fujiF)
+	fujiF.NR:SetPoint("TOPLEFT",fujiF,"TOPLEFT",4,-40);
+	fujiF.NR:SetPoint("BOTTOMRIGHT",fujiF,"BOTTOMRIGHT",-4,4);
+	fujiF.NR:PIGSetBackdrop(0)
+	fujiF.NR.Scroll = CreateFrame("ScrollFrame",nil,fujiF.NR, "FauxScrollFrameTemplate");  
+	fujiF.NR.Scroll:SetPoint("TOPLEFT",fujiF.NR,"TOPLEFT",2,-2);
+	fujiF.NR.Scroll:SetPoint("BOTTOMRIGHT",fujiF.NR,"BOTTOMRIGHT",-19,2);
+	fujiF.NR.Scroll:SetScale(0.8);
+	fujiF.NR.Scroll:SetScript("OnVerticalScroll", function(self, offset)
+	    FauxScrollFrame_OnVerticalScroll(self, offset, hang_Height, fujiF.NR.Update_List)
 	end)
-	fujiF.Skill.listbut={}
+	fujiF.NR.listbut={}
 	for id = 1, hang_NUM, 1 do
-		local hang = CreateFrame("Frame", nil, fujiF.Skill);
-		fujiF.Skill.listbut[id]=hang
-		hang:SetSize(fujiF.Skill:GetWidth()-18,hang_Height*2+4);
+		local hang = CreateFrame("Frame", nil, fujiF.NR);
+		fujiF.NR.listbut[id]=hang
+		hang:SetSize(fujiF.NR:GetWidth()-18,hang_Height*2+4);
 		if id==1 then
-			hang:SetPoint("TOPLEFT", fujiF.Skill.Scroll, "TOPLEFT", 0, 0);
+			hang:SetPoint("TOPLEFT", fujiF.NR, "TOPLEFT", 0, 0);
 		else
-			hang:SetPoint("TOPLEFT", fujiF.Skill.listbut[id-1], "BOTTOMLEFT", 0, 0);
+			hang:SetPoint("TOPLEFT", fujiF.NR.listbut[id-1], "BOTTOMLEFT", 0, 0);
 		end
 		if id~=hang_NUM then
 			hang.line = PIGLine(hang,"BOT",0,nil,nil,{0.5,0.5,0.5,0.2})
 		end
 		hang.Faction = hang:CreateTexture();
 		hang.Faction:SetTexture("interface/glues/charactercreate/ui-charactercreate-factions.blp");
-		hang.Faction:SetPoint("TOPLEFT", hang, "TOPLEFT", 0,-2);
+		hang.Faction:SetPoint("TOPLEFT", hang, "TOPLEFT", 3,-2);
 		hang.Faction:SetSize(hang_Height,hang_Height);
 		hang.Race = hang:CreateTexture();
 		hang.Race:SetPoint("LEFT", hang.Faction, "RIGHT", 1,0);
@@ -394,7 +391,7 @@ function BusinessInfo.SkillCD()
 			end
 		end
 	end
-	fujiF.Skill:HookScript("OnShow", function(self)
+	fujiF.NR:HookScript("OnShow", function(self)
 		self.Update_List();
 	end)
 	local function IsExistCD(dataT)
@@ -430,11 +427,11 @@ function BusinessInfo.SkillCD()
 			return true
 		end
 	end
-	function fujiF.Skill.Update_List()
+	function fujiF.NR.Update_List()
 		if not fujiF:IsVisible() then return end
-		local self=fujiF.Skill.Scroll
+		local self=fujiF.NR.Scroll
 		for id = 1, hang_NUM, 1 do
-			local fujik = fujiF.Skill.listbut[id]
+			local fujik = fujiF.NR.listbut[id]
 			fujik:Hide();
 			fujik.nameDQ:Hide()
 		end
@@ -462,7 +459,7 @@ function BusinessInfo.SkillCD()
 		    for id = 1, hang_NUM do
 				local dangqian = id+offset;
 				if cdmulu[dangqian] then
-					local fujik = fujiF.Skill.listbut[id]
+					local fujik = fujiF.NR.listbut[id]
 					fujik:Show();
 					if cdmulu[dangqian][2]=="Alliance" then
 						fujik.Faction:SetTexCoord(0,0.5,0,1);
@@ -489,7 +486,7 @@ function BusinessInfo.SkillCD()
 	fujiF:RegisterEvent("SKILL_LINES_CHANGED")
 	fujiF:RegisterEvent("BAG_UPDATE_COOLDOWN")
 	fujiF:RegisterUnitEvent("UNIT_SPELLCAST_SUCCEEDED","player"); 
-	if tocversion<40000 then         
+	if PIG_MaxTocversion() then         
 		fujiF:RegisterEvent("TRADE_SKILL_UPDATE")
 	else
 		fujiF:RegisterEvent("TRADE_SKILL_LIST_UPDATE")
@@ -502,42 +499,40 @@ function BusinessInfo.SkillCD()
 			C_Timer.After(0.4,GetPlayerSkillInfo)
 			C_Timer.After(1,GetBagItemCD)
 		elseif event=="SKILL_LINES_CHANGED" then
-			C_Timer.After(0.4,GetPlayerSkillInfo)
+			C_Timer.After(0.1,GetPlayerSkillInfo)
 		elseif event=="BAG_UPDATE_COOLDOWN" then
 			C_Timer.After(0.1,GetBagItemCD)
 		elseif event=="TRADE_SKILL_UPDATE" then
-			C_Timer.After(0.1,function()
-				for j=1,GetNumTradeSkills() do
-					local Skillname,skillType= GetTradeSkillInfo(j);
-					if skillType~= "header" then
-						local SpellID= GetSkillNameID(Skillname)
-						if SpellID then
-							local Cooldown = GetTradeSkillCooldown(j);
-							if Cooldown then
-								PIGA["StatsInfo"]["SkillData"][StatsInfo.allname][0][SpellID]=Cooldown+GetTime()
-							else
-								PIGA["StatsInfo"]["SkillData"][StatsInfo.allname][0][SpellID]=0
-							end
+			for j=1,GetNumTradeSkills() do
+				local Skillname,skillType= GetTradeSkillInfo(j);
+				if skillType~= "header" then
+					local SpellID= GetSkillNameID(Skillname)
+					if SpellID then
+						local Cooldown = GetTradeSkillCooldown(j);
+						if Cooldown and Cooldown>0 then
+							PIGA["StatsInfo"]["SkillData"][StatsInfo.allname][0][SpellID]=Cooldown+GetTime()
+						else
+							PIGA["StatsInfo"]["SkillData"][StatsInfo.allname][0][SpellID]=0
 						end
 					end
 				end
-			end)
+			end
 		elseif event=="TRADE_SKILL_LIST_UPDATE" then
-			C_Timer.After(0.1,function()
-				-- local prof1, prof2, archaeology, fishing, cooking = GetProfessions()
-				-- print()
-				-- local name, icon, skillLevel, maxSkillLevel, numAbilities, spelloffset, skillLine, skillModifier = GetProfessionInfo(prof1)
-				-- --print(name, icon, skillLevel, maxSkillLevel, numAbilities, spelloffset, skillLine, skillModifier)
-				-- for _, id in pairs(C_TradeSkillUI.GetAllRecipeIDs()) do
-				-- 	local recipeInfo = C_TradeSkillUI.GetRecipeInfo(id)
-				-- 	for k,v in pairs(recipeInfo) do
-				-- 		print(k,v)
-				-- 	end
-				-- 	--print(recipeInfo.recipeID, recipeInfo.name)
-				-- end
-			end)
+				-- C_Timer.After(0.1,function()
+				-- 	-- local prof1, prof2, archaeology, fishing, cooking = GetProfessions()
+				-- 	-- print()
+				-- 	-- local name, icon, skillLevel, maxSkillLevel, numAbilities, spelloffset, skillLine, skillModifier = GetProfessionInfo(prof1)
+				-- 	-- --print(name, icon, skillLevel, maxSkillLevel, numAbilities, spelloffset, skillLine, skillModifier)
+				-- 	-- for _, id in pairs(C_TradeSkillUI.GetAllRecipeIDs()) do
+				-- 	-- 	local recipeInfo = C_TradeSkillUI.GetRecipeInfo(id)
+				-- 	-- 	for k,v in pairs(recipeInfo) do
+				-- 	-- 		print(k,v)
+				-- 	-- 	end
+				-- 	-- 	--print(recipeInfo.recipeID, recipeInfo.name)
+				-- 	-- end
+				-- end)
 		elseif event=="UNIT_SPELLCAST_SUCCEEDED" then
-			C_Timer.After(0.4,function()
+			C_Timer.After(0.1,function()
 				for ix=1,#fujiF.CDspellID do
 					if arg3==fujiF.CDspellID[ix] then
 						if SpellItemID[arg3] then

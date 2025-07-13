@@ -2,9 +2,7 @@ local addonName, addonTable = ...;
 local L=addonTable.locale
 local match = _G.string.match
 local Create=addonTable.Create
-local PIGFrame=Create.PIGFrame
 local PIGEnter=Create.PIGEnter
-local PIGButton=Create.PIGButton
 local PIGFontString=Create.PIGFontString
 --====================================
 local InvSlot=addonTable.Data.InvSlot
@@ -165,16 +163,29 @@ function BagBankfun.Zhenghe(Rneirong,tabbut)
 			if(UnitExists("NPC"))then OpenAllBags() end
 		end
 	end);
-	if NDui or ElvUI then
-	elseif BagBankfun.Other_bag() then 
-	else
-		if ContainerFrameCombinedBags:IsShown() then CloseAllBags() end
-		if GetCVar("combinedBags")=="0" then SetCVar("combinedBags","1") end
-		ContainerFrameCombinedBags.meihang=PIGA["BagBank"]["BAGmeihangshu_retail"]
-		ContainerFrameCombinedBags.suofang=PIGA["BagBank"]["BAGsuofangBili"]
-		hooksecurefunc(ContainerFrameCombinedBags, "UpdateItems", function()	
-			for i, itemButton in ContainerFrameCombinedBags:EnumerateValidItems() do
-				BagBankfun.add_Itemslot_ZLV_ranse(itemButton,BagdangeW)--背包/银行包裹格子
+	if ContainerFrameCombinedBags:IsShown() then CloseAllBags() end
+	if GetCVar("combinedBags")=="0" then SetCVar("combinedBags","1") end
+	ContainerFrameCombinedBags.meihang=PIGA["BagBank"]["BAGmeihangshu"]+BagBankfun.BAGmeihangshu
+	ContainerFrameCombinedBags.suofang=PIGA["BagBank"]["BAGsuofangBili"]
+	hooksecurefunc(ContainerFrameCombinedBags, "UpdateItems", function()	
+		for i, itemButton in ContainerFrameCombinedBags:EnumerateValidItems() do
+			BagBankfun.add_Itemslot_ZLV_ranse(itemButton,BagdangeW)--背包/银行包裹格子
+			if PIGA["BagBank"]["JunkShow"] then
+				local bagID = itemButton:GetBagID();
+				local itemID, itemLink, icon, stackCount, quality=PIGGetContainerItemInfo(bagID, itemButton:GetID())
+				itemButton.JunkIcon:Hide();
+				if quality and quality==0 then
+					itemButton.JunkIcon:Show();
+				end
+			end
+		end
+	end)
+	for i=1,bagData["bankbag"] do
+		local xframe = bagData["bagIDMax"]+i+1
+		local framef=_G["ContainerFrame"..xframe];
+		hooksecurefunc(framef, "UpdateItems", function()	
+			for i, itemButton in framef:EnumerateValidItems() do
+				BagBankfun.add_Itemslot_ZLV_ranse(itemButton,BagdangeW)--银行包裹格子
 				if PIGA["BagBank"]["JunkShow"] then
 					local bagID = itemButton:GetBagID();
 					local itemID, itemLink, icon, stackCount, quality=PIGGetContainerItemInfo(bagID, itemButton:GetID())
@@ -185,159 +196,141 @@ function BagBankfun.Zhenghe(Rneirong,tabbut)
 				end
 			end
 		end)
-		for i=1,bagData["bankbag"] do
-			local xframe = bagData["bagIDMax"]+i+1
-			local framef=_G["ContainerFrame"..xframe];
-			hooksecurefunc(framef, "UpdateItems", function()	
-				for i, itemButton in framef:EnumerateValidItems() do
-					BagBankfun.add_Itemslot_ZLV_ranse(itemButton,BagdangeW)--银行包裹格子
-					if PIGA["BagBank"]["JunkShow"] then
-						local bagID = itemButton:GetBagID();
-						local itemID, itemLink, icon, stackCount, quality=PIGGetContainerItemInfo(bagID, itemButton:GetID())
-						itemButton.JunkIcon:Hide();
-						if quality and quality==0 then
-							itemButton.JunkIcon:Show();
-						end
-					end
-				end
-			end)
-		end
-		
-		--银行默认格子
-		for slot = 1, bagData["bankmun"] do
-			local famrr=_G["BankFrameItem"..slot]
-			BagBankfun.add_Itemslot_ZLV_ranse(famrr,BagdangeW)
-		end
-		--银行打开时关闭背包不关闭银行的背包
-		hooksecurefunc("ToggleAllBags", function()
-			if PIGA["BagBank"]["Zhenghe"] then
-				if BankFrame:IsShown() then
-					for i = bagData["bagIDMax"] + 1, NUM_CONTAINER_FRAMES do
-						OpenBag(i)
-					end
-				end
-			end
-		end)
-		function ContainerFrameCombinedBags:GetColumns()
-			if self:IsCombinedBagContainer() then
-				return self.meihang
-			else
-				return 4;
-			end
-		end
-		--缩放
-		hooksecurefunc("ContainerFrame_GenerateFrame", function(frame, size, id)
-			ContainerFrameCombinedBags:SetScale(ContainerFrameCombinedBags.suofang)
-		end)
-		--调整系统整合背包搜索框
-		hooksecurefunc(ContainerFrameCombinedBags, "SetSearchBoxPoint", function()
-			BagItemSearchBox:SetWidth(160);
-			BagItemSearchBox:SetPoint("TOPLEFT",ContainerFrameCombinedBags,"TOPLEFT",40,-37);
-		end)
-		---
-		ContainerFrameCombinedBags.EqBut =BagBankfun.addEquipmentbut(ContainerFrameCombinedBags,{"TOPRIGHT",ContainerFrameCombinedBags,"TOPRIGHT",-52,-37})
-		--
-		ContainerFrameCombinedBags.shezhi = BagBankfun.addSetbut(ContainerFrameCombinedBags,{"TOPRIGHT",ContainerFrameCombinedBags,"TOPRIGHT",-86,-38},Rneirong,tabbut)
-	
-		ContainerFrameCombinedBags:RegisterEvent("AUCTION_HOUSE_SHOW")
-		ContainerFrameCombinedBags:HookScript("OnEvent", function(self,event,arg1)
-			if event=="AUCTION_HOUSE_SHOW" then
-				if PIGA["BagBank"]["AHOpen"] then
-					if (UnitExists("NPC")) then
-						OpenAllBags()
-					end
-				end
-			end
-			if event=="BAG_UPDATE" then
-				if arg1>bagData["bagIDMax"] then
-					if BankFrame:IsVisible() then
-						Bag_Item_lv(nil, nil, arg1)
-					end
-				else
-					if self:IsVisible() then
-						Bag_Item_lv(ContainerFrameCombinedBags, nil, arg1)
-					end
-				end
-			end
-		end)
-
-		hooksecurefunc("ContainerFrame_GenerateFrame", function(frame, size, id)
-			if id>bagData["bagIDMax"] then
-				UpdateP_BANK(frame, size, id)
-			else
-				Bag_Item_lv(frame, size, id)
-			end
-		end)
-
-		---系统银行========================
-		BankFrame.meihang=17 or PIGA["BagBank"]["BANKmeihangshu_retail"]
-		BankFrame.suofang=1 or PIGA["BagBank"]["BANKsuofangBili"]
-		---可移动
-		BankFrame:RegisterForDrag("LeftButton")
-		BankFrame:SetMovable(true)
-		BankFrame:SetClampedToScreen(true)
-		BankFrame:SetScript("OnDragStart",function(self)
-		    self:StartMoving();
-		    self:SetUserPlaced(false)
-		end)
-		BankFrame:SetScript("OnDragStop",function(self)
-		    self:StopMovingOrSizing()
-		    self:SetUserPlaced(false)
-		end)
-		hooksecurefunc("BankFrame_UpdateAnchoringForPanel", function()
-			local accountBankSelected = BankFrame.activeTabIndex == 3;
-			local xOffset, yOffset = -340, -33;
-			BankItemSearchBox:SetPoint("TOPRIGHT", BankItemSearchBox:GetParent(), "TOPRIGHT", xOffset, yOffset);
-		end)
-		BankItemAutoSortButton:ClearAllPoints();
-		BankItemAutoSortButton:SetPoint("TOPRIGHT", BankItemSearchBox:GetParent(), "TOPRIGHT", -11, -29);
-		BankFrame:RegisterEvent("PLAYER_INTERACTION_MANAGER_FRAME_SHOW")
-		BankFrame:RegisterEvent("BAG_CONTAINER_UPDATE")
-		BankFrame:RegisterEvent("PLAYERBANKBAGSLOTS_CHANGED")
-		BankFrame:HookScript("OnEvent", function (self,event,arg1)
-			if event=="PLAYER_INTERACTION_MANAGER_FRAME_SHOW" then
-				zhegnheBANK()
-				for i=2,#bagData["bankID"] do
-					OpenBag(bagData["bankID"][i])
-				end
-				PIG_SetTabSelct()
-			elseif event=="BAG_CONTAINER_UPDATE" or event=="PLAYERBANKBAGSLOTS_CHANGED" then
-				if BankSlotsFrame:IsShown() then
-					BankSlotsFrame:Show_Hide_but(BankSlotsFrame.fenlei.show)
-				end
-			elseif event=="PLAYERBANKSLOTS_CHANGED" then
-				Bank_Item_lv(BankFrame,nil,arg1)
-			end
-		end)
-		for id=1,3 do		
-			PIG_SelectTabTex(id)
-		end
-		--分类设置
-		BankSlotsFrame.fenlei = CreateFrame("Button",nil,BankSlotsFrame, "TruncatedButtonTemplate");
-		BankSlotsFrame.fenlei:SetHighlightTexture("interface/buttons/ui-common-mousehilight.blp");
-		BankSlotsFrame.fenlei:SetSize(20,24);
-		BankSlotsFrame.fenlei:SetPoint("TOPLEFT",BankSlotsFrame,"TOPLEFT",56,-30);
-		BankSlotsFrame.fenlei.Tex = BankSlotsFrame.fenlei:CreateTexture(nil, "BORDER");
-		BankSlotsFrame.fenlei.Tex:SetAtlas("common-icon-forwardarrow")
-		BankSlotsFrame.fenlei.Tex:SetRotation(0)
-		BankSlotsFrame.fenlei.Tex:SetSize(22,20);
-		BankSlotsFrame.fenlei.Tex:SetPoint("CENTER",BankSlotsFrame.fenlei,"CENTER",2,0);
-		BankSlotsFrame.fenlei:SetScript("OnMouseDown", function (self)
-			self.Tex:SetPoint("CENTER",BankSlotsFrame.fenlei,"CENTER",3,-1);
-		end);
-		BankSlotsFrame.fenlei:SetScript("OnMouseUp", function (self)
-			self.Tex:SetPoint("CENTER",BankSlotsFrame.fenlei,"CENTER",2,0);
-		end);
-		BankSlotsFrame.fenlei.show=false
-		BankSlotsFrame.fenlei:SetScript("OnClick",  function (self)
-			if self.show then
-				self.show=false
-			else
-				self.show=true
-			end
-			xuanzhuangsanjiao(self.Tex,self.show)
-			BankSlotsFrame:Show_Hide_but(self.show)	
-		end);
-		BagBankfun.addfenleibagbut(BankSlotsFrame,"PIG_CharacterBANK_")
 	end
+	
+	--银行默认格子
+	for slot = 1, bagData["bankmun"] do
+		local famrr=_G["BankFrameItem"..slot]
+		BagBankfun.add_Itemslot_ZLV_ranse(famrr,BagdangeW)
+	end
+	--银行打开时关闭背包不关闭银行的背包
+	hooksecurefunc("ToggleAllBags", function()
+		if PIGA["BagBank"]["Zhenghe"] then
+			if BankFrame:IsShown() then
+				for i = bagData["bagIDMax"] + 1, NUM_CONTAINER_FRAMES do
+					OpenBag(i)
+				end
+			end
+		end
+	end)
+	function ContainerFrameCombinedBags:GetColumns()
+		if self:IsCombinedBagContainer() then
+			return self.meihang
+		else
+			return 4;
+		end
+	end
+	--缩放
+	hooksecurefunc("ContainerFrame_GenerateFrame", function(frame, size, id)
+		ContainerFrameCombinedBags:SetScale(ContainerFrameCombinedBags.suofang)
+	end)
+	--调整系统整合背包搜索框
+	hooksecurefunc(ContainerFrameCombinedBags, "SetSearchBoxPoint", function()
+		BagItemSearchBox:SetWidth(160);
+		BagItemSearchBox:SetPoint("TOPLEFT",ContainerFrameCombinedBags,"TOPLEFT",40,-37);
+	end)
+	---
+	ContainerFrameCombinedBags.EqBut =BagBankfun.addEquipmentbut(ContainerFrameCombinedBags,{"TOPRIGHT",ContainerFrameCombinedBags,"TOPRIGHT",-52,-37})
+	--
+	ContainerFrameCombinedBags.Setings = BagBankfun.addSetbut(ContainerFrameCombinedBags,{"TOPRIGHT",ContainerFrameCombinedBags,"TOPRIGHT",-86,-38},Rneirong,tabbut)
+
+	ContainerFrameCombinedBags:RegisterEvent("AUCTION_HOUSE_SHOW")
+	ContainerFrameCombinedBags:HookScript("OnEvent", function(self,event,arg1)
+		if event=="AUCTION_HOUSE_SHOW" then
+			if PIGA["BagBank"]["AHOpen"] then
+				if (UnitExists("NPC")) then
+					OpenAllBags()
+				end
+			end
+		elseif event=="BAG_UPDATE" then
+			if arg1>bagData["bagIDMax"] then
+				if BankFrame:IsVisible() then
+					Bag_Item_lv(nil, nil, arg1)
+				end
+			else
+				if self:IsVisible() then
+					Bag_Item_lv(ContainerFrameCombinedBags, nil, arg1)
+				end
+			end
+		end
+	end)
+
+	hooksecurefunc("ContainerFrame_GenerateFrame", function(frame, size, id)
+		if id>bagData["bagIDMax"] then
+			UpdateP_BANK(frame, size, id)
+		else
+			Bag_Item_lv(frame, size, id)
+		end
+	end)
+
+	---系统银行========================
+	BankFrame.meihang=17 or PIGA["BagBank"]["BANKmeihangshu_retail"]
+	BankFrame.suofang=1 or PIGA["BagBank"]["BANKsuofangBili"]
+	---可移动
+	BankFrame:RegisterForDrag("LeftButton")
+	BankFrame:SetMovable(true)
+	BankFrame:SetClampedToScreen(true)
+	BankFrame:SetScript("OnDragStart",function(self)
+	    self:StartMoving();
+	    self:SetUserPlaced(false)
+	end)
+	BankFrame:SetScript("OnDragStop",function(self)
+	    self:StopMovingOrSizing()
+	    self:SetUserPlaced(false)
+	end)
+	hooksecurefunc("BankFrame_UpdateAnchoringForPanel", function()
+		local accountBankSelected = BankFrame.activeTabIndex == 3;
+		local xOffset, yOffset = -340, -33;
+		BankItemSearchBox:SetPoint("TOPRIGHT", BankItemSearchBox:GetParent(), "TOPRIGHT", xOffset, yOffset);
+	end)
+	BankItemAutoSortButton:ClearAllPoints();
+	BankItemAutoSortButton:SetPoint("TOPRIGHT", BankItemSearchBox:GetParent(), "TOPRIGHT", -11, -29);
+	BankFrame:RegisterEvent("PLAYER_INTERACTION_MANAGER_FRAME_SHOW")
+	BankFrame:RegisterEvent("BAG_CONTAINER_UPDATE")
+	BankFrame:RegisterEvent("PLAYERBANKBAGSLOTS_CHANGED")
+	BankFrame:HookScript("OnEvent", function (self,event,arg1)
+		if event=="PLAYER_INTERACTION_MANAGER_FRAME_SHOW" and arg1==8 then
+			zhegnheBANK()
+			for i=2,#bagData["bankID"] do
+				OpenBag(bagData["bankID"][i])
+			end
+			PIG_SetTabSelct()
+		elseif event=="BAG_CONTAINER_UPDATE" or event=="PLAYERBANKBAGSLOTS_CHANGED" then
+			if BankSlotsFrame:IsShown() then
+				BankSlotsFrame:Show_Hide_but(BankSlotsFrame.fenlei.show)
+			end
+		elseif event=="PLAYERBANKSLOTS_CHANGED" then
+			Bank_Item_lv(BankFrame,nil,arg1)
+		end
+	end)
+	for id=1,3 do		
+		PIG_SelectTabTex(id)
+	end
+	--分类设置
+	BankSlotsFrame.fenlei = CreateFrame("Button",nil,BankSlotsFrame, "TruncatedButtonTemplate");
+	BankSlotsFrame.fenlei:SetHighlightTexture("interface/buttons/ui-common-mousehilight.blp");
+	BankSlotsFrame.fenlei:SetSize(20,24);
+	BankSlotsFrame.fenlei:SetPoint("TOPLEFT",BankSlotsFrame,"TOPLEFT",56,-30);
+	BankSlotsFrame.fenlei.Tex = BankSlotsFrame.fenlei:CreateTexture(nil, "BORDER");
+	BankSlotsFrame.fenlei.Tex:SetAtlas("common-icon-forwardarrow")
+	BankSlotsFrame.fenlei.Tex:SetRotation(0)
+	BankSlotsFrame.fenlei.Tex:SetSize(22,20);
+	BankSlotsFrame.fenlei.Tex:SetPoint("CENTER",BankSlotsFrame.fenlei,"CENTER",2,0);
+	BankSlotsFrame.fenlei:SetScript("OnMouseDown", function (self)
+		self.Tex:SetPoint("CENTER",BankSlotsFrame.fenlei,"CENTER",3,-1);
+	end);
+	BankSlotsFrame.fenlei:SetScript("OnMouseUp", function (self)
+		self.Tex:SetPoint("CENTER",BankSlotsFrame.fenlei,"CENTER",2,0);
+	end);
+	BankSlotsFrame.fenlei.show=false
+	BankSlotsFrame.fenlei:SetScript("OnClick",  function (self)
+		if self.show then
+			self.show=false
+		else
+			self.show=true
+		end
+		xuanzhuangsanjiao(self.Tex,self.show)
+		BankSlotsFrame:Show_Hide_but(self.show)	
+	end);
+	BagBankfun.addfenleibagbut(BankSlotsFrame,"PIG_CharacterBANK_")
 end

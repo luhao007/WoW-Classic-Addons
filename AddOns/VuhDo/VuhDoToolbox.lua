@@ -1412,27 +1412,14 @@ end
 -- CLASSIC COMPATIBILITY LAYER --
 ---------------------------------
 function VUHDO_getSpecialization()
-
-	if not GetSpecialization then
-		return GetActiveTalentGroup();
-	else
-		return GetSpecialization();
-	end
-
 end
 
 
 
 function VUHDO_getSpecializationInfo(aSpecNum, ...)
+	local tSpecNum = aSpecNum or VUHDO_getSpecialization();
 
-	if not GetSpecializationInfo then
-		local tSpecNum = aSpecNum or VUHDO_getSpecialization();
-
-		return tSpecNum, tSpecNum == 1 and "Primary" or (tSpecNum == 2 and "Secondary" or "Unkown"), _, _, _, GetTalentGroupRole(tSpecNum) or "NONE";
-	else
-		return GetSpecializationInfo(aSpecNum, ...);
-	end
-
+	return tSpecNum, tSpecNum == 1 and "Primary" or (tSpecNum == 2 and "Secondary" or "Unkown"), _, _, _, GetTalentGroupRole(tSpecNum) or "NONE";
 end
 
 

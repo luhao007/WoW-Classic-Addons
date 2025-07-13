@@ -1,4 +1,4 @@
-## Interface: 30404
+## Interface: 30405
 
 ## Title: Questie|cFFFF0000 game client not supported|r
 ## Notes: Questie only supports Classic TBC and Classic Era/SoM.

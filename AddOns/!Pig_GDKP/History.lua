@@ -1,29 +1,24 @@
 local addonName, addonTable = ...;
-local _, _, _, tocversion = GetBuildInfo()
-local Create, Data, Fun, L, Default, Default_Per= unpack(PIG)
------
-local PIGFrame=Create.PIGFrame
-local PIGButton = Create.PIGButton
-local PIGDownMenu=Create.PIGDownMenu
-local PIGLine=Create.PIGLine
-local PIGEnter=Create.PIGEnter
-local PIGSlider = Create.PIGSlider
-local PIGCheckbutton=Create.PIGCheckbutton
-local PIGOptionsList_RF=Create.PIGOptionsList_RF
-local PIGOptionsList_R=Create.PIGOptionsList_R
-local PIGQuickBut=Create.PIGQuickBut
-local Show_TabBut_R=Create.Show_TabBut_R
-local PIGFontString=Create.PIGFontString
-local PIGSetFont=Create.PIGSetFont
-----------
 local GDKPInfo=addonTable.GDKPInfo
--- -------
 function GDKPInfo.ADD_History(RaidR)
+	local Create, Data, Fun, L, Default, Default_Per= unpack(PIG)
+	-----
+	local PIGFrame=Create.PIGFrame
+	local PIGButton = Create.PIGButton
+	local PIGLine=Create.PIGLine
+	local PIGEnter=Create.PIGEnter
+	local PIGSlider = Create.PIGSlider
+	local PIGCheckbutton=Create.PIGCheckbutton
+	local PIGOptionsList_R=Create.PIGOptionsList_R
+	local PIGOptionsList_RF=Create.PIGOptionsList_RF
+	local PIGQuickBut=Create.PIGQuickBut
+	local Show_TabBut_R=Create.Show_TabBut_R
+	local PIGFontString=Create.PIGFontString
+	local PIGSetFont=Create.PIGSetFont
 	local GnName,GnUI,GnIcon,FrameLevel = unpack(GDKPInfo.uidata)
 	local LeftmenuV=GDKPInfo.LeftmenuV
 	local buzhuzhize=GDKPInfo.buzhuzhize
-	local RaidR=_G[GnUI]
-	local History=PIGFrame(RaidR,{"TOPLEFT",RaidR,"TOPLEFT",6,-26},nil,"History_UI")
+	local History=PIGFrame(RaidR,{"TOPLEFT",RaidR,"TOPLEFT",6,-26})
 	History:SetPoint("BOTTOMRIGHT",RaidR,"BOTTOMRIGHT",-6,52);
 	History:PIGSetBackdrop(1)
 	History:PIGClose()
@@ -75,19 +70,21 @@ function GDKPInfo.ADD_History(RaidR)
 	--目录
 	History.list.Scroll = CreateFrame("ScrollFrame",nil,History.list, "FauxScrollFrameTemplate");  
 	History.list.Scroll:SetPoint("TOPLEFT",History.list,"TOPLEFT",0,-2);
-	History.list.Scroll:SetPoint("BOTTOMRIGHT",History.list,"BOTTOMRIGHT",-25,2);
+	History.list.Scroll:SetPoint("BOTTOMRIGHT",History.list,"BOTTOMRIGHT",-19,2);
+	History.list.Scroll.ScrollBar:SetScale(0.8);
 	History.list.Scroll:SetScript("OnVerticalScroll", function(self, offset)
 	    FauxScrollFrame_OnVerticalScroll(self, offset, hang_Height, RaidR.Update_History)
 	end)
-
+	History.list.ButList={}
 	local list_WW = History.list:GetWidth()
 	for id = 1, hang_NUM do
-		local mululist = CreateFrame("Button","History_list_"..id,History.list, "TruncatedButtonTemplate");
+		local mululist = CreateFrame("Button",nil,History.list, "TruncatedButtonTemplate");
+		History.list.ButList[id]=mululist
 		mululist:SetSize(list_WW-22, hang_Height);
 		if id==1 then
 			mululist:SetPoint("TOP",History.list.Scroll,"TOP",2,0);
 		else
-			mululist:SetPoint("TOP",_G["History_list_"..(id-1)],"BOTTOM",0,0);
+			mululist:SetPoint("TOP",History.list.ButList[id-1],"BOTTOM",0,0);
 		end
 		if id~=hang_NUM then PIGLine(mululist,"BOT",nil,nil,nil,{0.3,0.3,0.3,0.3}) end
 		mululist.highlight = mululist:CreateTexture();
@@ -141,8 +138,8 @@ function GDKPInfo.ADD_History(RaidR)
 		self=History.list.Scroll
 		History.qingkong:Disable();
 		History.nr:Hide()
-		for i = 1, hang_NUM do
-			_G["History_list_"..i]:Hide();
+		for id = 1, hang_NUM do
+			History.list.ButList[id]:Hide();
 		end
 		local shujuyuan = PIGA["GDKP"]["History"]
 		local ItemsNum = #shujuyuan;
@@ -150,10 +147,10 @@ function GDKPInfo.ADD_History(RaidR)
 			History.qingkong:Enable();
 			FauxScrollFrame_Update(self, ItemsNum, hang_NUM, hang_Height);
 			local offset = FauxScrollFrame_GetOffset(self);
-			for i = 1, hang_NUM do
-				local dangqian = (ItemsNum+1)-i-offset;
+			for id = 1, hang_NUM do
+				local dangqian = (ItemsNum+1)-id-offset;
 				if shujuyuan[dangqian] then
-					local fameX = _G["History_list_"..i]
+					local fameX = History.list.ButList[id]
 					fameX:Show();
 					fameX:SetID(dangqian)
 					fameX.NO:SetText(dangqian);
@@ -181,24 +178,24 @@ function GDKPInfo.ADD_History(RaidR)
 	History.nr:PIGSetBackdrop(1)
 	History.nr.biaoti = PIGFontString(History.nr,{"BOTTOM",History.nr,"TOP",0,2},"\124cffFFFF00活动内容\124r","OUTLINE");
 	History.F=PIGOptionsList_RF(History.nr,26,nil,{6,6,46})
-	local itemF,itemTabBut=PIGOptionsList_R(History.F,"拾取记录",80)
-	itemF:Show()
-	itemTabBut:Selected()
 	------
 	local function add_TABScroll(fujif,tabname)
 		fujif.Scroll = CreateFrame("ScrollFrame",nil,fujif, "FauxScrollFrameTemplate");  
 		fujif.Scroll:SetPoint("TOPLEFT",fujif,"TOPLEFT",0,-2);
-		fujif.Scroll:SetPoint("BOTTOMRIGHT",fujif,"BOTTOMRIGHT",-25,2);
+		fujif.Scroll:SetPoint("BOTTOMRIGHT",fujif,"BOTTOMRIGHT",-19,2);
+		fujif.Scroll.ScrollBar:SetScale(0.8);
 		fujif.Scroll:SetScript("OnVerticalScroll", function(self, offset)
 		    FauxScrollFrame_OnVerticalScroll(self, offset, nr_hang_Height, fujif.gengxinList)
 		end)
+		fujif.ButList={}
 		for id = 1, nr_hang_Num do
-			local nrhang= CreateFrame("Frame", "History_nr_"..tabname..id, fujif.Scroll:GetParent());
+			local nrhang= CreateFrame("Frame", nil, fujif.Scroll:GetParent());
+			fujif.ButList[id]=nrhang
 			nrhang:SetSize(fujif:GetWidth()-22, nr_hang_Height);
 			if id==1 then
 				nrhang:SetPoint("TOP",fujif.Scroll,"TOP",3,0);
 			else
-				nrhang:SetPoint("TOP",_G["History_nr_"..tabname..(id-1)],"BOTTOM",0,0);
+				nrhang:SetPoint("TOP",fujif.ButList[id-1],"BOTTOM",0,0);
 			end
 			if id~=nr_hang_Num then PIGLine(nrhang,"BOT",nil,nil,nil,{0.3,0.3,0.3,0.3}) end
 			--
@@ -223,7 +220,7 @@ function GDKPInfo.ADD_History(RaidR)
 			nrhang.tx2 = PIGFontString(nrhang,{"RIGHT",nrhang,"RIGHT",-220,0},"","OUTLINE");
 			nrhang.tx2:SetTextColor(1, 1, 1, 1);
 			nrhang.tx3 = PIGFontString(nrhang,{"LEFT",nrhang,"LEFT",380,0},"","OUTLINE");
-			function nrhang:SetFun(itemNameD,itemLinkD)
+			function nrhang:ShowInfoFun(itemLinkD)
 				self.tx1.t:SetText(itemLinkD);
 			end
 		end
@@ -232,11 +229,15 @@ function GDKPInfo.ADD_History(RaidR)
 		end)
 		function fujif.gengxinList()
 			self=fujif.Scroll
-			for i = 1, nr_hang_Num do
-				_G["History_nr_"..tabname..i]:Hide()
+			for id = 1, nr_hang_Num do
+				local fameX = fujif.ButList[id]
+				fameX:Hide()
+				fameX.tx1.t:SetText("");
+				fameX.tx2:SetText("");
+				fameX.tx3:SetText("");
 			end
 			if History.xuanzhongID>0 then
-				local shujuyuan = PIGCopyTable(PIGA["GDKP"]["History"][History.xuanzhongID][tabname])
+				local TabDataList ={["Data"]={},["Num"]=0,["Data1"]={},["Data2"]={}}
 				if tabname=="Jiangli" then
 					local infoData = PIGA["GDKP"]["History"][History.xuanzhongID].Players
 					for p=1,8 do
@@ -247,84 +248,104 @@ function GDKPInfo.ADD_History(RaidR)
 									if gerenData[5] then
 										local bili = gerenData[6]*0.01
 										local biliG = zongshouru*bili
-										table.insert(shujuyuan,{buzhuzhize[g].."补助",biliG,gerenData[1]})
+										table.insert(TabDataList.Data,{buzhuzhize[g].."补助",biliG,gerenData[1]})
 									else
-										table.insert(shujuyuan,{buzhuzhize[g].."补助",gerenData[6],gerenData[1]})
+										table.insert(TabDataList.Data,{buzhuzhize[g].."补助",gerenData[6],gerenData[1]})
 									end
 								end
 							end
 						end
 					end
+				elseif tabname=="Tops" then
+					local sortedKeys,topsList=RaidR.GetTopData(PIGA["GDKP"]["History"][History.xuanzhongID].ItemList)
+					TabDataList.Data=sortedKeys
+					TabDataList.Data1=topsList
+					TabDataList.Data2 = PIGA["GDKP"]["History"][History.xuanzhongID][tabname]
+				else
+					TabDataList.Data = PIGA["GDKP"]["History"][History.xuanzhongID][tabname]
 				end
-				local ItemsNum = #shujuyuan;
-			    FauxScrollFrame_Update(self, ItemsNum, nr_hang_Num, nr_hang_Height);
+				TabDataList.Num=#TabDataList.Data
+			    FauxScrollFrame_Update(self, TabDataList.Num, nr_hang_Num, nr_hang_Height);
 			    local offset = FauxScrollFrame_GetOffset(self);
-				for i = 1, nr_hang_Num do
-					local dangqian = i+offset;
-					if shujuyuan[dangqian] then
-						local fameX = _G["History_nr_"..tabname..i]
+				for id = 1, nr_hang_Num do
+					local dangqian = id+offset;
+					if TabDataList.Data[dangqian] then
+						local fameX = fujif.ButList[id]
 						fameX:Show()
 						if tabname=="ItemList" then
-							fameX.itemID=shujuyuan[dangqian][11]
-							Fun.HY_ShowItemLink(fameX,shujuyuan[dangqian][2],shujuyuan[dangqian][11])
-							fameX.tx2:SetText(shujuyuan[dangqian][9].."\124cffFFFF00 G\124r");
-							fameX.tx3:SetText(shujuyuan[dangqian][8]);
-						elseif tabname=="Jiangli" then
-							fameX.tx1.t:SetText(shujuyuan[dangqian][1]);
-							fameX.tx2:SetText(shujuyuan[dangqian][2].."\124cffFFFF00 G\124r");
-							fameX.tx3:SetText(shujuyuan[dangqian][3]);
-						elseif tabname=="Fakuan" then
-							fameX.tx1.t:SetText(shujuyuan[dangqian][1]);
-							fameX.tx2:SetText(shujuyuan[dangqian][2].."\124cffFFFF00 G\124r");
-							fameX.tx3:SetText(shujuyuan[dangqian][3]);
+							fameX.itemID=TabDataList.Data[dangqian][11]
+							Fun.HY_ShowItemLink(fameX,TabDataList.Data[dangqian][11],TabDataList.Data[dangqian][2])
+							fameX.tx2:SetText(TabDataList.Data[dangqian][9].."\124cffFFFF00 G\124r");
+							fameX.tx3:SetText(TabDataList.Data[dangqian][8]);
+						elseif tabname=="Jiangli" or tabname=="Fakuan" then
+							fameX.tx1.t:SetText(TabDataList.Data[dangqian][1]);
+							if TabDataList.Data[dangqian][4] then
+								fameX.tx2:SetText(TabDataList.Data[dangqian][2].."(欠"..TabDataList.Data[dangqian][4]..")\124cffFFFF00 G\124r");
+							else
+								fameX.tx2:SetText(TabDataList.Data[dangqian][2].."\124cffFFFF00 G\124r");
+							end
+							fameX.tx3:SetText(TabDataList.Data[dangqian][3]);
+						elseif tabname=="Tops" then
+							fameX.tx1.t:SetText(TabDataList.Data[dangqian]);
+							fameX.tx2:SetText(TabDataList.Data1[TabDataList.Data[dangqian]].."\124cffFFFF00 G\124r");
+							if TabDataList.Data2 and TabDataList.Data2[TabDataList.Data[dangqian]] then
+								fameX.tx3:SetText(TabDataList.Data2[TabDataList.Data[dangqian]][1]);
+							end
 						end
 					end
 				end
 			end
 		end
 	end
+	local itemF,itemTabBut=PIGOptionsList_R(History.F,"拾取记录",80)
+	itemF:Show()
+	itemTabBut:Selected()
 	add_TABScroll(itemF,"ItemList")
 	----
-	local buzhuF=PIGOptionsList_R(History.F,"补助/奖励",80)
-	add_TABScroll(buzhuF,"Jiangli")
+	add_TABScroll(PIGOptionsList_R(History.F,"补助/奖励",80),"Jiangli")
 	----
-	local fakuanF=PIGOptionsList_R(History.F,"罚款/其他",80)
-	add_TABScroll(fakuanF,"Fakuan")
+	add_TABScroll(PIGOptionsList_R(History.F,"罚款/其他",80),"Fakuan")
+	---
+	add_TABScroll(PIGOptionsList_R(History.F,"消费榜",80),"Tops")
 	----
 	local renyaunF=PIGOptionsList_R(History.F,"人员信息",80)
 	local duiwuW,duiwuH = 130,28;
 	local jiangeW,jiangeH,juesejiangeH = 13,0,6;
+	renyaunF.duiwuList={}
 	for p=1,8 do
-		local duiwuF = CreateFrame("Frame", "History_PlayerList_"..p, renyaunF);
+		local duiwuF = CreateFrame("Frame", nil, renyaunF);
+		renyaunF.duiwuList[p]=duiwuF
 		duiwuF:SetSize(duiwuW,duiwuH*5+juesejiangeH*4);
 		if p==1 then
 			duiwuF:SetPoint("TOPLEFT",renyaunF,"TOPLEFT",12,-18);
 		end
 		if p>1 and p<5 then
-			duiwuF:SetPoint("LEFT",_G["History_PlayerList_"..(p-1)],"RIGHT",jiangeW,jiangeH);
+			duiwuF:SetPoint("LEFT",renyaunF.duiwuList[p-1],"RIGHT",jiangeW,jiangeH);
 		end
 		if p==5 then
-			duiwuF:SetPoint("TOP",_G["History_PlayerList_1"],"BOTTOM",0,-24);
+			duiwuF:SetPoint("TOP",renyaunF.duiwuList[1],"BOTTOM",0,-24);
 		end
 		if p>5 then
-			duiwuF:SetPoint("LEFT",_G["History_PlayerList_"..(p-1)],"RIGHT",jiangeW,jiangeH);
+			duiwuF:SetPoint("LEFT",renyaunF.duiwuList[p-1],"RIGHT",jiangeW,jiangeH);
 		end
+		duiwuF.PList={}
 		for pp=1,5 do
-			local playerF = PIGButton(duiwuF,nil,{duiwuW,duiwuH},nil,"History_PlayerList_"..p.."_"..pp);
+			local playerF = PIGButton(duiwuF,nil,{duiwuW,duiwuH});
+			duiwuF.PList[pp]=playerF
 			PIGSetFont(playerF.Text,14,"OUTLINE")
 			if pp==1 then
 				playerF:SetPoint("TOP",duiwuF,"TOP",0,0);
 			else
-				playerF:SetPoint("TOP",_G["History_PlayerList_"..p.."_"..(pp-1)],"BOTTOM",0,-juesejiangeH);
+				playerF:SetPoint("TOP",duiwuF.PList[pp-1],"BOTTOM",0,-juesejiangeH);
 			end
 		end
 	end
 	function renyaunF.gengxinList()
 		for p=1,8 do
 			for pp=1,5 do
-				local pff = _G["History_PlayerList_"..p.."_"..pp]
+				local pff = renyaunF.duiwuList[p].PList[pp]
 				pff:Hide();
-				pff:SetText("N/A");
+				pff:SetText(NONE);
 			end
 	    end
 	    local shujuyuan = PIGA["GDKP"]["History"][History.xuanzhongID].Players
@@ -332,7 +353,7 @@ function GDKPInfo.ADD_History(RaidR)
 		for p=1,ItemsNum do
 			for pp=1,#shujuyuan[p] do
 				if shujuyuan[p][pp] then
-			   		local pff = _G["History_PlayerList_"..p.."_"..pp]
+			   		local pff = renyaunF.duiwuList[p].PList[pp]
 			   		pff:Show();
 			   		local wanjianame=shujuyuan[p][pp][1]
 			   		local wanjiaName, fuwiqiName = strsplit("-", wanjianame);
@@ -341,7 +362,7 @@ function GDKPInfo.ADD_History(RaidR)
 					else
 						pff:SetText(wanjiaName);
 					end
-					local color = RAID_CLASS_COLORS[shujuyuan[p][pp][2]]
+					local color = PIG_CLASS_COLORS[shujuyuan[p][pp][2]]
 					pff.Text:SetTextColor(color.r, color.g, color.b,1);
 			   	end
 			end
@@ -405,7 +426,7 @@ function GDKPInfo.ADD_History(RaidR)
 		if #Old_Data>0 then
 			for p=1,#NewdataX do
 				NewdataX[p][2]=0
-				NewdataX[p][3]="N/A"
+				NewdataX[p][3]=NONE
 				NewdataX[p][4]=simoren
 				for ii=1,#Old_Data do
 					if NewdataX[p][1]==Old_Data[ii][1] then
@@ -458,7 +479,7 @@ function GDKPInfo.ADD_History(RaidR)
 		local fakuan_shouru=0;
 		local dataX = Old_Data.Fakuan
 		for xx = 1, #dataX do
-			if dataX[xx][3]~="N/A" then
+			if dataX[xx][3]~=NONE then
 				fakuan_shouru=fakuan_shouru+dataX[xx][2]+dataX[xx][4];
 			end
 		end
@@ -485,7 +506,7 @@ function GDKPInfo.ADD_History(RaidR)
 		local jiangli_shouru=0;
 		local dataX = Old_Data.Jiangli
 		for xx = 1, #dataX do
-			if dataX[xx][3]~="N/A" then
+			if dataX[xx][3]~=NONE then
 				if dataX[xx][4] then--百分比补助
 					jiangli_shouru=jiangli_shouru+Zshouru*(dataX[xx][2]*0.01);
 				else

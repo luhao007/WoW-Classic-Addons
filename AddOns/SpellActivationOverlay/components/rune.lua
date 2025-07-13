@@ -11,17 +11,17 @@ local function addRuneMapping(rune)
     local runeID = rune.skillLineAbilityID;
     for _, spellID in pairs(rune.learnedAbilitySpellIDs) do
         if runeMapping[spellID] ~= runeID then
-            SAO:Debug(Module, "Spell "..(GetSpellInfo(spellID) or "x").." ("..spellID..") is learned by rune "..runeID);
+            SAO:Debug(Module, (GetSpellInfo(spellID) or "x").." ("..spellID..") from rune "..runeID);
             runeMapping[spellID] = runeID;
         end
     end
 end
 
 local function initRuneMapping()
-    local categories = C_Engraving and C_Engraving.GetRuneCategories(false, true) or {};
+    local categories = C_Engraving and C_Engraving.GetRuneCategories(false, false) or {};
     local foundRune = false;
     for _, cat in pairs(categories) do
-        local runes = C_Engraving.GetRunesForCategory(cat, true) or {};
+        local runes = C_Engraving.GetRunesForCategory(cat, false) or {};
         for _, rune in pairs(runes) do
             addRuneMapping(rune);
             foundRune = true;

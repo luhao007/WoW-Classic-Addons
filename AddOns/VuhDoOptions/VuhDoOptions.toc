@@ -1,8 +1,8 @@
-## Interface: 30404
+## Interface: 30405
 ## Author: Iza@Gilneas, humfras, Ivaria@Hyjal
-## Version: 3.164-wotlkc
+## Version: CN3.4.5-|cffff7d0a煎饼果子|r|cff93d925溪子自改|r
 
-## Title: VuhDo ['vu:du:] - Options
+## Title: VuhDo Options-|cffff7d0a煎饼果子|r|cff93d925溪子自改|r
 ## Notes: VuhDo Options
 ## Title-zhCN: |cFFFFE00A<|r|cFFA330C9界面|r|cFFFFE00A>|r |cFFFFFFFF团队面板|r |cFF0055FF设置|r
 

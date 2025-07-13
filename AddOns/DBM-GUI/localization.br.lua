@@ -20,8 +20,6 @@ L.OTabPlugins				= "Outro"--Scenarios, PVP, Delves (11.x), Solo/Challenge conten
 L.OTabOptions				= "Opções"
 L.OTabAbout					= "Sobre"
 
-L.FOLLOWER					= "Seguidor"--i.e. the new dungeon type in 10.2.5. I haven't found a translated string yet
-
 L.TabCategory_CURRENT_SEASON	= "Temporada atual"
 
 L.TabCategory_OTHER			= "Outros módulos"
@@ -114,14 +112,16 @@ L.RecordOnlyBosses 					= "Registrar apenas encontros contra chefes"
 L.DoNotLogLFG 						= "Não registrar encontros de procurando grupo"
 --Auto Logging: Recorded Content types
 L.Area_AutoLoggingContent 			= "Conteúdo de registro automático"
-L.LogCurrentMythicRaids 			= "Raides atuais de nível Mítico (ou remix)" -- Retail Only
-L.LogCurrentRaids 					= "Raides não mítica atuais (heróicos e normal se o filtro Procurando grupo estiver desativado)"
-L.LogTWRaids 						= "Raides de Caminhada Temporal ou Tempo de Crona (não inclui remix)" -- Retail Only
+L.LogCurrentMythicRaids 			= "Raides míticas do nível atual" -- Retail Only
+L.LogCurrentRaids 					= "Raides não míticas do nível atual (heróicos e normal se o filtro Procurando grupo estiver desativado)"
+L.LogTWRaids 						= "Raides de Caminhada Temporal ou Tempo de Crona" -- Retail Only
 L.LogTrivialRaids 					= "Raides triviais (abaixo do nível do personagem)"
-L.LogCurrentMPlus 					= "Masmorras M+ atuais de nível (ou remix)" -- Retail Only
-L.LogCurrentMythicZero 				= "Masmorras Míticas 0 atuais de nível (ou remix)" -- Retail Only
-L.LogTWDungeons 					= "Masmorras de Caminhada Temporal ou Tempo de Crona (não inclui remix)" -- Retail Only
-L.LogCurrentHeroic 					= "Masmorras heroicas atuais de nível (Nota: se você estiver fazendo heroico via fila e quiser que seja registrado, desative o filtro Procurando grupo)"
+L.LogCurrentMPlus 					= "Masmorras M+ do nível atual" -- Retail Only
+L.LogCurrentMythicZero 				= "Masmorras Míticas 0 do nível atual" -- Retail Only
+L.LogTWDungeons 					= "Masmorras de Caminhada Temporal ou Tempo de Crona" -- Retail Only
+L.LogCurrentHeroic 					= "Masmorras heroicas do nível atual (Nota: se você estiver fazendo heroico via fila e quiser que seja registrado, desative o filtro Procurando grupo)"
+L.LogDelves							= "Imersões do nível atual"--Retail Only
+L.LogChallenges						= "Desafios especiais do nível atual"--Retail Only
 
 -- Tab: General Timer Options
 L.TimerGeneral 				= "Opções de cronômetro"
@@ -589,7 +589,12 @@ L.AutoAcceptFriendInvite	= "Aceitar convites de amigos automaticamente"
 L.AutoAcceptGuildInvite		= "Aceitar convites de membros da guilda automaticamente"
 L.Area_Advanced				= "Opções avançadas"
 L.FakeBW					= "Fingir ser BigWigs em checagens de versão ao invés de ser DBM (útil para guildas que forçam o uso de BigWigs)"
-
+--
+L.Area_Tooltip              = "Integração com dicas"
+L.EnableTooltip             = "Adicionar estatísticas do DBM às dicas dos chefes compatíveis"
+L.EnableTooltipInCombat     = "Exibir informações da dica durante o combate"
+L.EnableTooltipHeader       = "Incluir cabeçalho do DBM na dica"
+--
 L.Area_CombatAlerts			= "Opções de alertas de combate"
 L.AFKHealthWarning			= "Reproduzir som de alerta e fazer o ícone do aplicativo piscar quando você estiver perdendo vida (em qualquer porcentagem) enquanto estiver LDT"
 L.HealthWarningLow			= "Reproduzir som de alerta e fazer o ícone do aplicativo piscar quando você estiver perdendo vida (quando estiver abaixo de 35%) enquanto estiver LDT"
@@ -674,6 +679,7 @@ L.ExportTestFailedNonAnonString = "AVISO: A cadeia %q parece não estar anonimiz
 L.CreatedTest 					= "Teste criado com %d eventos em %.1f segundos."
 L.NoLogsFound 					= "A importação de Transcriptor não contém dados de registro."
 L.NoTestDataAvailable 			= "Nenhum dado de teste disponível"
+L.TestDataLoading				= "Carregando testes..."
 L.NoLogSelected 				= "Criação de teste falhou: Nenhum registro selecionado."
 L.LogAlreadyImported 			= "Criação de teste falhou: Teste já importado."
 

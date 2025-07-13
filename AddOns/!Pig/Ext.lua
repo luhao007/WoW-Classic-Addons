@@ -1,6 +1,5 @@
 local addonName, addonTable = ...;
 local L=addonTable.locale
-local _, _, _, tocversion = GetBuildInfo()
 -----
 local Create=addonTable.Create
 local PIGFrame=Create.PIGFrame
@@ -15,23 +14,19 @@ local Locale= GetLocale()
 L.pigname =addonName.."_"
 L.extLsit ={L.pigname.."Tardis",L.pigname.."GDKP",L.pigname.."Farm"}
 L["PIGaddonList"] = {
-	["Fuji"]=addonName,
+	[addonName]=L["ADDON_NAME"],
 	[L.extLsit[1]]="时空之门",
 	[L.extLsit[2]]="金团助手",
 	[L.extLsit[3]]="带本助手",
 }
 if Locale == "zhTW" then
-	L["PIGaddonList"] = {
-		[L.extLsit[1]]="時空之門",
-		[L.extLsit[2]]="金團助手",
-		[L.extLsit[3]]="帶本助手",
-	}
+	L["PIGaddonList"][L.extLsit[1]]="時空之門"
+	L["PIGaddonList"][L.extLsit[2]]="金團助手"
+	L["PIGaddonList"][L.extLsit[3]]="帶本助手"
 elseif Locale == "enUS" then
-	L["PIGaddonList"] = {
-		[L.extLsit[1]]="Tardis",
-		[L.extLsit[2]]="GDKP",
-		[L.extLsit[3]]="Farm",
-	}
+	L["PIGaddonList"][L.extLsit[1]]="Tardis"
+	L["PIGaddonList"][L.extLsit[2]]="GDKP"
+	L["PIGaddonList"][L.extLsit[3]]="Farm"
 end
 local ADDONS_DOWN_1 = "网易DD(dd.163.com)|cff00FFFF插件库|r"..SEARCH
 local ADDONS_DOWN_2 = "网易DD(dd.163.com)|cffFF00FF配置分享|r"..SEARCH
@@ -39,8 +34,8 @@ L["PIG_ADDON_LIST"]={
 	[0]={
 		["open"]=true,
 		["name"]=addonName,
-		["namecn"]=L["ADDON_NAME"],
-		["tooltip"]="一个工具箱。整合很多小功能，可以极大减少你的插件数量",
+		["namecn"]=L["PIGaddonList"][addonName],
+		["tooltip"]="工具合集。整合很多小功能，可以极大减少你的插件数量",
 		["down_1"]=ADDONS_DOWN_1,
 		--["down_2"]="https://www.curseforge.com/wow/addons/pig"	
 	},
@@ -70,16 +65,19 @@ L["PIG_ADDON_LIST"]={
 		["down_2"]="https://afdian.com/a/wowpig",
 		--["down_2"]="https://www.curseforge.com/wow/addons/pig-farm",
 	},
+	[4]={
+
+	},
 }
 local function add_extLsitFrame(ly,self,ExtID,topV)
 	local data=L["PIG_ADDON_LIST"][ExtID]
 	self.OpenMode=data.open
 	local addnameF=PIGFrame(self,nil,{1,14})
 	addnameF:SetPoint("TOPLEFT",self,"TOPLEFT",30,topV);
-	addnameF.addnameT = PIGFontString(addnameF,{"LEFT",addnameF,"RIGHT",0,0},"|cff00FFFF"..data.name.."|r |cff00ff00["..data.namecn.."]|r","OUTLINE",16)
+	addnameF.addnameT = PIGFontString(addnameF,{"LEFT",addnameF,"RIGHT",0,0},"|cff00FFFF"..data.namecn.."|r","OUTLINE",16)
 	addnameF.err = PIGFontString(addnameF,{"LEFT", addnameF.addnameT, "RIGHT", 10,0},"","OUTLINE",18);
 	addnameF.err:SetTextColor(1, 0, 0, 1);
-	addnameF.errbut = PIGButton(addnameF,{"LEFT", addnameF.err, "RIGHT", 0,0},{120,24},"点击启用并重载");
+	addnameF.errbut = PIGButton(addnameF,{"LEFT", addnameF.err, "RIGHT", 0,0},{120,22},"点击启用并重载");
 	addnameF.errbut:SetScript("OnClick", function (self)
 		EnableAddOn(data.name)
 		ReloadUI();
@@ -139,7 +137,6 @@ local function add_extLsitFrame(ly,self,ExtID,topV)
 			addnameF.UpdateF:Show()
 		else
 			local name, title, notes, loadable,reason=PIGGetAddOnInfo(L.extLsit[ExtID])
-			--print(ADDON_DISABLED)
 			if not loadable then
 				if reason=="MISSING" then
 					addnameF.err:SetText("<未安装>");
@@ -162,9 +159,9 @@ local function AddExtOptionsUI(ExtID)
 	fuFrame.extaddonT=add_extLsitFrame("ext",fuFrame,ExtID,-60)
 	Data.Ext[L.extLsit[ExtID]]={fuFrame,fuFrameBut,L["PIG_ADDON_LIST"][ExtID].tooltip}
 end
-AddExtOptionsUI(1)
-AddExtOptionsUI(2)
-AddExtOptionsUI(3)
+for i=1,3 do
+	AddExtOptionsUI(i)
+end
 --About
 local topV = 10
 Create.add_extLsitAboutFrame=function(ly,fuFrame,YY)

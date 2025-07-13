@@ -4,17 +4,38 @@ local find = _G.string.find
 local gsub = _G.string.gsub
 local match = _G.string.match
 local gmatch=_G.string.gmatch
-local _, _, _, tocversion = GetBuildInfo()
 local Data=addonTable.Data
+local Fun=addonTable.Fun
 --------------
 local QuickChatfun = addonTable.QuickChatfun
 local FasongYCqingqiu=addonTable.Fun.FasongYCqingqiu
 local GetRaceClassTXT=addonTable.Fun.GetRaceClassTXT
-
+local GetItemInfoInstant=GetItemInfoInstant or C_Item and C_Item.GetItemInfoInstant
+local GetItemStats=GetItemStats or C_Item and C_Item.GetItemStats
 --远程观察图标
 local wanjiaxinxil = {}
 local ClassColor=Data.ClassColor
 local Texwidth,Texheight = 500,500
+local gemList = {
+	["EMPTY_SOCKET_META"]=136257,--多彩
+	["EMPTY_SOCKET_BLUE"]=136256,--蓝色
+	["EMPTY_SOCKET_RED"]=136258,--红色
+	["EMPTY_SOCKET_YELLOW"]=136259,--黄色
+}
+local function GetGemList(linkx)
+	local baoshiinfo = {}
+    local statsg = GetItemStats(linkx)
+    if statsg then
+	    for key, num in pairs(statsg) do
+	        if (key:match("EMPTY_SOCKET_")) then
+	            for i = 1, num do
+	           		table.insert(baoshiinfo, key)
+	            end
+	        end
+	    end
+	end
+	return baoshiinfo
+end
 local function ShowZb_Link_Icon(newText)
 	if PIGA["Chat"]["FastCopy"] or PIGA["Chat"]["ShowZb"] then
 		local namexShowZb=""
@@ -43,24 +64,61 @@ local function ShowZb_Link_Icon(newText)
 			end
 		end
 	end
-	if PIGA["Chat"]["ShowLinkIcon"] then
+	if PIGA["Chat"]["ShowLinkIcon"] or PIGA["Chat"]["ShowLinkLV"] or PIGA["Chat"]["ShowLinkSlots"] then
 		if newText:match("Hitem:") then
 			local tihuanidlist = {}
-			for word in newText:gmatch("|cff%w%w%w%w%w%w|Hitem:(%d-):") do
-				tihuanidlist[word]=GetItemIcon(word)
+			for word in newText:gmatch("|(Hitem:.-)|h") do
+				tihuanidlist[word] = {}
+				if PIGA["Chat"]["ShowLinkIcon"] then
+					tihuanidlist[word]["icon"]=GetItemIcon(word)
+				end
+				if PIGA["Chat"]["ShowLinkLV"] then
+					local effectiveILvl, isPreview, baseILvl = GetDetailedItemLevelInfo(word)
+					tihuanidlist[word]["LV"]=effectiveILvl or 0
+				end
+				if PIGA["Chat"]["ShowLinkSlots"] then
+					local itemID, itemType, itemSubType, itemEquipLoc = GetItemInfoInstant(word)
+					if _G[itemEquipLoc] then
+						tihuanidlist[word]["Slots"]=itemSubType.."-".._G[itemEquipLoc]
+					end
+				end
+				if PIGA["Chat"]["ShowLinkGem"] then
+				    tihuanidlist[word]["Gem"]=GetGemList(word)
+				end
 			end
 			for k,v in pairs(tihuanidlist) do
-				newText=newText:gsub("(|cff%w%w%w%w%w%w|Hitem:"..k..":)","|T"..v..":0|t%1");
+				if PIGA["Chat"]["ShowLinkIcon"] then
+					newText=newText:gsub("(|cff%w%w%w%w%w%w|"..k.."|h)","|T"..v.icon..":0|t%1");
+				end
+				if PIGA["Chat"]["ShowLinkLV"] or PIGA["Chat"]["ShowLinkSlots"] then
+					local tihuanneirong = ""
+					if PIGA["Chat"]["ShowLinkLV"] then
+						tihuanneirong=tihuanneirong..v.LV
+					end
+					if PIGA["Chat"]["ShowLinkSlots"] and v.Slots then
+						tihuanneirong=tihuanneirong..v.Slots
+					end
+					newText=newText:gsub("(|cff%w%w%w%w%w%w|"..k.."|h%[)(.-%]|h|r)","%1("..tihuanneirong..")%2");
+					if PIGA["Chat"]["ShowLinkGem"] and #v.Gem>0 then
+						local GemTxt = ""
+						for ixx=1,#v.Gem do
+							GemTxt=GemTxt.."|T"..gemList[v.Gem[ixx]]..":0|t"
+						end
+						newText=newText:gsub("(|cff%w%w%w%w%w%w|"..k.."|h%[.-%]|h|r)","%1"..GemTxt);
+					end
+				end
 			end
 		end
 	end
 	return newText
 end
+local is_slist_1=Fun.is_slist_1
 local function tiqu_UnitID(self,event,arg1,...)
 	local arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10,arg11,arg12=...
 	if arg5 and arg12 then
 		local nameg, fuwqi = strsplit("-", arg5);
-		if fuwqi==Pig_OptionsUI.Realm then
+		if is_slist_1(nameg) then return true end
+		if fuwqi==PIG_OptionsUI.Realm then
 			wanjiaxinxil[nameg]=arg12
 		else
 			wanjiaxinxil[arg5]=arg12
@@ -113,7 +171,7 @@ local function PindaoName(text)
 				local text=text:gsub("|h%[小队%]|h", "|h%["..JJM[3].."%]|h")--小队
 				--xuhao
 				local text=text:gsub("|h%[(%d+)%. "..TRADE.." %- 城市%]|h", "|h%[%1%.交%]|h")
-				if tocversion>99999 then
+				if PIG_MaxTocversion(100000,true) then
 					local text=text:gsub("|h%[(%d+)%. "..TRADE.." %(服务%) %- 城市%]|h", "|h%[%1%.服%]|h")
 					local text=text:gsub("|h%[(%d+)%. 新手聊天%]|h", "|h%[%1%.新%]|h")
 					return text
@@ -126,7 +184,7 @@ local function PindaoName(text)
 				local text=text:gsub("|h%[小隊%]|h", "|h%["..JJM[3].."%]|h")--小队
 				--xuhao
 				local text=text:gsub("|h%[(%d+)%. "..TRADE.." %- 城鎮%]|h", "|h%[%1%.交%]|h")
-				if tocversion>99999 then
+				if PIG_MaxTocversion(100000,true) then
 					local text=text:gsub("|h%[(%d+)%. "..TRADE.." %(服務%) %- 城鎮%]|h", "|h%[%1%.服%]|h")
 					local text=text:gsub("|h%[(%d+)%. 新手聊天%]|h", "|h%[%1%.新%]|h")
 					return text
@@ -141,25 +199,25 @@ local function PindaoName(text)
 end
 
 --修复点击密语
--- Pig_OptionsUI.Plus_chat = PIGCheckbutton(Pig_OptionsUI,{"BOTTOMRIGHT", Pig_OptionsUI, "TOPRIGHT", -340, 2},{"修复聊天框点击密语","修复聊天框点击密语无效问题"})
--- Pig_OptionsUI.Plus_chat:SetScript("OnClick", function (self)
+-- PIG_OptionsUI.Plus_chat = PIGCheckbutton(PIG_OptionsUI,{"BOTTOMRIGHT", PIG_OptionsUI, "TOPRIGHT", -340, 2},{"修复聊天框点击密语","修复聊天框点击密语无效问题"})
+-- PIG_OptionsUI.Plus_chat:SetScript("OnClick", function (self)
 -- 	if self:GetChecked() then
 -- 		PIGA["Chat"]["Plus_chat"]=true;
 -- 	else
 -- 		PIGA["Chat"]["Plus_chat"]=false;
 -- 	end
--- 	Pig_OptionsUI.Plus_chat:Plus_chat_xifu()
+-- 	PIG_OptionsUI.Plus_chat:Plus_chat_xifu()
 -- end);
--- Pig_OptionsUI.Plus_chat:HookScript("OnShow", function(self)
+-- PIG_OptionsUI.Plus_chat:HookScript("OnShow", function(self)
 -- 	self:SetChecked(PIGA["Chat"]["Plus_chat"])
 -- end)
--- function Pig_OptionsUI.Plus_chat:Plus_chat_xifu()
+-- function PIG_OptionsUI.Plus_chat:Plus_chat_xifu()
 -- 	if PIGA["Chat"]["Plus_chat"]==nil then PIGA["Chat"]["Plus_chat"] = true end
 -- 	if PIGA["Chat"]["Plus_chat"] then
 -- 		local old_ChatFrame_SendTell=ChatFrame_SendTell
 -- 		ChatFrame_SendTell=function(name, chatFrame,pig)
 -- 			local name1,server2 = strsplit("-",name)
--- 			if Pig_OptionsUI.Realm==server2 then
+-- 			if PIG_OptionsUI.Realm==server2 then
 -- 				name = name1
 -- 			end
 -- 			local editBox = ChatEdit_ChooseBoxForSend(chatFrame);	
@@ -187,9 +245,9 @@ function QuickChatfun.PIGMessage()
 		if ( strsub(text, 1, 11) ~= "garrmission" ) then return end
 		local nametext = strsub(text, 13);
 		local gnid,name_server = strsplit(":", nametext);--lineID, chatType, chatTarget
-		if tocversion<100000 then
+		if PIG_MaxTocversion() then
 			local name,server = strsplit("-",name_server)
-			if Pig_OptionsUI.Realm==server then
+			if PIG_OptionsUI.Realm==server then
 				name_server = name
 			end
 		end
@@ -237,11 +295,11 @@ function QuickChatfun.PIGMessage()
 			local msninfo = chatID.AddMessage
 			chatID.AddMessage = function(frame, text, ...)
 				--local text=text:gsub("|cff%w%w%w%w%w%w|Hmount:.-|h%[","");
-				--ChatFrame99:AddMessage(text:gsub("|", "||"));
+				--PIG_ChatFrameKeyWord:AddMessage(text:gsub("|", "||"));
 				--if i==1 then table.insert(PIGA["xxxxxx"],text) end
 				if text and text~="" and text:match("player") then
 					local text=PindaoName(text)
-					local text=ShowZb_Link_Icon(text,frame)
+					local text=ShowZb_Link_Icon(text)
 					return msninfo(frame, text, ...)
 				end
 				return msninfo(frame, text, ...)

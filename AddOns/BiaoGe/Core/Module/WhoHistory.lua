@@ -14,17 +14,14 @@ local RGB_16 = ns.RGB_16
 local GetClassRGB = ns.GetClassRGB
 local SetClassCFF = ns.SetClassCFF
 local GetText_T = ns.GetText_T
-local FrameDongHua = ns.FrameDongHua
-local FrameHide = ns.FrameHide
 local AddTexture = ns.AddTexture
 local GetItemID = ns.GetItemID
 
 local Maxb = ns.Maxb
-local Maxi = ns.Maxi
 
 local pt = print
 local realmID = GetRealmID()
-local player = UnitName("player")
+local player = BG.playerName
 local realmName = GetRealmName()
 
 BG.Init(function()
@@ -108,8 +105,8 @@ BG.Init(function()
                 GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
                 GameTooltip:ClearLines()
                 GameTooltip:AddLine(self:GetText(), 1, 1, 1, true)
-                GameTooltip:AddLine(L["|cffFFFFFF左键：|r搜索该记录"], 1, 0.82, 0)
-                GameTooltip:AddLine(L["|cffFFFFFF右键：|r删除该记录"], 1, 0.82, 0)
+                GameTooltip:AddLine(AddTexture("LEFT") .. L["搜索该记录"], 1, 0.82, 0)
+                GameTooltip:AddLine(AddTexture("RIGHT") .. L["删除该记录"], 1, 0.82, 0)
                 GameTooltip:Show()
             end)
             bt:SetScript("OnLeave", function(self)
@@ -348,9 +345,7 @@ BG.Init(function()
         end
     end
 
-    BG.RegisterEvent("WHO_LIST_UPDATE", function()
-        GetWhoText()
-    end)
+    BG.RegisterEvent("WHO_LIST_UPDATE",GetWhoText)
 
     WhoFrame:HookScript("OnShow", function()
         if BiaoGe.options["searchList"] == 1 then
