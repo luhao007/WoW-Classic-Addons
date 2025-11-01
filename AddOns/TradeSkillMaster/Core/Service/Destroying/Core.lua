@@ -5,25 +5,27 @@
 -- ------------------------------------------------------------------------------ --
 
 local TSM = select(2, ...) ---@type TSM
-local Destroying = TSM:NewPackage("Destroying")
-local Environment = TSM.Include("Environment")
-local DisenchantInfo = TSM.Include("Data.DisenchantInfo")
-local Container = TSM.Include("Util.Container")
-local Database = TSM.Include("Util.Database")
-local Event = TSM.Include("Util.Event")
-local SlotId = TSM.Include("Util.SlotId")
-local Table = TSM.Include("Util.Table")
-local TempTable = TSM.Include("Util.TempTable")
-local ItemString = TSM.Include("Util.ItemString")
-local Reactive = TSM.Include("Util.Reactive")
-local Future = TSM.Include("Util.Future")
-local Log = TSM.Include("Util.Log")
-local Threading = TSM.Include("Service.Threading")
-local ItemInfo = TSM.Include("Service.ItemInfo")
-local CustomPrice = TSM.Include("Service.CustomPrice")
-local Conversions = TSM.Include("Service.Conversions")
-local BagTracking = TSM.Include("Service.BagTracking")
-local Settings = TSM.Include("Service.Settings")
+local Destroying = TSM:NewPackage("Destroying") ---@type AddonPackage
+local ClientInfo = TSM.LibTSMWoW:Include("Util.ClientInfo")
+local Container = TSM.LibTSMWoW:Include("API.Container")
+local Spell = TSM.LibTSMWoW:Include("API.Spell")
+local TradeSkill = TSM.LibTSMWoW:Include("API.TradeSkill")
+local Database = TSM.LibTSMUtil:Include("Database")
+local Event = TSM.LibTSMWoW:Include("Service.Event")
+local SlotId = TSM.LibTSMWoW:Include("Type.SlotId")
+local Table = TSM.LibTSMUtil:Include("Lua.Table")
+local TempTable = TSM.LibTSMUtil:Include("BaseType.TempTable")
+local ItemString = TSM.LibTSMTypes:Include("Item.ItemString")
+local Conversion = TSM.LibTSMTypes:Include("Item.Conversion")
+local Reactive = TSM.LibTSMUtil:Include("Reactive")
+local Future = TSM.LibTSMUtil:IncludeClassType("Future")
+local Log = TSM.LibTSMUtil:Include("Util.Log")
+local BinarySearch = TSM.LibTSMUtil:Include("Util.BinarySearch")
+local Threading = TSM.LibTSMTypes:Include("Threading")
+local ItemInfo = TSM.LibTSMService:Include("Item.ItemInfo")
+local CustomString = TSM.LibTSMTypes:Include("CustomString")
+local Conversions = TSM.LibTSMApp:Include("Service.Conversions")
+local BagTracking = TSM.LibTSMService:Include("Inventory.BagTracking")
 local private = {
 	combineThread = nil,
 	destroyThread = nil,
@@ -54,7 +56,8 @@ local SPELL_IDS = {
 local ITEM_SUB_CLASS_METAL_AND_STONE = 7
 local ITEM_SUB_CLASS_HERB = 9
 local TARGET_SLOT_ID_MULTIPLIER = 1000000
-local CLEANUP_THRESHOLD = 60 * 24 * 60 * 60
+local CLEANUP_TIME_THRESHOLD = 60 * 24 * 60 * 60
+local CLEANUP_MAX_ENTRIES = 100
 local GEM_CHIPS = {
 	["i:129099"] = "i:129100",
 	["i:130200"] = "i:129100",
@@ -64,7 +67,7 @@ local GEM_CHIPS = {
 	["i:130204"] = "i:129100",
 }
 local START_MESSAGE = newproxy()
-local STATE_SCHEMA = Reactive.CreateStateSchema()
+local STATE_SCHEMA = Reactive.CreateStateSchema("DESTROYING_STATE")
 	:AddBooleanField("canCombine", false)
 	:Commit()
 
@@ -74,7 +77,7 @@ local STATE_SCHEMA = Reactive.CreateStateSchema()
 -- Module Functions
 -- ============================================================================
 
-function Destroying.OnInitialize()
+function Destroying.OnInitialize(settingsDB)
 	private.state = STATE_SCHEMA:CreateState()
 	private.combineThread = Threading.New("COMBINE_STACKS", private.CombineThread)
 	Threading.SetCallback(private.combineThread, private.CombineThreadDone)
@@ -82,7 +85,7 @@ function Destroying.OnInitialize()
 	Threading.SetCallback(private.destroyThread, private.DestroyThreadDone)
 	BagTracking.RegisterCallback(private.UpdateBagDB)
 
-	private.settings = Settings.NewView()
+	private.settings = settingsDB:NewView()
 		:AddKey("global", "internalData", "destroyingHistory")
 		:AddKey("global", "destroyingOptions", "deAbovePrice")
 		:AddKey("global", "destroyingOptions", "deMaxQuality")
@@ -92,17 +95,12 @@ function Destroying.OnInitialize()
 		:RegisterCallback("deMaxQuality", private.UpdateBagDB)
 		:RegisterCallback("includeSoulbound", private.UpdateBagDB)
 
-	local cleanupTime = time() - CLEANUP_THRESHOLD
+	local cleanupTime = time() - CLEANUP_TIME_THRESHOLD
 	for spellId, entries in pairs(private.settings.destroyingHistory) do
 		-- Rely on the entries being sorted in ascending time
-		local removeThroughIndex = nil
-		for i = 1, #entries do
-			if entries[i].time > cleanupTime then
-				break
-			end
-			removeThroughIndex = i
-		end
-		if removeThroughIndex then
+		local index, insertIndex = BinarySearch.Table(entries, cleanupTime, private.GetHistoryEntryTime)
+		local removeThroughIndex = max((index or insertIndex) - 1, #entries - CLEANUP_MAX_ENTRIES)
+		if removeThroughIndex > 0 then
 			Log.Info("Removing %d old entries for %s", removeThroughIndex, tostring(spellId))
 			Table.RemoveRange(entries, 1, removeThroughIndex)
 		end
@@ -142,12 +140,11 @@ function Destroying.OnInitialize()
 	Event.Register("UNIT_SPELLCAST_INTERRUPTED", private.SpellCastEventHandler)
 	Event.Register("UNIT_SPELLCAST_SUCCEEDED", private.SpellCastEventHandler)
 
-	if Environment.HasFeature(Environment.FEATURES.C_TRADE_SKILL_UI) then
-		hooksecurefunc(C_TradeSkillUI, "CraftSalvage", function(spellId, _, itemLocation)
+	if ClientInfo.HasFeature(ClientInfo.FEATURES.C_TRADE_SKILL_UI) then
+		TradeSkill.SecureHookCraftSalvage(function(spellId, _, itemLocation)
 			private.destroySpellId = spellId
 			private.itemSpellId = Container.GetItemId(itemLocation.bagID, itemLocation.slotIndex)
 		end)
-
 		Event.Register("TRADE_SKILL_ITEM_CRAFTED_RESULT", private.TradeSkillCraftResultHandler)
 		Event.Register("TRADE_SKILL_LIST_UPDATE", private.TradeSkillListUpdateHandler)
 	end
@@ -169,6 +166,8 @@ function Destroying.CreateBagQuery()
 		:NotEqual("ignoreSession", true)
 		:NotEqual("ignorePermanent", true)
 		:GreaterThanOrEqual("quantity", Database.OtherFieldQueryParam("minQuantity"))
+		:OrderBy("name", true)
+		:OrderBy("slotId", true)
 end
 
 function Destroying.CanCombinePublisher()
@@ -181,10 +180,10 @@ function Destroying.StartCombine()
 	return private.combineFuture
 end
 
-function Destroying.StartDestroy(button, row, callback)
+function Destroying.StartDestroy(button, itemString, slotId)
 	private.destroyFuture:Start()
 	private.destroyThreadRunning = true
-	Threading.Start(private.destroyThread, button, row)
+	Threading.Start(private.destroyThread, button, itemString, slotId)
 	-- we need the thread to run now so send it a sync message
 	Threading.SendSyncMessage(private.destroyThread, START_MESSAGE)
 	return private.destroyFuture
@@ -289,13 +288,14 @@ end
 -- Destroy Thread
 -- ============================================================================
 
-function private.DestroyThread(button, row)
+function private.DestroyThread(button, itemString, slotId)
 	-- We get sent a sync message so we run right away
 	assert(Threading.ReceiveMessage() == START_MESSAGE)
 
-	local itemString, spellId, bag, slot = row:GetFields("itemString", "spellId", "bag", "slot")
-	local startQuantity = select(2, Container.GetItemInfo(bag, slot))
-	button:SetMacroText(format("/cast %s;\n/use %d %d", GetSpellInfo(spellId), bag, slot))
+	local bag, slot = SlotId.Split(slotId)
+	local spellId = private.destroyInfoDB:GetUniqueRowField("itemString", itemString, "spellId")
+	local startQuantity = Container.GetStackCount(bag, slot)
+	button:SetMacroText(format("/cast %s;\n/use %d %d", Spell.GetInfo(spellId), bag, slot))
 
 	-- Wait for the spell cast to start or fail
 	private.pendingSpellId = spellId
@@ -357,7 +357,7 @@ function private.DestroyThread(button, row)
 
 	-- Wait up to a second for the item we destroyed to be removed from the bags
 	local timeout = GetTime() + 1
-	while startQuantity == select(2, Container.GetItemInfo(bag, slot)) do
+	while startQuantity == Container.GetStackCount(bag, slot) do
 		if GetTime() > timeout then
 			return false
 		end
@@ -379,7 +379,7 @@ function private.SpellCastEventHandler(event, unit, _, spellId)
 	if unit ~= "player" then
 		return
 	end
-	if Environment.HasFeature(Environment.FEATURES.C_TRADE_SKILL_UI) and event == "UNIT_SPELLCAST_START" then
+	if ClientInfo.HasFeature(ClientInfo.FEATURES.C_TRADE_SKILL_UI) and private.destroySpellId and private.destroySpellId == spellId and event ~= "UNIT_SPELLCAST_START" and event ~= "UNIT_SPELLCAST_SUCCEEDED" then
 		private.destroySpellId = nil
 		private.itemSpellId = nil
 	end
@@ -433,13 +433,15 @@ function private.UpdateBagDB()
 		:OrderBy("slotId", true)
 		:Select("slotId", "itemString", "quantity")
 	if not private.settings.includeSoulbound then
-		query:Equal("isBoP", false)
-			:Equal("isBoA", false)
+		query:Equal("isBound", false)
 	end
-	if Environment.IsWrathClassic() then
-		private.disenchantSkillLevel = TSM.Crafting.PlayerProfessions.GetProfessionSkill(UnitName("player"), GetSpellInfo(7411))
-		private.jewelcraftSkillLevel = TSM.Crafting.PlayerProfessions.GetProfessionSkill(UnitName("player"), GetSpellInfo(28897))
-		private.inscriptionSkillLevel = TSM.Crafting.PlayerProfessions.GetProfessionSkill(UnitName("player"), GetSpellInfo(45357))
+	if ClientInfo.IsPandaClassic() then
+		local disenchantName = Spell.GetInfo(7411)
+		local jewelcraftName = Spell.GetInfo(28897)
+		local inscriptionName = Spell.GetInfo(45357)
+		private.disenchantSkillLevel = TSM.Crafting.PlayerProfessions.GetProfessionSkill(UnitName("player"), disenchantName)
+		private.jewelcraftSkillLevel = TSM.Crafting.PlayerProfessions.GetProfessionSkill(UnitName("player"), jewelcraftName)
+		private.inscriptionSkillLevel = TSM.Crafting.PlayerProfessions.GetProfessionSkill(UnitName("player"), inscriptionName)
 	end
 	for _, slotId, itemString, quantity in query:Iterator() do
 		local minQuantity = nil
@@ -480,8 +482,8 @@ function private.ProcessBagItem(itemString)
 	if not spellId then
 		return
 	elseif spellId == SPELL_IDS.disenchant then
-		local deAbovePrice = CustomPrice.GetValue(private.settings.deAbovePrice, itemString) or 0
-		local deValue = CustomPrice.GetValue("Destroy", itemString) or math.huge
+		local deAbovePrice = CustomString.GetValue(private.settings.deAbovePrice, itemString) or 0
+		local deValue = CustomString.GetValue("Destroy", itemString) or math.huge
 		if deValue < deAbovePrice then
 			return
 		end
@@ -498,12 +500,12 @@ function private.IsDestroyable(itemString)
 	local quality = ItemInfo.GetQuality(itemString)
 	if ItemInfo.IsDisenchantable(itemString) and quality <= private.settings.deMaxQuality then
 		local hasSourceItem = true
-		if Environment.IsWrathClassic() then
+		if ClientInfo.IsPandaClassic() then
 			local classId = ItemInfo.GetClassId(itemString)
 			local itemLevel = ItemInfo.GetItemLevel(ItemString.GetBase(itemString))
 			hasSourceItem = false
-			for targetItemString in DisenchantInfo.TargetItemIterator() do
-				local _, _, _, _, skillRequired = DisenchantInfo.GetTargetItemSourceInfo(targetItemString, classId, quality, itemLevel)
+			for targetItemString in Conversion.DisenchantTargetItemIterator() do
+				local _, _, _, _, skillRequired = Conversions.GetDisenchantTargetItemSourceInfo(targetItemString, classId, quality, itemLevel)
 				if private.disenchantSkillLevel and skillRequired and private.disenchantSkillLevel >= skillRequired then
 					hasSourceItem = true
 				end
@@ -522,10 +524,10 @@ function private.IsDestroyable(itemString)
 	local subClassId = ItemInfo.GetSubClassId(itemString)
 	-- Workaround for Fire Leaf (i:39970) not being treated as an herb (at least in classsic)
 	if (classId == Enum.ItemClass.Tradegoods and subClassId == ITEM_SUB_CLASS_HERB) or itemString == "i:39970" then
-		conversionMethod = Conversions.METHOD.MILL
+		conversionMethod = Conversion.METHOD.MILL
 		destroySpellId = SPELL_IDS.milling
 	elseif classId == Enum.ItemClass.Tradegoods and subClassId == ITEM_SUB_CLASS_METAL_AND_STONE then
-		conversionMethod = Conversions.METHOD.PROSPECT
+		conversionMethod = Conversion.METHOD.PROSPECT
 		destroySpellId = SPELL_IDS.prospect
 	else
 		private.canDestroyCache[itemString] = false
@@ -534,8 +536,8 @@ function private.IsDestroyable(itemString)
 	end
 
 	local hasSourceItem = false
-	for _, _, _, _, _, _, _, skillRequired in Conversions.TargetItemsByMethodIterator(itemString, conversionMethod) do
-		if not skillRequired or (conversionMethod == Conversions.METHOD.PROSPECT and private.jewelcraftSkillLevel and skillRequired and private.jewelcraftSkillLevel >= skillRequired) or (conversionMethod == Conversions.METHOD.MILL and private.inscriptionSkillLevel and skillRequired and private.inscriptionSkillLevel >= skillRequired) then
+	for _, _, _, _, _, _, _, skillRequired in Conversion.TargetItemsByMethodIterator(itemString, conversionMethod) do
+		if not skillRequired or (conversionMethod == Conversion.METHOD.PROSPECT and private.jewelcraftSkillLevel and skillRequired and private.jewelcraftSkillLevel >= skillRequired) or (conversionMethod == Conversion.METHOD.MILL and private.inscriptionSkillLevel and skillRequired and private.inscriptionSkillLevel >= skillRequired) then
 			hasSourceItem = true
 		end
 	end
@@ -546,4 +548,8 @@ function private.IsDestroyable(itemString)
 	end
 
 	return private.canDestroyCache[itemString], private.destroyQuantityCache[itemString]
+end
+
+function private.GetHistoryEntryTime(entry)
+	return entry.time
 end

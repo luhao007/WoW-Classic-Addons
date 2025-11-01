@@ -63,8 +63,14 @@ local TITAN_PANEL_BUTTON_TYPE_ICON = 2;
 local TITAN_PANEL_BUTTON_TYPE_COMBO = 3;
 local TITAN_PANEL_BUTTON_TYPE_CUSTOM = 4;
 local pluginOnEnter = nil;
+
+-- Used for drag and drop, assuming one can only drag one plugin :)
 local TITAN_PANEL_MOVE_ADDON = "";
 local TITAN_PANEL_DROPOFF_ADDON = "";
+local Drag_init = {}
+local drag = Drag_init
+local FROM_BAR_SHORT = ""
+local FROM_BAR_FRAME = ""
 
 -- Library instances
 local LibQTip = nil
@@ -140,7 +146,7 @@ end
 ---@param xOffset number X offset
 ---@param yOffset number Y offset
 ---@param frame table Tooltip frame
---- Set Titan_Global.debug.tool_tips to output debug
+--- Set Titan_Debug.titan.tool_tips to output debug
 local function TitanTooltip_SetOwnerPosition(parent, anchorPoint, relativeToFrame, relativePoint, xOffset, yOffset, frame)
 	-- Changes for 9.1.5 Removed the background template from the GameTooltip
 	-- Making changes to it difficult and possibly changing the tooltip globally.
@@ -159,20 +165,18 @@ local function TitanTooltip_SetOwnerPosition(parent, anchorPoint, relativeToFram
 		frame:SetScale(TitanPanelGetVar("TooltipFont"));
 	end
 
-	if Titan_Global.debug.tool_tips then
 		local dbg_msg = "_pos"
 			.. " '" .. tostring(frame:GetName()) .. "'"
 			.. " " .. tostring(frame:IsShown()) .. ""
 			.. " @ '" .. tostring(relativeToFrame) .. "'"
 			.. " " .. tostring(_G[relativeToFrame]:IsShown()) .. ""
-		TitanDebug(dbg_msg, "normal")
+		Titan_Debug.Out('titan', 'tool_tips', dbg_msg)
 		dbg_msg = ">>_pos"
 			.. " " .. tostring(anchorPoint) .. ""
 			.. " " .. tostring(relativePoint) .. ""
 			.. " w" .. tostring(format("%0.1f", frame:GetWidth())) .. ""
 			.. " h" .. tostring(format("%0.1f", frame:GetHeight())) .. ""
-		TitanDebug(dbg_msg, "normal")
-	end
+		Titan_Debug.Out('titan', 'tool_tips', dbg_msg)
 end
 
 ---local Helper to set the screen position of the tooltip frame
@@ -211,7 +215,7 @@ end
 
 ---local Set the tooltip (GameTooltip) of the given Titan plugin.
 ---@param self table Plugin frame
---- Set Titan_Global.debug.tool_tips to output debug of this routine
+--- Set Titan_Debug.titan.tool_tips to output debug of this routine
 local function TitanPanelButton_SetTooltip(self)
 	local dbg_msg = "TT:"
 	local ok = false
@@ -267,6 +271,8 @@ local function TitanPanelButton_SetTooltip(self)
 			self.plugin_id = id
 			self.plugin_frame = TitanUtils_ButtonName(id)
 			if (plugin and plugin.tooltipCustomFunction) then
+                -- Hide the GameTooltip while being updated, to avoid race conditions.
+                frame:Hide()
 				-- Prep the tooltip frame
 				TitanTooltip_SetPanelTooltip(self, id, frame);
 
@@ -301,6 +307,8 @@ local function TitanPanelButton_SetTooltip(self)
 				end
 
 				if (tooltipTextFunc) then
+                    -- Hide the GameTooltip while being updated, to avoid race conditions.
+                    frame:Hide()
 					-- Prep the tooltip frame
 					TitanTooltip_SetPanelTooltip(self, id, frame);
 					self.tooltipTitle = plugin.tooltipTitle;
@@ -329,9 +337,7 @@ local function TitanPanelButton_SetTooltip(self)
 		-- no need to waste cycles
 	end
 
-	if Titan_Global.debug.tool_tips then
-		TitanDebug(dbg_msg, "normal")
-	end
+		Titan_Debug.Out('titan', 'tool_tips', dbg_msg)
 end
 
 ---local Is the given Titan plugin template type text?
@@ -377,40 +383,48 @@ end
 --- Set TITAN_PANEL_MOVING so any Titan routine will know a 'drag & drop' is in progress.
 --- Set TITAN_PANEL_MOVE_ADDON so sanity checks can be done on the 'drop'.
 local function TitanPanelButton_OnDragStart(self)
-	if TitanPanelGetVar("LockButtons") or InCombatLockdown() then return end
+	-- Due to API change in 11.2.0, :ClearAllPoints immediately invalidates the rect...
+	-- Need to change order of events between drag start and stop:
+	-- - Remove but not Hide() the plugin - seems Hide() triggers OnDragStop without release of mouse button...
+	-- - Make ALL 'do not drag' checks BEFORE remove!!
+	--
+	-- Dropped Ace Dewdrop-2.0 lib support as of 2025 Sep; last updated 2008 Sep
+	-- Dropped Ace Tablet-2.0 lib support as of 2025 Sep; last updated 2009 Jan (marked as abandoned)
 
-	local frname = self;
-
-	-- Clear button positions or we'll grab the button and all buttons 'after'
-	for i, j in pairs(TitanPanelSettings.Buttons) do
-		local pluginid = _G[TitanUtils_ButtonName(TitanPanelSettings.Buttons[i])];
-		if pluginid then
-			pluginid:ClearAllPoints()
-		end
+	if TitanPanelGetVar("LockButtons") or InCombatLockdown() then
+		return -- not requested or not allowed
+	else
+		-- Proceed
 	end
 
-	-- Start the drag; close any tooltips and open control frames
+	local frname = self
+	local frstr = self:GetName()
+	local plugin_id = TitanUtils_GetButtonID(frstr)
+	local str = ""
+	str = "_OnDragStart start "
+		.." "..tostring(plugin_id)..""
+--		.." from "..tostring(FROM_BAR_SHORT)..""
+	Titan_Debug.Out('titan', 'plugin_drag_drop', str)
+
+
+	-- Tell Titan that a drag & drop is in process
+	TITAN_PANEL_MOVING = 1;
+	-- Start the drag
 	frname:StartMoving();
 	frname.isMoving = true;
+
+	-- Close any tooltips and control frames
 	TitanUtils_CloseAllControlFrames();
 	TitanPanelRightClickMenu_Close();
-	if AceLibrary then
-		if AceLibrary:HasInstance("Dewdrop-2.0") then
-			AceLibrary("Dewdrop-2.0"):Close()
-		end
-		if AceLibrary:HasInstance("Tablet-2.0") then
-			AceLibrary("Tablet-2.0"):Close()
-		end
-	end
 	GameTooltip:Hide();
+
 	-- LibQTip-1.0 support code
 	LibQTip = LibStub("LibQTip-1.0", true)
 	if LibQTip then
-		local key, tip
 		for key, tip in LibQTip:IterateTooltips() do
 			if tip then
 				local _, relativeTo = tip:GetPoint()
-				if relativeTo and relativeTo:GetName() == self:GetName() then
+				if relativeTo and relativeTo:GetName() == frstr then
 					tip:Hide()
 					break
 				end
@@ -419,11 +433,18 @@ local function TitanPanelButton_OnDragStart(self)
 	end
 	-- /LibQTip-1.0 support code
 
-	-- Hold the plugin id so we can do checks on the drop
-	TITAN_PANEL_MOVE_ADDON = TitanUtils_GetButtonID(self:GetName());
+	FROM_BAR_SHORT = TitanUtils_GetWhichBar(plugin_id) -- short name
+	str = "_OnDragStart moving"
+		.." "..tostring(plugin_id)..""
+		.." from "..tostring(FROM_BAR_SHORT)..""
+	Titan_Debug.Out('titan', 'plugin_drag_drop', str)
+	-- Clear the plugin placement so we only move the intended plugin
+	TitanPanel_RemoveButton(plugin_id, false)
+	frname:Show() -- 'remove' hid the plugin
 
-	-- Tell Titan that a drag & drop is in process
-	TITAN_PANEL_MOVING = 1;
+	-- Hold the plugin id so we can do checks on the drop
+	TITAN_PANEL_MOVE_ADDON = plugin_id
+
 	-- Store the OnEnter handler so the tooltip does not show - or other oddities
 	pluginOnEnter = self:GetScript("OnEnter")
 	self:SetScript("OnEnter", nil)
@@ -435,90 +456,68 @@ end
 --- Clear TITAN_PANEL_MOVING.
 --- Clear TITAN_PANEL_MOVE_ADDON.
 local function TitanPanelButton_OnDragStop(self)
-	if TitanPanelGetVar("LockButtons") then
-		return
-	end
-	local ok_to_move = true
-	local nonmovableFrom = false;
-	local nonmovableTo = false;
-	local frname = self;
+	-- The plugin is under the cursor so we MUST place the plugin somewhere!
+	-- We cannot just return.
+	-- Also means we can no longer swap plugins.
+	-- For now, we will drop the plugin on the bar under the cursor;
+	-- placing the plugin 'right' if set for that plugin
+
+	local frname = self
+	local frstr = self:GetName()
+	local plugin_id = TitanUtils_GetButtonID(frstr)
+
+	local str = ""
+	str = "_OnDragStop start "
+		.." "..tostring(plugin_id)..""
+	Titan_Debug.Out('titan', 'plugin_drag_drop', str)
 
 	if TITAN_PANEL_MOVING == 1 then
 		frname:StopMovingOrSizing();
 		frname.isMoving = false;
 		TITAN_PANEL_MOVING = 0;
 
-		-- See if the plugin is supposed to stay on the bar it is on
-		if TitanGetVar(TITAN_PANEL_MOVE_ADDON, "ForceBar") then
-			ok_to_move = false
-		end
+		local bar
+		local tbar = "" -- bar short name
+		local fbar = TitanGetVar(plugin_id, "ForceBar")
 
-		-- eventually there could be several reasons to not allow
-		-- the plugin to move
-		if ok_to_move then
-			local i, j;
-			for i, j in pairs(TitanPanelSettings.Buttons) do
-				local pluginid =
-					_G[TitanUtils_ButtonName(TitanPanelSettings.Buttons[i])];
-				--					_G["TitanPanel"..TitanPanelSettings.Buttons[i].."Button"];
-				if (pluginid and MouseIsOver(pluginid)) and frname ~= pluginid then
-					TITAN_PANEL_DROPOFF_ADDON = TitanPanelSettings.Buttons[i];
+		str = "_OnDragStop "
+			.." "..tostring(plugin_id)..""
+		if fbar == nil
+		or fbar == false then
+			-- Find which bar it was dropped on
+			for idx, v in pairs(TitanBarData) do
+				bar = idx
+				if (bar and MouseIsOver(_G[bar])) then
+					tbar = TitanBarData[bar].name
 				end
 			end
-
-			-- switching sides is not allowed
-			nonmovableFrom = TitanUtils_ToRight(TITAN_PANEL_MOVE_ADDON)
-			nonmovableTo = TitanUtils_ToRight(TITAN_PANEL_DROPOFF_ADDON)
-			if nonmovableTo ~= nonmovableFrom then
-				TITAN_PANEL_DROPOFF_ADDON = "";
-			end
-
-			if TITAN_PANEL_DROPOFF_ADDON == "" then
-				-- See if the plugin was dropped on a bar rather than
-				-- another plugin.
-				local bar
-				local tbar = nil
-				-- Find which bar it was dropped on
-				for idx, v in pairs(TitanBarData) do
-					bar = idx
-					if (bar and MouseIsOver(_G[bar])) then
-						tbar = bar
-					end
-				end
-
-				if tbar then
-					TitanPanel_RemoveButton(TITAN_PANEL_MOVE_ADDON)
-					TitanUtils_AddButtonOnBar(TitanBarData[tbar].name, TITAN_PANEL_MOVE_ADDON)
-				else
-					-- not sure what the user did...
-				end
+			if tbar == "" then
+				-- not sure what the user did...
+				-- Likely released on UI so put back on the bar it came from
+				str = str .." back to"
+				tbar = FROM_BAR_SHORT
 			else
-				-- plugin was dropped on another plugin - swap (for now)
-				local dropoff = TitanUtils_GetCurrentIndex(TitanPanelSettings.Buttons
-				, TITAN_PANEL_DROPOFF_ADDON);
-				local pickup = TitanUtils_GetCurrentIndex(TitanPanelSettings.Buttons
-				, TITAN_PANEL_MOVE_ADDON);
-				local dropoffbar = TitanUtils_GetWhichBar(TITAN_PANEL_DROPOFF_ADDON);
-				local pickupbar = TitanUtils_GetWhichBar(TITAN_PANEL_MOVE_ADDON);
-
-				if dropoff ~= nil and dropoff ~= "" then
-					-- TODO: Change to 'insert' rather than swap
-					TitanPanelSettings.Buttons[dropoff] = TITAN_PANEL_MOVE_ADDON;
-					TitanPanelSettings.Location[dropoff] = dropoffbar;
-					TitanPanelSettings.Buttons[pickup] = TITAN_PANEL_DROPOFF_ADDON;
-					TitanPanelSettings.Location[pickup] = pickupbar;
-				end
+				str = str .." onto"
 			end
+		else
+			str = str .." force to"
+			tbar = fbar -- put it back; allows user to shift it
 		end
 
-		-- This is important! The start drag cleared the button positions so
-		-- the buttons need to be put back properly.
-		TitanPanel_InitPanelButtons();
+		str = str .." "..tostring(tbar)..""
+		Titan_Debug.Out('titan', 'plugin_drag_drop', str)
+		TitanUtils_AddButtonOnBar(tbar, TITAN_PANEL_MOVE_ADDON)
+
+		-- The plugin was added a bar so clean up.
 		TITAN_PANEL_MOVE_ADDON = "";
-		TITAN_PANEL_DROPOFF_ADDON = "";
-		-- Restore the OnEnter script handler
-		if pluginOnEnter then self:SetScript("OnEnter", pluginOnEnter) end
+		if pluginOnEnter then
+			-- Restore the OnEnter script handler
+			self:SetScript("OnEnter", pluginOnEnter) 
+		else
+			-- No OnEnter was found at drag start
+		end
 		pluginOnEnter = nil;
+
 	end
 end
 
@@ -857,9 +856,7 @@ local function TitanPanelButton_SetButtonText(id)
 		-- no valid routine to update the plugin text
 		dbg_msg = dbg_msg .. " | no valid routine found"
 	end
-	if Titan_Global.debug.plugin_text then
-		TitanDebug(dbg_msg, "normal")
-	end
+		Titan_Debug.Out('titan', 'plugin_text', dbg_msg)
 end
 
 ---local Set the width of the given Titan plugin - text only.
@@ -1060,6 +1057,32 @@ function TitanPanelDetectPluginMethod(id)
 	TitanPluginframe:SetScript("OnDragStop", function(self)
 		TitanPanelButton_OnDragStop(self);
 	end)
+end
+
+---Titan Sets the OnDragStart & OnDragStop scripts of a Titan plugin.
+---@param self Button Plugin
+function TitanPanelButton_AddMouseScripts(self)
+	-- Ensure the id is not nil
+	if self then
+		self:RegisterForClicks("LeftButtonUp", "RightButtonUp", "MiddleButtonUp");
+		self:RegisterForDrag("LeftButton")
+
+		-- Set the OnDragStart script
+		self:SetScript("OnDragStart", function(self)
+			if not IsShiftKeyDown()
+				and not IsControlKeyDown()
+				and not IsAltKeyDown() then
+				TitanPanelButton_OnDragStart(self)
+			end
+		end)
+
+		-- Set the OnDragStop script
+		self:SetScript("OnDragStop", function(self)
+			TitanPanelButton_OnDragStop(self)
+		end)
+	else
+		-- nothing to add to ??
+	end
 end
 
 ---API Set the icon of the given Titan plugin.

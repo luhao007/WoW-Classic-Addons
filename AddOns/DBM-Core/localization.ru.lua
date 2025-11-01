@@ -6,12 +6,8 @@ local L = DBM_CORE_L
 L.DEADLY_BOSS_MODS						= "Deadly Boss Mods"
 L.DBM									= "DBM"
 
-local guild = GetGuildInfo("player")
 local dateTable = date("*t")
-if C_Seasons and C_Seasons.GetActiveSeason and C_Seasons.GetActiveSeason() == 12 and guild == "OnlyFangs" then
-	L.DEADLY_BOSS_MODS					= "Deadly Boss Lua"
-	L.DBM								= "Boss Loa"
-elseif dateTable.day and dateTable.month and dateTable.day == 1 and dateTable.month == 4 then
+if dateTable.day and dateTable.month and dateTable.day == 1 and dateTable.month == 4 then
 	L.DEADLY_BOSS_MODS					= "Harmless Minion Mods"
 	L.DBM								= "HMM"
 end
@@ -28,9 +24,9 @@ L.LOAD_MOD_SUCCESS					= "Загружен модуль для '%s'. Для до
 L.LOAD_MOD_COMBAT					= "Загрузка '%s' отложена до выхода из боя"
 L.LOAD_GUI_ERROR					= "Не удалось загрузить GUI: %s"
 L.LOAD_GUI_COMBAT					= "GUI не может быть изначально загружено в бою. GUI будет загружено после боя. После загрузки GUI Вы сможете загружать его в бою."
-L.BAD_LOAD							= L.DBM .. " не удалось полностью загрузить модуль для этого подземелья, т.к. Вы находитесь в режиме боя. Как только Вы выйдете из боя, пожалуйста, сделайте /console reloadui как можно скорее."
+L.BAD_LOAD							= L.DBM .. " не удалось полностью загрузить модуль для этого подземелья, т.к. Вы находитесь в режиме боя. Как только Вы выйдете из боя, пожалуйста, перезагрузите интерфейс как можно скорее."
 L.LOAD_MOD_VER_MISMATCH				= "%s не может быть загружен, потому что Ваш DBM-Core не соответствует требованиям. Требуется обновлённая версия."
-L.LOAD_MOD_EXP_MISMATCH				= "%s не может быть загружен, потому что он создан для дополнения WoW, которое в данный момент недоступно. Когда дополнение станет доступно, модуль заработает автоматически."
+L.LOAD_MOD_EXP_MISMATCH				= "%s не может быть загружен, потому что он создан для контента WoW, который в данный момент недоступен. Когда контент станет доступен, модуль заработает автоматически."
 L.LOAD_MOD_TOC_MISMATCH				= "%s не может быть загружен, потому что он создан для патча WoW (%s), который в данный момент недоступен. Когда патч станет доступен, модуль заработает автоматически."
 L.LOAD_MOD_DISABLED					= "%s установлен, но в данный момент отключён. Этот модуль не будет загружен, пока Вы его не включите."
 L.LOAD_MOD_DISABLED_PLURAL			= "%s установлены, но в данный момент отключены. Эти модули не будут загружены, пока Вы их не включите."
@@ -43,39 +39,41 @@ L.TEXT_ONLY_RANGE					= "Радар ограничен только тексто
 L.NO_RANGE							= "Радар не может быть использован, поскольку Blizzard отключила некоторые функции в этой зоне."
 L.NO_ARROW							= "Стрелка не может быть использована в подземельях"
 L.NO_HUD							= "HUDMap не может быть использован в подземельях"
+L.NO_COMMS							= "Связь с аддоном нельзя использовать во время сражений или активных подземелий M+. Используйте эту команду снова после окончания сражения или подземелья."
 
-L.DYNAMIC_DIFFICULTY_CLUMP			= L.DBM .. " отключил динамическое окно проверки дистанции на этом боссе, т.к. нет точной информации о необходимом количестве игроков в одном скоплении для рейда Вашего размера."
-L.DYNAMIC_ADD_COUNT					= L.DBM .. " отключил предупреждения о появлении помощников на этом боссе, т.к. нет точной информации о количестве помощников, которые появляются в рейде Вашего размера."
-L.DYNAMIC_MULTIPLE					= L.DBM .. " отключил несколько таймеров и предупреждений на этом боссе, т.к. нет точной информации о том, как работают механики энкаунтера для рейда Вашего размера."
+L.DYNAMIC_DIFFICULTY_CLUMP			= L.DBM .. " отключил динамическое окно проверки дистанции в этом бою, т.к. нет точной информации о необходимом количестве игроков в одном скоплении для рейда Вашего размера."
+L.DYNAMIC_ADD_COUNT					= L.DBM .. " отключил предупреждения о появлении аддов в этом бою, т.к. нет точной информации о количестве аддов, которые появляются в рейде Вашего размера."
+L.DYNAMIC_MULTIPLE					= L.DBM .. " отключил несколько функций в этом бою, т.к. нет точной информации о некоторых механиках для рейда Вашего размера."
 
 L.LOOT_SPEC_REMINDER				= "Ваша текущая специализация %s. Вы выбрали добычу для специализации %s."
 
 L.BIGWIGS_ICON_CONFLICT				= L.DBM .. " обнаружил, что у Вас включена установка меток в BigWigs и " .. L.DBM .. " одновременно. Пожалуйста, отключите метки в одном из них, чтобы избежать конфликтов."
 
-L.MOD_AVAILABLE						= "Для этого контента доступен дополнительный модуль %s, но он не установлен. Вы можете скачать его с Curse, Wago, WoWI или со страницы релизов на GitHub."
+L.MOD_AVAILABLE						= "Для этого контента доступен дополнительный модуль %s, но он не установлен. Вы можете скачать его с Curse, Wago, WoWI или с GitHub."
 L.MOD_MISSING						= "Модуль рейдов отсутствует"
 L.NOT_INSTALLED						= "Не установлено"
 
 L.COMBAT_STARTED					= "%s вступает в бой. Удачи! :)"
-L.COMBAT_STARTED_IN_PROGRESS		= "%s вступает в бой (в процессе). Удачи! :)"
+L.COMBAT_STARTED_IN_PROGRESS		= "%s вступает в бой (уже в процессе). Удачи! :)"
 L.GUILD_COMBAT_STARTED				= "%s вступает в бой с группой гильдии %s"
 L.SCENARIO_STARTED					= "%s начат. Удачи! :)"
-L.SCENARIO_STARTED_IN_PROGRESS		= "Вы зашли в сценарий %s (в процессе). Удачи! :)"
+L.SCENARIO_STARTED_IN_PROGRESS		= "Вы зашли в сценарий %s (уже в процессе). Удачи! :)"
 L.BOSS_DOWN							= "%s погибает спустя %s!"
-L.BOSS_DOWN_I						= "%s погибает! Общее количество побед у Вас %d."
-L.BOSS_DOWN_L						= "%s погибает спустя %s! Ваш последний бой длился %s, а лучший бой длился %s. Общее количество побед у Вас %d."
-L.BOSS_DOWN_NR						= "%s погибает спустя %s! Это новый рекорд! (Предыдущий рекорд был %s). Общее количество побед у Вас %d."
-L.RAID_DOWN							= "%s зачищен за %s!"
-L.RAID_DOWN_L						= "%s зачищен за %s! Текущий рекорд %s."
-L.RAID_DOWN_NR						= "%s зачищен за %s! Это новый рекорд! (Предыдущий рекорд был %s)."
+L.BOSS_DOWN_I						= "%s погибает! Общее количество побед у Вас - %d."
+L.BOSS_DOWN_L						= "%s погибает спустя %s! Ваш последний бой длился %s, а лучший - %s. Общее количество побед у Вас - %d."
+L.BOSS_DOWN_NR						= "%s погибает спустя %s! Это новый рекорд! Предыдущий рекорд - %s. Общее количество побед у Вас - %d."
+L.RAID_DOWN							= "%s пройден за %s!"
+L.RAID_DOWN_L						= "%s пройден за %s! Текущий рекорд - %s."
+L.RAID_DOWN_NR						= "%s пройден за %s! Это новый рекорд! Предыдущий рекорд - %s."
 L.GUILD_BOSS_DOWN					= "%s потерпел поражение от группы гильдии %s спустя %s!"
 L.SCENARIO_COMPLETE					= "%s завершён спустя %s!"
-L.SCENARIO_COMPLETE_I				= "%s завершён! Общее количество прохождений у Вас %d."
-L.SCENARIO_COMPLETE_L				= "%s завершён спустя %s! Ваше последнее прохождение заняло %s, а лучшее прохождение заняло %s. Общее количество прохождений у Вас %d."
-L.SCENARIO_COMPLETE_NR				= "%s завершён спустя %s! Это новый рекорд! (Предыдущий рекорд был %s). Общее количество прохождений у Вас %d."
-L.COMBAT_ENDED_AT					= "Бой с %s (%s) закончился спустя %s."
-L.COMBAT_ENDED_AT_LONG				= "Бой с %s (%s) закончился спустя %s. На этом уровне сложности Вы вайпнулись уже %d раз."
+L.SCENARIO_COMPLETE_I				= "%s завершён! Общее количество прохождений у Вас - %d."
+L.SCENARIO_COMPLETE_L				= "%s завершён спустя %s! Ваше последнее прохождение заняло %s, а лучшее - %s. Общее количество прохождений у Вас - %d."
+L.SCENARIO_COMPLETE_NR				= "%s завершён спустя %s! Это новый рекорд! Предыдущий рекорд - %s. Общее количество прохождений у Вас - %d."
+L.COMBAT_ENDED_AT					= "Бой против %s (%s) завершился спустя %s."
+L.COMBAT_ENDED_AT_LONG				= "Бой против %s (%s) завершился спустя %s. На этом уровне сложности Вы вайпнулись уже %d раз."
 L.GUILD_COMBAT_ENDED_AT				= "Группа гильдии %s вайпнулась на %s (%s) спустя %s."
+L.GUILD_COMBAT_ENDED				= "Группа гильдии %s вайпнулась на %s спустя %s."
 L.SCENARIO_ENDED_AT					= "%s закончился спустя %s."
 L.SCENARIO_ENDED_AT_LONG			= "%s закончился спустя %s. На этом уровне сложности Вы не завершили сценарий уже %d раз."
 L.COMBAT_STATE_RECOVERED			= "%s был атакован %s назад, восстанавливаю таймеры..."
@@ -84,7 +82,7 @@ L.TRANSCRIPTOR_LOG_END				= "Логирование с помощью Transcript
 
 L.MOVIE_SKIPPED						= L.DBM .. " автоматически попытался пропустить ролик."
 L.MOVIE_NOTSKIPPED					= L.DBM .. " обнаружил ролик, который можно пропустить, но НЕ пропустил его из-за ошибки Blizzard. Когда эта ошибка будет исправлена, пропуск ролика будет снова включен."
-L.BONUS_SKIPPED						= L.DBM .. " автоматически закрыл окно бонусного броска. Если Вам нужно вернуть это окно, введите /dbmbonusroll в течение 3 минут."
+L.BONUS_SKIPPED						= L.DBM .. " автоматически закрыл окно бонусного броска. Если Вам нужно вернуть это окно, введите /dbmbonusroll в течение 3-х минут."
 
 L.AFK_WARNING						= "Вы АФК и в бою (осталось %d процентов здоровья), срабатывает звуковой сигнал. Если Вы не АФК, отключите АФК режим или эту опцию в 'Дополнительные возможности'."
 L.LOWHEALTH_WARNING					= "Низкое здоровье (осталось %d процентов здоровья), срабатывает звуковой сигнал. Вы можете отключить эту опцию в 'Дополнительные возможности'."
@@ -101,8 +99,8 @@ L.PROFILE_APPLIED					= "Профиль '%s' применён."
 L.PROFILE_APPLY_ERROR				= "Не удалось применить профиль. Профиль '%s' не существует."
 L.PROFILE_COPIED					= "Профиль '%s' скопирован."
 L.PROFILE_COPY_ERROR				= "Не удалось скопировать профиль. Профиль '%s' не существует."
-L.PROFILE_COPY_ERROR_SELF			= "Невозможно скопировать профиль сам в себя."
-L.PROFILE_DELETED					= "Профиль '%s' удалён. Профиль 'По умолчанию' будет применён."
+L.PROFILE_COPY_ERROR_SELF			= "Невозможно скопировать профиль себе."
+L.PROFILE_DELETED					= "Профиль '%s' удалён. Будет применён профиль 'По умолчанию'."
 L.PROFILE_DELETE_ERROR				= "Не удалось удалить профиль. Профиль '%s' не существует."
 L.PROFILE_CANNOT_DELETE				= "Невозможно удалить профиль 'По умолчанию'."
 L.MPROFILE_COPY_SUCCESS				= "Настройки модуля от %s (специализация %d) были скопированы."
@@ -132,8 +130,8 @@ L.ALLMOD_DEFAULT_LOADED				= "Настройки 'По умолчанию' дл�
 L.ALLMOD_STATS_RESETED				= "Вся статистика модуля была сброшена."
 L.MOD_DEFAULT_LOADED				= "Настройки 'По умолчанию' для этого боя были загружены."
 
-L.WORLDBOSS_ENGAGED					= "В Вашем игровом мире возможно начался бой с %s (%s процентов здоровья, отправил %s)."
-L.WORLDBOSS_DEFEATED				= "%s возможно был побеждён в Вашем игровом мире (отправил %s)."
+L.WORLDBOSS_ENGAGED					= "В Вашем игровом мире, возможно, начался бой с %s с %s процентов здоровья (отправил %s)."
+L.WORLDBOSS_DEFEATED				= "В Вашем игровом мире, возможно, был побеждён %s (отправил %s)."
 L.WORLDBUFF_STARTED         		= "В Вашем игровом мире начался мировой бафф %s для фракции %s (отправил %s)."
 
 L.TIMER_FORMAT_SECS					= "%.2f |4секунда:секунды:секунд;"
@@ -175,13 +173,13 @@ L.AUTO_RESPOND_WHISPER				= "%s сейчас занят, в бою против 
 L.WHISPER_COMBAT_END_KILL			= "%s одержал победу над %s!"
 L.WHISPER_COMBAT_END_KILL_STATS		= "%s одержал победу над %s! Общее количество побед у них - %d."
 L.WHISPER_COMBAT_END_WIPE_AT		= "%s потерпел поражение от %s на %s"
-L.WHISPER_COMBAT_END_WIPE_STATS_AT	= "%s потерпел поражение от %s на %s. Общее количество вайпов у них - %d."
+L.WHISPER_COMBAT_END_WIPE_STATS_AT	= "%s потерпел поражение от %s на %s. Общее количество вайпов на этой сложности у них - %d."
 --Scenarios (no percents. words like "fighting" or "wipe" changed to better fit scenarios)
 L.AUTO_RESPOND_WHISPER_SCENARIO		= "%s сейчас занят в %s (%d/%d человек живые)"
 L.WHISPER_SCENARIO_END_KILL			= "%s завершил %s!"
 L.WHISPER_SCENARIO_END_KILL_STATS	= "%s завершил %s! Общее количество побед у них - %d."
 L.WHISPER_SCENARIO_END_WIPE			= "%s не завершил %s"
-L.WHISPER_SCENARIO_END_WIPE_STATS	= "%s не завершил %s. Общее количество незавершённых у них - %d."
+L.WHISPER_SCENARIO_END_WIPE_STATS	= "%s не завершил %s. Общее количество незавершённых на этой сложности у них - %d."
 
 L.DUNGEONS							= "Подземелья: "--префикс для проверки версии подземелий
 L.VERSIONCHECK_HEADER				= "Boss Mod - Версии"
@@ -206,7 +204,7 @@ L.UPDATEREMINDER_DISABLE			= "ПРЕДУПРЕЖДЕНИЕ: В связи с т�
 L.UPDATEREMINDER_DISABLETEST		= "ПРЕДУПРЕЖДЕНИЕ: В связи с тем, что Ваш " .. L.DEADLY_BOSS_MODS.. " устарел, а это тестовый/бета игровой мир, он был принудительно отключен и не может использоваться до тех пор, пока не будет обновлен. Это делается для того, чтобы устаревшие моды не использовались для создания отзывов о тестировании."
 L.UPDATEREMINDER_HOTFIX				= "Ваша версия " .. L.DBM .. " будет иметь некорректные таймеры или предупреждения во время этого сражения. Это исправлено в новой версии."
 L.UPDATEREMINDER_HOTFIX_ALPHA		= "Ваша версия " .. L.DBM .. " будет иметь некорректные таймеры или предупреждения во время этого сражения. Это исправлено в следующей версии (или альфа-версии)."
-L.UPDATEREMINDER_MAJORPATCH			= "ПРЕДУПРЕЖДЕНИЕ: Из-за того, что Ваш " .. L.DEADLY_BOSS_MODS .. " устарел, он был отключён до обновления, т.к. это большой игровой патч. Это необходимо для того, чтобы старый и несовместимый код не приводил к ухудшению игрового опыта для Вас и членов Вашей группы. Убедитесь, что Вы скачали новую версию с Curse, Wago, WoWI или со страницы релизов GitHub."
+L.UPDATEREMINDER_MAJORPATCH			= "ПРЕДУПРЕЖДЕНИЕ: Из-за того, что Ваш " .. L.DEADLY_BOSS_MODS .. " устарел, он был отключён до обновления, т.к. это большой игровой патч. Это необходимо для того, чтобы старый и несовместимый код не приводил к ухудшению игрового опыта для Вас и членов Вашей группы. Убедитесь, что Вы скачали новую версию с Curse, Wago, WoWI или GitHub."
 L.VEM								= "ПРЕДУПРЕЖДЕНИЕ: Вы используете " .. L.DEADLY_BOSS_MODS .. " и Voice Encounter Mods одновременно. "..L.DBM.." не был загружен, т.к. эти два аддона не могут работать вместе."
 L.OUTDATEDPROFILES					= "ПРЕДУПРЕЖДЕНИЕ: DBM-Profiles несовместим с этой версией " .. L.DBM .. ". Он должен быть удалён, прежде чем "..L.DBM.." сможет продолжить, чтобы избежать конфликтов."
 L.OUTDATEDSPELLTIMERS				= "ПРЕДУПРЕЖДЕНИЕ: DBM-SpellTimers несовместим с " .. L.DBM .. " и должен быть выключен для корректной работы " .. L.DBM .. "."
@@ -214,17 +212,17 @@ L.OUTDATEDRLT						= "ПРЕДУПРЕЖДЕНИЕ: DBM-RaidLeadTools несов
 L.VICTORYSOUND						= "ПРЕДУПРЕЖДЕНИЕ: DBM-VictorySound несовместим с этой версией " .. L.DBM .. ". Он должен быть удалён, чтобы " .. L.DBM .. " мог продолжить работу без конфликтов."
 L.DPMCORE							= "ПРЕДУПРЕЖДЕНИЕ: Deadly PvP mods несовместимы с этой версией " .. L.DBM .. ". Чтобы избежать конфликтов, удалите их."
 L.DBMLDB							= "ПРЕДУПРЕЖДЕНИЕ: DBM-LDB теперь встроен в DBM-Core. Рекомендуется удалить 'DBM-LDB' из папки с Вашими аддонами."
-L.DBMLOOTREMINDER					= "ПРЕДУПРЕЖДЕНИЕ: Обнаружен установленный DBM-LootReminder. Этот аддон больше не совместим с клиентом WoW Retail и приводит к поломке пулл таймеров " .. L.DBM .. ". Рекомендуется удалить этот аддон."
-L.UPDATE_REQUIRES_RELAUNCH			= "ПРЕДУПРЕЖДЕНИЕ: Это обновление " .. L.DBM .. " не будет работать корректно, если Вы не перезапустите игровой клиент. Это обновление содержит новые файлы или изменения в .toc файле, которые не могут быть загружены через ReloadUI. Вы можете столкнуться со сломанной функциональностью или ошибками, если продолжите без перезапуска клиента."
-L.OUT_OF_DATE_NAG					= "Ваша версия " .. L.DBM .. " устарела и этот энкаунтер имеет новые фичи и багфиксы в новой версии. Рекомендуется обновиться, чтобы не было отсутствующих важных предупреждений, или таймеров, или крика от Вас, на который рассчитывает остальная группа."
-L.PLATER_NP_AURAS_MSG				= L.DBM .. "включает в себя расширенную функцию, позволяющую отображать таймеры восстановления противника с помощью иконок на индикаторах здоровья. Эта функция включена по умолчанию для большинства пользователей, но для пользователей Plater она по умолчанию отключена в настройках Plater, если Вы не включите её. Чтобы получить максимальную отдачу от DBM (и Plater), рекомендуется включить эту функцию в Plater в разделе 'Специальные баффы'. Если не хотите видеть это сообщение снова, Вы также можете просто полностью отключить опцию 'Иконки перезарядки на индикаторах здоровья' в настройках Глобальных отключений или настройках Индикаторов здоровья DBM"
+L.DBMLOOTREMINDER					= "ПРЕДУПРЕЖДЕНИЕ: Обнаружен установленный DBM-LootReminder. Этот аддон больше не совместим с клиентом WoW Retail и приводит к поломке таймеров атаки " .. L.DBM .. ". Рекомендуется удалить этот аддон."
+L.UPDATE_REQUIRES_RELAUNCH			= "ПРЕДУПРЕЖДЕНИЕ: Это обновление " .. L.DBM .. " будет работать некорректно, если Вы полностью не перезапустите WoW. Это обновление содержит новые файлы или изменения в .toc файле, которые не могут быть загружены через /reload. Вы можете столкнуться с ошибками разного рода, если продолжите без перезапуска WoW."
+L.OUT_OF_DATE_NAG					= "Ваша версия " .. L.DBM .. " устарела, а сражение с тем или иным боссом содержит новые функции или исправления ошибок в новой версии. Рекомендуется обновить версию " .. L.DBM .. ", чтобы улучшить игровой процесс."
+L.PLATER_NP_AURAS_MSG				= L.DBM .. " включает в себя расширенную функцию, позволяющую отображать таймеры восстановления противника с помощью иконок на индикаторах здоровья. Эта функция включена по умолчанию для большинства пользователей, но для пользователей Plater она по умолчанию отключена в настройках Plater, если Вы не включите её. Чтобы получить максимальную отдачу от DBM (и Plater), рекомендуется включить эту функцию в Plater в разделе 'Специальные баффы'. Если не хотите видеть это сообщение снова, Вы также можете просто полностью отключить опцию 'Иконки перезарядки на индикаторах здоровья' в настройках Глобальных отключений или настройках Индикаторов здоровья DBM."
 
 L.MOVABLE_BAR						= "Перетащите!"
 
 L.PIZZA_SYNC_INFO					= "|Hplayer:%1$s|h[%1$s]|h транслирует Вам таймер " .. L.DBM .. ": '%2$s'\n|Hgarrmission:DBM:cancel:%2$s:nil|h|cff3588ff[Отменить этот таймер]|r|h  |Hgarrmission:DBM:ignore:%2$s:%1$s|h|cff3588ff[Игнорировать таймеры от %1$s]|r|h"
 --L.PIZZA_SYNC_INFO					= "|Hplayer:%1$s|h[%1$s]|h транслирует Вам таймер " .. L.DBM .. ""
 L.PIZZA_CONFIRM_IGNORE				= "Игнорировать таймеры " .. L.DBM .. " от %s на время текущего сеанса?"
-L.PIZZA_ERROR_USAGE					= "Использование: /dbm [broadcast] timer <time> <text>. <time> должно быть больше 3."
+L.PIZZA_ERROR_USAGE					= "Использование: /dbm [broadcast] timer <время> <текст>. <время> должно быть 3 или больше."
 
 --L.MINIMAP_TOOLTIP_HEADER (Same as English locales)
 L.MINIMAP_TOOLTIP_FOOTER			= "[Shift+ЛКМ] - переместить значок " .. L.DBM
@@ -234,10 +232,10 @@ L.RANGECHECK_HEADERT				= "Проверка дистанции (%dм-%dP)"
 L.RANGECHECK_RHEADER				= "R-Проверка дистанции (%dм)"
 L.RANGECHECK_RHEADERT				= "R-Проверка дистанции (%dм-%dP)"
 L.RANGECHECK_SETRANGE				= "Настройка дистанции"
-L.RANGECHECK_SETTHRESHOLD			= "Настройка порога игроков"
-L.RANGECHECK_SOUNDS					= "Звуковой сигнал"
-L.RANGECHECK_SOUND_OPTION_1			= "Один из игроков подошёл к Вам слишком близко"
-L.RANGECHECK_SOUND_OPTION_2			= "Несколько человек находятся около Вас"
+L.RANGECHECK_SETTHRESHOLD			= "Настройка предела игроков"
+L.RANGECHECK_SOUNDS					= "Звуки"
+L.RANGECHECK_SOUND_OPTION_1			= "Воспроизводить звук, когда в зоне действия находится один игрок"
+L.RANGECHECK_SOUND_OPTION_2			= "Воспроизводить звук, когда в зоне действия находятся несколько игроков"
 L.RANGECHECK_SOUND_0				= "Без звука"
 L.RANGECHECK_SOUND_1				= "По умолчанию"
 L.RANGECHECK_SOUND_2				= "Раздражающий звуковой сигнал"
@@ -266,26 +264,29 @@ L.INFOFRAME_ALT						= "Альтернативная:"--Альтернативн
 
 L.LFG_INVITE						= "Приглашение в подземелье"
 
-L.SLASHCMD_HELP = {
+--Common slash commands
+L.SLASHCMD_HELP							= {--AI translated (it's fine)
 	"Доступные команды:",
 	"-----------------",
-	"/dbm unlock: Отображает перемещаемый индикатор таймера (псевдоним: move).",
-	"/range <число> или /distance <число>: Показать окно проверки дистанции. /rrange или /rdistance для изменения цветов.",
-	"/hudar <число>: Проверка дистанции, использующая HUD.",
-	"/dbm timer: Запускает пользовательский " .. L.DBM .. " отсчёт времени, для доп. информации введите '/dbm timer'.",
-	"/dbm arrow: Показывает " .. L.DBM .. " стрелку, для доп. информации введите '/dbm arrow help'.",
-	"/dbm hud: Показывает " .. L.DBM .. " HUD, для доп. информации введите '/dbm hud'.",
-	"/dbm help2: Показывает команды управления рейдом"
+	"/dbm unlock: Показывает перемещаемый таймер в строке состояния (псевдоним: move).",
+	"/dbm pull <sec>: Отправляет таймер атаки на <sec> секунд в рейд (требуются права лидера. псевдоним: pull).",
+	"/dbm break <min>: Отправляет таймер перерыва на <min> минут в рейд (требуются права лидера. псевдоним: break).",
+	"/dbm timer: Запускает пользовательский таймер " .. L.DBM .. ", подробности в разделе '/dbm timer'.",
+	"/dbm key: Выполняет проверки ключей M+ и рейтинга для группы/гильдии, а также предоставляет быстрые телепорты к подземельям. (псевдоним: key, keys, keystone)",
+	"/dbm lag: Выполняет проверку задержки для всего рейда.",
+	"/dbm durability: Выполняет проверку прочности для всего рейда.",
+	"/dbm help2: Показывает дополнительные команды"
 }
-L.SLASHCMD_HELP2 = {
+--Менее используемые команды
+L.SLASHCMD_HELP2						= {--AI translated (it's fine)
 	"Доступные команды:",
 	"-----------------",
-	"/dbm pull <сек>: Отправляет рейду отсчёт времени до атаки (требуются права лидера или помощника. Псевдоним: pull).",
-	"/dbm break <мин>: Отправляет рейду таймер перерыва (требуются права лидера или помощника. Псевдоним: break).",
-	"/dbm version: Выполняет проверку версии босс мода (псевдоним: ver).",
-	"/dbm version2: Выполняет проверку версии босс мода и отправляет сообщение шёпотом с устаревшей версией (псевдоним: ver2).",
-	"/dbm lag: Выполняет проверку задержки у всего рейда.",
-	"/dbm durability: Выполняет проверку прочности у всего рейда."
+	"/dbm version: Выполняет проверку версии босс-мода (псевдоним: ver).",
+	"/dbm version2: Выполняет проверку версии босс-мода, которая также шепчет игрокам, у которых устаревшая версия (псевдоним: ver2).",
+	"/range <number> или /distance <number>: Показывает фрейм диапазона. /rrange или /rdistance для изменения цветов.",
+	"/hudar <number>: Показывает HUD для определения расстояния.",
+	"/dbm arrow: Показывает стрелку " .. L.DBM .. ", подробности в разделе '/dbm arrow help'.",
+	"/dbm hud: Показывает HUD " .. L.DBM .. ", подробности в разделе '/dbm hud'."
 }
 L.TIMER_USAGE = {
 	L.DBM .. " команды таймера:",
@@ -296,13 +297,13 @@ L.TIMER_USAGE = {
 	"/dbm timer endloop: Останавливает любой повторяющийся ltimer."
 }
 
-L.ERROR_NO_PERMISSION				= "У Вас недостаточно прав для отправки таймера пулла/перерыва."
-L.ERROR_NO_PERMISSION_COMBAT		= "Таймер пулла/перерыва не может быть отправлен во время боя."
-L.PULL_TIME_TOO_SHORT				= "Таймер атаки должен быть больше 3 секунд."
+L.ERROR_NO_PERMISSION				= "У Вас недостаточно прав для отправки таймера атаки/перерыва."
+L.ERROR_NO_PERMISSION_COMBAT		= "Таймер атаки/перерыва не может быть отправлен во время боя."
+L.PULL_TIME_TOO_SHORT				= "Таймер атаки должен быть больше 3-х секунд."
 L.PULL_TIME_TOO_LONG				= "Таймер атаки не может быть дольше 60 секунд. Вместо этого используйте таймер /break"
 
 L.BREAK_USAGE						= "Перерыв не может быть дольше 60 минут. Убедитесь, что Вы вводите время в минутах, а не секундах."
-L.BREAK_START						= "Перерыв начинается -- у Вас есть %s! (отправил %s)"
+L.BREAK_START						= "Перерыв начался, у Вас есть %s! (отправил %s)"
 L.BREAK_MIN							= "Перерыв заканчивается через %s мин.!"
 L.BREAK_SEC							= "Перерыв заканчивается через %s сек.!"
 L.TIMER_BREAK						= "Перерыв!"
@@ -320,19 +321,19 @@ L.GEAR_FISHING_POLE					= "Удочка"
 L.ACHIEVEMENT_TIMER_SPEED_KILL 		= "Достижение"
 
 -- Auto-generated Warning Localizations
-L.AUTO_ANNOUNCE_TEXTS.you 			= "%s на тебе"
+L.AUTO_ANNOUNCE_TEXTS.you 			= "%s на ТЕБЕ"
 L.AUTO_ANNOUNCE_TEXTS.target 		= "%s на >%%s<"
-L.AUTO_ANNOUNCE_TEXTS.targetsource  = ">%%s< применяется %s на >%%s<"
+L.AUTO_ANNOUNCE_TEXTS.targetsource  = ">%%s< применяет %s на >%%s<"
 L.AUTO_ANNOUNCE_TEXTS.targetcount	= "%s (%%s) на >%%s<"
 L.AUTO_ANNOUNCE_TEXTS.spell 		= "%s"
-L.AUTO_ANNOUNCE_TEXTS.spellsource 	= ">%%s< применяется %s"
-L.AUTO_ANNOUNCE_TEXTS.incoming		= "%s входящий дебафф"
-L.AUTO_ANNOUNCE_TEXTS.incomingcount	= "%s входящий дебафф (%%s)"
+L.AUTO_ANNOUNCE_TEXTS.spellsource 	= ">%%s< применяет %s"
+L.AUTO_ANNOUNCE_TEXTS.incoming		= "%s получает дебафф"
+L.AUTO_ANNOUNCE_TEXTS.incomingcount	= "%s получает дебафф (%%s)"
 L.AUTO_ANNOUNCE_TEXTS.ends			= "%s заканчивается"
 L.AUTO_ANNOUNCE_TEXTS.endtarget		= "%s заканчивается: >%%s<"
 L.AUTO_ANNOUNCE_TEXTS.fades			= "%s спадает"
 L.AUTO_ANNOUNCE_TEXTS.addsleft		= "Осталось %s: %%d"
-L.AUTO_ANNOUNCE_TEXTS.cast 			= "Применение заклинания %s: %.1f сек"
+L.AUTO_ANNOUNCE_TEXTS.cast 			= "Применение заклинания %s: %.1f сек."
 L.AUTO_ANNOUNCE_TEXTS.soon 			= "Скоро %s"
 L.AUTO_ANNOUNCE_TEXTS.sooncount		= "Скоро %s (%%s)"
 L.AUTO_ANNOUNCE_TEXTS.countdown		= "%s через %%ds"
@@ -346,28 +347,28 @@ L.AUTO_ANNOUNCE_TEXTS.moveto 		= "%s - бегите к >%%s<"
 
 local prewarnOption 					= "Заранее предупреждать о $spell:%s"
 L.AUTO_ANNOUNCE_OPTIONS.you 			= "Объявлять, когда $spell:%s на тебе"
-L.AUTO_ANNOUNCE_OPTIONS.target 			= "Объявлять цели заклинания $spell:%s"
-L.AUTO_ANNOUNCE_OPTIONS.targetNF		= "Объявлять цели заклинания $spell:%s (игнорирует глобальные фильтры целей)"
-L.AUTO_ANNOUNCE_OPTIONS.targetsource	= "Объявлять цели заклинания $spell:%s (с источником)"
-L.AUTO_ANNOUNCE_OPTIONS.targetcount		= "Объявлять цели заклинания $spell:%s (со счётчиком)"
+L.AUTO_ANNOUNCE_OPTIONS.target 			= "Объявлять о $spell:%s на целях"
+L.AUTO_ANNOUNCE_OPTIONS.targetNF		= "Объявлять о $spell:%s на целях (игнорирует глобальные фильтры целей)"
+L.AUTO_ANNOUNCE_OPTIONS.targetsource	= "Объявлять о $spell:%s на целях (с источником)"
+L.AUTO_ANNOUNCE_OPTIONS.targetcount		= "Объявлять о $spell:%s на целях (со счётчиком)"
 L.AUTO_ANNOUNCE_OPTIONS.spell 			= "Объявлять, когда будет произнесено заклинание $spell:%s"
-L.AUTO_ANNOUNCE_OPTIONS.spellsource 	= "Объявлять, когда будет произнесено заклинание $spell:%s (источник)"
+L.AUTO_ANNOUNCE_OPTIONS.spellsource 	= "Объявлять, когда будет произнесено заклинание $spell:%s (с источником)"
 L.AUTO_ANNOUNCE_OPTIONS.incoming		= "Объявлять, когда $spell:%s получает отрицательные эффекты"
 L.AUTO_ANNOUNCE_OPTIONS.incomingcount	= "Объявлять (со счётчиком), когда $spell:%s получает отрицательные эффекты"
 L.AUTO_ANNOUNCE_OPTIONS.ends			= "Предупреждать об окончании $spell:%s"
-L.AUTO_ANNOUNCE_OPTIONS.endtarget		= "Предупреждать об окончании $spell:%s (цель)"
+L.AUTO_ANNOUNCE_OPTIONS.endtarget		= "Предупреждать об окончании $spell:%s (с целью)"
 L.AUTO_ANNOUNCE_OPTIONS.fades			= "Предупреждать о спадении $spell:%s"
 L.AUTO_ANNOUNCE_OPTIONS.addsleft		= "Объявлять, сколько осталось $spell:%s"
 L.AUTO_ANNOUNCE_OPTIONS.cast 			= "Предупреждать о применении заклинания $spell:%s"
 L.AUTO_ANNOUNCE_OPTIONS.soon 			= prewarnOption
 L.AUTO_ANNOUNCE_OPTIONS.sooncount		= prewarnOption
-L.AUTO_ANNOUNCE_OPTIONS.countdown		= "Спамить заранее отсчёт до заклинания $spell:%s"
+L.AUTO_ANNOUNCE_OPTIONS.countdown		= "Заранее спамить отсчёт для $spell:%s"
 L.AUTO_ANNOUNCE_OPTIONS.prewarn 		= prewarnOption
-L.AUTO_ANNOUNCE_OPTIONS.bait			= "Предупреждать заранее (чтобы байтить) для $spell:%s"
+L.AUTO_ANNOUNCE_OPTIONS.bait			= "Заранее предупреждать (чтобы байтить) для $spell:%s"
 L.AUTO_ANNOUNCE_OPTIONS.stage 			= "Объявлять фазу %s"
 L.AUTO_ANNOUNCE_OPTIONS.stagechange		= "Объявлять смены фаз"
-L.AUTO_ANNOUNCE_OPTIONS.prestage 		= "Предупреждать заранее о фазе %s"
-L.AUTO_ANNOUNCE_OPTIONS.count 			= "Предупреждение для $spell:%s (со счётчиком)"
+L.AUTO_ANNOUNCE_OPTIONS.prestage 		= "Заранее предупреждать о фазе %s"
+L.AUTO_ANNOUNCE_OPTIONS.count 			= "Объявлять, когда было произнесено $spell:%s (со счётчиком)"
 L.AUTO_ANNOUNCE_OPTIONS.stack 			= "Объявлять количество стаков $spell:%s"
 L.AUTO_ANNOUNCE_OPTIONS.moveto			= "Объявлять, когда нужно переместиться к кому-то или куда-то для $spell:%s"
 
@@ -416,9 +417,9 @@ L.AUTO_SPEC_WARN_TEXTS.switch 			= "%s - переключитесь"
 L.AUTO_SPEC_WARN_TEXTS.switchcount 		= "%s - переключитесь (%%s)"
 L.AUTO_SPEC_WARN_TEXTS.switchcustom 	= "%s - переключитесь (%%s)"
 L.AUTO_SPEC_WARN_TEXTS.gtfo				= "Под Вами %%s - выбегите"
-L.AUTO_SPEC_WARN_TEXTS.adds				= "Прибыли адды - смените цель"
-L.AUTO_SPEC_WARN_TEXTS.addscount		= "Прибыли адды - смените цель (%%s)"
-L.AUTO_SPEC_WARN_TEXTS.addscustom		= "Прибыли адды - %%s"
+L.AUTO_SPEC_WARN_TEXTS.adds				= "Появились адды - переключитесь"
+L.AUTO_SPEC_WARN_TEXTS.addscount		= "Появились адды - переключитесь (%%s)"
+L.AUTO_SPEC_WARN_TEXTS.addscustom		= "Появились адды - %%s"
 L.AUTO_SPEC_WARN_TEXTS.targetchange		= "Смена цели - переключитесь на %%s"
 
 -- Auto-generated Special Warning Localizations
@@ -485,20 +486,20 @@ L.AUTO_TIMER_TEXTS.ai				= "%s ИИ"
 L.AUTO_TIMER_TEXTS.cd 				= "%s"
 L.AUTO_TIMER_TEXTS.cdcount			= "%s (%%s)"
 L.AUTO_TIMER_TEXTS.cdsource			= "%s: >%%s<"
-L.AUTO_TIMER_TEXTS.cdspecial		= "Восст. спецспособности"
+L.AUTO_TIMER_TEXTS.cdspecial		= "Восст. Спецспособности"
 L.AUTO_TIMER_TEXTS.cdcombo			= "%%1$s + %%2$s"
+
+L.AUTO_TIMER_TEXTS.next 			= "%s"
+L.AUTO_TIMER_TEXTS.nextcount		= "%s (%%s)"
+L.AUTO_TIMER_TEXTS.nextsource		= "%s: >%%s<"
+L.AUTO_TIMER_TEXTS.nextspecial		= "След. Спецспособность"
+L.AUTO_TIMER_TEXTS.nextcombo		= "%%1$s + %%2$s"
 
 L.AUTO_TIMER_TEXTS.var				= "%s"
 L.AUTO_TIMER_TEXTS.varcount			= "%s (%%s)"
 L.AUTO_TIMER_TEXTS.varsource		= "%s: >%%s<"
 L.AUTO_TIMER_TEXTS.varspecial		= "Спецспособность"
 L.AUTO_TIMER_TEXTS.varcombo			= "%%1$s + %%2$s"
-
-L.AUTO_TIMER_TEXTS.next 			= "%s"
-L.AUTO_TIMER_TEXTS.nextcount		= "%s (%%s)"
-L.AUTO_TIMER_TEXTS.nextsource		= "%s: %%s"
-L.AUTO_TIMER_TEXTS.nextspecial		= "След. спецспособность"
-L.AUTO_TIMER_TEXTS.nextcombo		= "%%1$s + %%2$s"
 
 L.AUTO_TIMER_TEXTS.achievement		= "%s"
 L.AUTO_TIMER_TEXTS.stage			= "Фаза"
@@ -546,13 +547,13 @@ L.AUTO_TIMER_OPTIONS.nextsource		= "Отсчёт времени до следу�
 L.AUTO_TIMER_OPTIONS.nextspecial	= "Отсчёт времени до следующей спецспособности"
 L.AUTO_TIMER_OPTIONS.nextcombo		= "Отсчёт времени до следующей комбо способности"--Используется для объединения двух способностей в один таймер
 
-L.AUTO_TIMER_OPTIONS.var 			= "Отсчёт времени (с разбросом) до восстановления $spell:%s"
-L.AUTO_TIMER_OPTIONS.varcount 		= "Отсчёт времени (с количеством и разбросом) до восстановления $spell:%s"
-L.AUTO_TIMER_OPTIONS.varnp 			= "Показывать только таймер на индикаторах здоровья (с разбросом) до восстановления $spell:%s"
-L.AUTO_TIMER_OPTIONS.varpnp 		= "Показывать только таймер приоритета на индикаторах здоровья (с разбросом) до восстановления $spell:%s"
-L.AUTO_TIMER_OPTIONS.varsource 		= "Отсчёт времени (с источником и разбросом) до восстановления $spell:%s"
+L.AUTO_TIMER_OPTIONS.var 			= "Отсчёт времени (с разницей) до восстановления $spell:%s"
+L.AUTO_TIMER_OPTIONS.varcount 		= "Отсчёт времени (с количеством и разницей) до восстановления $spell:%s"
+L.AUTO_TIMER_OPTIONS.varnp 			= "Показывать только таймер на индикаторах здоровья (с разницей) до восстановления $spell:%s"
+L.AUTO_TIMER_OPTIONS.varpnp 		= "Показывать только таймер приоритета на индикаторах здоровья (с разницей) до восстановления $spell:%s"
+L.AUTO_TIMER_OPTIONS.varsource 		= "Отсчёт времени (с источником и разницей) до восстановления $spell:%s"
 L.AUTO_TIMER_OPTIONS.varspecial 	= "Отсчёт времени (с разницей) до восстановления спецспособности"
-L.AUTO_TIMER_OPTIONS.varcombo 		= "Отсчёт времени (с разбросом) до восстановления комбо способностей"
+L.AUTO_TIMER_OPTIONS.varcombo 		= "Отсчёт времени (с разницей) до восстановления комбо способностей"
 
 L.AUTO_TIMER_OPTIONS.achievement 	= "Отсчёт времени для %s"
 L.AUTO_TIMER_OPTIONS.stage			= "Отсчёт времени до следующей фазы"
@@ -622,8 +623,8 @@ L.AUTO_NAMEPLATE_OPTION_TEXT			= "Показывать ауры индикато
 L.AUTO_NAMEPLATE_OPTION_TEXT_FORCED		= "Показывать ауры индикаторов для $spell:%s, используя только "..L.DBM..""
 L.AUTO_RANGE_OPTION_TEXT			= "Показывать окно проверки дистанции (%s) для $spell:%s"
 L.AUTO_RANGE_OPTION_TEXT_SHORT		= "Показывать окно проверки дистанции (%s)"
-L.AUTO_RRANGE_OPTION_TEXT			= "Показывать обратное окно проверки дистанции (%s) для $spell:%s"
-L.AUTO_RRANGE_OPTION_TEXT_SHORT		= "Показывать обратное окно проверки дистанции (%s)"
+L.AUTO_RRANGE_OPTION_TEXT			= "Показывать окно обратной проверки дистанции (%s) для $spell:%s"
+L.AUTO_RRANGE_OPTION_TEXT_SHORT		= "Показывать окно обратной проверки дистанции (%s)"
 L.AUTO_INFO_FRAME_OPTION_TEXT		= "Показывать информационное окно для $spell:%s"
 L.AUTO_INFO_FRAME_OPTION_TEXT2		= "Показывать информационное окно для обзора боя"
 L.AUTO_INFO_FRAME_OPTION_TEXT3		= "Показывать информационный фрейм для $spell:%s (при достижении порогового значения %%s)"
@@ -674,14 +675,9 @@ L.SPEED_CLEAR_TIMER_TEXT			= "Лучшее прохождение"
 L.COMBAT_RES_TIMER_TEXT				= "След. заряд БР"
 L.TIMER_RESPAWN						= "Появление %s"
 
-L.LAG_CHECKING						= "Проверка задержки у рейда..."
-L.LAG_HEADER						= L.DEADLY_BOSS_MODS.. " - результаты проверки задержки"
-L.LAG_ENTRY							= "%s: глобальная задержка [%d ms] / локальная задержка [%d ms]"
-L.LAG_FOOTER						= "Нет ответа: %s"
-
-L.DUR_CHECKING						= "Проверка прочности у рейда..."
-L.DUR_HEADER						= L.DEADLY_BOSS_MODS.. " - результаты проверки прочности"
-L.DUR_ENTRY							= "%s: прочность [%d процентов] / экипировка сломана [%s]"
+L.LAG_HEADER						= L.DBM.. " - результаты проверки задержки"
+L.DUR_HEADER						= L.DBM.. " - результаты проверки прочности"
+L.KEYSTONES_HEADER					= L.DBM.. " - ключи М+"
 
 L.OVERRIDE_ACTIVATED					= "Для этого сражения лидер рейда активировал перезапись конфигурации."
 
@@ -728,3 +724,28 @@ L.TOOLTIP_FASTEST				= "Быстрое убийство (%s)"
 L.FOLLOWER					= "Союзник"
 L.STORY					    = PLAYER_DIFFICULTY_STORY_RAID or "Сюжет"
 L.DUOS						= "Дуо"
+
+-- Keystone dungeon names (keep to a max of 6 characters)
+-- See https://wago.tools/db2/MapChallengeMode for ID => Dungeon Names
+L.KEYSTONE_NAMES[197] = 'ОА' -- Eye of Azshara
+L.KEYSTONE_NAMES[198] = 'ЧТС' -- Darkheart Thicket
+L.KEYSTONE_NAMES[199] = 'КЧЛ' -- Black Rook Hold
+L.KEYSTONE_NAMES[200] = 'ЧД' -- Halls of Valor
+L.KEYSTONE_NAMES[206] = 'ЛН' -- Neltharion's Lair
+L.KEYSTONE_NAMES[207] = 'КС' -- Vault of the Wardens
+L.KEYSTONE_NAMES[208] = 'УАП' -- Maw of Souls
+L.KEYSTONE_NAMES[209] = 'КС' -- The Arcway
+L.KEYSTONE_NAMES[210] = 'КЗ' -- Court of Stars
+L.KEYSTONE_NAMES[227] = 'ВКН' -- Return to Karazhan: Lower
+L.KEYSTONE_NAMES[233] = 'СВН' -- Cathedral of Eternal Night
+L.KEYSTONE_NAMES[234] = 'ВКВ' -- Return to Karazhan: Upper
+L.KEYSTONE_NAMES[239] = 'ПТ' -- Seat of the Triumvirate
+
+L.KEYSTONE_NAMES[378] = 'ЧП' -- Halls of Atonement
+L.KEYSTONE_NAMES[391] = 'РТУЧ' -- Tazavesh: Streets of Wonder
+L.KEYSTONE_NAMES[392] = 'РТГС' -- Tazavesh: So'leah's Gambit
+L.KEYSTONE_NAMES[499] = 'ПСП' -- Priority of the Sacred Flame
+L.KEYSTONE_NAMES[503] = 'АКГО' -- Ara-Kara, City of Echoes
+L.KEYSTONE_NAMES[505] = 'СР' -- The Dawnbreaker
+L.KEYSTONE_NAMES[525] = 'ШЛЮЗ' -- Operation Floodgate
+L.KEYSTONE_NAMES[542] = 'ЗА' -- Eco-Dome Al'dani

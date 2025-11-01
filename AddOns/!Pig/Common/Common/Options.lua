@@ -19,7 +19,7 @@ local AudioData=addonTable.AudioList.Data
 local CommonInfo=addonTable.CommonInfo
 CommonInfo.Commonfun={}
 ----常用
-local fujiF,fujiTabBut =PIGOptionsList_R(CommonInfo.NR,L["COMMON_TABNAME"],70)
+local fujiF,fujiTabBut =PIGOptionsList_R(CommonInfo.NR,GENERAL,70)
 fujiF:Show()
 fujiTabBut:Selected()
 
@@ -73,9 +73,11 @@ end);
 fujiF.xingnengF.addonProfilerEnabled =PIGCheckbutton(fujiF.xingnengF.offnewfont,{"LEFT",fujiF.xingnengF.offnewfont,"RIGHT",280,0},{"关闭插件占用分析功能","关闭11.0之后增加的插件占用分析功能。此功能会导致额外性能消耗，会导致帧率下降！"})
 fujiF.xingnengF.addonProfilerEnabled:HookScript("OnClick", function (self)
 	if self:GetChecked() then
+		C_AddOnProfiler.IsEnabled = function() return false end
 		C_CVar.RegisterCVar("addonProfilerEnabled", "1"); C_CVar.SetCVar("addonProfilerEnabled", "0")
 		PIGA["Common"]["addonProfilerEnabled"]=true
 	else
+		C_AddOnProfiler.IsEnabled = function() return false end
 		C_CVar.RegisterCVar("addonProfilerEnabled", "1"); C_CVar.SetCVar("addonProfilerEnabled", "1")
 		PIGA["Common"]["addonProfilerEnabled"]=false
 	end
@@ -406,6 +408,7 @@ fujiF:HookScript("OnShow", function (self)
 	if PIGA["Common"]["Offnewfont"] then SetCVar("UseSlug","0") end
 	self.xingnengF.addonProfilerEnabled:SetChecked(PIGA["Common"]["addonProfilerEnabled"])
 	if PIGA["Common"]["addonProfilerEnabled"] then
+		C_AddOnProfiler.IsEnabled = function() return false end
 		C_CVar.RegisterCVar("addonProfilerEnabled", "1"); C_CVar.SetCVar("addonProfilerEnabled", "0")
 	end
 	CombatLogF:UpdateWCL_Checkbut()

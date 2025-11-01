@@ -4,15 +4,11 @@ tinsert(addon.Gui.AchievementTooltip.Sections, section);
 
 local numCriteria;
 function section:CheckAdd(achievement)
-	if achievement.TransmogSets then
+	if achievement.TransmogSetIds then
 		return;
 	end
-	local state;
-	if achievement.TemporaryObtainable then
-		state = achievement.TemporaryObtainable.Obtainable();
-	end
-	local pastObtainable = state and (not state or state == "Past");
-	if not addon.Options.db.profile.Tooltip.Achievements.ObjectivesProgress.Show or pastObtainable then
+	local state = achievement:GetObtainableState();
+	if not addon.Options.db.profile.Tooltip.Achievements.ObjectivesProgress.Show or state == "Past" then
 		return;
 	end
 	if achievement.IsCompleted and not addon.Options.db.profile.Tooltip.Achievements.ObjectivesProgress.ShowWhenAchievementCompleted then

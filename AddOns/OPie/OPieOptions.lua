@@ -85,8 +85,8 @@ do -- config.bind
 			GameTooltip:SetOwner(self, "ANCHOR_NONE")
 			GameTooltip:SetPoint("TOP", self, "BOTTOM")
 			GameTooltip:AddLine(L"Conditional Bindings", NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b)
-			GameTooltip:AddLine(L"The binding will update to reflect the value of this macro conditional.", HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, 1)
-			GameTooltip:AddLine((L"You may use extended macro conditionals; see %s for details."):format("|cff33DDFFhttps://townlong-yak.com/addons/opie/extended-conditionals|r"), HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, 1)
+			GameTooltip:AddLine(L"The binding will update to reflect the value of this macro options expression.", HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, 1)
+			GameTooltip:AddLine((L"You may use extended conditionals; see %s for details."):format("|cff33DDFFhttps://townlong-yak.com/addons/opie/extended-conditionals|r"), HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, 1)
 			GameTooltip:AddLine((L"Example: %s."):format(GREEN_FONT_COLOR_CODE .. "[combat] ALT-C; [nomounted] CTRL-F|r"), NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b)
 			GameTooltip:Show()
 		end)
@@ -236,23 +236,23 @@ do -- config.bind
 	end
 	local specialSymbolMap = {OPEN="[", CLOSE="]", SEMICOLON=";"}
 	local function SetBindingText(self, bind, pre, post, hasBinding)
+		local pre2, pre3
 		if type(bind) == "string" and bind:match("%[.*%]") then
-			bind, post, hasBinding = KR:EvaluateCmdOptions(bind), post or " |cff20ff20[+]|r", true
+			bind, pre2, hasBinding = KR:EvaluateCmdOptions(bind), pre3 or "|cff20ff20[+]|r ", true
 		end
-		local pre2
-		pre2, bind = (bind or ""):match('^%s*(!*)%s*(%S.*)$')
+		pre3, bind = (bind or ""):match('^%s*(!*)%s*(%S.*)$')
 		bind = bind and KR:UnescapeCmdOptionsValue(bind):gsub("[^%-]+$", specialSymbolMap)
 		local bindText = bind and bind ~= "" and GetBindingText(bind)
 		if CI_ERA and bindText and bind:match("PAD") then
 			for ai in bindText:gmatch("|A:([^:]+)") do
-				if not C_Texture.GetAtlasInfo(ai) then -- BUG[1.14.4/2310]
+				if not C_Texture.GetAtlasInfo(ai) then -- BUG[1.14.4/2310,1.15.7/2507]
 					bindText = bind
 					break
 				end
 			end
 		end
 		self.hasSetBinding = not not (hasBinding or bindText)
-		return self:SetText((pre or "") .. (pre2 or "") .. (bindText or L"Not bound") .. (post or ""))
+		return self:SetText((pre or "") .. (pre2 or "") .. (pre3 or "") .. (bindText or L"Not bound") .. (post or ""))
 	end
 	local function ToggleAlternateEditor(self, bind)
 		if alternateFrame:IsShown() and alternateFrame.owner == self then
@@ -312,45 +312,6 @@ do -- config.bind
 		return btn
 	end
 end
-do -- config.pulseDropdown
-	local function cloneTex(tex)
-		local l, sl = tex:GetDrawLayer()
-		local r = tex:GetParent():CreateTexture(nil, l, nil, sl+1)
-		r:SetAllPoints(tex)
-		r:SetTexture(tex:GetTexture())
-		r:SetTexCoord(tex:GetTexCoord())
-		r:SetVertexColor(0, 0.5, 0.75)
-		r:SetBlendMode("ADD")
-		return r
-	end
-	function config.pulseDropdown(drop)
-		if not drop.LeftA then
-			drop.LeftA, drop.MiddleA, drop.RightA = cloneTex(drop.Left), cloneTex(drop.Middle), cloneTex(drop.Right)
-		end
-		local endTime = GetTime()+2
-		local function pulse()
-			if drop.pulseFunc ~= pulse then
-				return
-			end
-			local t = GetTime()
-			if t >= endTime or not drop:IsVisible() then
-				drop.MiddleA:SetAlpha(0)
-				drop.LeftA:SetAlpha(0)
-				drop.RightA:SetAlpha(0)
-				drop.pulseFunc = nil
-				return
-			end
-			local p = 1-(endTime-t)/2
-			local s = 0.5+sin(p*360*3-90)/2
-			drop.LeftA:SetAlpha(s)
-			drop.MiddleA:SetAlpha(s)
-			drop.RightA:SetAlpha(s)
-			EV.After(0, pulse)
-		end
-		drop.pulseFunc = pulse
-		pulse()
-	end
-end
 config.undo = TS:CreateUndoHandle()
 
 local function CallSwitchProfile(msg, ...)
@@ -405,6 +366,7 @@ local OPC_Options = {
 		{"navi", tag="InRingBindingNav", caption=L"Customize in-ring bindings"},
 	{ "section", caption=L"Behavior" },
 		{"bool", "UseDefaultBindings", caption=L"Use default ring bindings"},
+		{"bool", "DeclutterOnOpen", caption=L"Hide toasts on ring open"},
 		{"bool", "HideStanceBar", caption=L"Hide stance bar", globalOnly=true},
 		{"bool", "PerCharRotationStore", caption=L"Per-character ring rotations", globalOnly=true},
 		{"range", "RingScale", 0.1, 2, caption=L"Ring scale", valueFormat="%0.1f"},
@@ -426,12 +388,13 @@ frame = TS:CreateOptionsPanel("OPie", nil, {forceRootVersion=true})
 	frame.version:SetFormattedText("%s", PC:GetVersion() or "")
 	frame.desc:SetText(L"Customize OPie's appearance and behavior. Right clicking a checkbox restores it to its default state."
 		.. (MODERN and "\n" .. L"Profiles activate automatically when you switch character specializations." or ""))
-local OPC_Profile = CreateFrame("Frame", "OPC_Profile", frame, "UIDropDownMenuTemplate")
+local OPC_Profile = XU:Create("DropDown", nil, frame)
 	OPC_Profile:SetPoint("TOPLEFT", frame, 0, -80)
-	UIDropDownMenu_SetWidth(OPC_Profile, 200)
-local OPC_OptionDomain = CreateFrame("Frame", "OPC_OptionDomain", frame, "UIDropDownMenuTemplate")
+	OPC_Profile:SetWidth(250)
+	T.OPC_Profile = OPC_Profile
+local OPC_OptionDomain = XU:Create("DropDown", nil, frame)
 	OPC_OptionDomain:SetPoint("LEFT", OPC_Profile, "RIGHT", 44, 0)
-	UIDropDownMenu_SetWidth(OPC_OptionDomain, 250)
+	OPC_OptionDomain:SetWidth(300)
 
 local OPC_AlterOption, OPC_AlterOptionW, OPC_AlterOptionQ, OPC_BlockInput
 local OPC_UpdateControlReqs, OPC_UpdateViewport, OPC_IsViewDirty, OR_CurrentOptionsDomain
@@ -451,7 +414,7 @@ local widgetControl, optionControl = {}, {} do -- Widget construction
 	optionsScrollBar:SetScript("OnValueChanged", function(_, nv)
 		controlContainer:SetPoint("TOPLEFT", 0, nv)
 	end)
-	local sharedDrop = CreateFrame("Frame", "OPC_SharedDropDown", frame, "UIDropDownMenuTemplate")
+	local sharedDrop = CreateFrame("Frame", "OPC_SharedDropDown", nil, "UIDropDownMenuTemplate")
 	sharedDrop:Hide()
 
 	local function onCheckboxClick(self, btn)
@@ -564,18 +527,20 @@ local widgetControl, optionControl = {}, {} do -- Widget construction
 		if halfpoint then
 			ofsY = ofsY - rowHeight
 		end
-		local s, leftMargin, centerLine = TS:CreateOptionsSlider(controlContainer, nil, 242)
+		local t, s, leftMargin, centerLine = nil, XU:Create("OPie:OptionsSlider", nil, controlContainer)
+		s:SetWidth(242)
 		s:SetPoint("TOPLEFT", rframe, "TOPLEFT", 319-leftMargin, ofsY-3)
-		s.text:SetPoint("LEFT", rframe, "TOPLEFT", 42, ofsY-3-centerLine)
-		s.text:SetJustifyH("LEFT")
-		s.text:Show()
+		t = s:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+		t:SetPoint("LEFT", rframe, "TOPLEFT", 42, ofsY-3-centerLine)
+		t:SetJustifyH("LEFT")
+		t:Show()
+		v.text = t
 		s:SetValueStep(v[5] or 0.1)
 		s:SetMinMaxValues(v[3] < v[4] and v[3] or -v[3], v[4] > v[3] and v[4] or -v[4])
 		s:SetObeyStepOnDrag(true)
 		s:SetScript("OnValueChanged", onValueChanged)
-		s.lo:SetFormattedText(v.valueFormat or "%s", v[3])
-		s.hi:SetFormattedText(v.valueFormat or "%s", v[4])
-		v.text = s.text
+		s:SetRangeLabelText((v.valueFormat or "%s"):format(v[3]), (v.valueFormat or "%s"):format(v[4]))
+		s:SetTipValueFormat(v.valueFormat)
 		return s, ofsY - 20, false, 0
 	end
 	function build.radio(v, ofsY, halfpoint, rowHeight, rframe)
@@ -676,22 +641,21 @@ do -- customized widgets
 			return OPC_AlterOption(offsetControl, self:GetID() == 1 and "IndicationOffsetX" or "IndicationOffsetY", nv)
 		end
 		for i=1, 2 do
-			local s, leftMargin, _centerLine = TS:CreateOptionsSlider(offsetPanel, nil, 0)
+			local t, s, leftMargin, _centerLine = nil, XU:Create("OPie:OptionsSlider", nil, offsetPanel)
 			s:SetID(i)
 			s:SetPoint("TOPLEFT", -leftMargin, 27-42*i)
 			s:SetPoint("TOPRIGHT", -5, 27-42*i)
-			s.text:SetFontObject(GameFontHighlightSmall)
-			s.text:SetJustifyH("LEFT")
-			s.text:SetPoint("BOTTOMLEFT", s, "TOPLEFT", leftMargin, 3)
-			s.text:SetText(i == 1 and L"Move rings right" or L"Move rings down")
-			s.text:Show()
+			t = s:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+			t:SetJustifyH("LEFT")
+			t:SetPoint("BOTTOMLEFT", s, "TOPLEFT", leftMargin, 3)
+			t:SetText(i == 1 and L"Move rings right" or L"Move rings down")
+			t:Show()
 			s:SetValueStep(50)
 			s:SetMinMaxValues(-500, 500)
 			s:SetObeyStepOnDrag(true)
 			s:SetScript("OnValueChanged", onOffsetValueChanged)
-			s.lo:SetText("")
-			s.hi:SetText("")
-			offsetControl[2+i], offsetControl[4+i] = s, s.text
+			s:SetRangeLabelText("", "")
+			offsetControl[2+i], offsetControl[4+i] = s, t
 		end
 		function offsetPanel:OnSetOwningButton()
 			getmetatable(self).__index.ClearAllPoints(self)
@@ -948,9 +912,9 @@ do -- customized widgets
 	end
 end
 
-local OPC_AppearanceFactory = CreateFrame("Frame", "OPC_AppearanceDropdown", frame, "UIDropDownMenuTemplate")
+local OPC_AppearanceFactory = XU:Create("DropDown", nil, frame)
 OPC_AppearanceFactory:SetPoint("LEFT", optionControl._Appearance.widget, "LEFT", 284, -1)
-UIDropDownMenu_SetWidth(OPC_AppearanceFactory, 200)
+OPC_AppearanceFactory:SetWidth(250)
 
 T.OPC_RingScopePrefixes = {
 	[30] = "|cff25bdff",
@@ -1057,10 +1021,10 @@ function OPC_OptionDomain:text()
 		local name, key = PC:GetRingInfo(OR_CurrentOptionsDomain)
 		label = (L"Ring: %s"):format("|cffaaffff" .. (name or key) .."|r")
 	end
-	UIDropDownMenu_SetText(self, label)
+	self:SetText(label)
 end
 local function OPC_Profile_FormatName(ident)
-	return ident == "default" and L"default" or ident
+	return ident == "default" and L"default" or ident or "|cffff0000-???-|r"
 end
 do -- OPC_Profile:initialize
 	local curProfile
@@ -1139,7 +1103,7 @@ do -- OPC_Profile:initialize
 	end
 end
 function OPC_Profile:text()
-	UIDropDownMenu_SetText(self, L"Profile" .. ": " .. OPC_Profile_FormatName(PC:GetCurrentProfile()))
+	self:SetText(L"Profile" .. ": " .. OPC_Profile_FormatName(PC:GetCurrentProfile()))
 end
 function OPC_AppearanceFactory:formatText(key, outOfDate, name, disabled)
 	name = name or T.OPieUI:GetIndicatorConstructorName(key)
@@ -1167,7 +1131,7 @@ function OPC_AppearanceFactory:text()
 		key, name = avail and key or nil, avail and name or nil
 		text = self:formatText(key, nil, name) .. (avail and "" or "|cff909090*")
 	end
-	UIDropDownMenu_SetText(self, text)
+	self:SetText(text)
 end
 local function OPC_AppearanceFactory_set(_, key)
 	PC:SetOption("IndicatorFactory", key, OR_CurrentOptionsDomain)
@@ -1202,14 +1166,10 @@ function OPC_AppearanceFactory:initialize()
 		UIDropDownMenu_AddButton(info)
 	end
 end
-function frame.refresh()
-	OPC_BlockInput = true
+local function refreshControls()
 	if OR_CurrentOptionsDomain and not PC:GetRingInfo(OR_CurrentOptionsDomain) then
 		OR_CurrentOptionsDomain = nil
 	end
-	OPC_OptionDomain:text()
-	OPC_Profile:text()
-	OPC_AppearanceFactory:text()
 	OPC_AppearanceFactory:SetShown(T.OPieUI:HasMultipleIndicatorConstructors())
 	for _, control in ipairs(OPC_Options) do
 		local widget, ctype, option = control.widget, control[1], control[2]
@@ -1231,6 +1191,13 @@ function frame.refresh()
 			OPC_UpdateControlReqs(control)
 		end
 	end
+	OPC_OptionDomain:text()
+	OPC_Profile:text()
+	OPC_AppearanceFactory:text()
+end
+function frame.refresh()
+	OPC_BlockInput = true
+	securecall(refreshControls)
 	OPC_BlockInput = false
 	config.checkSVState(frame)
 end
@@ -1260,7 +1227,7 @@ function T.ShowOPieOptionsPanel(ringKey)
 	frame:OpenPanel()
 	OPC_OptionDomain_click(nil, ringKey)
 	frame.resetOnHide = true
-	config.pulseDropdown(OPC_OptionDomain)
+	OPC_OptionDomain:Pulse()
 end
 function OPie_OpenSettings()
 	frame:OpenPanel()

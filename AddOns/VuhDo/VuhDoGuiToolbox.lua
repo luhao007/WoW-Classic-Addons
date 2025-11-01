@@ -3,7 +3,6 @@ local _;
 VUHDO_COMBO_MAX_ENTRIES = 10000;
 
 local floor = floor;
-local mod = mod;
 local tonumber = tonumber;
 local strsub = strsub;
 local pairs = pairs;
@@ -17,6 +16,7 @@ local sIsSideBarLeft = { };
 local sIsSideBarRight = { };
 local sShowPanels;
 local sIsHideEmptyAndClickThrough;
+local sIsPartyFrameHooked;
 local sEmpty = { };
 
 local tEmptyColor = { };
@@ -109,8 +109,9 @@ end
 
 --
 function VUHDO_mayMoveHealPanels()
-	return (VUHDO_IS_PANEL_CONFIG or not VUHDO_CONFIG["LOCK_PANELS"])
-		and (not InCombatLockdown() or not VUHDO_CONFIG["LOCK_IN_FIGHT"]);
+
+	return not InCombatLockdown() and (VUHDO_IS_PANEL_CONFIG or not VUHDO_CONFIG["LOCK_PANELS"]);
+
 end
 
 
@@ -354,6 +355,7 @@ local VUHDO_BLIZZ_EVENTS = {
 	"READY_CHECK_CONFIRM",
 	"READY_CHECK_FINISHED",
 --	"RUNE_POWER_UPDATE",
+	"SPELLS_CHANGED",
 	"UI_SCALE_CHANGED",
 	"UNIT_AURA",
 	"UNIT_CLASSIFICATION_CHANGED",
@@ -549,18 +551,35 @@ end
 
 
 --
+local function VUHDO_updateBlizzPartyFrames()
+
+	if InCombatLockdown() then
+		return;
+	end
+
+	if VUHDO_CONFIG["BLIZZ_UI_HIDE_PARTY"] == 3 then
+		for tCnt = 1, 4 do
+			VUHDO_hideFrame(_G["PartyMemberFrame" .. tCnt]);
+		end
+	elseif VUHDO_CONFIG["BLIZZ_UI_HIDE_PARTY"] == 1 then
+		for tCnt = 1, 4 do
+			VUHDO_showFrame(_G["PartyMemberFrame" .. tCnt]);
+		end
+	end
+
+end
+
+
+
+--
 local function VUHDO_hideBlizzParty()
 	HIDE_PARTY_INTERFACE = "1";
 
-	hooksecurefunc("ShowPartyFrame",
-		function()
-			if not InCombatLockdown() then
-				for tCnt = 1, 4 do
-					VUHDO_hideFrame(_G["PartyMemberFrame" .. tCnt]);
-				end
-			end
-		end
-	);
+	if not sIsPartyFrameHooked then
+		hooksecurefunc("ShowPartyFrame", VUHDO_updateBlizzPartyFrames);
+
+		sIsPartyFrameHooked = true;
+	end
 
 	local tPartyFrame;
 	for tCnt = 1, 4 do
@@ -587,15 +606,11 @@ local function VUHDO_showBlizzParty()
 	if tonumber(GetCVar("useCompactPartyFrames")) == 0 then
 		HIDE_PARTY_INTERFACE = "0";
 
-		hooksecurefunc("ShowPartyFrame",
-			function()
-				if not InCombatLockdown() then
-					for tCnt = 1, 4 do
-						VUHDO_showFrame(_G["PartyMemberFrame" .. tCnt]);
-					end
-				end
-			end
-		);
+		if not sIsPartyFrameHooked then
+			hooksecurefunc("ShowPartyFrame", VUHDO_updateBlizzPartyFrames);
+
+			sIsPartyFrameHooked = true;
+		end
 
 		local tPartyFrame;
 		for tCnt = 1, 4 do
@@ -777,20 +792,21 @@ function VUHDO_fixFrameLevels(anIsForceUpdateChildren, aFrame, aBaseLevel, ...)
 	local tChild = select(tCnt, ...);
 	aFrame:SetFrameLevel(aBaseLevel);
 	while tChild do -- Layer components seem to have no name, important for HoT icons.
-		if tChild:GetName() then
-			tOurLevel = aBaseLevel + 1 + (tChild["addLevel"] or 0);
+		if tChild.IsForbidden and not tChild:IsForbidden() then
+			if tChild.GetName and tChild:GetName() then
+				tOurLevel = aBaseLevel + 1 + (tChild["addLevel"] or 0);
 
-			if not tChild["vfl"] then
-				if not VUHDO_isConfigPanelShowing() then
-					tChild:SetFrameStrata(aFrame:GetFrameStrata());
+				if not tChild["vfl"] then
+					if not VUHDO_isConfigPanelShowing() then
+						tChild:SetFrameStrata(aFrame:GetFrameStrata());
+					end
+					tChild:SetFrameLevel(tOurLevel);
+					tChild["vfl"] = true;
+					VUHDO_fixFrameLevels(anIsForceUpdateChildren, tChild, tOurLevel, tChild:GetChildren());
+				elseif(anIsForceUpdateChildren) then
+					VUHDO_fixFrameLevels(true, tChild, tOurLevel, tChild:GetChildren());
 				end
-				tChild:SetFrameLevel(tOurLevel);
-				tChild["vfl"] = true;
-				VUHDO_fixFrameLevels(anIsForceUpdateChildren, tChild, tOurLevel, tChild:GetChildren());
-			elseif(anIsForceUpdateChildren) then
-				VUHDO_fixFrameLevels(true, tChild, tOurLevel, tChild:GetChildren());
 			end
-
 		end
 		tCnt = tCnt + 1;
 		tChild = select(tCnt, ...);
@@ -1005,6 +1021,31 @@ function VUHDO_indicatorTextCallback(aBarNum, aUnit, aProviderName, aText, aValu
 		if VUHDO_INDICATOR_CONFIG[tPanelNum]["TEXT_INDICATORS"][anIndicatorName]["TEXT_PROVIDER"] == aProviderName then
 			VUHDO_getHealthBarText(tButton, aBarNum):SetText(aText);
 		end
+	end
+
+end
+
+
+
+--
+local VUHDO_COLOR_CACHE = { };
+local tColorCacheKey;
+local tColor;
+function VUHDO_getOrCreateCachedColor(aR, aG, aB, aO)
+
+	if not aR or not aG or not aB then
+		return;
+	end
+
+	tColorCacheKey = aR .. "|" .. aG .. "|" .. aB ..  "|" .. (aO or "");
+
+	if VUHDO_COLOR_CACHE[tColorCacheKey] then
+		return VUHDO_COLOR_CACHE[tColorCacheKey];
+	else
+		tColor = CreateColor(aR, aG, aB, aO);
+		VUHDO_COLOR_CACHE[tColorCacheKey] = tColor;
+
+		return tColor;
 	end
 
 end

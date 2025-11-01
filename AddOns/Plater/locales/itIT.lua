@@ -5,6 +5,10 @@ do
 
 ------------------------------------------------------------
 --[[Translation missing --]]
+L["A /reload may be required to take effect."] = "A /reload may be required to take effect."
+--[[Translation missing --]]
+L["CVar, saved within Plater profile and restored when loading the profile."] = "CVar, saved within Plater profile and restored when loading the profile."
+--[[Translation missing --]]
 L["EXPORT"] = "Export"
 --[[Translation missing --]]
 L["EXPORT_CAST_COLORS"] = "Share Colors"
@@ -16,6 +20,8 @@ L["HIGHLIGHT_HOVEROVER"] = "Hover Over Highlight"
 L["HIGHLIGHT_HOVEROVER_ALPHA"] = "Hover Over Highlight Alpha"
 --[[Translation missing --]]
 L["HIGHLIGHT_HOVEROVER_DESC"] = "Highlight effect when the mouse is over the nameplate."
+--[[Translation missing --]]
+L["Hold Shift to change the sound of all casts with the audio %s to %s"] = "Hold Shift to change the sound of all casts with the audio %s to %s"
 --[[Translation missing --]]
 L["IMPORT"] = "Import"
 --[[Translation missing --]]
@@ -63,6 +69,14 @@ L["OPTIONS_ANCHOR_TARGET_SIDE"] = "Which side this widget is attach to."
 L["OPTIONS_ANCHOR_TOP"] = "In Alto"
 L["OPTIONS_ANCHOR_TOPLEFT"] = "In Alto a Sinistra"
 L["OPTIONS_ANCHOR_TOPRIGHT"] = "In Alto a Destra"
+--[[Translation missing --]]
+L["OPTIONS_AUDIOCUE_COOLDOWN"] = "Audio Cooldown"
+--[[Translation missing --]]
+L["OPTIONS_AUDIOCUE_COOLDOWN_DESC"] = [=[Amount of time in milliseconds to wait before playing the SAME audio again.
+
+Prevents loud sounds from playing when two or more casts are happening at the same time.
+
+Set to 0 to disable this feature.]=]
 --[[Translation missing --]]
 L["OPTIONS_AURA_DEBUFF_HEIGHT"] = "Debuff's icon height."
 --[[Translation missing --]]
@@ -169,7 +183,13 @@ L["OPTIONS_CASTBAR_TOGGLE_TEST_DESC"] = "Start cast bar test, press again to sto
 --[[Translation missing --]]
 L["OPTIONS_CASTBAR_WIDTH"] = "Width of the cast bar."
 --[[Translation missing --]]
+L["OPTIONS_CASTCOLORS_DISABLE_SOUNDS"] = "Remove All Sounds"
+--[[Translation missing --]]
+L["OPTIONS_CASTCOLORS_DISABLE_SOUNDS_CONFIRM"] = "Are you sure you want to remove all configured cast sounds?"
+--[[Translation missing --]]
 L["OPTIONS_CASTCOLORS_DISABLECOLORS"] = "Disable All Colors"
+--[[Translation missing --]]
+L["OPTIONS_CASTCOLORS_DISABLECOLORS_CONFIRM"] = "Confirm disable all cast colors?"
 --[[Translation missing --]]
 L["OPTIONS_CLICK_SPACE_HEIGHT"] = "The height of the are area which accepts mouse clicks to select the target"
 --[[Translation missing --]]
@@ -263,6 +283,10 @@ L["OPTIONS_ICONROWSPACING"] = "Icon Row Spacing"
 L["OPTIONS_ICONSPACING"] = "Icon Spacing"
 --[[Translation missing --]]
 L["OPTIONS_INDICATORS"] = "Indicators"
+--[[Translation missing --]]
+L["OPTIONS_INTERACT_OBJECT_NAME_COLOR"] = "Game object name color"
+--[[Translation missing --]]
+L["OPTIONS_INTERACT_OBJECT_NAME_COLOR_DESC"] = "Names on objects will get this color."
 --[[Translation missing --]]
 L["OPTIONS_INTERRUPT_FILLBAR"] = "Fill Cast Bar On Interrupt"
 --[[Translation missing --]]
@@ -407,6 +431,8 @@ Character specific setting!]=]
 --[[Translation missing --]]
 L["OPTIONS_SCALE"] = "Scale"
 --[[Translation missing --]]
+L["OPTIONS_SCRIPTING_ADDOPTION"] = "Select which option to add"
+--[[Translation missing --]]
 L["OPTIONS_SCRIPTING_REAPPLY"] = "Re-Apply Default Values"
 L["OPTIONS_SETTINGS_COPIED"] = "impostazioni copiate."
 L["OPTIONS_SETTINGS_FAIL_COPIED"] = "impossibile ottenere le impostazioni per la scheda attualmente selezionata."
@@ -531,6 +557,16 @@ L["OPTIONS_YOFFSET"] = "Offset Y"
 L["OPTIONS_YOFFSET_DESC"] = [=[Adjust the position on the Y axis.
 
 *right click to type the value.]=]
+--[[Translation missing --]]
+L[ [=[Show nameplate for friendly npcs.
+
+|cFFFFFF00 Important |r: This option is dependent on the client`s nameplate state (on/off).
+
+|cFFFFFF00 Important |r: when disabled but enabled on the client through (%s), the healthbar isn't visible but the nameplate is still clickable.]=] ] = [=[Show nameplate for friendly npcs.
+
+|cFFFFFF00 Important |r: This option is dependent on the client`s nameplate state (on/off).
+
+|cFFFFFF00 Important |r: when disabled but enabled on the client through (%s), the healthbar isn't visible but the nameplate is still clickable.]=]
 --[[Translation missing --]]
 L["TARGET_CVAR_ALWAYSONSCREEN"] = "Target Always on the Screen|cFFFF7700*|r"
 --[[Translation missing --]]

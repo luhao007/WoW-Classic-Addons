@@ -763,7 +763,7 @@ function QuickChatfun.QuickBut_Keyword()
 					return false
 				end
 			end
-			if BlackList["BlackName"] and FilterBlack_Name(arg2) then
+			if BlackList["BlackName"] and FilterBlack_Name(arg5) then
 				BlackList["name_count"]=BlackList["name_count"]+1
 				return true
 			end

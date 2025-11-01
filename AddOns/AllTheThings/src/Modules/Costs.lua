@@ -13,21 +13,19 @@ local PlayerHasToy, C_CurrencyInfo_GetCurrencyInfo
 	= PlayerHasToy, C_CurrencyInfo.GetCurrencyInfo
 
 -- App locals
-local SearchForFieldContainer, GetRawField, GetRelativeByFunc, SearchForObject
-	= app.SearchForFieldContainer, app.GetRawField, app.GetRelativeByFunc, app.SearchForObject
+local SearchForFieldContainer, GetRawField, GetRelativeByFunc, SearchForObject, IsComplete
+	= app.SearchForFieldContainer, app.GetRawField, app.GetRelativeByFunc, app.SearchForObject, app.IsComplete
 local OneTimeQuests = app.EmptyTable
 local GetItemCount = app.WOWAPI.GetItemCount
-local IsSpellKnownHelper
-app.AddEventHandler("OnLoad", function()
-	IsSpellKnownHelper = app.IsSpellKnownHelper
-end)
+local IsSpellKnownHelper, CreateObject, FillGroups
 
 -- Module locals
-local RecursiveGroupRequirementsFilter, RecursiveAccountFilter, DGU, UpdateRunner, ExtraFilters, ResolveSymbolicLink
+local RecursiveGroupRequirementsFilter, RecursiveAccountFilter, DGU, UpdateRunner, ExtraFilters
 -- If a Thing which has a cost is not a quest or is available as a quest
 local function IsAvailable(ref)
 	return not ref.questID or app.IsQuestAvailable(ref)
 end
+local CostLinkedFillOptions = {Fillers={}}
 
 local Depth = 0
 local CostDebugIDs = {
@@ -45,9 +43,11 @@ local CostDebugIDs = {
 	-- [175142] = true,	-- All-Seeing Right Eye
 	-- [207026] = true,	-- Dreamsurge Coalescence
 	-- [205052] = true,	-- Miloh
-	-- [515] = true, -- DMF Ticket
-	-- [241] = true, -- Champion's Seal
-	-- [40610] = true, -- Chestguard of the Lost Conqueror [10M]
+	-- [515] = true,	-- DMF Ticket
+	-- [241] = true,	-- Champion's Seal
+	-- [40610] = true,	-- Chestguard of the Lost Conqueror [10M]
+	-- [194681] = true,	-- Sugarwing Cupcake
+	-- [193215] = true,	-- Scaleseeker Mezeri
 }
 local function PrintDebug(id, ...)
 	if CostDebugIDs.ALL then
@@ -69,16 +69,17 @@ end
 -- 2 - Available to collect based on only Unobtainable Filtering
 -- 3 - Available to collect without Filtering
 local function CheckCollectible(ref, costid)
+	-- local RefSearch = app:RawSearchLink(ref.key,ref[ref.key])
 	-- Depth = Depth + 1
 	-- Only track Costs through Things which are Available
 	if not IsAvailable(ref) then
-		-- app.PrintDebug("Non-available Thing blocking Cost chain",app:SearchLink(ref))
+		-- PrintDebug(costid, "Non-available Thing blocking Cost chain",RefSearch)
 		return;
 	end
-	-- PrintDebug(costid, "CheckCollectible",app:SearchLink(ref))
+	-- PrintDebug(costid, "CheckCollectible",RefSearch,ref.__FillGroups,FilterRequirement(ref))
 	-- Used as a cost for something which is collectible itself and not collected
 	if ref.collectible and not ref.collected then
-		-- PrintDebug(costid, "Purchase via Collectible",app:SearchLink(ref),FilterRequirement(ref) == 1 and "VISIBLE" or FilterRequirement(ref) == 2 and "ACCOUNT" or "FILTERED")
+		-- PrintDebug(costid, "Purchase via Collectible",RefSearch,FilterRequirement(ref) == 1 and "VISIBLE" or FilterRequirement(ref) == 2 and "ACCOUNT" or "FILTERED")
 		return FilterRequirement(ref)
 	end
 	-- If this group has sub-groups, are any of them collectible?
@@ -93,41 +94,27 @@ local function CheckCollectible(ref, costid)
 			collectible = CheckCollectible(o, costid)
 			if collectible then
 				mincollectible = math_min(collectible,mincollectible or 99)
-				-- PrintDebug(costid, "Purchase via sub-group Collectible",collectible,app:SearchLink(ref),"<=",app:SearchLink(o))
+				-- PrintDebug(costid, "Purchase via sub-group Collectible",collectible,RefSearch,"<=",app:RawSearchLink(o.key,o[o.key]))
 				-- quick escape if we've already determined this container contains something visible with current filters
 				if mincollectible == 1 then return mincollectible end
 			end
 		end
-		return mincollectible
-	end
-	-- If this group has a symlink, generate the symlink into a cached version of the ref for the following sub-group check
-	local symresults
-	if ref.sym then
-		-- since 'sym' is cached itself when retrieved, we don't need the recreating of objects here for caching
-		symresults = ResolveSymbolicLink(ref, true)
-	end
-	-- If this group has sym results, are any of them collectible?
-	if symresults then
-		local o, collectible
-		local mincollectible
-		-- local subDepth = Depth
-		for i=1,#symresults do
-			o = symresults[i];
-			-- Depth = subDepth
-			collectible = CheckCollectible(o, costid)
-			if collectible then
-				mincollectible = math_min(collectible,mincollectible or 99)
-				-- PrintDebug(costid, "Purchase via sym-group Collectible",collectible,app:SearchLink(ref),"<=",app:SearchLink(o))
-				-- quick escape if we've already determined this container contains something visible with current filters
-				if mincollectible == 1 then return mincollectible end
-			end
-		end
-		return mincollectible
+		-- PrintDebug(costid, "mincollectible after no collectible sub-groups",mincollectible,RefSearch)
+		if mincollectible then return mincollectible end
 	end
 	-- Used as a cost for something which is collectible as a cost itself
 	if ref.collectibleAsCost then
-		-- PrintDebug(costid, "Purchase via collectibleAsCost",app:SearchLink(ref),FilterRequirement(ref) == 1 and "VISIBLE" or FilterRequirement(ref) == 2 and "ACCOUNT" or "FILTERED")
+		-- PrintDebug(costid, "Purchase via collectibleAsCost",RefSearch,FilterRequirement(ref) == 1 and "VISIBLE" or FilterRequirement(ref) == 2 and "ACCOUNT" or "FILTERED")
 		return FilterRequirement(ref)
+	end
+	-- NPC/Sym are Filler checks
+	if not ref.__FillGroups then
+		local clone = CreateObject(ref, true)
+		FillGroups(clone, CostLinkedFillOptions)
+		if clone.g then
+			-- PrintDebug(costid, "Check filled cost",RefSearch)
+			return CheckCollectible(clone, costid)
+		end
 	end
 end
 app.CheckCollectible = CheckCollectible;
@@ -515,6 +502,8 @@ UpdateCostGroup = function(c)
 				UpdateCostsByItemID(id, refresh, true)
 			elseif type == "c" then
 				UpdateCostsByCurrencyID(id, refresh, true)
+			elseif type == "s" then
+				UpdateCostsBySpellID(id, refresh, true)
 			end
 		end
 	end
@@ -583,6 +572,37 @@ app.CollectibleAsCost = function(t)
 	t.collectibleAsCost = nil;
 	CACChain[thash] = nil
 end
+local function CalculateGroupsCostAmount(g, costID, includedHashes)
+	local o, subg, subcost, c
+	local cost = 0
+	for i=1,#g do
+		o = g[i]
+		subcost = o.visible and not IsComplete(o) and o.cost or nil
+		if not includedHashes[o.hash] and subcost and type(subcost) == "table" then
+			for j=1,#subcost do
+				c = subcost[j]
+				if c[2] == costID then
+					includedHashes[o.hash] = true
+					cost = cost + c[3];
+					break
+				end
+			end
+		end
+		subg = o.g
+		if subg then
+			cost = cost + CalculateGroupsCostAmount(subg, costID, includedHashes)
+		end
+	end
+	return cost
+end
+-- Returns the total amount of 'costID' for all non-collected Things within the group (not including the group itself)
+local function CalculateTotalCosts(group, costID)
+	-- app.PrintDebug("CalculateTotalCosts",group.hash,costID)
+	local g = group and group.g
+	local cost = g and CalculateGroupsCostAmount(g, costID, {}) or 0
+	-- app.PrintDebug("CalculateTotalCosts",group.hash,costID,"=>",cost)
+	return cost
+end
 
 -- Costs API Implementation
 -- Access via AllTheThings.Modules.Costs
@@ -590,12 +610,18 @@ local api = {};
 app.Modules.Costs = api;
 app.AddEventHandler("OnLoad", function()
 	DGU = app.DirectGroupUpdate;
-	ResolveSymbolicLink = app.ResolveSymbolicLink
+	IsSpellKnownHelper = app.IsSpellKnownHelper
+	CreateObject = app.__CreateObject
+	FillGroups = app.FillGroups
 	UpdateRunner = app.CreateRunner("costs");
 	api.Runner = UpdateRunner
 	UpdateRunner.SetPerFrameDefault(100)
 	UpdateRunner.DefaultOnStart(ResetCostTotals)
 	UpdateRunner.DefaultOnReset(ResetCostTotals)
+	local fillers = CostLinkedFillOptions.Fillers
+	local getFiller = app.Modules.Fill.GetFiller
+	fillers[#fillers + 1] = getFiller("NPC")
+	fillers[#fillers + 1] = getFiller("SYMLINK")
 	-- UpdateRunner.ToggleDebugFrameTime()
 end)
 app.AddEventHandler("OnSavedVariablesAvailable", function(currentCharacter, accountWideData)
@@ -605,12 +631,30 @@ app.AddEventHandler("OnAfterSavedVariablesAvailable", function(currentCharacter,
 	OneTimeQuests = accountWideData.OneTimeQuests
 end)
 app.AddEventHandler("OnRecalculate_NewSettings", UpdateCosts)
+-- Information Types
+app.AddEventHandler("OnLoad", function()
+	app.Settings.CreateInformationType("Cost_Calculation", {
+		text = "Cost_Calculation",
+		priority = 2.91, HideCheckBox = true, ForceActive = true,
+		Process = function(t, reference, tooltipInfo)
+			if not app.Settings:GetTooltipSetting("Currencies") then return end
 
+			if not app.ThingKeys[reference.key] then return end
+
+			local id = reference[reference.key]
+			local currencyCount = CalculateTotalCosts(reference, id)
+			if currencyCount > 0 then
+				tooltipInfo[#tooltipInfo + 1] = { left = L.CURRENCY_NEEDED_TO_BUY, right = app.formatNumericWithCommas(currencyCount) }
+			end
+		end
+	})
+end)
 -- Cost Capture Handling
 do
 	local setmetatable, tonumber, wipe = setmetatable, tonumber, wipe
 	-- probably fine to only have 1 Runner for cost collector... I mean how many popouts can one person make...
 	local CollectorRunner = app.CreateRunner("cost_collector")
+	CollectorRunner.SetPerFrameDefault(25)
 	local function AddCost(costType, id, amount)
 		-- app.PrintDebug("Cost",costType.type,id,amount)
 		costType[id] = costType[id] + amount
@@ -624,19 +668,28 @@ do
 		return k
 	end}
 
-	local function AddGroupCosts(o, Collector)
-		-- app.PrintDebug("AGC",o.hash)
-		if not o.visible or o.saved or o.collected then return end
-		-- only add costs once per hash in case it is duplicated
-		local hash = o.hash
-		if not hash or Collector.Hashes[hash] then return end
-		Collector.Hashes[hash] = true
+	local function AddGroupCosts(o, Collector, amount)
+		-- app.PrintDebug("AGC",app:SearchLink(o),o.visible,amount)
+		-- if we're adding a specific amount, then we ignore the duplicate prevention
+		if not amount then
+			if IsComplete(o) then return end
+			-- only add costs once per hash in case it is duplicated
+			local hash = o.hash
+			if not hash or Collector.Hashes[hash] then return end
+			Collector.Hashes[hash] = true
+		end
 
 		local cost = o.cost;
 		cost = cost and type(cost) == "table" and cost;
 		local providers = o.providers;
 		if not cost and not providers then return; end
 
+		amount = amount or 1
+		-- app.PrintDebug("AGC.Needed",
+		-- 	o.visible and "VISIBLE",
+		-- 	o.saved and "SAVED",
+		-- 	o.collectible and "COLLECTIBLE",
+		-- 	o.collected and "COLLECTED",amount)
 		-- Gold cost currently ignored
 		-- app.PrintDebug("AGC:Add",o.hash)
 		-- app.PrintTable(cost)
@@ -647,7 +700,7 @@ do
 			for _,c in ipairs(cost) do
 				type = c[1]
 				if type == "c" or type == "i" then
-					AddCost(Data[type], c[2], c[3])
+					AddCost(Data[type], c[2], c[3] * amount)
 				-- elseif type == "g" then
 					-- special gold cost blah
 					-- AddCost(Data[type], 1, c[2])
@@ -659,23 +712,37 @@ do
 			for _,c in ipairs(providers) do
 				type = c[1]
 				if type == "i" then
-					AddCost(Data[type], c[2], 1)
+					AddCost(Data[type], c[2], amount)
 				end
 			end
 		end
 	end
+	local IgnoredTypesForCost = {
+		NonCollectible = true,
+		VisualHeader = true,
+		VisualHeaderWithGroups = true,
+	}
+	local IgnoredTypesForNestedCosts = {
+		EnsembleItem = true,
+	}
 	local function ScanGroups(group, Collector)
 
 		-- ignore costs for and within certain groups
 		if not group.visible or group.sourceIgnored then return end
 
-		CollectorRunner.Run(AddGroupCosts, group, Collector)
+		local runner = Collector.Runner
+		local groupType = group.__type
+		-- app.PrintDebug("AGC:Run",app:SearchLink(group),IgnoredTypesForCost[groupType],IgnoredTypesForNestedCosts[groupType],group.filledCost)
+		-- don't include NonCollectible or VisualHeaders
+		if not IgnoredTypesForCost[groupType] then
+			runner.Run(AddGroupCosts, group, Collector)
+		end
 		local g = group.g
 		if not g then return end
 
 		-- don't scan groups inside Item groups which have a cost/provider (i.e. ensembles)
 		-- this leads to wildly bloated totals
-		if group.filledCost or (group.itemID and (group.cost or group.providers)) then return end
+		if group.filledCost or IgnoredTypesForNestedCosts[groupType] then return end
 
 		for _,o in ipairs(g) do
 			ScanGroups(o, Collector)
@@ -686,22 +753,22 @@ do
 		if not group then return end
 
 		Collector.Reset()
-		local text = group.text
-		Collector.__text = text
+		local text = group.__text
 		group.text = (text or "").."  "..BLIZZARD_STORE_PROCESSING
 		group.OnSetVisibility = app.ReturnTrue
-		-- app.PrintDebug("StartUpdating",group.text)
-		app.DirectGroupUpdate(group)
+		-- app.PrintDebug("AGC:Start",text)
+		app.DirectGroupRefresh(group, true)
 	end
 	local function EndUpdating(Collector)
 		local group = Collector.__group
 		if not group then return end
 
-		-- app.PrintDebug("AGC:End")
+		group.text = group.__text
+		-- app.PrintDebug("AGC:End",group.text)
 		-- app.PrintTable(Collector.Data)
-		group.text = Collector.__text
 		-- Build all the cost data which is available to the current filters into the cost group
 		local costItems = group.g
+		local requiresCostItems = {}
 		for costKey,costType in pairs(Collector.Data) do
 			if type(costType) == "table" then
 				local costThing
@@ -720,9 +787,17 @@ do
 						-- 	costThing = app.CreateRawText(
 						-- 		app.SearchForObject("itemID", id, "field")
 						-- 			or app.CreateItem(id), amount)
+						else
+							costThing = nil
 						end
 						if costThing then
-							costItems[#costItems + 1] = costThing
+							if costThing.providers or (costThing.cost and type(costThing.cost) == "table") then
+								costThing.back = 0.5
+								costThing[1] = (costThing.cost and #costThing.cost) or 0.5
+								requiresCostItems[#requiresCostItems + 1] = costThing
+							else
+								costItems[#costItems + 1] = costThing
+							end
 						end
 					end
 				end
@@ -730,6 +805,8 @@ do
 		end
 		if #costItems > 0 then
 			app.Sort(costItems, app.SortDefaults.Total)
+			app.Sort(requiresCostItems, app.SortDefaults.Total)
+			app.ArrayAppend(costItems, requiresCostItems)
 			app.AssignChildren(group)
 		else
 			group.OnSetVisibility = nil
@@ -737,26 +814,73 @@ do
 		app.DirectGroupUpdate(group)
 		Collector.Reset()
 	end
+	local function ScanSubCosts(Collector)
+		-- app.PrintDebug("SSC:Start",Collector.__group.__text)
+		local group = Collector.__group
+		if not group then return end
 
-	api.GetCostCollector = function()
+		local costThing
+		local anyNewCost
+		local CurCostData = app.CloneDictionary(Collector.Data)
+		-- Scan all current Total Costs, marking each with being scanned, and incrementing
+		for costKey,costType in pairs(CurCostData) do
+			if type(costType) == "table" then
+				if rawget(costType, "Amounts") == nil then costType.Amounts = {} end
+				if costKey == "c" then
+					for id,amount in pairs(costType) do
+						id = tonumber(id)
+						if id and costType.Amounts[id] ~= amount then
+							-- app.PrintDebug("have",costKey,id,amount,"checked @",costType.Amounts[id])
+							costType.Amounts[id] = amount
+							costThing = app.SearchForObject("currencyID", id, "key") or app.CreateCurrencyClass(id)
+							anyNewCost = true
+							AddGroupCosts(costThing, Collector, amount)
+						end
+					end
+				elseif costKey == "i" then
+					for id,amount in pairs(costType) do
+						id = tonumber(id)
+						if id and costType.Amounts[id] ~= amount then
+							-- app.PrintDebug("have",costKey,id,amount,"checked @",costType.Amounts[id])
+							costType.Amounts[id] = amount
+							costThing = app.SearchForObject("itemID", id, "field") or app.CreateItem(id)
+							anyNewCost = true
+							AddGroupCosts(costThing, Collector, amount)
+						end
+					end
+				end
+			end
+		end
 
-		local Collector = {}
+		if anyNewCost then
+			Collector.Runner.Run(ScanSubCosts, Collector)
+		else
+			Collector.Runner.Run(EndUpdating, Collector)
+		end
+	end
 
+	api.GetCostCollector = function(group)
+
+		-- local windowRunner = group.window and group.window:GetRunner()
+		-- app.PrintDebug("New Cost Collector",windowRunner)
 		-- Table which can capture cost information for a collector
-		Collector.Data = setmetatable({}, __costData)
-		Collector.Hashes = {}
+		local Collector = {
+			Runner=CollectorRunner,
+			Data = setmetatable({}, __costData),
+			Hashes = {},
+		}
 
 		Collector.ScanGroups = function(group, costGroup)
 			Collector.__group = costGroup
-			CollectorRunner.SetPerFrame(25)
-			CollectorRunner.Run(StartUpdating, Collector)
+			local runner = Collector.Runner
+			runner.Run(StartUpdating, Collector)
 			local g = group.g
 			if g then
 				for _,o in ipairs(g) do
 					ScanGroups(o, Collector)
 				end
 			end
-			CollectorRunner.Run(EndUpdating, Collector)
+			runner.Run(ScanSubCosts, Collector)
 		end
 
 		Collector.Reset = function()
@@ -838,15 +962,24 @@ local function BuildTotalCost(group)
 		g = {},
 		OnClick = app.UI.OnClick.IgnoreRightClick,
 	});
+	-- keep an unmodified text copy
+	costGroup.__text = costGroup.text
 
-	local Collector = app.Modules.Costs.GetCostCollector()
+	local Collector = app.Modules.Costs.GetCostCollector(group)
 
-	local function RefreshCollector(data)
-		if data then
-			-- don't process the refresh if there was a data provided to the event and it's a different window and not a Thing
-			if not data.__type and data ~= group.window then return end
+	local function RefreshCollector(window, didUpdate)
+		-- app.PrintDebug("RefreshCollector??",group.window.Suffix,window and app:SearchLink(window.data),didUpdate)
+		if not didUpdate then return end
+		if window then
+			-- don't process the refresh if it's a different window
+			if window ~= group.window then return end
+			-- don't update costs if the popout hasn't been filled yet
+			if not window.data._fillcomplete then return end
+		else
+			-- no window provided to event
+			return
 		end
-		-- app.PrintDebug("RefreshCollector",group.window.Suffix,data and (data.Suffix or app:SearchLink(data)))
+
 		wipe(costGroup.g)
 		Collector.ScanGroups(group, costGroup)
 	end
@@ -854,15 +987,9 @@ local function BuildTotalCost(group)
 	-- we need to make sure we have a window reference for this group's Collector
 	-- so that when the window is expired, we know to remove the necessary Handler(s)
 	if group.window then
-		-- changing settings should refresh the Collector...
-		group.window:AddEventHandler("OnRecalculate_NewSettings", RefreshCollector)
-		-- force refresh should refresh collector...
-		group.window:AddEventHandler("OnRefreshCollections", RefreshCollector)
-		-- when the window is done filling, we can run the collector
-		group.window:AddEventHandler("OnWindowFillComplete", RefreshCollector)
-		-- when something is collected/removed, refresh the collector
-		group.window:AddEventHandler("OnThingCollected", RefreshCollector)
-		group.window:AddEventHandler("OnThingRemoved", RefreshCollector)
+		group.window:AddEventHandler("OnWindowUpdated", RefreshCollector)
+		-- when called from window fill complete, force it to appear as an update
+		group.window:AddEventHandler("OnWindowFillComplete", function(window) RefreshCollector(window, true) end)
 	end
 
 	-- Add the cost group to the popout
@@ -891,7 +1018,8 @@ local SkipPurchases = {
 	currencyID = {
 		[515] = 1,		-- Darkmoon Prize Ticket
 		[1166] = 1.5,	-- Timewarped Badge
-		[2778] = 2.5,	-- Bronze
+		[2778] = 2.5,	-- Bronze (Remix: Pandaria)
+		[3252] = 2.5,	-- Bronze (Remix: Legion)
 	},
 	LearnedTypes = {
 		Toy = 1,
@@ -923,7 +1051,6 @@ app.AddEventHandler("OnLoad", function()
 	local Fill = app.Modules.Fill
 	if not Fill then return end
 
-	local CreateObject = app.__CreateObject
 	Fill.AddFiller("COST",
 	function(group, FillData)
 		-- do not fill purchases on certain items, can skip the skip though based on a level
@@ -970,6 +1097,6 @@ app.AddEventHandler("OnLoad", function()
 	end,
 	{
 		SettingsIcon = app.asset("Currency"),
-		SettingsTooltip = "Fills any Purchases which can be made with a given Cost |T"..app.asset("Currency")..":0|t\n\nNOTE: A 'Purchase' is a loose term in that it essentially means it requires/consumes/uses/depletes/etc. the 'Cost' in order to be obtained.",
+		SettingsTooltip = app.L.FILL_COST_DATA_CHECKBOX_TOOLTIP,
 	})
 end)

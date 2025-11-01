@@ -14,28 +14,61 @@ local IsQuestFlaggedCompleted, SearchForFieldContainer, SearchForField
 -- WoW API Cache
 local GetSpellLink = app.WOWAPI.GetSpellLink;
 
-local IsSpellKnown, IsPlayerSpell, GetNumSpellTabs, GetSpellTabInfo, IsSpellKnownOrOverridesKnown
+-- TODO: some of these deprecated in 11.2, move to WOWAPI
+local IsSpellKnown, GetNumSpellTabs, GetSpellTabInfo, IsSpellKnownOrOverridesKnown
 ---@diagnostic disable-next-line: deprecated
-	= IsSpellKnown, IsPlayerSpell, GetNumSpellTabs, GetSpellTabInfo, IsSpellKnownOrOverridesKnown
+	= app.WOWAPI.IsSpellKnown, GetNumSpellTabs, GetSpellTabInfo, app.WOWAPI.IsSpellKnownOrOverridesKnown
 
+local SpellQuestLinks = {
+	-- double check added Mount spells in Mount.lua [PerCharacterMountSpells/AccountWideMountSpells]
+	[390631] = 66444,	-- Ottuk Taming
+	[241857] = 46319,	-- Lunarwing
+	[231437] = 46319,	-- Lunarwing
+	[148972] = 32325,	-- Green Dreadsteed
+	[148970] = 32325,	-- Green Felsteed
+	[1255451] = 92638,	-- Feldruid's Scornwing Idol
+}
+local SpellQuestOverrides = setmetatable({}, { __index = function(t,key)
+	local questID = SpellQuestLinks[key]
+	if not questID then
+		t[key] = false
+		return
+	end
+
+	local saved = IsQuestFlaggedCompleted(questID)
+	if not saved then return end
+
+	t[key] = saved
+	return saved
+end})
 -- Consolidates some spell checking
 ---@param spellID number
 ---@param rank? number
 ---@param ignoreHigherRanks? boolean
 ---@return boolean isKnown
-local IsSpellKnownHelper = function(spellID, rank, ignoreHigherRanks)
-	if IsPlayerSpell(spellID) or IsSpellKnown(spellID) or IsSpellKnown(spellID, true)
-		or IsSpellKnownOrOverridesKnown(spellID) or IsSpellKnownOrOverridesKnown(spellID, true) then
-		return true;
+local IsSpellKnownHelper
+-- In 11.2 some spell checking was consolidated
+if app.GameBuildVersion >= 110200 then
+	IsSpellKnownHelper = function(spellID, rank, ignoreHigherRanks)
+		if IsSpellKnown(spellID)
+			or IsSpellKnown(spellID, 1)
+			or IsSpellKnownOrOverridesKnown(spellID, 0, true)
+			or IsSpellKnownOrOverridesKnown(spellID, 1, true)
+			or SpellQuestOverrides[spellID] then
+			return true
+		end
 	end
-	if spellID == 390631 and IsQuestFlaggedCompleted(66444) then	-- Ottuk Taming returning false for the above functions
-		return true;
-	end
-	if (spellID == 241857 or spellID == 231437) and IsQuestFlaggedCompleted(46319) then	-- Lunarwing returning false for the above functions
-		return true;
-	end
-	if (spellID == 148972 or spellID == 148970) and IsQuestFlaggedCompleted(32325) then	-- Green Dread/Fel-Steed returning false for the above functions
-		return true;
+else
+	local IsPlayerSpell = app.WOWAPI.IsPlayerSpell
+	IsSpellKnownHelper = function(spellID, rank, ignoreHigherRanks)
+		if IsPlayerSpell(spellID)
+			or IsSpellKnown(spellID)
+			or IsSpellKnown(spellID, true)
+			or IsSpellKnownOrOverridesKnown(spellID)
+			or IsSpellKnownOrOverridesKnown(spellID, true)
+			or SpellQuestOverrides[spellID] then
+			return true
+		end
 	end
 end
 app.IsSpellKnownHelper = IsSpellKnownHelper;
@@ -63,10 +96,10 @@ SpellNameToSpellID = setmetatable(L.SPELL_NAME_TO_SPELL_ID, {
 		for spellID,g in pairs(cache) do
 			GetSpellName(spellID);
 		end
-		for _,spellID in pairs(app.SkillIDToSpellID) do
+		for _,spellID in pairs(app.SkillDB.SkillToSpell) do
 			GetSpellName(spellID);
 		end
-		for specID,spellID in pairs(app.SpecializationSpellIDs) do
+		for specID,spellID in pairs(app.SkillDB.SpecializationSpells) do
 			GetSpellName(spellID);
 		end
 		local numSpellTabs, offset, lastSpellName, currentSpellRank = GetNumSpellTabs(), select(4, GetSpellTabInfo(1)), "", 1;
@@ -104,7 +137,7 @@ local SkillIcons = setmetatable({
 	[2886] = 1394946,	-- Supply Shipments
 }, { __index = function(t, key)
 	if not key then return; end
-	local skillSpellID = app.SkillIDToSpellID[key];
+	local skillSpellID = app.SkillDB.SkillToSpell[key];
 	if skillSpellID then
 		return GetSpellIcon(skillSpellID);
 	end
@@ -124,7 +157,6 @@ local function default_costCollectibles(t)
 	return app.EmptyTable
 end
 local function CacheInfo(t, field)
-	app.DirectGroupRefresh(t, true)
 	local _t, id = cache.GetCached(t);
 	local name, icon = GetSpellName(id), GetSpellIcon(id);
 	_t.name = name;
@@ -177,7 +209,7 @@ do
 	},
 	"WithItem", {
 		ImportFrom = "Item",
-		ImportFields = { "name", "link", "icon", "specs", "tsm", "costCollectibles" },
+		ImportFields = { "name", "link", "icon", "specs", "tsm", "costCollectibles", "AsyncRefreshFunc" },
 	},
 	function(t) return t.itemID end)
 
@@ -266,7 +298,7 @@ do
 	},
 	"WithItem", {
 		ImportFrom = "Item",
-		ImportFields = { "name", "link", "icon", "specs", "tsm", "costCollectibles" },
+		ImportFields = { "name", "link", "icon", "specs", "tsm", "costCollectibles", "AsyncRefreshFunc" },
 		b = function(t)
 			-- If not tracking Recipes Account-Wide, then pretend that every Recipe is BoP
 			return app.Settings.AccountWide[SETTING] and 2 or 1;

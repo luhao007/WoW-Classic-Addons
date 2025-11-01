@@ -58,12 +58,12 @@
 
 			<Frame name="VuhDoNewOptionsSpellMouseKeyPanel" inherits="VuhDoPanelTemplate">
 				<Size>
-					<AbsDimension x="239" y="365" />
+					<AbsDimension x="268" y="365" />
 				</Size>
 				<Anchors>
 					<Anchor point="TOPLEFT">
 						<Offset>
-							<AbsDimension x="265" y="-17" />
+							<AbsDimension x="260" y="-17" />
 						</Offset>
 					</Anchor>
 				</Anchors>

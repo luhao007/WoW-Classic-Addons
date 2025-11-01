@@ -8,7 +8,6 @@ local appName, app = ...;
 local L = app.L;
 
 local AssignChildren, CloneClassInstance, GetRelativeValue = app.AssignChildren, app.CloneClassInstance, app.GetRelativeValue;
-local IsQuestFlaggedCompleted, IsQuestFlaggedCompletedForObject = app.IsQuestFlaggedCompleted, app.IsQuestFlaggedCompletedForObject;
 
 -- Abbreviations
 L.ABBREVIATIONS[L.UNSORTED .. " %> " .. L.UNSORTED] = "|T" .. app.asset("WindowIcon_Unsorted") .. ":0|t " .. L.SHORTTITLE .. " %> " .. L.UNSORTED;
@@ -41,9 +40,8 @@ BINDING_NAME_ALLTHETHINGS_REROLL_RANDOM = L.REROLL_RANDOM
 -- While this may seem silly, caching references to commonly used APIs is actually a performance gain...
 local C_DateAndTime_GetServerTimeLocal
 	= C_DateAndTime.GetServerTimeLocal;
-local ipairs, pairs, rawset, rawget, pcall, tinsert, tremove, math_floor
-	= ipairs, pairs, rawset, rawget, pcall, tinsert, tremove, math.floor;
-local C_Map_GetPlayerMapPosition = C_Map.GetPlayerMapPosition;
+local ipairs, pairs, rawset, rawget, select, tinsert, tremove
+	= ipairs, pairs, rawset, rawget, select, tinsert, tremove;
 local GetAchievementNumCriteria = _G["GetAchievementNumCriteria"];
 local GetAchievementCriteriaInfo = _G["GetAchievementCriteriaInfo"];
 local IsPlayerSpell, IsSpellKnown, IsSpellKnownOrOverridesKnown =
@@ -56,6 +54,8 @@ local GetItemIcon = app.WOWAPI.GetItemIcon;
 local GetItemInfoInstant = app.WOWAPI.GetItemInfoInstant;
 local GetItemCount = app.WOWAPI.GetItemCount;
 local GetSpellCooldown = app.WOWAPI.GetSpellCooldown;
+local GetSpellName = app.WOWAPI.GetSpellName;
+local GetSpellIcon = app.WOWAPI.GetSpellIcon;
 local GetSpellLink = app.WOWAPI.GetSpellLink;
 
 -- App & Module locals
@@ -69,15 +69,13 @@ local Colorize = app.Modules.Color.Colorize;
 local HexToARGB = app.Modules.Color.HexToARGB;
 local RGBToHex = app.Modules.Color.RGBToHex;
 local GetUnobtainableTexture
+app.IsSpellKnownHelper
+	= IsSpellKnown;
 
 -- Locals from future-loaded Modules
 app.AddEventHandler("OnLoad", function()
 	GetUnobtainableTexture = app.GetUnobtainableTexture
 end)
-
--- WoW API Cache
-local GetSpellName = app.WOWAPI.GetSpellName;
-local GetSpellIcon = app.WOWAPI.GetSpellIcon;
 
 -- Data Lib
 local AllTheThingsAD = {};			-- For account-wide data.
@@ -241,7 +239,7 @@ local subroutines;
 subroutines = {
 	["common_recipes_vendor"] = function(npcID)
 		return {
-			{"select", "creatureID", npcID},	-- Main Vendor
+			{"select", "npcID", npcID},	-- Main Vendor
 			{"pop"},	-- Remove Main Vendor and push his children into the processing queue.
 			{"is", "itemID"},	-- Only Items
 			{"exclude", "itemID",
@@ -270,7 +268,7 @@ subroutines = {
 	end,
 	["common_vendor"] = function(npcID)
 		return {
-			{"select", "creatureID", npcID},	-- Main Vendor
+			{"select", "npcID", npcID},	-- Main Vendor
 			{"pop"},	-- Remove Main Vendor and push his children into the processing queue.
 			{"is", "itemID"},	-- Only Items
 		};
@@ -354,7 +352,7 @@ ResolveSymbolicLink = function(o)
 				response = app:BuildSearchResponse(app.Categories.Craftables, "requireSkill", requireSkill);
 				if response then tinsert(searchResults, {text=LOOT_JOURNAL_LEGENDARIES_SOURCE_CRAFTED_ITEM,icon = app.asset("Category_Crafting"),g=response});  end
 				response = app:BuildSearchResponse(app.Categories.Holidays, "requireSkill", requireSkill);
-				if response then tinsert(searchResults, app.CreateNPC(app.HeaderConstants.HOLIDAYS, response));  end
+				if response then tinsert(searchResults, app.CreateCustomHeader(app.HeaderConstants.HOLIDAYS, response));  end
 				response = app:BuildSearchResponse(app.Categories.WorldEvents, "requireSkill", requireSkill);
 				if response then tinsert(searchResults, {text=BATTLE_PET_SOURCE_7,icon = app.asset("Category_Event"),g=response});  end
 				if app.Categories.ExpansionFeatures then
@@ -393,30 +391,25 @@ ResolveSymbolicLink = function(o)
 					end
 				end
 			elseif cmd == "not" then
-				-- Instruction to include only search results where a key value is not a value
+				-- Instruction to include only search results where a key value for a field is not a value
+				local field = sym[2];
 				if #sym > 3 then
-					local dict = {};
-					for k=2,#sym,2 do
-						dict[sym[k] ] = sym[k + 1];
+					local matches = {};
+					for k=3,#sym,1 do
+						matches[sym[k]] = true;
 					end
 					for k=#searchResults,1,-1 do
 						local result = searchResults[k];
-						local matched = true;
-						for key,value in pairs(dict) do
-							if not result[key] or result[key] ~= value then
-								matched = false;
-								break;
-							end
-						end
-						if matched then
+						local value = result[field];
+						if value and matches[value] then
 							tremove(searchResults, k);
 						end
 					end
 				else
-					local key, value = sym[2], sym[3];
+					local value = sym[3];
 					for k=#searchResults,1,-1 do
 						local result = searchResults[k];
-						if result[key] and result[key] == value then
+						if result[field] and result[field] == value then
 							tremove(searchResults, k);
 						end
 					end
@@ -497,7 +490,7 @@ ResolveSymbolicLink = function(o)
 						local results = ResolveSymbolicLink(setmetatable({sym=commands}, {__index=o}));
 						if results then
 							for k,result in ipairs(results) do
-								tinsert(searchResults, result);
+								tinsert(finalized, result);
 							end
 						end
 					end
@@ -1124,6 +1117,7 @@ local function GetSearchResults(method, paramA, paramB, ...)
 
 	if mostAccessibleSource then
 		group.parent = mostAccessibleSource.parent;
+		group.description = mostAccessibleSource.description;
 		group.awp = mostAccessibleSource.awp;
 		group.rwp = mostAccessibleSource.rwp;
 		group.e = mostAccessibleSource.e;
@@ -1137,7 +1131,7 @@ local function GetSearchResults(method, paramA, paramB, ...)
 		local costResults = SearchForField("currencyIDAsCost", paramB);
 		if #costResults > 0 then
 			if not group.g then group.g = {} end
-			local usedToBuy = app.CreateNPC(app.HeaderConstants.VENDORS);
+			local usedToBuy = app.CreateCustomHeader(app.HeaderConstants.VENDORS);
 			usedToBuy.text = "Currency For";
 			if not usedToBuy.g then usedToBuy.g = {}; end
 			for i,o in ipairs(costResults) do
@@ -1149,9 +1143,9 @@ local function GetSearchResults(method, paramA, paramB, ...)
 		local costResults = SearchForField("itemIDAsCost", paramB);
 		if #costResults > 0 then
 			if not group.g then group.g = {} end
-			local attunement = app.CreateNPC(app.HeaderConstants.QUESTS);
+			local attunement = app.CreateCustomHeader(app.HeaderConstants.QUESTS);
 			if not attunement.g then attunement.g = {}; end
-			local usedToBuy = app.CreateNPC(app.HeaderConstants.VENDORS);
+			local usedToBuy = app.CreateCustomHeader(app.HeaderConstants.VENDORS);
 			if not usedToBuy.g then usedToBuy.g = {}; end
 			for i,o in ipairs(costResults) do
 				if o.key == "instanceID" or ((o.key == "difficultyID" or o.key == "mapID" or o.key == "headerID") and (o.parent and GetRelativeValue(o.parent, "instanceID")) and not o[o.key] == app.HeaderConstants.REWARDS) then
@@ -1218,7 +1212,7 @@ local function GetSearchResults(method, paramA, paramB, ...)
 						local mapID = app.GetBestMapForGroup(entry, currentMapID);
 						if mapID and mapID ~= currentMapID then left = left .. " (" .. app.GetMapName(mapID) .. ")"; end
 						if entry.icon then item.prefix = item.prefix .. "|T" .. entry.icon .. ":0|t "; end
-						
+
 						-- If this entry has specialization requirements, let's attempt to show the specialization icons.
 						right = item.right;
 						local specs = entry.specs;
@@ -1230,7 +1224,7 @@ local function GetSearchResults(method, paramA, paramB, ...)
 								right = app.GetClassesString(c, false, false) .. right;
 							end
 						end
-						
+
 						tinsert(tooltipInfo, { left = item.prefix .. left, right = right });
 					end
 				else
@@ -1538,6 +1532,9 @@ function app:GetDataCache()
 		});
 		local g = rootData.g;
 
+		-----------------------------------------
+		-- P R I M A R Y   C A T E G O R I E S --
+		-----------------------------------------
 		-- Dungeons & Raids
 		if app.Categories.Instances then
 			tinsert(g, {
@@ -1591,14 +1588,14 @@ function app:GetDataCache()
 		end
 
 		-- Professions
-		local ProfessionsHeader = app.CreateNPC(app.HeaderConstants.PROFESSIONS, {
+		local ProfessionsHeader = app.CreateCustomHeader(app.HeaderConstants.PROFESSIONS, {
 			g = app.Categories.Professions or {}
 		});
 		tinsert(g, ProfessionsHeader);
 
 		-- Holidays
 		if app.Categories.Holidays then
-			tinsert(g, app.CreateNPC(app.HeaderConstants.HOLIDAYS, {
+			tinsert(g, app.CreateCustomHeader(app.HeaderConstants.HOLIDAYS, {
 				description = "These events occur at consistent dates around the year based on and themed around real world holiday events.",
 				g = app.Categories.Holidays,
 				SortType = "EventStart",
@@ -1615,6 +1612,9 @@ function app:GetDataCache()
 			});
 		end
 
+		-----------------------------------------
+		-- L I M I T E D   C A T E G O R I E S --
+		-----------------------------------------
 		-- Character
 		if app.Categories.Character then
 			local db = {};
@@ -1625,17 +1625,9 @@ function app:GetDataCache()
 			tinsert(g, db);
 		end
 
-		-- In-Game Store
-		if app.Categories.InGameShop then
-			tinsert(g, app.CreateNPC(app.HeaderConstants.IN_GAME_SHOP, {
-				g = app.Categories.InGameShop,
-				expanded = false
-			}));
-		end
-
 		-- PvP
 		if app.Categories.PVP then
-			tinsert(g, app.CreateNPC(app.HeaderConstants.PVP, {
+			tinsert(g, app.CreateCustomHeader(app.HeaderConstants.PVP, {
 				g = app.Categories.PVP,
 				isPVPCategory = true
 			}));
@@ -1679,7 +1671,23 @@ function app:GetDataCache()
 			});
 		end
 
-		-- Dynamic Categories
+		---------------------------------------
+		-- M A R K E T   C A T E G O R I E S --
+		---------------------------------------
+		-- Black Market
+		if app.Categories.BlackMarket then tinsert(g, app.Categories.BlackMarket[1]); end
+
+		-- In-Game Store
+		if app.Categories.InGameShop then
+			tinsert(g, app.CreateCustomHeader(app.HeaderConstants.IN_GAME_SHOP, {
+				g = app.Categories.InGameShop,
+				expanded = false
+			}));
+		end
+
+		-----------------------------------------
+		-- D Y N A M I C   C A T E G O R I E S --
+		-----------------------------------------
 		if app.Windows then
 			local keys,sortedList = {},{};
 			for suffix,window in pairs(app.Windows) do
@@ -1719,7 +1727,9 @@ function app:GetDataCache()
 			end
 			app.Sort(sortedList, app.SortDefaults.Strings);
 			for i,suffix in ipairs(sortedList) do
-				tinsert(g, app.CreateDynamicCategory(suffix));
+				local dynamicCategory = app.CreateDynamicCategory(suffix);
+				dynamicCategory.sourceIgnored = 1;
+				tinsert(g, dynamicCategory);
 			end
 		end
 
@@ -1728,7 +1738,7 @@ function app:GetDataCache()
 
 		-- Yourself.
 		tinsert(g, app.CreateUnit("player", {
-			description = "Awarded for logging in.\n\nGood job! YOU DID IT!\n\nOnly visible while in Debug Mode.",
+			description = L.DEBUG_LOGIN,
 			races = { app.RaceIndex },
 			c = { app.ClassIndex },
 			r = app.FactionID,
@@ -1943,135 +1953,6 @@ app.CreateCurrencyClass = app.CreateClass("Currency", "currencyID", {
 });
 end)();
 
--- Profession Lib
-(function()
-app.SkillIDToSpellID = setmetatable({
-	[171] = 2259,	-- Alchemy
-	[794] = 78670,	-- Arch
-	[261] = 5149,	-- Beast Training
-	[164] = 2018,	-- Blacksmithing
-	[185] = 2550,	-- Cooking
-	[333] = 7411,	-- Enchanting
-	[202] = 4036,	-- Engineering
-	[356] = 7620,	-- Fishing
-	[129] = 3273,	-- First Aid
-	[182] = 2366,	-- Herb Gathering
-	[773] = 45357,	-- Inscription
-	[755] = 25229,	-- Jewelcrafting
-	[165] = 2108,	-- Leatherworking
-	[186] = 2575,	-- Mining
-	[393] = 8613,	-- Skinning
-	[197] = 3908,	-- Tailoring
-	[960] = 53428,	-- Runeforging
-	[40] = 2842,	-- Poisons
-	[633] = 1809,	-- Lockpicking
-	[921] = 921,	-- Pickpocketing
-
-	-- Riding
-	[762] = 33388,	-- Riding
-
-	-- Specializations
-	[20219] = 20219,	-- Gnomish Engineering
-	[20222] = 20222,	-- Goblin Engineering
-	[9788] = 9788,		-- Armorsmith
-	[9787] = 9787,		-- Weaponsmith
-	[17041] = 17041,	-- Master Axesmith
-	[17040] = 17040,	-- Master Hammersmith
-	[17039] = 17039,	-- Master Swordsmith
-	[10656] = 10656,	-- Dragonscale Leatherworking
-	[10658] = 10658,	-- Elemental Leatherworking
-	[10660] = 10660,	-- Tribal Leatherworking
-	[26801] = 26801,	-- Shadoweave Tailoring
-	[26797] = 26797,	-- Spellfire Tailoring
-	[26798] = 26798,	-- Mooncloth Tailoring
-	[125589] = 125589,	-- Way of the Brew
-	[124694] = 124694,	-- Way of the Grill
-	[125588] = 125588,	-- Way of the Oven
-	[125586] = 125586,	-- Way of the Pot
-	[125587] = 125587,	-- Way of the Steamer
-	[125584] = 125584,	-- Way of the Wok
-}, {__index = function(t,k) return k; end});
-app.SpellIDToSkillID = {};
-for skillID,spellID in pairs(app.SkillIDToSpellID) do
-	app.SpellIDToSkillID[spellID] = skillID;
-end
-app.SpecializationSpellIDs = setmetatable({
-	[20219] = 4036,	-- Gnomish Engineering
-	[20222] = 4036,	-- Goblin Engineering
-	[9788] = 2018,	-- Armorsmith
-	[9787] = 2018,	-- Weaponsmith
-	[17041] = 2018,	-- Master Axesmith
-	[17040] = 2018,	-- Master Hammersmith
-	[17039] = 2018,	-- Master Swordsmith
-	[10656] = 2108,	-- Dragonscale Leatherworking
-	[10658] = 2108,	-- Elemental Leatherworking
-	[10660] = 2108,	-- Tribal Leatherworking
-	[26801] = 3908,	-- Shadoweave Tailoring
-	[26797] = 3908,	-- Spellfire Tailoring
-	[26798] = 3908,	-- Mooncloth Tailoring
-	[125589] = 2550,-- Way of the Brew
-	[124694] = 2550,-- Way of the Grill
-	[125588] = 2550,-- Way of the Oven
-	[125586] = 2550,-- Way of the Pot
-	[125587] = 2550,-- Way of the Steamer
-	[125584] = 2550,-- Way of the Wok
-}, {__index = function(t,k) return k; end})
-
-local BLACKSMITHING = ATTC.SkillIDToSpellID[164];
-local LEATHERWORKING = ATTC.SkillIDToSpellID[165];
-local TAILORING = ATTC.SkillIDToSpellID[197];
-app.OnUpdateForCrafter = function(t)
-	t.visible = nil;
-	t.collectible = nil;
-	if app.MODE_DEBUG_OR_ACCOUNT then
-		return false;
-	else
-		local skills = app.CurrentCharacter.ActiveSkills;
-		if skills[BLACKSMITHING] or skills[LEATHERWORKING] or skills[TAILORING] then
-			return false;
-		end
-		t.collectible = false;
-		t.visible = false;
-		return true;
-	end
-end;
-app.OnUpdateForOmarionsHandbook = function(t)
-	t.visible = true;
-	t.collectible = nil;
-	if app.MODE_DEBUG_OR_ACCOUNT or IsQuestFlaggedCompleted(9233) or C_QuestLog_IsOnQuest(9233) then
-		return false;
-	else
-		for spellID,skills in pairs(app.CurrentCharacter.ActiveSkills) do
-			if (spellID == BLACKSMITHING or spellID == LEATHERWORKING or spellID == TAILORING) and skills[1] > 270 then
-				t.collectible = false;
-				t.visible = false;
-				return true;
-			end
-		end
-	end
-end;
-app.CreateProfession = app.CreateClass("Profession", "professionID", {
-	["text"] = function(t)
-		return GetSpellName(t.spellID);
-	end,
-	["icon"] = function(t)
-		return GetSpellIcon(t.spellID);
-	end,
-	["spellID"] = function(t)
-		return app.SkillIDToSpellID[t.professionID];
-	end,
-	["requireSkill"] = function(t)
-		return t.professionID;
-	end,
-	["ignoreSourceLookup"] = function(t)
-		return true;
-	end,
-	["sym"] = function(t)
-		return {{"selectprofession", t.professionID}};
-	end
-});
-end)();
-
 -- Recipe & Spell Lib
 (function()
 local grey = RGBToHex(0.75, 0.75, 0.75);
@@ -2152,10 +2033,10 @@ app.IsSpellKnown = function(spellID, rank, ignoreHigherRanks)
 end
 app.SpellNameToSpellID = setmetatable(L.SPELL_NAME_TO_SPELL_ID, {
 	__index = function(t, key)
-		for _,spellID in pairs(app.SkillIDToSpellID) do
+		for _,spellID in pairs(app.SkillDB.SkillToSpell) do
 			app.GetSpellName(spellID);
 		end
-		for specID,spellID in pairs(app.SpecializationSpellIDs) do
+		for specID,spellID in pairs(app.SkillDB.SpecializationSpells) do
 			app.GetSpellName(spellID);
 		end
 		for spellID,g in pairs(SearchForFieldContainer("spellID")) do
@@ -2216,6 +2097,7 @@ local nameFromSpellID = function(t)
 end;
 local spellFields = {
 	CACHE = function() return "Spells" end,
+	IsClassIsolated = true,
 	["text"] = function(t)
 		return t.link;
 	end,
@@ -2299,282 +2181,6 @@ app.CreateSpell = function(id, t)
 end
 end)();
 
-
--- Companion Lib
-(function()
-local SetBattlePetCollected = function(t, speciesID, collected)
-	return app.SetCollected(t, "BattlePets", speciesID, collected);
-end
-local SetMountCollected = function(t, spellID, collected)
-	return app.SetCollected(t, "Spells", spellID, collected, "Mounts");
-end
-local speciesFields = {
-	CACHE = function() return "BattlePets" end,
-	["f"] = function(t)
-		return app.FilterConstants.BATTLE_PETS;
-	end,
-	["collectible"] = function(t)
-		return app.Settings.Collectibles.BattlePets;
-	end,
-	["text"] = function(t)
-		return "|cff0070dd" .. (t.name or RETRIEVING_DATA) .. "|r";
-	end,
-	["link"] = function(t)
-		if t.itemID then
-			local link = select(2, GetItemInfo(t.itemID));
-			if link and not IsRetrieving(link) then
-				t.link = link;
-				return link;
-			end
-		end
-	end,
-	["tsm"] = function(t)
-		---@diagnostic disable-next-line: undefined-field
-		if t.itemID then return ("i:%d"):format(t.itemID); end
-		---@diagnostic disable-next-line: undefined-field
-		return ("p:%d:1:3"):format(t.speciesID);
-	end,
-	["RefreshCollectionOnly"] = true,
-};
-local mountFields = {
-	IsClassIsolated = true,
-	CACHE = function() return "Spells" end,
-	["text"] = function(t)
-		return "|cffb19cd9" .. t.name .. "|r";
-	end,
-	["icon"] = function(t)
-		return GetSpellIcon(t.spellID);
-	end,
-	["link"] = function(t)
-		return (t.itemID and select(2, GetItemInfo(t.itemID))) or GetSpellLink(t.spellID);
-	end,
-	["f"] = function(t)
-		return app.FilterConstants.MOUNTS;
-	end,
-	RefreshCollectionOnly = true,
-	["collectible"] = function(t)
-		return app.Settings.Collectibles.Mounts;
-	end,
-	["explicitlyCollected"] = function(t)
-		return IsSpellKnown(t.spellID) or (t.questID and IsQuestFlaggedCompleted(t.questID)) or (t.itemID and GetItemCount(t.itemID, true) > 0);
-	end,
-	["b"] = function(t)
-		return (t.parent and t.parent.b) or 1;
-	end,
-	["name"] = function(t)
-		return GetSpellName(t.spellID) or RETRIEVING_DATA;
-	end,
-	["tsmForItem"] = function(t)
-		---@diagnostic disable-next-line: undefined-field
-		if t.itemID then return ("i:%d"):format(t.itemID); end
-		---@diagnostic disable-next-line: undefined-field
-		if t.parent and t.parent.itemID then return ("i:%d"):format(t.parent.itemID); end
-	end,
-	["linkForItem"] = function(t)
-		return select(2, GetItemInfo(t.itemID)) or GetSpellLink(t.spellID);
-	end,
-};
-
-if C_PetJournal and app.GameBuildVersion > 30000 then
-	local C_PetJournal = _G["C_PetJournal"];
-	-- Once the Pet Journal API is available, then all pets become account wide.
-	SetBattlePetCollected = function(t, speciesID, collected)
-		if collected then
-			return app.SetAccountCollected(t, "BattlePets", speciesID, collected);
-		else
-			-- Stop turning it off, dumbass Blizzard API.
-			return app.IsAccountCached("BattlePets", speciesID);
-		end
-	end
-	speciesFields.icon = function(t)
-		return select(2, C_PetJournal.GetPetInfoBySpeciesID(t.speciesID));
-	end
-	speciesFields.name = function(t)
-		return C_PetJournal.GetPetInfoBySpeciesID(t.speciesID) or (t.itemID and GetItemInfo(t.itemID)) or RETRIEVING_DATA;
-	end
-	speciesFields.petTypeID = function(t)
-		return select(3, C_PetJournal.GetPetInfoBySpeciesID(t.speciesID));
-	end
-	speciesFields.displayID = function(t)
-		return select(12, C_PetJournal.GetPetInfoBySpeciesID(t.speciesID));
-	end
-	speciesFields.description = function(t)
-		return select(6, C_PetJournal.GetPetInfoBySpeciesID(t.speciesID));
-	end
-	speciesFields.collected = function(t)
-		local count = C_PetJournal.GetNumCollectedInfo(t.speciesID);
-		return SetBattlePetCollected(t, t.speciesID, count and count > 0);
-	end
-	app.AddEventRegistration("NEW_PET_ADDED", function(...)
-		app:RefreshDataQuietly("NEW_PET_ADDED", true);
-	end)
-
-	local C_MountJournal = _G["C_MountJournal"];
-	if C_MountJournal then
-		-- Once the Mount Journal API is available, then all mounts become account wide.
-		SetMountCollected = function(t, spellID, collected)
-			return app.SetAccountCollected(t, "Spells", spellID, collected);
-		end
-		local SpellIDToMountID = setmetatable({}, { __index = function(t, id)
-			local allMountIDs = C_MountJournal.GetMountIDs();
-			if allMountIDs and #allMountIDs > 0 then
-				for i,mountID in ipairs(allMountIDs) do
-					local spellID = select(2, C_MountJournal.GetMountInfoByID(mountID));
-					if spellID then rawset(t, spellID, mountID); end
-				end
-				setmetatable(t, nil);
-				return rawget(t, id);
-			end
-		end });
-		mountFields.mountID = function(t)
-			return SpellIDToMountID[t.spellID];
-		end
-		mountFields.name = function(t)
-			local mountID = t.mountID;
-			if mountID then return C_MountJournal.GetMountInfoByID(mountID); end
-			return GetSpellName(t.spellID) or RETRIEVING_DATA;
-		end
-		mountFields.displayID = function(t)
-			local mountID = t.mountID;
-			if mountID then return C_MountJournal.GetMountInfoExtraByID(mountID); end
-		end
-		mountFields.lore = function(t)
-			local mountID = t.mountID;
-			if mountID then return select(2, C_MountJournal.GetMountInfoExtraByID(mountID)); end
-		end
-		mountFields.collected = function(t)
-			local mountID = t.mountID;
-			if mountID then
-				local _, spellID, _, _, _, _, _, _, _, _, isCollected = C_MountJournal.GetMountInfoByID(mountID);
-				return SetMountCollected(t, spellID, isCollected);
-			else
-				local spellID = t.spellID;
-				for i,o in ipairs(SearchForField("spellID", spellID)) do
-					if o.explicitlyCollected then
-						return SetMountCollected(t, spellID, true);
-					end
-				end
-				return SetMountCollected(t, spellID, false);
-			end
-		end
-	else
-		mountFields.name = function(t)
-			return GetSpellName(t.spellID) or RETRIEVING_DATA;
-		end
-		mountFields.collected = function(t)
-			local spellID = t.spellID;
-			for i,o in ipairs(SearchForField("spellID", spellID)) do
-				if o.explicitlyCollected then
-					return SetMountCollected(t, spellID, true);
-				end
-			end
-			return SetMountCollected(t, spellID, false);
-		end
-	end
-else
-	speciesFields.icon = function(t)
-		if t.itemID then
-			return GetItemIcon(t.itemID) or 134400;
-		end
-		return 134400;
-	end
-	speciesFields.name = function(t)
-		return t.itemID and GetItemInfo(t.itemID) or RETRIEVING_DATA;
-	end
-	mountFields.name = function(t)
-		return GetSpellName(t.spellID) or RETRIEVING_DATA;
-	end
-	if GetCompanionInfo and GetNumCompanions("CRITTER") ~= nil then
-		local CollectedBattlePetHelper = {};
-		local CollectedMountHelper = {};
-		local function RefreshCompanionCollectionStatus(companionType)
-			local anythingNew = false;
-			if not companionType or companionType == "CRITTER" then
-				setmetatable(CollectedBattlePetHelper, nil);
-				local critterCount = GetNumCompanions("CRITTER");
-				if not critterCount then
-					print("Failed to get Companion Info for Critters");
-				else
-					for i=critterCount,1,-1 do
-						local spellID = select(3, GetCompanionInfo("CRITTER", i));
-						if spellID then
-							if not CollectedBattlePetHelper[spellID] then
-								CollectedBattlePetHelper[spellID] = true;
-								anythingNew = true;
-							end
-						else
-							print("Failed to get Companion Info for Critter ".. i);
-						end
-					end
-				end
-			end
-			if not companionType or companionType == "MOUNT" then
-				setmetatable(CollectedMountHelper, nil);
-				for i=GetNumCompanions("MOUNT"),1,-1 do
-					local spellID = select(3, GetCompanionInfo("MOUNT", i));
-					if spellID then
-						if not CollectedMountHelper[spellID] then
-							CollectedMountHelper[spellID] = true;
-							anythingNew = true;
-						end
-					else
-						print("Failed to get Companion Info for Mount ".. i);
-					end
-				end
-			end
-			if anythingNew then app:RefreshDataQuietly("RefreshCompanionCollectionStatus", true); end
-		end
-		local meta = { __index = function(t, spellID)
-			RefreshCompanionCollectionStatus();
-			return rawget(t, spellID);
-		end };
-		setmetatable(CollectedBattlePetHelper, meta);
-		setmetatable(CollectedMountHelper, meta);
-		speciesFields.collected = function(t)
-			return SetBattlePetCollected(t, t.speciesID, (t.spellID and CollectedBattlePetHelper[t.spellID]));
-		end
-		mountFields.collected = function(t)
-			return SetMountCollected(t, t.spellID, (t.spellID and CollectedMountHelper[t.spellID]));
-		end
-		app:RegisterEvent("COMPANION_LEARNED");
-		app:RegisterEvent("COMPANION_UNLEARNED");
-		app:RegisterEvent("COMPANION_UPDATE");
-		app.events.COMPANION_LEARNED = RefreshCompanionCollectionStatus;
-		app.events.COMPANION_UNLEARNED = RefreshCompanionCollectionStatus;
-		app.events.COMPANION_UPDATE = RefreshCompanionCollectionStatus;
-	else
-		speciesFields.collected = function(t)
-			return SetBattlePetCollected(t, t.speciesID, t.itemID and GetItemCount(t.itemID, true) > 0);
-		end
-		mountFields.collected = function(t)
-			local spellID = t.spellID;
-			for i,o in ipairs(SearchForField("spellID", spellID)) do
-				if o.explicitlyCollected then
-					return SetMountCollected(t, spellID, true);
-				end
-			end
-			return SetMountCollected(t, spellID, false);
-		end
-	end
-end
-
-app.CreateMount = app.CreateClass("Mount", "spellID", mountFields,
-	"WithItem", {	-- This is a conditional contructor.
-		link = mountFields.linkForItem;
-		tsm = mountFields.tsmForItem
-	}, function(t) return t.itemID; end);
-app.CreatePetAbility = app.CreateUnimplementedClass("PetAbility", "petAbilityID");
-app.CreatePetType = app.CreateClass("PetType", "petTypeID", {
-	["text"] = function(t)
-		return _G["BATTLE_PET_NAME_" .. t.petTypeID];
-	end,
-	["icon"] = function(t)
-		return app.asset("Icon_PetFamily_"..PET_TYPE_SUFFIX[t.petTypeID]);
-	end,
-});
-app.CreateSpecies = app.CreateClass("Species", "speciesID", speciesFields);
-end)();
-
 -- Startup Event
 local ADDON_LOADED_HANDLERS = {
 	[appName] = function()
@@ -2644,6 +2250,7 @@ local ADDON_LOADED_HANDLERS = {
 		if not accountWideData.Deaths then accountWideData.Deaths = 0; end
 		if not accountWideData.Exploration then accountWideData.Exploration = {}; end
 		if not accountWideData.Factions then accountWideData.Factions = {}; end
+		if not accountWideData.FactionBonus then accountWideData.FactionBonus = {}; end
 		if not accountWideData.FlightPaths then accountWideData.FlightPaths = {}; end
 		if not accountWideData.Quests then accountWideData.Quests = {}; end
 		if not accountWideData.Spells then accountWideData.Spells = {}; end

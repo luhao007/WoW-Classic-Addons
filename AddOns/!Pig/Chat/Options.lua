@@ -239,14 +239,11 @@ local function JoinPIG_D(pindaoName)
 	hooksecurefunc(ChannelFrame.ChannelList, "Update", function()
 		JoinPIG_D_1(pindaoName)
 	end)
-	local pindaojinzhiPPP = CreateFrame("Frame")
-    pindaojinzhiPPP:RegisterEvent("ADDON_LOADED")
-    pindaojinzhiPPP:SetScript("OnEvent", function(self, event, arg1)
-        if arg1=="Blizzard_Communities" then
-        	self:UnregisterEvent("ADDON_LOADED")
+	Fun.IsAddOnLoaded("Blizzard_Communities",function()
+		if ChannelFrame:IsShown() then
         	ChannelFrame:Hide()
-        	ChannelFrame:Show()
-		end
+       		ChannelFrame:Show()
+       	end
 	end)
 end
 local function JoinPIGALL(pindaoName)
@@ -420,13 +417,13 @@ local function WhoWhisper_Fun()
 		end)
 		button.senmsgFun=true
 	end
-	WhoFrame.senmsg.bianji.F=PIGFrame(WhoFrame.senmsg.bianji,{"TOPLEFT",WhoFrame.senmsg.bianji,"TOPRIGHT",4,0},{300,200})
-	WhoFrame.senmsg.bianji.F:PIGSetBackdrop(1,nil,nil,nil,0)
+	WhoFrame.senmsg.bianji.F=PIGFrame(WhoFrame.senmsg.bianji,{"TOPLEFT",WhoFrame.senmsg.bianji,"TOPRIGHT",4,0},{300,200},nil,nil,nil,{["ElvUI"]={0,0,0,0},["NDui"]={0,0,0,0}})
+	WhoFrame.senmsg.bianji.F:PIGSetBackdrop(1)
 	WhoFrame.senmsg.bianji.F:PIGClose()
 	WhoFrame.senmsg.bianji.F:Hide()
 	WhoFrame.senmsg.bianji.F.biaoti = PIGFontString(WhoFrame.senmsg.bianji.F,{"TOP", WhoFrame.senmsg.bianji.F, "TOP", 0,-4},"密语内容");
-	WhoFrame.senmsg.bianji.F.NR=PIGFrame(WhoFrame.senmsg.bianji.F,{"TOPLEFT", WhoFrame.senmsg.bianji.F, "TOPLEFT", 3,-26})
-	WhoFrame.senmsg.bianji.F.NR:SetPoint("BOTTOMRIGHT", WhoFrame.senmsg.bianji.F, "BOTTOMRIGHT", -3,3);
+	WhoFrame.senmsg.bianji.F.NR=PIGFrame(WhoFrame.senmsg.bianji.F,{"TOPLEFT", WhoFrame.senmsg.bianji.F, "TOPLEFT", 4,-26})
+	WhoFrame.senmsg.bianji.F.NR:SetPoint("BOTTOMRIGHT", WhoFrame.senmsg.bianji.F, "BOTTOMRIGHT", -5,3);
 	WhoFrame.senmsg.bianji.F.NR:PIGSetBackdrop(0,0.6,nil,{1, 1, 0})
 	WhoFrame.senmsg.bianji.F.NR.E = CreateFrame("EditBox", nil, WhoFrame.senmsg.bianji.F.NR);
 	WhoFrame.senmsg.bianji.F.NR.E:SetPoint("TOPLEFT", WhoFrame.senmsg.bianji.F.NR, "TOPLEFT", 2,-2);
@@ -557,7 +554,6 @@ ChatF.extinfoF.ShowLinkIcon:SetScript("OnClick", function (self)
 		PIGA["Chat"]["ShowLinkIcon"]=false;
 	end
 end);
---LINK显示装备等级
 ChatF.extinfoF.ShowLinkLV = PIGCheckbutton_R(ChatF.extinfoF,{"物品链接显示装等","聊天栏发送的物品链接会显示装等"})
 ChatF.extinfoF.ShowLinkLV:SetScript("OnClick", function (self)
 	if self:GetChecked() then
@@ -566,7 +562,6 @@ ChatF.extinfoF.ShowLinkLV:SetScript("OnClick", function (self)
 		PIGA["Chat"]["ShowLinkLV"]=false;
 	end
 end);
---LINK显示装备部位
 ChatF.extinfoF.ShowLinkSlots = PIGCheckbutton_R(ChatF.extinfoF,{"物品链接显示部位","聊天栏发送的物品链接会显示部位"})
 ChatF.extinfoF.ShowLinkSlots:SetScript("OnClick", function (self)
 	if self:GetChecked() then
@@ -575,7 +570,6 @@ ChatF.extinfoF.ShowLinkSlots:SetScript("OnClick", function (self)
 		PIGA["Chat"]["ShowLinkSlots"]=false;
 	end
 end);
---LINK显示装备部位
 ChatF.extinfoF.ShowLinkGem = PIGCheckbutton_R(ChatF.extinfoF,{"物品链接显示宝石孔位","聊天栏发送的物品链接会显示宝石孔位"})
 ChatF.extinfoF.ShowLinkGem:SetScript("OnClick", function (self)
 	if self:GetChecked() then
@@ -590,7 +584,7 @@ ChatF.extinfoF:HookScript("OnShow", function (self)
 	self.ShowLinkIcon:SetChecked(PIGA["Chat"]["ShowLinkIcon"])
 	self.ShowLinkLV:SetChecked(PIGA["Chat"]["ShowLinkLV"])
 	self.ShowLinkSlots:SetChecked(PIGA["Chat"]["ShowLinkSlots"])
-	self.ShowLinkSlots:SetChecked(PIGA["Chat"]["ShowLinkGem"])
+	self.ShowLinkGem:SetChecked(PIGA["Chat"]["ShowLinkGem"])
 end);
 
 --快捷频道切换按钮=============
@@ -987,7 +981,7 @@ local function zhanlianhuiche()
 end
 ---
 local ADDName= {"PIG"}
-local ChatpindaoMAX = addonTable.Fun.ChatpindaoMAX
+local ChatpindaoMAX = Fun.ChatpindaoMAX
 ChatF.ycBut = CreateFrame("Button", nil, ChatF);
 ChatF.ycBut:SetSize(16,16);
 ChatF.ycBut:SetPoint("BOTTOMRIGHT",ChatF,"BOTTOMRIGHT",0,0);

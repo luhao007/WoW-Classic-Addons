@@ -23,11 +23,11 @@ local RTabFrame =Create.PIGOptionsList_RF(fuFrame)
 local FramePlusfun={}
 addonTable.FramePlusfun=FramePlusfun
 --
-local FramePlusF,FramePlustabbut =PIGOptionsList_R(RTabFrame,L["COMMON_TABNAME"],90)
+local FramePlusF,FramePlustabbut =PIGOptionsList_R(RTabFrame,GENERAL,90)
 FramePlusF:Show()
 FramePlustabbut:Selected()
 ----------------------
-FramePlusF.BuffTime = PIGCheckbutton_R(FramePlusF,{"优化BUFF时间显示","精确显示自身BUFF/DEBUFF时间"})
+FramePlusF.BuffTime = PIGCheckbutton_R(FramePlusF,{"优化BUFF时间显示","精确显示自身BUFF/DEBUFF时间"},true)
 FramePlusF.BuffTime:SetScript("OnClick", function (self)
 	if self:GetChecked() then
 		PIGA["FramePlus"]["BuffTime"]=true;
@@ -38,7 +38,7 @@ FramePlusF.BuffTime:SetScript("OnClick", function (self)
 	end
 end);
 ----
-FramePlusF.Skill_QKbut = PIGCheckbutton_R(FramePlusF,{"专业界面快速切换按钮","在专业界面显示便捷切换专业按钮"})
+FramePlusF.Skill_QKbut = PIGCheckbutton_R(FramePlusF,{"专业界面快速切换按钮","在专业界面显示便捷切换专业按钮"},true)
 FramePlusF.Skill_QKbut:SetScript("OnClick", function (self)
 	if self:GetChecked() then
 		PIGA["FramePlus"]["Skill_QKbut"]=true;
@@ -48,21 +48,9 @@ FramePlusF.Skill_QKbut:SetScript("OnClick", function (self)
 		PIG_OptionsUI.RLUI:Show()
 	end
 end);
-
-------
-FramePlusF.AddonList = PIGCheckbutton_R(FramePlusF,{"增强插件列表(插件启用状态保存)","增强插件列表，让你可以按需开启插件"})
-FramePlusF.AddonList:SetScript("OnClick", function (self)
-	if self:GetChecked() then
-		PIGA["FramePlus"]["AddonList"]=true;
-		FramePlusfun.AddonList()
-	else
-		PIGA["FramePlus"]["AddonList"]=false
-		PIG_OptionsUI.RLUI:Show()
-	end
-end);
 if PIG_MaxTocversion(20000) then
 	local tooltip = "整合追踪类技能，点击小地图追踪技能按钮选择其他追踪技能！";
-	FramePlusF.Tracking = PIGCheckbutton_R(FramePlusF,{"整合追踪技能",tooltip})
+	FramePlusF.Tracking = PIGCheckbutton_R(FramePlusF,{"整合追踪技能",tooltip},true)
 	FramePlusF.Tracking:SetScript("OnClick", function (self)
 		if self:GetChecked() then
 			PIGA["FramePlus"]["Tracking"]=true
@@ -73,72 +61,11 @@ if PIG_MaxTocversion(20000) then
 		end
 	end)
 end
-
--------
-FramePlusF.yidong = PIGFrame(FramePlusF,{"BOTTOMLEFT",FramePlusF,"BOTTOMLEFT",0,0})
-FramePlusF.yidong:PIGSetBackdrop(0)
-FramePlusF.yidong:SetHeight(60)
-FramePlusF.yidong:SetPoint("BOTTOMRIGHT",FramePlusF,"BOTTOMRIGHT",0,0);
-
-FramePlusF.yidong.BlizzardUI_Move = PIGCheckbutton(FramePlusF.yidong,{"LEFT",FramePlusF.yidong,"LEFT",20,0},{"解锁(移动)系统界面","解锁系统界面，使其可以:\n1.移动:拖动界面标题栏移动\n2.缩放:在需要缩放界面按住Ctrl+Alt滚动鼠标滚轮"})
-FramePlusF.yidong.BlizzardUI_Move:SetScript("OnClick", function (self)
-	if InCombatLockdown() then self:SetChecked(PIGA["FramePlus"]["BlizzardUI_Move"]) PIG_OptionsUI:ErrorMsg(ERR_NOT_IN_COMBAT,"R") return end
-	if self:GetChecked() then
-		PIGA["FramePlus"]["BlizzardUI_Move"]=true;
-		FramePlusfun.BlizzardUI_Move()
-	else
-		PIGA["FramePlus"]["BlizzardUI_Move"]=false
-		PIG_OptionsUI.RLUI:Show()
-	end
-end);
-FramePlusF.yidong.BlizzardUI_Move.Save = PIGCheckbutton(FramePlusF.yidong,{"LEFT",FramePlusF.yidong.BlizzardUI_Move.Text,"RIGHT",40,0},{"保存移动后位置","保存移动后位置"})
-FramePlusF.yidong.BlizzardUI_Move.Save:SetScript("OnClick", function (self)
-	if self:GetChecked() then
-		PIGA["FramePlus"]["BlizzardUI_Move_Save"]=true	
-	else
-		PIGA["FramePlus"]["BlizzardUI_Move_Save"]=false
-	end
-end);
-
-FramePlusF.UIWidget = PIGFrame(FramePlusF,{"BOTTOMLEFT",FramePlusF.yidong,"TOPLEFT",0,-1})
-FramePlusF.UIWidget:PIGSetBackdrop(0)
-FramePlusF.UIWidget:SetHeight(60)
-FramePlusF.UIWidget:SetPoint("BOTTOMRIGHT",FramePlusF.yidong,"TOPRIGHT",0,-1);
-FramePlusF.UIWidget.Open = PIGCheckbutton(FramePlusF.UIWidget,{"LEFT",FramePlusF.UIWidget,"LEFT",20,0},{"移动小部件","移动屏幕中上部的小部件(占塔/战场积分面板)"})
-FramePlusF.UIWidget.Open:SetScript("OnClick", function (self)
-	if self:GetChecked() then
-		PIGA["FramePlus"]["UIWidget"]=true;
-		FramePlusfun.UIWidget()
-	else
-		PIGA["FramePlus"]["UIWidget"]=false
-		PIG_OptionsUI.RLUI:Show()
-	end
-end);
-FramePlusF.UIWidget.pianyiX = PIGSlider(FramePlusF.UIWidget,{"LEFT",FramePlusF.UIWidget.Open.Text,"RIGHT",10,0},{-700,700,1,{["Right"]="X偏移%s"}})
-FramePlusF.UIWidget.pianyiX.Slider:HookScript("OnValueChanged", function(self, arg1)
-	PIGA["FramePlus"]["UIWidgetPointX"]=arg1;
-	FramePlusfun.UIWidget()
-end)
-FramePlusF.UIWidget.pianyiY = PIGSlider(FramePlusF.UIWidget,{"LEFT",FramePlusF.UIWidget.pianyiX,"RIGHT",80,0},{-500,15,1,{["Right"]="Y偏移%s"}})
-FramePlusF.UIWidget.pianyiY.Slider:HookScript("OnValueChanged", function(self, arg1)
-	PIGA["FramePlus"]["UIWidgetPointY"]=arg1
-	FramePlusfun.UIWidget()
-end)
-function FramePlusfun.UIWidget()
-	if not PIGA["FramePlus"]["UIWidget"] then return end
-	UIWidgetTopCenterContainerFrame:SetPoint("TOP", 0+PIGA["FramePlus"]["UIWidgetPointX"], -15+PIGA["FramePlus"]["UIWidgetPointY"]);
-end
 --
 FramePlusF:HookScript("OnShow", function(self)
 	self.BuffTime:SetChecked(PIGA["FramePlus"]["BuffTime"])
 	self.Skill_QKbut:SetChecked(PIGA["FramePlus"]["Skill_QKbut"])
-	self.UIWidget.Open:SetChecked(PIGA["FramePlus"]["UIWidget"])
-	self.UIWidget.pianyiX:PIGSetValue(PIGA["FramePlus"]["UIWidgetPointX"])
-	self.UIWidget.pianyiY:PIGSetValue(PIGA["FramePlus"]["UIWidgetPointY"])
-	self.AddonList:SetChecked(PIGA["FramePlus"]["AddonList"])
 	if self.Tracking then self.Tracking:SetChecked(PIGA["FramePlus"]["Tracking"]) end
-	self.yidong.BlizzardUI_Move:SetChecked(PIGA["FramePlus"]["BlizzardUI_Move"])
-	self.yidong.BlizzardUI_Move.Save:SetChecked(PIGA["FramePlus"]["BlizzardUI_Move_Save"])
 end)
 
 ---界面扩展-------------
@@ -376,9 +303,7 @@ end)
 addonTable.FramePlus = function()
 	FramePlusfun.BuffTime()
 	FramePlusfun.Skill_QKbut()
-	FramePlusfun.UIWidget()
 	FramePlusfun.Tracking()
-	FramePlusfun.AddonList()
 	FramePlusfun.Loot()
 	FramePlusfun.LootMasterErr()
 	FramePlusfun.Roll()
@@ -387,7 +312,6 @@ addonTable.FramePlus = function()
 	FramePlusfun.Macro()
 	FramePlusfun.Quest()
 	FramePlusfun.Skill()
-	FramePlusfun.BlizzardUI_Move()
 	FramePlusfun.Character_ADD()
 	FramePlusfun.Talent()
 	FramePlusfun.Character_Shuxing()

@@ -1,21 +1,5 @@
 local appName, app = ...
 
--- Temporarily attach the settings menu's locales to L.
-local appL = app.L;
-setmetatable(appL.SETTINGS_MENU, {
-	__index = function(t, key)
-		local str = appL[key];
-		if str then
-			--print("SETTINGS_MENU", key);
-			t[key] = str;
-			return str;
-		else
-			print("SETTINGS_MENU", key, "missing reference");
-			return "INVALID LOCALIZATION";
-		end
-	end
-});
-
 -- Create the settings container.
 -- TODO: Investigate if this needs to be a frame or if it can be something else.
 local settings = CreateFrame("FRAME", appName .. "-Settings", InterfaceOptionsFramePanelContainer)
@@ -102,6 +86,18 @@ settings.RequiredForInsaneMode = {
 	Titles = true,
 	Toys = true,
 	Transmog = app.GameBuildVersion >= 40000,
+	-- Expansion Filters
+	Classic = true,
+	TBC = app.GameBuildVersion >= 20000,
+	Wrath = app.GameBuildVersion >= 30000,
+	Cata = app.GameBuildVersion >= 40000,
+	MoP = app.GameBuildVersion >= 50000,
+	WoD = app.GameBuildVersion >= 60000,
+	Legion = app.GameBuildVersion >= 70000,
+	BfA = app.GameBuildVersion >= 80000,
+	SL = app.GameBuildVersion >= 90000,
+	DF = app.GameBuildVersion >= 100000,
+	TWW = app.GameBuildVersion >= 110000,
 }
 
 -- RANKED MODE
@@ -117,6 +113,18 @@ settings.RequiredForRankedMode = {
 	Titles = true,
 	Toys = true,
 	Transmog = app.GameBuildVersion >= 40000,
+	-- Expansion Filters
+	Classic = true,
+	TBC = app.GameBuildVersion >= 20000,
+	Wrath = app.GameBuildVersion >= 30000,
+	Cata = app.GameBuildVersion >= 40000,
+	MoP = app.GameBuildVersion >= 50000,
+	WoD = app.GameBuildVersion >= 60000,
+	Legion = app.GameBuildVersion >= 70000,
+	BfA = app.GameBuildVersion >= 80000,
+	SL = app.GameBuildVersion >= 90000,
+	DF = app.GameBuildVersion >= 100000,
+	TWW = app.GameBuildVersion >= 110000,
 }
 
 -- CORE MODE
@@ -128,6 +136,18 @@ settings.RequiredForCoreMode = {
 	Mounts = true,
 	Toys = true,
 	Transmog = app.GameBuildVersion >= 40000,
+	-- Expansion Filters
+	Classic = true,
+	TBC = app.GameBuildVersion >= 20000,
+	Wrath = app.GameBuildVersion >= 30000,
+	Cata = app.GameBuildVersion >= 40000,
+	MoP = app.GameBuildVersion >= 50000,
+	WoD = app.GameBuildVersion >= 60000,
+	Legion = app.GameBuildVersion >= 70000,
+	BfA = app.GameBuildVersion >= 80000,
+	SL = app.GameBuildVersion >= 90000,
+	DF = app.GameBuildVersion >= 100000,
+	TWW = app.GameBuildVersion >= 110000,
 }
 
 if app.GameBuildVersion >= 90000 then

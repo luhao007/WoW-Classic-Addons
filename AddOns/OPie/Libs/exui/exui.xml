@@ -6,4 +6,5 @@
 	<Script file="LineInput.lua" />
 	<Script file="TextArea.lua" />
 	<Script file="IconSelector.lua" />
+	<Script file="DropDown.lua" />
 </Ui>

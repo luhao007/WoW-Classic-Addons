@@ -6,7 +6,7 @@
 
 local TSM = select(2, ...) ---@type TSM
 local Expenses = TSM.MainUI.Ledger:NewPackage("Expenses")
-local L = TSM.Include("Locale").GetTable()
+local L = TSM.Locale.GetTable()
 
 
 

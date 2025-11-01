@@ -262,7 +262,7 @@ L:SetGeneralLocalization{
 L = DBM:GetModLocalization(395)
 
 L:SetGeneralLocalization{
-	name 		= "『奴役者』基茲盧爾"
+	name 		= "奴役者基茲盧爾"
 }
 -----------------------------
 --  Overlord Wyrmthalak  --
@@ -270,7 +270,7 @@ L:SetGeneralLocalization{
 L = DBM:GetModLocalization(396)
 
 L:SetGeneralLocalization{
-	name 		= "維姆薩拉克主宰"
+	name 		= "維姆薩拉克"
 }
 
 -------------------------
@@ -317,6 +317,11 @@ L = DBM:GetModLocalization("WarchiefRendBlackhand")
 
 L:SetGeneralLocalization{
 	name 		= "大酋長雷德·黑手"
+}
+
+L:SetMiscLocalization{
+	Pull1 = "Excellent... it would appear as if the meddlesome insects have arrived just in time to feed my legion. Welcome, mortals!", -- Yell when you jump into the arena
+	Pull2 = "THIS CANNOT BE!!! Rend, deal with these insects.", -- Yell when you defeat the last wave
 }
 -----------------------------
 --  The Beast  --
@@ -441,7 +446,7 @@ L:SetGeneralLocalization{
 L = DBM:GetModLocalization(405)
 
 L:SetGeneralLocalization{
-	name 		= "『狂野變形者』奧茲恩"
+	name 		= "奧茲恩"
 }
 --------------------
 -- Tendris Warpwood --
@@ -529,7 +534,11 @@ L:SetGeneralLocalization{
 L = DBM:GetModLocalization(416)
 
 L:SetGeneralLocalization{
-	name 		= "『觀察者』克魯什"
+	name 		= "觀察者克魯什"
+}
+
+L:SetMiscLocalization{
+    Defeat	= "國王死了——哦，不！召喚米茲勒！他知道下一步該怎麼做！"
 }
 ----------------
 -- King Gordok --
@@ -673,7 +682,7 @@ L:SetGeneralLocalization{
 L = DBM:GetModLocalization("Taragaman")
 
 L:SetGeneralLocalization{
-	name 		= "『飢餓者』塔拉加曼"
+	name 		= "饑餓者塔拉加曼"
 }
 -----------------------------
 --  Jergosh the Invoker  --
@@ -681,7 +690,7 @@ L:SetGeneralLocalization{
 L = DBM:GetModLocalization("Jergosh")
 
 L:SetGeneralLocalization{
-	name 		= "『塑能師』耶戈什"
+	name 		= "祈求者耶戈什"
 }
 -----------------------------
 --  Bazzalan  --
@@ -736,7 +745,7 @@ L:SetGeneralLocalization{
 L = DBM:GetModLocalization("AmnennartheColdbringer")
 
 L:SetGeneralLocalization{
-	name 		= "『寒冰使者』亞門納爾"
+	name 		= "寒冰之王亞門納爾"
 }
 
 -----------------------------
@@ -1049,7 +1058,7 @@ L:SetGeneralLocalization{
 L = DBM:GetModLocalization("OdotheBlindwatcher")
 
 L:SetGeneralLocalization{
-	name 		= "『盲眼守衛』奧杜"
+	name 		= "盲眼守衛奧杜"
 }
 
 -----------------------------
@@ -1067,7 +1076,7 @@ L:SetGeneralLocalization{
 L = DBM:GetModLocalization("FenrustheDevourer")
 
 L:SetGeneralLocalization{
-	name 		= "『吞噬者』芬魯斯"
+	name 		= "吞噬者芬魯斯"
 }
 
 -----------------------------
@@ -1246,7 +1255,7 @@ L:SetGeneralLocalization{
 L = DBM:GetModLocalization(455)
 
 L:SetGeneralLocalization{
-	name 		= "『暴食者』拉姆斯登"
+	name 		= "吞嚥者拉姆斯登"
 }
 L:SetTimerLocalization{
     TimerGuards    = "哨兵出現"
@@ -1279,7 +1288,7 @@ L:SetGeneralLocalization{
 L = DBM:GetModLocalization(458)
 
 L:SetGeneralLocalization{
-	name 		= "『預言者』迦瑪蘭"
+	name 		= "預言者迦瑪蘭"
 }
 ----------------------------------------------
 --	Wardens of the Dream					--
@@ -1456,7 +1465,7 @@ L:SetGeneralLocalization{
 L = DBM:GetModLocalization(481)
 
 L:SetGeneralLocalization{
-	name 		= "『吞噬者』穆坦努斯"
+	name 		= "吞噬者穆坦努斯"
 }
 
 -----------------------------
@@ -1494,7 +1503,7 @@ L:SetGeneralLocalization{
 L = DBM:GetModLocalization(485)
 
 L:SetGeneralLocalization{
-	name 		= "『殉教者』塞卡"
+	name 		= "殉教者塞卡"
 }
 
 -----------------------------
@@ -1549,7 +1558,7 @@ L:SetGeneralLocalization{
 L = DBM:GetModLocalization("Diathorus")
 
 L:SetGeneralLocalization{
-	name 		= "『追尋者』迪亞索魯斯"
+	name 		= "搜尋者迪亞索魯斯"
 }
 -----------------------------
 --  Destructor's Wraith  --
@@ -1680,3 +1689,6 @@ L:SetWarningLocalization{
 L:SetOptionLocalization{
 	WarnDoom = "Show announce to decurse $spell:1221577"
 }
+
+
+

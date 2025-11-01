@@ -69,6 +69,32 @@ function TomTom:ReparentMinimap(minimap)
     end
 end
 
+-- Theme handling
+local function getMinimapDotTexture()
+    local theme = addon.db.profile.minimap.theme
+    return addon.waypointThemeRegistry:GetThemeDotTexture(theme)
+end
+
+local function getMinimapArrowTexture()
+    local theme = addon.db.profile.minimap.theme
+    return addon.waypointThemeRegistry:GetThemeArrowTexture(theme)
+end
+
+local function getMinimapDotSize()
+    local theme = addon.db.profile.minimap.theme
+    return addon.waypointThemeRegistry:GetThemeDotSize(theme)
+end
+
+local function getMinimapArrowSize()
+    local theme = addon.db.profile.minimap.theme
+    return addon.waypointThemeRegistry:GetThemeArrowSize(theme)
+end
+
+local function getWorldMapDotTexture()
+    local theme = addon.db.profile.worldmap.theme
+    return addon.waypointThemeRegistry:GetThemeDotTexture(theme)
+end
+
 local waypointMap = {}
 local idx = 0
 
@@ -85,8 +111,8 @@ function TomTom:SetWaypoint(waypoint, callbacks, show_minimap, show_world)
         idx = idx + 1
         local minimapButtonName = string.format("TTMinimapButton%d", idx)
         local minimap = CreateFrame("Button", minimapButtonName, minimapParent)
-        minimap:SetHeight(20)
-        minimap:SetWidth(20)
+        minimap:SetHeight(30)
+        minimap:SetWidth(30)
         minimap:RegisterForClicks("RightButtonUp")
 
         -- Add to the "All points" table so we can reparent easily
@@ -95,13 +121,17 @@ function TomTom:SetWaypoint(waypoint, callbacks, show_minimap, show_world)
         minimap.icon = minimap:CreateTexture(nil,"OVERLAY")
         minimap.icon:SetPoint("CENTER", 0, 0)
         minimap.icon:SetBlendMode("BLEND")  -- ADD/BLEND
+        minimap.icon:SetTexelSnappingBias(0)
+        minimap.icon:SetSnapToPixelGrid(false)
 
         minimap.arrow = minimap:CreateTexture(nil,"OVERLAY")
-        minimap.arrow:SetTexture("Interface\\AddOns\\TomTom\\Images\\MinimapArrow-Green")
+        minimap.arrow:SetTexture(getMinimapArrowTexture())
         minimap.arrow:SetPoint("CENTER", 0 ,0)
-        minimap.arrow:SetHeight(40)
-        minimap.arrow:SetWidth(40)
+        minimap.arrow:SetHeight(30)
+        minimap.arrow:SetWidth(30)
         minimap.arrow:Hide()
+        minimap.arrow:SetTexelSnappingBias(0)
+        minimap.arrow:SetSnapToPixelGrid(false)
 
         -- Add the behavior scripts
         minimap:SetScript("OnEnter", Minimap_OnEnter)
@@ -147,16 +177,21 @@ function TomTom:SetWaypoint(waypoint, callbacks, show_minimap, show_world)
     if waypoint.minimap_displayID then
          SetPortraitTextureFromCreatureDisplayID(point.minimap.icon, waypoint.minimap_displayID)
     else
-        point.minimap.icon:SetTexture(waypoint.minimap_icon or profile.minimap.default_icon)
+        point.minimap.icon:SetTexture(waypoint.minimap_icon or getMinimapDotTexture())
     end
     point.minimap.icon:SetHeight(waypoint.minimap_icon_size or profile.minimap.default_iconsize)
     point.minimap.icon:SetWidth(waypoint.minimap_icon_size or profile.minimap.default_iconsize)
+
+    -- Need to re-apply the arrow textures here to suppor themes
+    point.minimap.arrow:SetTexture(waypoint.minimap_icon or getMinimapArrowTexture())
+    point.minimap.arrow:SetHeight(getMinimapArrowSize())
+    point.minimap.arrow:SetWidth(getMinimapArrowSize())
 
     -- Set up the worldmap.icon
     if waypoint.worldmap_displayID then
          SetPortraitTextureFromCreatureDisplayID(point.worldmap.icon, waypoint.worldmap_displayID)
     else
-        point.worldmap.icon:SetTexture(waypoint.worldmap_icon or profile.worldmap.default_icon)
+        point.worldmap.icon:SetTexture(waypoint.worldmap_icon or getWorldMapDotTexture())
     end
     point.worldmap:SetHeight(waypoint.worldmap_icon_size or profile.worldmap.default_iconsize)
     point.worldmap:SetWidth(waypoint.worldmap_icon_size or profile.worldmap.default_iconsize)

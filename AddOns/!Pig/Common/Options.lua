@@ -9,7 +9,7 @@ local PIGOptionsList_R=Create.PIGOptionsList_R
 local CommonInfo={}
 addonTable.CommonInfo=CommonInfo
 ---
-local Llist,LlistTabBut = PIGOptionsList(L["COMMON_TABNAME"],"TOP")
+local Llist,LlistTabBut = PIGOptionsList(GENERAL,"TOP")
 Llist:Show()
 LlistTabBut:Selected()
 local NR =Create.PIGOptionsList_RF(Llist)

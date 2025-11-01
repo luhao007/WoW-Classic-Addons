@@ -196,6 +196,9 @@ function QuestieTBCQuestFixes:Load()
         [1322] = {
             [questKeys.objectivesText] = {"Acquire 5 Acidic Venom Sacs for Do'gol in Brackenwall Village."},
         },
+        [1361] = {
+            [questKeys.startedBy] = {{2229,4485,10540}},
+        },
         [1437] = {
             [questKeys.triggerEnd] = {"Find and search Tyranis and Dalinda Malem's wagon", {[zoneIDs.DESOLACE]={{56.52,17.84}}}},
         },
@@ -222,6 +225,9 @@ function QuestieTBCQuestFixes:Load()
         },
         [1687] = {
             [questKeys.questLevel] = -1,
+        },
+        [1698] = {
+            [questKeys.startedBy] = {{5479,7315}},
         },
         [1699] = {
             [questKeys.triggerEnd] = {"Enter the Rethban Caverns", {[zoneIDs.REDRIDGE_MOUNTAINS]={{19.22,25.25}}}},
@@ -1310,7 +1316,7 @@ function QuestieTBCQuestFixes:Load()
         },
         [9544] = {
             [questKeys.requiredSourceItems] = {23801},
-            [questKeys.objectives] = {{{17375,nil,Questie.ICON_TYPE_INTERACT}}},
+            [questKeys.objectives] = {{{17375,nil,Questie.ICON_TYPE_EVENT}}},
             [questKeys.extraObjectives] = {{nil,Questie.ICON_TYPE_INTERACT,l10n("Open the cage"),0,{{"object",410019}}}},
         },
         [9545] = {
@@ -1427,7 +1433,7 @@ function QuestieTBCQuestFixes:Load()
                 {nil,Questie.ICON_TYPE_SLAY, l10n("Kill Bristlelimb Furbolgs to lure High Chief Bristlelimb"), 0, {{"monster", 17320}, {"monster", 17321}}},
                 {nil,Questie.ICON_TYPE_INTERACT,l10n("Open the cage"),0,{{"object",181928}}},
             },
-            [questKeys.objectives] = {{{17682,nil,Questie.ICON_TYPE_INTERACT}}},
+            [questKeys.objectives] = {{{17682,nil,Questie.ICON_TYPE_EVENT}}},
         },
         [9668] = {
             [questKeys.nextQuestInChain] = 9693,
@@ -1720,7 +1726,7 @@ function QuestieTBCQuestFixes:Load()
         },
         [9948] = {
             [questKeys.requiredMinRep] = {941,0},
-            [questKeys.objectives] = {{{18428,nil,Questie.ICON_TYPE_INTERACT}}},
+            [questKeys.objectives] = {{{18428,nil,Questie.ICON_TYPE_EVENT}}},
             [questKeys.extraObjectives] = {{nil,Questie.ICON_TYPE_INTERACT,l10n("Open the cage"),0,{{"object",182484}}}},
         },
         [9955] = {
@@ -1907,6 +1913,7 @@ function QuestieTBCQuestFixes:Load()
         [10106] = {
             [questKeys.questLevel] = -1,
             [questKeys.requiredMaxRep] = {},
+            [questKeys.objectives] = {{{19028,nil,Questie.ICON_TYPE_EVENT},{19029,nil,Questie.ICON_TYPE_EVENT},{19032,nil,Questie.ICON_TYPE_EVENT}}},
         },
         [10107] = {
             [questKeys.objectives] = {{{18261,"Hear the Tale of the Blademaster",Questie.ICON_TYPE_TALK}}},
@@ -1917,6 +1924,7 @@ function QuestieTBCQuestFixes:Load()
         [10110] = {
             [questKeys.questLevel] = -1,
             [questKeys.requiredMaxRep] = {},
+            [questKeys.objectives] = {{{19028,nil,Questie.ICON_TYPE_EVENT},{19029,nil,Questie.ICON_TYPE_EVENT},{19032,nil,Questie.ICON_TYPE_EVENT}}},
         },
         [10111] = {
             [questKeys.extraObjectives] = {{nil, Questie.ICON_TYPE_EVENT, l10n("Jump!"), 0, {{"object", 183146}}}},
@@ -3420,7 +3428,7 @@ function QuestieTBCQuestFixes:Load()
         },
         [11145] = {
             [questKeys.requiredSourceItems] = {33061},
-            [questKeys.objectives] = {{{23720,nil,Questie.ICON_TYPE_INTERACT}}},
+            [questKeys.objectives] = {{{23720,nil,Questie.ICON_TYPE_EVENT}}},
             [questKeys.extraObjectives] = {{nil,Questie.ICON_TYPE_INTERACT,l10n("Open the cage"),0,{{"object",410020}}}},
         },
         [11146] = {
@@ -3688,6 +3696,10 @@ function QuestieTBCQuestFixes:Load()
         },
         [11526] = {
             [questKeys.preQuestSingle] = {},
+        },
+        [11531] = {
+            [questKeys.specialFlags] = 1,
+            [questKeys.requiredRaces] = raceIDs.ALL_ALLIANCE,
         },
         [11532] = {
             [questKeys.extraObjectives] = {{nil, Questie.ICON_TYPE_TALK, l10n("Speak to Ayren Cloudbreaker"), 0, {{"monster", 25059}}}},

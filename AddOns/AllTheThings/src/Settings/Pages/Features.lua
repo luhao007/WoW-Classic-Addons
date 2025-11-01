@@ -1,5 +1,5 @@
 local appName, app = ...;
-local L, settings = app.L.SETTINGS_MENU, app.Settings;
+local L, settings = app.L, app.Settings;
 
 -- Settings: Features Page
 local child = settings:CreateOptionsPage(L.FEATURES_PAGE, appName)
@@ -16,6 +16,12 @@ local textChatCommands = child:CreateTextLabel(L.CHAT_COMMANDS_TEXT)
 textChatCommands:SetPoint("TOPLEFT", headerChatCommands, "BOTTOMLEFT", 0, -4)
 textChatCommands:SetWidth(320)
 
+local headerKeybindings = child:CreateHeaderLabel(L.KEYBINDINGS)
+headerKeybindings:SetPoint("TOPLEFT", textChatCommands, "BOTTOMLEFT", 0, -15)
+
+local textKeybindings = child:CreateTextLabel(app.Modules.Color.Colorize(L.KEYBINDINGS_TEXT, app.Colors.White))
+textKeybindings:SetPoint("TOPLEFT", headerKeybindings, "BOTTOMLEFT", 0, -4)
+textKeybindings:SetWidth(320)
 
 -- Column 2
 local headerIconLegendStatus = child:CreateHeaderLabel(L.ICON_LEGEND_STATUS_LABEL)
@@ -32,18 +38,8 @@ local textIconLegendMisc = child:CreateTextLabel(L.ICON_LEGEND_MISC_TEXT)
 textIconLegendMisc:SetPoint("TOPLEFT", headerIconLegendMisc, "BOTTOMLEFT", 0, -4)
 textIconLegendMisc:SetWidth(320)
 
-local headerKeybindings = child:CreateHeaderLabel(L.KEYBINDINGS)
-headerKeybindings:SetPoint("TOPLEFT", textIconLegendMisc, "BOTTOMLEFT", 0, -15)
-
-local textKeybindings = child:CreateTextLabel(app.Modules.Color.Colorize(L.KEYBINDINGS_TEXT, app.Colors.White))
-textKeybindings:SetPoint("TOPLEFT", headerKeybindings, "BOTTOMLEFT", 0, -4)
-textKeybindings:SetWidth(320)
-
-
-
-
 local headerMinimapButton = child:CreateHeaderLabel(L.MINIMAP_LABEL)
-headerMinimapButton:SetPoint("TOPLEFT", textKeybindings, "BOTTOMLEFT", 0, -15)
+headerMinimapButton:SetPoint("TOPLEFT", textIconLegendMisc, "BOTTOMLEFT", 0, -15)
 
 
 local checkboxShowMinimapButton = child:CreateCheckBox(L.MINIMAP_BUTTON_CHECKBOX,
@@ -180,7 +176,7 @@ if app.IsRetail then
 	local checkboxFilterMiniListTimerunning = child:CreateCheckBox(L.FILTER_MINI_LIST_FOR_TIMERUNNING_CHECKBOX,
 	function(self)
 		self:SetChecked(settings:GetTooltipSetting("Filter:MiniList:Timerunning"))
-		self:SetAlpha(0.4)
+		self:SetAlpha(app.Modules.Events.IsTimerunningActive and 1 or 0.4)
 	end,
 	function(self)
 		-- No Timerunning Active, don't modify settings

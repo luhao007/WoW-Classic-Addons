@@ -38,8 +38,8 @@ local function PlotCachedCoords()
 					local root,rootByCreatureID,rootByObjectID = {},{},{};
 					for key,group in pairs(datas) do
 						local creatureID, objectID;
-						if group.npcID or group.creatureID then
-							creatureID = group.npcID or group.creatureID;
+						if group.npcID then
+							creatureID = group.npcID
 						elseif group.objectID then
 							objectID = group.objectID;
 						else
@@ -252,7 +252,7 @@ local function AddTomTomParentChainWaypoint(group, depth)
 	end
 end
 local function AddTomTomRawSearchResultWaypoints(field, value)
-	if not field or not value or value < 1 then return end
+	if not field or not app.ThingKeys[field] or not tonumber(value) or tonumber(value) < 1 then return end
 
 	for _,o in ipairs(SearchForObject(field, value, "field", true)) do
 		-- app.PrintDebug("WP:Search:",o,field,value,app:RawSearchLink(field, value))
@@ -380,7 +380,7 @@ app.AddEventHandler("OnReady", function()
 										local achGroup = SearchForObject("achievementID", o.achievementID, "key")
 										tooltip:AddDoubleLine(L.CRITERIA_FOR, achGroup.text or GetAchievementLink(o.achievementID));
 									else
-										if key == "npcID" then key = "creatureID"; end
+										if key == "creatureID" then key = "npcID"; end
 										AttachTooltipSearchResults(tooltip, SearchForField, key, o.keyval);
 									end
 								end

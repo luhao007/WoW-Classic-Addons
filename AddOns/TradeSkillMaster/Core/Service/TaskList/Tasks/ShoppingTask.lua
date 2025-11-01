@@ -5,10 +5,11 @@
 -- ------------------------------------------------------------------------------ --
 
 local TSM = select(2, ...) ---@type TSM
-local ShoppingTask = TSM.Include("LibTSMClass").DefineClass("ShoppingTask", TSM.TaskList.ItemTask)
-local L = TSM.Include("Locale").GetTable()
-local Delay = TSM.Include("Util.Delay")
-local Log = TSM.Include("Util.Log")
+local LibTSMClass = LibStub("LibTSMClass")
+local ShoppingTask = LibTSMClass.DefineClass("ShoppingTask", TSM.TaskList.ItemTask)
+local L = TSM.Locale.GetTable()
+local DelayTimer = TSM.LibTSMWoW:IncludeClassType("DelayTimer")
+local Log = TSM.LibTSMUtil:Include("Util.Log")
 TSM.TaskList.ShoppingTask = ShoppingTask
 local private = {
 	initialized = false,
@@ -31,7 +32,7 @@ function ShoppingTask.__init(self, searchType)
 	self._searchType = searchType
 
 	if not private.initialized then
-		private.updateTimer = Delay.CreateTimer("SHOPPING_TASK_UPDATE", private.UIUpdateCallbackDelayed)
+		private.updateTimer = DelayTimer.New("SHOPPING_TASK_UPDATE", private.UIUpdateCallbackDelayed)
 		TSM.UI.AuctionUI.RegisterUpdateCallback(private.UIUpdateCallback)
 		TSM.UI.AuctionUI.Shopping.RegisterUpdateCallback(private.UIUpdateCallback)
 		private.initialized = true

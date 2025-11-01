@@ -1,29 +1,34 @@
-## Interface: 30405
+## Interface: 50502
 ## Author: MysticalOS, QartemisT
-## Version: 11.2.2
+## Version: 12.0.2
 
 ## Title: |cffffe00a<|r|cffff7d0aDBM Core|r|cffffe00a>|r |cff69ccf0Main Core|r
 ## Notes: Deadly Boss Mods
-## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r |cFFFFFFFF副本助手|r |cFFFFE00ADBM|r
+## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r|cFFFFFFFF副本助手|r |cFFFFE00ADBM|r
 ## Notes-zhCN: 功能强大的副本助手，支持所有Boss。
 
 ## IconTexture: Interface\AddOns\DBM-Core\textures\dbm_airhorn
 
+## Category: DBM
+## Category-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r
+## Group: DBM-Core
+
 ## Dependencies: DBM-StatusBarTimers
+## OptionalDependencies: LibStub, CallbackHandler-1.0, LibSharedMedia-3.0, LibChatAnims, LibDBIcon-1.0, LibDeflate, LibSerialize, LibSpecialization, LibKeystone, CustomNames, Masque, ChatThrottleLib
 ## LoadOnDemand: 0
 ## DefaultState: enabled
 
-## SavedVariables: DBM_AllSavedOptions, DBM_MinimapIcon, DBM_AnnoyingPopupDisables, DBM_ModsToLoadWithFullTestSupport
+## SavedVariables: DBM_AllSavedOptions, DBM_MinimapIcon, DBM_AnnoyingPopupDisables, DBM_ModsToLoadWithFullTestSupport, DBM_Keystones
 ## SavedVariablesPerCharacter: DBM_UsedProfile, DBM_UseDualProfile, DBM_CharSavedRevision
 
-## X-Min-Interface: 110107
+## X-Min-Interface: 110200
 ## X-Curse-Project-ID: 3358
-## X-WoWI-ID: 8814
 ## X-Wago-ID: qv633o6b
 ## X-Website: https://deadlybossmods.com
 ## X-Part-Of: DBM-Core
 
 Libs\ChatThrottleLib\ChatThrottleLib.lua
+Libs\LibKeystone\LibKeystone.lua
 
 localization.en.lua
 localization.br.lua
@@ -48,9 +53,9 @@ commonlocal.kr.lua
 commonlocal.ru.lua
 
 # Pre-core modules
+modules\objects\GameVersion.lua
 modules\objects\PrototypeRegistry.lua
 modules\objects\Testing.lua
-modules\objects\GameVersion.lua
 modules\objects\StringUtils.lua
 modules\objects\TableUtils.lua
 modules\objects\StandardFont.lua
@@ -70,6 +75,11 @@ DBM-RangeCheck.lua
 DBM-InfoFrame.lua
 DBM-HudMap.lua
 DBM-Nameplate.lua
+
+# GUI Features
+modules\gui\Latency.lua
+modules\gui\Durability.lua
+modules\gui\Keystones.lua
 
 # Modules
 modules\Commands.lua

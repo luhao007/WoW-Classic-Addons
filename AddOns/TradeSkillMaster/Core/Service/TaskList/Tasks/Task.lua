@@ -5,7 +5,8 @@
 -- ------------------------------------------------------------------------------ --
 
 local TSM = select(2, ...) ---@type TSM
-local Task = TSM.Include("LibTSMClass").DefineClass("Task", nil, "ABSTRACT")
+local LibTSMClass = LibStub("LibTSMClass")
+local Task = LibTSMClass.DefineClass("Task", nil, "ABSTRACT")
 TSM.TaskList.Task = Task
 
 

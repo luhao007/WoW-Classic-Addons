@@ -1,6 +1,340 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## 87.1 - 2025-10-09
+### Fixed
+- FindIndex Error on achievement click from popup and ObjectTracker
+
+## 87.0 - 2025-10-05
+### Added
+- Missing season 2 and 3 transmog sets
+- Legion Remix achievements and event
+
+### Changed
+- Transfered some Shadowlands and Dragonflight map data into the new system
+
+## 86.2 - 2025-08-30
+### Added
+- Additional zhCN localization
+- Additional delve and Midnight edition achievements
+
+### Fixed
+- With Flying Colors is now faction specific
+
+## 86.1 - 2025-08-10
+### Fixed
+- Moved Court is Now in Session to a more fitting category
+- Raiding with Leashes II: Attunement Edition should now have proper tooltip data
+
+### Mists Classic
+- Raiding with Leashes II: Attunement Edition should now have proper tooltip data
+- Multiple Wrath and Cata schievements should now have proper tooltip data
+
+## 86.0 - 2025-08-05
+### Added
+- New 11.2.0 achievements
+
+### Fixed
+- Popup dialog errors
+
+## 85.2 - 2025-07-19
+### Fixed
+- GW2_UI compatibility issue when disabling Event Reminders
+
+## 85.1 - 2025-07-02
+### Mists Classic
+- Version 5.5.0 filtering
+
+## 85.0 - 2025-06-27
+### Added
+- More tooltip data for Mists of Pandaria content
+
+### Changed
+- General achievements cleanup
+
+### Mists Classic
+- Added support
+
+### Cata Classic
+- Removed support
+
+## 84.0 - 2025-06-18
+### Added
+- Missing 11.1.5 The Enterprising Dungeon Master achievements
+- Turbulent Timeways achievements (1)
+- Rise of the Red Dawn achievements (2)
+- Legion raid achievements (4)
+- Lorewalking achievements (3)
+- D.I.S.C. and Overcharged Delve achievements (2)
+- Version 11.1.7 filtering
+
+## 83.4 - 2025-06-06
+### Added
+- Dastardly Duos zone data
+- A lot of Pet Battle tooltip data provided by Silden
+- Credits for Malivil and Silden for contributing to the addon
+
+### Fixed
+- Only temporarily obtainable achievements that are currently obtainable should have a green header color
+
+## 83.3 - 2025-06-03
+### Added
+- Flame Warden of Khaz Algar to the Midsummer category
+- Flame Warden of Khaz Algar is now temporarily obtainable
+- Dastardly Duos achievements are now temporarily obtainable
+- Export to CSV (dev note: this is an experimental feature available in the options under General -> Debug -> Export to CSV)
+- Isle of Dorn Skyriding Races tooltip data
+
+### Fixed
+- Dastardly Duos event reminder (EU)
+
+## 83.2 - 2025-05-29
+### Added
+- Dastardly Duos event reminder
+
+## 83.1 - 2025-05-17
+### Added
+- Portuguese (Brazilian) translations
+
+### Fixed
+- Version 11.1.5 should now also be available for filtering
+
+## 83.0 - 2025-04-22
+### Added
+- Nightfall event achievements (4)
+- Dastardly Duos event achievements (19)
+- Horrific Visions Revisited achievements (29)
+
+## 82.4 - 2025-04-14
+### Fixed
+- The default Blizzard Achievements tab should once again know all its categories
+- Tasks should no longer be empty (dev note: this is a "temporary" fix until I have more time to find the source of the issue)
+
+## 82.3 - 2025-03-01
+### Added
+- Addon category
+
+## 82.2 - 2025-02-26
+### Fixed
+- Another potential memory leak addressed
+
+## 82.1 - 2025-02-26
+### Changed
+- Upgraded the world map button library to reflect the now vertical layout
+
+### Fixed
+- Potential memory leak addressed
+
+## 82.0 - 2025-02-10
+### Added
+- 11.1 achievement (159)
+- New Warband Campsite achievement reward filter
+
+### Fixed
+- Master of the Turbulent Timeways is no longer obtainable even when the Turbulent Timeways event is active
+- Delve category names should no longer have the tier in the name
+- Uncategorized category should be working again
+
+## 81.4 - 2025-01-21
+### Fixed
+- Achievement points should once again be counted "correctly" (dev note: a feature to show other faction achievements as completed for meta achievements resulted in also counting those as completed resulting in high numbers; this feature is removed for the time being until a proper fix can be developed)
+
+## 81.3 - 2025-01-16
+### Fixed
+- Resolved an error when both the Achievement Window and the Calendar are open
+
+### Removed
+- Plunderstorm event
+
+## 81.2 - 2025-01-11
+### Added
+- Option to change the transparency of the faction icon
+
+### Fixed
+- Plugin options should no longer cause errors for ElvUI and GW2_UI
+
+## 81.1 - 2025-01-10
+### Fixed
+- Resolved some loading order issues related to ElvUI and event reminders
+
+## 81.0 - 2025-01-09
+### Added
+- The watch list can now be a mix of account wide achievements for one character, character specific achievements for another character or all account wide or character specific
+- Shadowlands Mythic+ season categories in the Specials tab
+- Achievements can now have multiple moments when they were available to earn
+- Cross-Expansion - Delves category is now moved from The War Within to Cross-Expansion
+- Has Reward filter with additional reward type filters
+- Show Other Faction Warband as Completed option (dev note: see loc for details)
+- Plunderstorm and Turbulent Timeways events
+- Upcoming Calendar Event Reminders with a lot of options
+
+### Changed
+- Factions and EventType are now accessible trough the API system
+
+### Fixed
+- When marking an achievement as watched, the view should no longer completely reset
+- Side buttons are once again skinned when using GW2 UI
+
+## 80.2 - 2024-12-18
+### Added
+- Lingering Shadows achievement
+
+## 80.1 - 2024-12-18
+### Added
+- Patch 11.0.7 to the filters
+
+## 80.0 - 2024-12-17
+### Added
+- Achievements added in 11.0.7
+- Feature to prioritize which tab is used when getting redirected to an achievement
+- Has Reward filter (dev note: reward type filters will come in a later version)
+- Option to show a Warband icon on Warband achievements
+- Option to hide the blue Warband achievement color
+- Option to completely turn off the Event Reminders Module with 1 option
+
+## 79.0 - 2024-11-15
+### Added
+- Guild achievements tab keybind
+- WoW's 20th Anniversary achievement
+
+### Changed
+- Achievements and Categories are now moved to the new API system
+- Data loading time is reduced by 50%
+
+### Cata Classic
+- Additional (promotional) achievements marked as unobtainable
+
+## 78.0 - 2024-11-01
+### Added
+- Transmog sets for The War Within raid and season 1
+
+### Changed
+- Transmog sets are now moved to the new API system
+
+### Removed
+- Khaz Algar Lore Hunter achievement
+
+## 77.0 - 2024-10-31
+### Changed
+- Backend data is now prepared to be more API friendly (in case KAF support ever stops)
+
+### Cata Classic
+- Opening a category from the event reminders or going to an achievement from a link, tracker, ... should once again work without errors
+
+## 76.2 - 2024-10-27
+### Fixed
+- Compatibility with GW2_UI and BetterWardrobe addons
+
+## 76.1 - 2024-10-24
+### Fixed
+- Loading of KAF should once again load everything
+
+## 76.0 - 2024-10-23
+### Added
+- Storm Rider races tooltip data
+- WoW's 20th Anniversary achievements 
+
+### Changed
+- Event Data rework
+
+### Cata Classic
+- Added Protocol Inferno achievements
+
+## 75.8 - 2024-09-02
+### Added
+- Categorized more achievements (thank you Seb)
+
+## 75.7 - 2024-08-23
+### Added
+- Missing map data for the 4 main zones
+
+## 75.6 - 2024-08-21
+### Added
+- Achievements added in 11.0.2
+
+### Fixed
+- Tracking achievements should once again show as a category when it's enabled
+- Temporarily shown achievements icon is not update and no longer uses the flight path icon
+- Achievements without a category should no longer cause an error
+
+## 75.5 - 2024-08-15
+### Fixed
+- Library bug
+
+## 75.4 - 2024-08-12
+### Fixed
+- Turned off errors again when translations are missing
+
+## 75.3 - 2024-08-12
+### Changed
+- Updated all localization
+
+## 75.2 - 2024-07-31
+### Added
+- Radiant Echoes are now available as Event Reminders
+
+## 75.1 - 2024-07-30
+### Cata Classic
+- Fixed an issue during loading
+- Fixed an issue with the Right Click Menu of the Achievements
+
+## 75.0 - 2024-07-30
+### Changed
+- Updated the Right Click Menu of the Achievements to use the new DropDown system
+- Pet Battle Link Data rework
+- Tooltip Data is now included in KAF and is no longer a separate addon
+
+## 74.4 - 2024-07-25
+### Fixed
+- The Browsing History will now also work for the Achievements tab
+
+## 74.3 - 2024-07-24
+### Changed
+- Updated the Right Click Menu of the Event Reminders to use the new DropDown system
+
+### Fixed
+- GW2_UI compatibility
+
+## 74.2 - 2024-07-24
+### Changed
+- The Browsing History will now track the actual achievement's category if the achievement was selected in a category with flexible data like the Adjustable Categories
+
+### Fixed
+- Uncategorized should once again load properly
+
+## 74.1 - 2024-07-24
+### Fixed
+- All data should once again load properly
+
+### Cata Classic
+- Achievements tab should once again know which achievements to show
+
+## 74.0 - 2024-07-24
+### Added
+- The War Within category and subcategories in the Expansions tab with all the new achievements (371)
+- Deephaul Ravine achievements (8)
+- Worldsoul Memory event achievements (5)
+- Misc achievements (4)
+- Map data for most new achievements
+- Summary category is now part of the Adjustable Categories group and can be shown or hidden (dev note: Game Menu -> Options -> AddOns -> Krowi's Achievement Filter -> Layout -> Adjustable Categories -> Summary)
+
+### Fixed
+- Several bugs in preparation for The War Within (Beta) changes
+
+### Changed
+- Draconically Superior and Draconically Epic are now temporarily obtainable
+- Draconically Superior and Draconically Epic, Dreaming of Drakes, Dreaming of Wyrns and Dreaming of the Aspects moved from the Cross-Expansion Character category to the Dragonflight Character category
+- Trading Post: Dragonflight moved from the Cross-Expansion Character category to the Promotions
+- Renamed category The Temple of Atal'hakkar to Sunken Temple
+- Renamed The Stockade to Stormwind Stockades
+- Updated the Filter in the Achievement Window to use the new DropDown system (dev note: will most likely cause errors with ElvUI and GW2_UI the first few days)
+- Data clean up after the migration to the new data structure last year (dev note: a new expansion is the best moment to do this, especially with all the changes Blizzard made to achievements) (dev note 2: should result in 50-63% less duplicate data and potentially memory usage)
+- Cleaned up Event Reminders naming and should now be more consistent
+- Adjustable Categories rework for better maintainability
+
+### Wrath Classic
+- No longer supported
+
 ## 73.6 - 2024-06-27
 ### Fixed
 - Several bugs in preperation for The War Within (Beta) changes
@@ -940,7 +1274,7 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 - Default fade delay for event reminder pop ups changed to 10 seconds (down from 30)
-- Localization of the temporary obtainable string is can now be reordered
+- Localization of the temporarily obtainable string can now be reordered
 - Calendar events and World events options are now grouped via a sidebar instead of a big list
 - World events are now rounded to 5 minutes instead of 1 hour
 - Moved some options from Layout - Categories to Layout - Adjustable Categories

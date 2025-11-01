@@ -1,13 +1,15 @@
-## Interface: 30405
+## Interface: 50502
 ## Author: geligasi
-## Version: 1.54
+## Version: 1.64
 
 ## Title: !Pig_GDKP
 ## Notes: GDKP Assistant
-## Title-zhCN: |cFFFFE00A<|r|cFFFFF468功能|r|cFFFFE00A>|r |cFFFFFFFFPig工具箱|r |cFF69CCF0金团助手|r
+## Title-zhCN: |cFFFFE00A<|r|cFFFFF468功能|r|cFFFFE00A>|r|cFFFFFFFFPig工具箱|r |cFF69CCF0金团助手|r
 ## Notes-zhCN: |cffFF8C00!Pig金团助手功能|r
 
 ## IconTexture: Interface/AddOns/!Pig/Libs/logo32.blp
+
+## Category-zhCN: |cFFFFE00A<|r|cFFFFF468功能|r|cFFFFE00A>|r
 
 ## AddonCompartmentFunc: PIGCompartmentClick_GDKP
 ## AddonCompartmentFuncOnEnter: PIGCompartmentEnter_GDKP

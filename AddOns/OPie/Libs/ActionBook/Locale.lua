@@ -10,8 +10,8 @@ V =
       "Reittier", "Reittiere", "Neues Makro", "Zeige nur wenn angelegt", "Begleiterfähigkeit", "Begleiterfähigkeiten", "Zielmarkierungssymbol", "Weltmarkierung", "Markierungssymbole", "Zeige einen Platzhalter wenn nicht verfügbar",
       "Zauber", "Spielzeug", "Spielzeuge", "UI Fenster", "Benutze den höchsten bekannten Rang", "Zonenfähigkeiten",
     }
-    or C == "esES" and { -- 35/36 (97%)
-      "Habilidades", "Usar otros artículos con el mismo nombre", "Mascota de duelo", "Mascotas de duelo", "Calendario", "Macro personalizado", "Montura de Dracoequitación", "Conjunto de equipamiento", z, "Conjuntos de equipamiento",
+    or C == "esES" and { -- 36/36 (100%)
+      "Habilidades", "Usar otros artículos con el mismo nombre", "Mascota de duelo", "Mascotas de duelo", "Calendario", "Macro personalizado", "Montura de Dracoequitación", "Conjunto de equipamiento", "Hueco de Equipo", "Conjuntos de equipamiento",
       "Equipado", "Botón de acción extra", "Montura voladora", "Montura terrestre", "Panel de interfaz", "Artículo", "Artículos", "Macro", "Macros", "Misceláneo",
       "Montura", "Monturas", "Nueva macro", "Mostrar sólo al equipar", "Habilidad de mascota", "Habilidades de mascota", "Marcador de objetivo", "Marcador del mundo", "Marcadores del mundo", "Mostrar un marcador cuando no esté disponible",
       "Hechizo", "Juguete", "Juguetes", "Paneles de IU", "Usar el rango mas alto", "Habilidades de zona",
@@ -28,11 +28,17 @@ V =
       "Monture", "Montures", "Nouvelle Macro", "Afficher seulement quand équipé", "Compétence du Familier", "Compétences du familier", "Marqueur de Raid", "Marqueur de Terrain", "Marqueurs de Raid", "Afficher un remplacement quand indisponible",
       "Sort", "Jouet", "Jouets", "Fenêtres de l'interface", "Utiliser le rang le plus élevé connu", "Compétences de zone",
     }
-    or C == "koKR" and { -- 34/36 (94%)
-      "능력", "같은 이름의 아이템 사용", "애완동물 대전", "전투 애완동물", "달력", "사용자 정의 매크로", "용조련술 탈것", "장비 구성", z, "장비 구성",
-      z, "추가 행동 버튼", "나는 탈것", "지상 탈것", "인터페이스 메뉴", "아이템", "아이템", "매크로", "매크로", "기타",
-      "탈것", "탈것", "새 매크로", "착용 시에만 표시", "소환수 능력", "소환수 능력", "공격대 징표", "공격대 위치 표시기", "공격대 징표", "이 조각 항상 표시",
-      "주문", "장난감", "장난감", "UI 메뉴", "알려진 최고 레벨 사용", "지역 기술",
+    or C == "itIT" and { -- 25/36 (69%)
+      z, "Usa anche gli oggetti con lo stesso nome", z, z, z, z, z, z, z, z,
+      "Equipaggiato/a", z, "Cavalcatura Volanti", "Cavalcature a terra", "Pannello di Interfaccia", "Oggetto", "Oggetti", "La macro", "Le macro", "Varie",
+      "Cavalcatura", "Cavalcature", "Nuovo Macro", "Mostra solo quando è equipaggiato", z, "Abilità di animali domestici", "Segnalini Raid", "Segnalini mondiali di raid", "Segnalini raid", "Mostra sempre questo segnaposto quando è disponibile",
+      "Incanto", "Gioccatolo", "Gioccatoli", "Pannelli dell'interfaccia utente", "Usare il grado più alto conosciuto.", "Abilità di Zona.",
+    }
+    or C == "koKR" and { -- 36/36 (100%)
+      "능력", "같은 이름의 아이템 사용", "애완동물 대전", "전투 애완동물", "달력", "사용자 정의 매크로", "용조련술 탈것", "장비 구성", "장비 칸", "장비 구성",
+      "착용", "추가 행동 버튼", "비행 탈것", "지상 탈것", "인터페이스 메뉴", "아이템", "아이템", "매크로", "매크로", "기타",
+      "탈것", "탈것", "새 매크로", "착용 시에만 표시", "소환수 능력", "소환수 능력", "공격대 징표", "공격대 바닥 징표", "공격대 징표", "사용 불가능할 때 점선으로 표시",
+      "주문", "장난감", "장난감", "UI 메뉴", "가장 높은 등급 기술 사용", "지역 기술",
     }
     or C == "ruRU" and { -- 36/36 (100%)
       "Способности", "Использовать предметы с таким же именем", "Боевой питомец", "Боевые питомцы", "Календарь", "Пользовательские макросы", "Средство передвижения для полётов на драконе", "Комплект экипировки", "Ячейка экипировки", "Комплекты экипировки",
@@ -40,8 +46,8 @@ V =
       "Средство передвижения", "Средства передвижения", "Новый Макрос", "Показывать только если надет", "Способности питомца", "Способности питомцев", "Рейдовая метка", "Метка рейда", "Рейдовые метки", "Всегда показывать этот фрагмент",
       "Заклинание", "Игрушки", "Игрушки", "Панели пользовательского интерфейса", "Использовать наивысший изученный ранг", "Способности местности",
     }
-    or C == "zhCN" and { -- 35/36 (97%)
-      "技能", "同样使用具有相同名字的物品", "战斗宠物", "战斗宠物", "日历", "自定义宏", "驭龙术坐骑", "套装方案", z, "套装方案",
+    or C == "zhCN" and { -- 36/36 (100%)
+      "技能", "同样使用具有相同名字的物品", "战斗宠物", "战斗宠物", "日历", "自定义宏", "驭龙术坐骑", "套装方案", "装备栏位", "套装方案",
       "装备", "额外动作按钮", "飞行坐骑", "地面坐骑", "界面面板", "物品", "物品", "宏", "宏", "杂项",
       "坐骑", "坐骑", "新建宏", "仅在已装备时显示", "宠物技能", "宠物技能", "团队标记", "团队世界标记", "团队标记", "不可用时显示占位符",
       "法术", "玩具", "玩具", "UI面板", "使用已知的最高等级技能", "区域技能",

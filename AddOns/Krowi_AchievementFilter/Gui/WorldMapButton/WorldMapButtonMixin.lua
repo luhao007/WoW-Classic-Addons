@@ -1,7 +1,5 @@
 local _, addon = ...;
-local C_AddOns = {}
-C_AddOns.IsAddOnLoaded = IsAddOnLoaded
-C_AddOns.LoadAddOn = LoadAddOn
+
 KrowiAF_WorldMapButtonMixin = {};
 
 function KrowiAF_WorldMapButtonMixin:OnLoad()
@@ -24,13 +22,13 @@ function KrowiAF_WorldMapButtonMixin:OnClick()
     local achievements = self.Achievements;
     if achievements and #achievements > 0 then
         HideUIPanel(WorldMapFrame);
-        for i = 1, #addon.Data.SelectedZoneCategories do
-            addon.Data.SelectedZoneCategories[i].Achievements = addon.Options.db.profile.AdjustableCategories.SelectedZone[i] and achievements or nil;
-            addon.Data.SelectedZoneCategories[i].Name = addon.L["Selected Zone"] .. " (" .. self.Text .. ")";
+        for i = 1, #addon.SpecialCategories.SelectedZone do
+            addon.SpecialCategories.SelectedZone[i].Achievements = addon.Options.db.profile.AdjustableCategories.SelectedZone[i] and achievements or nil;
+            addon.SpecialCategories.SelectedZone[i].Name = addon.L["Selected Zone"] .. " (" .. self.Text .. ")";
         end
-        for i = 1, #addon.Data.SelectedZoneCategories do
+        for i = 1, #addon.SpecialCategories.SelectedZone do
             if addon.Options.db.profile.AdjustableCategories.SelectedZone[i] then
-                KrowiAF_SelectCategory(addon.Data.SelectedZoneCategories[i]);
+                KrowiAF_SelectCategory(addon.SpecialCategories.SelectedZone[i]);
                 return;
             end
         end
@@ -62,10 +60,6 @@ function KrowiAF_WorldMapButtonMixin:Refresh()
         return;
     end
     self:Show();
-
-    if not C_AddOns.IsAddOnLoaded("Blizzard_AchievementUI") then
-        C_AddOns.LoadAddOn("Blizzard_AchievementUI");
-    end
 
     local mapID = WorldMapFrame:GetMapID();
     self.Achievements = addon.GetAchievementsInZone(mapID, true);

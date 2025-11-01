@@ -107,12 +107,28 @@
 						</Scripts>
 					</CheckButton>
 
+					<CheckButton name="$parentPurgeableBuffsCheckButton" text="VUHDO_I18N_PURGEABLE_BUFFS" inherits="VuhDoCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="12" y="-31" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								VUHDO_lnfSetModel(self, "VUHDO_CONFIG.DETECT_DEBUFFS_IGNORE_PURGEABLE_BUFFS");
+								VUHDO_lnfSetTooltip(self, VUHDO_I18N_TT.K608);
+							</OnLoad>
+						</Scripts>
+					</CheckButton>
+
 				</Frames>
 			</Frame>
 
 			<Frame name="$parentIconsPanel" inherits="VuhDoPanelTemplate">
 				<Size>
-					<AbsDimension x="236" y="280" />
+					<AbsDimension x="236" y="365" />
 				</Size>
 				<Anchors>
 					<Anchor point="TOPLEFT">
@@ -151,7 +167,7 @@
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
-									<AbsDimension x="123" y="-31" />
+									<AbsDimension x="13" y="-69" />
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -160,22 +176,6 @@
 								VUHDO_lnfSetModel(self, "VUHDO_PANEL_SETUP.BAR_COLORS.useDebuffIconBossOnly");
 								VUHDO_lnfSetTooltip(self, "Check to only show debuffs from raid bosses.");
 								VUHDO_lnfAddConstraint(self, VUHDO_LF_CONSTRAINT_DISABLE, "VUHDO_PANEL_SETUP.BAR_COLORS.useDebuffIcon", false);
-							</OnLoad>
-						</Scripts>
-					</CheckButton>
-
-					<CheckButton name="$parentShowOnlyForFriendlyCheckButton" text="VUHDO_I18N_DEBUFF_SHOW_ONLY_FOR_FRIENDLY_TEXT" inherits="VuhDoCheckButtonTemplate">
-						<Anchors>
-							<Anchor point="TOPLEFT">
-								<Offset>
-									<AbsDimension x="13" y="-69" />
-								</Offset>
-							</Anchor>
-						</Anchors>
-						<Scripts>
-							<OnLoad>
-								VUHDO_lnfSetModel(self, "VUHDO_CONFIG.CUSTOM_DEBUFF.isShowOnlyForFriendly");
-								VUHDO_lnfSetTooltip(self, VUHDO_I18N_DEBUFF_SHOW_ONLY_FOR_FRIENDLY_TOOLTIP);
 							</OnLoad>
 						</Scripts>
 					</CheckButton>
@@ -192,6 +192,96 @@
 							<OnLoad>
 								VUHDO_lnfSetModel(self, "VUHDO_CONFIG.DETECT_DEBUFFS_REMOVABLE_ONLY_ICONS");
 								VUHDO_lnfSetTooltip(self, nil);
+								VUHDO_lnfAddConstraint(self, VUHDO_LF_CONSTRAINT_DISABLE, "VUHDO_PANEL_SETUP.BAR_COLORS.useDebuffIcon", false);
+							</OnLoad>
+						</Scripts>
+					</CheckButton>
+
+					<CheckButton name="$parentShowFriendlyCheckButton" text="VUHDO_I18N_SHOW_ON_FRIENDLY" inherits="VuhDoCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="13" y="-107" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								VUHDO_lnfSetModel(self, "VUHDO_CONFIG.CUSTOM_DEBUFF.isShowFriendly");
+								VUHDO_lnfSetTooltip(self, VUHDO_I18N_TT.K600);
+								VUHDO_lnfAddConstraint(self, VUHDO_LF_CONSTRAINT_DISABLE, "VUHDO_PANEL_SETUP.BAR_COLORS.useDebuffIcon", false);
+							</OnLoad>
+						</Scripts>
+					</CheckButton>
+
+					<CheckButton name="$parentShowHostileCheckButton" text="VUHDO_I18N_SHOW_ON_HOSTILE" inherits="VuhDoCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="123" y="-107" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								VUHDO_lnfSetModel(self, "VUHDO_CONFIG.CUSTOM_DEBUFF.isShowHostile");
+								VUHDO_lnfSetTooltip(self, VUHDO_I18N_TT.K601);
+								VUHDO_lnfAddConstraint(self, VUHDO_LF_CONSTRAINT_DISABLE, "VUHDO_PANEL_SETUP.BAR_COLORS.useDebuffIcon", false);
+							</OnLoad>
+						</Scripts>
+					</CheckButton>
+
+					<Frame name="$parentHostileSpellSourceLabel" inherits="VuhDoLabelFrameTemplate">
+						<Size>
+							<AbsDimension x="149" y="18" />
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="13" y="-142" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer>
+								<FontString name="$parentLabel" text="VUHDO_I18N_HOSTILE_SPELL_SOURCE" justifyH="LEFT" inherits="VuDoDefaultFontTemplate">
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+
+					<CheckButton name="$parentHostileMineCheckButton" text="VUHDO_I18N_MINE" inherits="VuhDoCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="13" y="-160" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								VUHDO_lnfSetModel(self, "VUHDO_CONFIG.CUSTOM_DEBUFF.isHostileMine");
+								VUHDO_lnfSetTooltip(self, VUHDO_I18N_TT.K602);
+								VUHDO_lnfAddConstraint(self, VUHDO_LF_CONSTRAINT_DISABLE, "VUHDO_PANEL_SETUP.BAR_COLORS.useDebuffIcon", false);
+								VUHDO_lnfAddConstraint(self, VUHDO_LF_CONSTRAINT_DISABLE, "VUHDO_CONFIG.CUSTOM_DEBUFF.isShowHostile", false);
+							</OnLoad>
+						</Scripts>
+					</CheckButton>
+
+					<CheckButton name="$parentHostileOthersCheckButton" text="VUHDO_I18N_OTHERS" inherits="VuhDoCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="123" y="-160" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								VUHDO_lnfSetModel(self, "VUHDO_CONFIG.CUSTOM_DEBUFF.isHostileOthers");
+								VUHDO_lnfSetTooltip(self, VUHDO_I18N_TT.K603);
+								VUHDO_lnfAddConstraint(self, VUHDO_LF_CONSTRAINT_DISABLE, "VUHDO_PANEL_SETUP.BAR_COLORS.useDebuffIcon", false);
+								VUHDO_lnfAddConstraint(self, VUHDO_LF_CONSTRAINT_DISABLE, "VUHDO_CONFIG.CUSTOM_DEBUFF.isShowHostile", false);
 							</OnLoad>
 						</Scripts>
 					</CheckButton>
@@ -203,7 +293,7 @@
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
-									<AbsDimension x="13" y="-105" />
+									<AbsDimension x="13" y="-195" />
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -222,7 +312,7 @@
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
-									<AbsDimension x="33" y="-140" />
+									<AbsDimension x="33" y="-227" />
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -242,7 +332,7 @@
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
-									<AbsDimension x="13" y="-228" />
+									<AbsDimension x="13" y="-315" />
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -258,7 +348,7 @@
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
-									<AbsDimension x="40" y="-246" />
+									<AbsDimension x="40" y="-330" />
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -297,7 +387,7 @@
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
-									<AbsDimension x="13" y="-155" />
+									<AbsDimension x="13" y="-242" />
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -316,7 +406,7 @@
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
-									<AbsDimension x="125" y="-155" />
+									<AbsDimension x="125" y="-242" />
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -335,7 +425,7 @@
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
-									<AbsDimension x="13" y="-193" />
+									<AbsDimension x="13" y="-280" />
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -354,7 +444,7 @@
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
-									<AbsDimension x="125" y="-193" />
+									<AbsDimension x="125" y="-280" />
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -372,7 +462,7 @@
 
 			<Frame name="$parentSoundPanel" inherits="VuhDoPanelTemplate">
 				<Size>
-					<AbsDimension x="180" y="70" />
+					<AbsDimension x="180" y="110" />
 				</Size>
 				<Anchors>
 					<Anchor point="TOPLEFT">
@@ -395,6 +485,7 @@
 							<OnLoad>
 								VUHDO_setComboModel(self, "VUHDO_CONFIG.SOUND_DEBUFF", VUHDO_SOUNDS);
 								VUHDO_lnfSetTooltip(self, VUHDO_I18N_TT.K279);
+								self:SetAttribute("custom_function", VUHDO_notifySoundSelect);
 							</OnLoad>
 						</Scripts>
 					</Button>
@@ -407,6 +498,22 @@
 							</Layer>
 						</Layers>
 					</Frame>
+
+					<CheckButton name="$parentSoundRemovableCheckButton" text="VUHDO_I18N_REMOVABLE_ONLY" inherits="VuhDoCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="13" y="-69" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								VUHDO_lnfSetModel(self, "VUHDO_CONFIG.SOUND_DEBUFF_REMOVABLE_ONLY");
+								VUHDO_lnfSetTooltip(self, VUHDO_I18N_TT.K597);
+							</OnLoad>
+						</Scripts>
+					</CheckButton>
 
 				</Frames>
 			</Frame>

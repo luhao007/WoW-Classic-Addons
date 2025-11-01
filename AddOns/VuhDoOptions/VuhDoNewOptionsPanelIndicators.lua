@@ -432,7 +432,7 @@ end
 --
 local tName;
 local tSlider;
-local function VUHDO_createSliderForComponent(anIndex, tElement, aParent)
+local function VUHDO_createSliderForComponent(anIndex, anElement, aParent)
 	tName = "VuhDoIndicatorOptionsSlider" .. aParent:GetName() .. anIndex;
 	tSlider = _G[tName];
 	if (tSlider == nil) then
@@ -442,10 +442,10 @@ local function VUHDO_createSliderForComponent(anIndex, tElement, aParent)
 	tSlider:SetWidth(150);
 	tSlider:SetHeight(32);
 
-	VUHDO_lnfSliderOnLoad(tSlider, tElement["name"], tElement["min"], tElement["max"], tElement["unit"], tElement["step"]);
-	VUHDO_lnfSetModel(tSlider, tElement["model"]);
+	VUHDO_lnfSliderOnLoad(tSlider, anElement["name"], anElement["min"], anElement["max"], anElement["unit"], anElement["step"]);
+	VUHDO_lnfSetModel(tSlider, anElement["model"]);
 	VUHDO_lnfSliderInitFromModel(tSlider);
-	VUHDO_lnfSetTooltip(tSlider, tElement["tooltip"]);
+	VUHDO_lnfSetTooltip(tSlider, anElement["tooltip"]);
 
 	return tSlider;
 end
@@ -455,17 +455,17 @@ end
 --
 local tName;
 local tCheckButton;
-local function VUHDO_createCheckBoxForComponent(anIndex, tElement, aParent)
+local function VUHDO_createCheckBoxForComponent(anIndex, anElement, aParent)
 	tName = "VuhDoIndicatorOptions" .. aParent:GetName() .. anIndex .. "CheckButton";
 	tCheckButton = _G[tName];
 	if (tCheckButton == nil) then
 		tCheckButton = CreateFrame("CheckButton", tName, aParent, "VuhDoCheckButtonTemplate");
 	end
-	tCheckButton:SetText(tElement["name"]);
+	tCheckButton:SetText(anElement["name"]);
 	VUHDO_lnfCheckButtonOnLoad(tCheckButton);
-	VUHDO_lnfSetModel(tCheckButton, tElement["model"]);
+	VUHDO_lnfSetModel(tCheckButton, anElement["model"]);
 	VUHDO_lnfCheckButtonInitFromModel(tCheckButton);
-	VUHDO_lnfSetTooltip(tCheckButton, tElement["tooltip"]);
+	VUHDO_lnfSetTooltip(tCheckButton, anElement["tooltip"]);
 
 	return tCheckButton;
 end
@@ -475,7 +475,7 @@ end
 --
 local tName;
 local tPanel, tCombo, tTexture;
-local function VUHDO_createComboBoxForComponent(anIndex, tElement, aParent)
+local function VUHDO_createComboBoxForComponent(anIndex, anElement, aParent)
 	tName = "VuhDoIndicatorOptionsComboPanel" .. aParent:GetName() .. anIndex;
 	tPanel = _G[tName];
 	if (tPanel == nil) then
@@ -485,15 +485,15 @@ local function VUHDO_createComboBoxForComponent(anIndex, tElement, aParent)
 	tPanel:SetWidth(150);
 
 	tCombo = _G[tName .. "Combo"];
-	VUHDO_setComboModel(tCombo, tElement["model"], tElement["enumerator"]);
+	VUHDO_setComboModel(tCombo, anElement["model"], anElement["enumerator"]);
 	VUHDO_lnfComboBoxInitFromModel(tCombo);
-	VUHDO_lnfSetTooltip(tCombo, tElement["tooltip"]);
+	VUHDO_lnfSetTooltip(tCombo, anElement["tooltip"]);
 
 	tTexture = _G[tName .. "Texture"];
-	if (strfind(tElement["model"], "TEXTURE")) then
-		VUHDO_lnfSetModel(tTexture, tElement["model"]);
+	if (strfind(anElement["model"], "TEXTURE")) then
+		VUHDO_lnfSetModel(tTexture, anElement["model"]);
 		VUHDO_lnfTextureSwatchInitFromModel(tTexture);
-		_G[tTexture:GetName() .. "TitleString"]:SetText(tElement["name"]);
+		_G[tTexture:GetName() .. "TitleString"]:SetText(anElement["name"]);
 		tTexture:Show();
 		tPanel:SetHeight(70);
 	else
@@ -501,7 +501,7 @@ local function VUHDO_createComboBoxForComponent(anIndex, tElement, aParent)
 		tPanel:SetHeight(38);
 	end
 
-	_G[tName .. "TitleLabelLabel"]:SetText(tElement["name"]);
+	_G[tName .. "TitleLabelLabel"]:SetText(anElement["name"]);
 
 	return tPanel;
 end
@@ -511,14 +511,14 @@ end
 --
 local tName;
 local tButton;
-local function VUHDO_createTextOptionsButtonForComponent(anIndex, tElement, aParent)
+local function VUHDO_createTextOptionsButtonForComponent(anIndex, anElement, aParent)
 	tName = "VuhDoIndicatorOptions" .. aParent:GetName() .. anIndex .. "TextOptionsButton";
 	tButton = _G[tName];
 	if (tButton == nil) then
 		tButton = CreateFrame("CheckButton", tName, aParent, "VuhDoFontButtonTemplate");
 	end
-	tButton:SetText(tElement["name"]);
-	VUHDO_lnfSetModel(tButton, tElement["model"]);
+	tButton:SetText(anElement["name"]);
+	VUHDO_lnfSetModel(tButton, anElement["model"]);
 
 	return tButton;
 end
@@ -528,7 +528,7 @@ end
 --
 local tName;
 local tPanel, tCheckButton;
-local function VUHDO_createAnchorRadioForComponent(anIndex, tElement, aParent)
+local function VUHDO_createAnchorRadioForComponent(anIndex, anElement, aParent)
 
 	tName = "VuhDoIndicatorOptions" .. aParent:GetName() .. anIndex .. "AnchorTexture";
 	tPanel = _G[tName];
@@ -541,7 +541,7 @@ local function VUHDO_createAnchorRadioForComponent(anIndex, tElement, aParent)
 		tCheckButton = _G[tName .. tPoint .. "RadioButton"];
 
 		if tCheckButton then
-			VUHDO_lnfSetRadioModel(tCheckButton, tElement["model"], string.upper(tPoint));
+			VUHDO_lnfSetRadioModel(tCheckButton, anElement["model"], string.upper(tPoint));
 		end
 	end
 
@@ -552,7 +552,7 @@ end
 
 
 --
-local tIndex, tElement, tComponent, tYCompOfs;
+local tComponent, tYCompOfs;
 local function VUHDO_buildCustomComponents(aPanel, someCustomElements)
 	tYCompOfs = -10;
 	for tIndex, tElement in ipairs(someCustomElements) do
@@ -582,11 +582,9 @@ end
 local sAllMorePanels = { };
 
 --
-local tIndex, tIndicator;
-local tBouqetSlotName, tBouquetSlot, tXOfs, tYOfs, tOffset, tMorePanel, tHeight;
+local tBouqetSlotName, tBouquetSlot, tXOfs, tYIndex, tMorePanel, tHeight;
 function VUHDO_newOptionsIndicatorsBuildScrollChild(aScrollChild)
 	tXOfs = 10;
-	tYOfs = 0;
 	tYIndex = 0;
 	for tIndex, tIndicator in ipairs(sIndicatorMetaModel) do
 		tBouqetSlotName = "VuhDoBouqetSlotItem" .. tIndex;

@@ -1,9 +1,17 @@
-## Interface: 30405
-## Version: 2.8.12
+## Interface: 50502
+## Version: 2.11.9
 
-## Title: Pawn |cff99ddff谷|r|cff88ccee风|r|cff77bbdd修|r|cff66aacc复|r|cff5599bb版|r
+## Title: Pawn
 ## Notes: Pawn helps you compare items and find upgrades.
-## Title-zhCN: |cFFFFE00A<|r|cFFC79C6E战斗|r|cFFFFE00A>|r |cFFFFFFFF装备评分|r |cFFFFE00APawn|r
+## Title-zhCN: |cFFFFE00A<|r|cFFC79C6E战斗|r|cFFFFE00A>|r|cFFFFFFFF装备评分|r |cFFFFE00APawn|r
+
+## IconTexture: Interface\AddOns\Pawn\Textures\PawnIcon.tga
+
+## Category-zhCN: |cFFFFE00A<|r|cFFC79C6E战斗|r|cFFFFE00A>|r
+
+## AddonCompartmentFunc: PawnUIShow
+
+## OptionalDependencies: Ace3, ArkInventoryRules, AtlasLoot, EQCompare, EquipCompare, LinkWrangler, MobInfo2, MultiTips, Outfitter
 
 ## SavedVariables: PawnCommon
 ## SavedVariablesPerCharacter: PawnOptions, PawnMrRobotScaleProviderOptions, PawnClassicScaleProviderOptions
@@ -29,6 +37,8 @@ Gems.lua
 GemsClassic.lua
 GemsBurningCrusade.lua
 GemsWrath.lua
+GemsCataclysm.lua
+GemsMists.lua
 ScaleTemplates.lua
 ItemIDs.lua
 Pawn.lua

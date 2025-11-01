@@ -1,7 +1,7 @@
-local _, T = ...
-if select(4,GetBuildInfo()) < 8e4 then return end
+local COMPAT, _, T = select(4,GetBuildInfo()), ...
+if COMPAT < 8e4 then return end
 
-local EV, L = T.Evie, T.L
+local EV, XU, L = T.Evie, T.exUI, T.L
 local AB = assert(T.ActionBook:compatible(2,23), "A compatible version of ActionBook is required.")
 local CHARNAME = UnitName("player") .. "@" .. GetRealmName()
 
@@ -17,7 +17,7 @@ do -- /opiespecset
 	function SlashCmdList.OPIE_SPECSET(msg)
 		local sid, sname = msg:match("^(%d+) {(.*)}$")
 		sid = tonumber(sid)
-		if sid and GetSpecialization() ~= sid and not InCombatLockdown() then
+		if sid and C_SpecializationInfo.GetSpecialization() ~= sid and not InCombatLockdown() then
 			C_SpecializationInfo.SetSpecialization(sid)
 			if sname ~= "" then
 				esSpec, esSet, esDeadline = sid, sname, GetTime()+9
@@ -26,9 +26,10 @@ do -- /opiespecset
 	end
 end
 do -- AB/specset
+	local _, _, CLASS_ID = UnitClass("player")
 	local slot, tspec, tset = {}, {}, {}
 	local function SetSpecializationTooltip(self, id, set)
-		local _, name, desc = GetSpecializationInfo(id)
+		local _, name, desc = C_SpecializationInfo.GetSpecializationInfo(id)
 		if name then
 			self:SetText(name, 1,1,1)
 			self:AddLine(desc, nil, nil, nil, 1)
@@ -60,22 +61,22 @@ do -- AB/specset
 		SetSpecializationTooltip(self, spec, set)
 	end
 	local function hintSpecSet(tok)
-		local cs, spec, set = GetSpecialization(), tspec[tok], tset[tok]
+		local cs, spec, set = C_SpecializationInfo.GetSpecialization(), tspec[tok], tset[tok]
 		if spec == nil then
 			spec, set = 0+tok:sub(1,1), tok:sub(3)
 			tspec[tok], tset[tok] = spec, set
 		end
-		local _, name, _, ico = GetSpecializationInfo(spec)
+		local _, name, _, ico = C_SpecializationInfo.GetSpecializationInfo(spec)
 		local state = (cs == spec and 1 or 0)
 		return (HasFullControl() and not InCombatLockdown()), state, ico, name, 0, 0, 0, SetSpecSetTooltip, tok
 	end
 	local function createSpecSet(idx, sets)
-		local _, specName = GetSpecializationInfo(idx)
+		local _, specName = C_SpecializationInfo.GetSpecializationInfo(idx)
 		local setName = sets and sets[CHARNAME]
 		setName = setName ~= false and (setName or specName) or ""
 		local tk = idx .. "#" .. setName
 		local ret = slot[tk]
-		if specName and UnitLevel("player") >= 10 and GetNumSpecializations() >= idx and not ret then
+		if specName and UnitLevel("player") >= 10 and C_SpecializationInfo.GetNumSpecializationsForClassID(CLASS_ID) >= idx and not ret then
 			ret = AB:CreateActionSlot(hintSpecSet, tk, "retext", ("/cancelform [nospec:%d,form:travel,anyflyable,noflying,nocombat]\n/opiespecset %d {%s}\n%s [spec:%d] %s"):format(idx, idx, setName, SLASH_EQUIP_SET1, setName ~= "" and idx or 5, setName))
 			slot[tk] = ret
 		end
@@ -94,13 +95,13 @@ do -- AB/specset
 end
 do -- EditorUI
 	local bg = CreateFrame("Frame")
-	local drop = CreateFrame("Frame", "OPie_SSDrop", bg, "UIDropDownMenuTemplate")
+	local drop = XU:Create("DropDown", nil, bg)
 	local lab = drop:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
 	local myPlayerMap, mySpecID, mySpecName
 	lab:SetPoint("LEFT", bg, "TOPLEFT", 0, -18)
 	lab:SetText(L"Equip set:")
 	drop:SetPoint("TOPRIGHT", -3, -2)
-	UIDropDownMenu_SetWidth(drop, 250)
+	drop:SetWidth(300)
 	
 	local function getCurrentValue()
 		local value = nil
@@ -115,7 +116,7 @@ do -- EditorUI
 	function drop:text()
 		local name = getCurrentValue()
 		local _, ico = C_EquipmentSet.GetEquipmentSetInfo(name and C_EquipmentSet.GetEquipmentSetID(name) or -1)
-		UIDropDownMenu_SetText(drop, name == false and NONE or ((ico and "|T" .. ico .. ":0|t " or "|cffb0b0b0") .. name))
+		drop:SetText(name == false and NONE or ((ico and "|T" .. ico .. ":0|t " or "|cffb0b0b0") .. name))
 	end
 	function drop:set(name)
 		if name == mySpecName then

@@ -10,6 +10,10 @@ if not C_ArtifactUI then
 	return
 end
 
+-- Globals
+local C_ArtifactUI_GetAppearanceInfoByID
+	= C_ArtifactUI.GetAppearanceInfoByID
+
 -- WoW API Cache
 local GetItemInfo = app.WOWAPI.GetItemInfo;
 
@@ -28,6 +32,25 @@ app.GetArtifactModItemID = GetArtifactModItemID
 
 local KEY, CACHE, SETTING = "artifactID", "Artifacts", "Transmog"
 local CLASSNAME = "Artifact"
+local ArtifactInfoStatic, ArtifactInfoCached
+-- This is for Artifact data which doesn't change while playing
+ArtifactInfoStatic = setmetatable({}, { __index = function(t,key)
+	local info = { C_ArtifactUI_GetAppearanceInfoByID(key) }
+	if info[1] then
+		t[key] = info
+		ArtifactInfoCached[key] = info
+	end
+	return info
+end})
+-- This is for Artifact data which can change while playing (collection status)
+ArtifactInfoCached = setmetatable({}, { __index = function(t,key)
+	local info = { C_ArtifactUI_GetAppearanceInfoByID(key) }
+	if info[1] then
+		t[key] = info
+		ArtifactInfoStatic[key] = info
+	end
+	return info
+end})
 -- Artifact Class
 app.CreateArtifact = app.CreateClass(CLASSNAME, KEY, {
 	artifactinfo = function(t)
@@ -36,9 +59,7 @@ app.CreateArtifact = app.CreateClass(CLASSNAME, KEY, {
 			uiCameraID, altHandUICameraID, swatchR, swatchG, swatchB,
 			modelAlpha, modelDesaturation, suppressGlobalAnim = C_ArtifactUI.GetAppearanceInfoByID(t[KEY]);
 		]]--
-		local info = { C_ArtifactUI.GetAppearanceInfoByID(t[KEY]) };
-		t.artifactinfo = info;
-		return info;
+		return ArtifactInfoStatic[t[KEY]]
 	end,
 	-- TODO: Maybe this should move to an Expansion Thing instead of having a FilterID
 	f = function(t) return 11; end,
@@ -48,11 +69,8 @@ app.CreateArtifact = app.CreateClass(CLASSNAME, KEY, {
 		return app.TypicalCharacterCollected(CACHE, t[KEY], SETTING)
 	end,
 	name = function(t)
-		local id = t.parent;
-		id = id and id.headerID;
 		-- Artifact listing in the Main item sets category just show 'Variant #' but elsewhere show the Item's name
-		-- TODO: these will likely change to dynamic headers at some point, and need to check against HEADERS constants
-		if id and -5205 <= id and id <= -5200 then
+		if t.parent and t.parent.headerID then
 			return t.variantText;
 		end
 		return t.appearanceText;
@@ -145,12 +163,13 @@ app.CreateArtifact = app.CreateClass(CLASSNAME, KEY, {
 });
 app.AddEventHandler("OnRefreshCollections", function()
 	local object
+	wipe(ArtifactInfoCached)
 	local saved, none = {}, {}
 	for id,_ in pairs(app.GetRawFieldContainer(KEY)) do
 		object = app.SearchForObject(KEY, id, "field")
 		-- This artifact is listed for the current class
 		if not GetRelativeField(object, "nmc", true) then
-			if object.artifactinfo[5] then
+			if ArtifactInfoCached[id][5] then
 				saved[id] = true
 			else
 				none[id] = true

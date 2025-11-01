@@ -15,21 +15,21 @@ L.pigname =addonName.."_"
 L.extLsit ={L.pigname.."Tardis",L.pigname.."GDKP",L.pigname.."Farm"}
 L["PIGaddonList"] = {
 	[addonName]=L["ADDON_NAME"],
-	[L.extLsit[1]]="时空之门",
+	[L.extLsit[1]]="汇合石-时空之门",
 	[L.extLsit[2]]="金团助手",
 	[L.extLsit[3]]="带本助手",
 }
 if Locale == "zhTW" then
-	L["PIGaddonList"][L.extLsit[1]]="時空之門"
+	L["PIGaddonList"][L.extLsit[1]]="匯合石-時空之門"
 	L["PIGaddonList"][L.extLsit[2]]="金團助手"
 	L["PIGaddonList"][L.extLsit[3]]="帶本助手"
 elseif Locale == "enUS" then
-	L["PIGaddonList"][L.extLsit[1]]="Tardis"
+	L["PIGaddonList"][L.extLsit[1]]="LFG-Tardis"
 	L["PIGaddonList"][L.extLsit[2]]="GDKP"
 	L["PIGaddonList"][L.extLsit[3]]="Farm"
 end
-local ADDONS_DOWN_1 = "网易DD(dd.163.com)|cff00FFFF插件库|r"..SEARCH
-local ADDONS_DOWN_2 = "网易DD(dd.163.com)|cffFF00FF配置分享|r"..SEARCH
+local ADDONS_DOWN_1 = "网易DD(dd.163.com)/新手盒子|cff00FFFF插件库|r"..SEARCH
+local ADDONS_DOWN_2 = "网易DD(dd.163.com)/新手盒子|cffFF00FF配置分享|r"..SEARCH
 L["PIG_ADDON_LIST"]={
 	[0]={
 		["open"]=true,
@@ -60,8 +60,8 @@ L["PIG_ADDON_LIST"]={
 		["name"]=L.extLsit[3],
 		["namecn"]=L["PIGaddonList"][L.extLsit[3]],
 		["tooltip"]="伐木/带本日志",
-		["down_1"]=ADDONS_DOWN_2,
-		["down_1_name"]="geligasi",
+		["down_1"]=ADDONS_DOWN_1,
+		--["down_1_name"]="geligasi",
 		["down_2"]="https://afdian.com/a/wowpig",
 		--["down_2"]="https://www.curseforge.com/wow/addons/pig-farm",
 	},
@@ -114,7 +114,7 @@ local function add_extLsitFrame(ly,self,ExtID,topV)
 		addnameF.UpdateF.T2E:SetScript("OnEditFocusLost", function(self) self:SetTextpig() end);
 	end
 	if data.down_2 then
-		addnameF.UpdateF.T3 = PIGFontString(addnameF.UpdateF,{"TOPLEFT",addnameF.UpdateF,"BOTTOMLEFT",0,-addnameF.UpdateF.jianjuV},"非网易DD到此下载: ","OUTLINE")
+		addnameF.UpdateF.T3 = PIGFontString(addnameF.UpdateF,{"TOPLEFT",addnameF.UpdateF,"BOTTOMLEFT",0,-addnameF.UpdateF.jianjuV},"非网易DD/新手盒子到此下载: ","OUTLINE")
 		addnameF.UpdateF.T3:SetTextColor(1, 1, 1, 1);
 		addnameF.UpdateF.T3E = CreateFrame("EditBox", nil, addnameF.UpdateF, "InputBoxInstructionsTemplate");
 		addnameF.UpdateF.T3E:SetSize(400,20);

@@ -5,14 +5,15 @@
 -- ------------------------------------------------------------------------------ --
 
 local TSM = select(2, ...) ---@type TSM
-local Expirations = TSM.TaskList:NewPackage("Expirations")
-local L = TSM.Include("Locale").GetTable()
-local Delay = TSM.Include("Util.Delay")
-local Table = TSM.Include("Util.Table")
-local ObjectPool = TSM.Include("Util.ObjectPool")
-local AuctionTracking = TSM.Include("Service.AuctionTracking")
-local MailTracking = TSM.Include("Service.MailTracking")
+local Expirations = TSM.TaskList:NewPackage("Expirations") ---@type AddonPackage
+local L = TSM.Locale.GetTable()
+local DelayTimer = TSM.LibTSMWoW:IncludeClassType("DelayTimer")
+local Table = TSM.LibTSMUtil:Include("Lua.Table")
+local ObjectPool = TSM.LibTSMUtil:IncludeClassType("ObjectPool")
+local Auction = TSM.LibTSMService:Include("Auction")
+local Mail = TSM.LibTSMService:Include("Mail")
 local private = {
+	settings = nil,
 	mailTaskPool = ObjectPool.New("EXPIRING_MAIL_TASK", TSM.TaskList.ExpiringMailTask, 0),
 	auctionTaskPool = ObjectPool.New("EXPIRED_AUCTION_TASK", TSM.TaskList.ExpiredAuctionTask, 0),
 	activeTasks = {},
@@ -30,11 +31,17 @@ local DAYS_LEFT_LIMIT = 1
 -- Module Functions
 -- ============================================================================
 
+function Expirations.OnInitialize(settingsDB)
+	private.settings = settingsDB:NewView()
+		:AddKey("factionrealm", "internalData", "expiringMail")
+		:AddKey("factionrealm", "internalData", "expiringAuction")
+end
+
 function Expirations.OnEnable()
-	private.updateDelayedTimer = Delay.CreateTimer("EXPIRATIONS_UPDATE_DELAYED", private.PopulateTasks)
-	private.updateTimer = Delay.CreateTimer("EXPIRATIONS_UPDATE", private.PopulateTasks)
-	AuctionTracking.RegisterExpiresCallback(Expirations.Update)
-	MailTracking.RegisterExpiresCallback(private.UpdateDelayed)
+	private.updateDelayedTimer = DelayTimer.New("EXPIRATIONS_UPDATE_DELAYED", private.PopulateTasks)
+	private.updateTimer = DelayTimer.New("EXPIRATIONS_UPDATE", private.PopulateTasks)
+	Auction.RegisterExpiresCallback(Expirations.Update)
+	Mail.RegisterExpiresCallback(private.UpdateDelayed)
 	TSM.TaskList.RegisterTaskPool(private.ActiveTaskIterator)
 	private.PopulateTasks()
 end
@@ -70,7 +77,7 @@ function private.PopulateTasks()
 	end
 
 	-- expiring mails
-	for k, v in pairs(TSM.db.factionrealm.internalData.expiringMail) do
+	for k, v in pairs(private.settings.expiringMail) do
 		local task = private.expiringMailTasks["ExpiringMails"]
 		if not task then
 			task = private.mailTaskPool:Get()
@@ -80,7 +87,7 @@ function private.PopulateTasks()
 
 		local expiration = (v - time()) / 24 / 60 / 60
 		if expiration <= DAYS_LEFT_LIMIT * -1 then
-			TSM.db.factionrealm.internalData.expiringMail[PLAYER_NAME] = nil
+			private.settings.expiringMail[PLAYER_NAME] = nil
 		else
 			if not task:HasCharacter(k) and expiration <= DAYS_LEFT_LIMIT then
 				task:AddCharacter(k, expiration)
@@ -105,7 +112,7 @@ function private.PopulateTasks()
 	end
 
 	-- expired auctions
-	for k, v in pairs(TSM.db.factionrealm.internalData.expiringAuction) do
+	for k, v in pairs(private.settings.expiringAuction) do
 		local task = private.expiredAuctionTasks["ExpiredAuctions"]
 		if not task then
 			task = private.auctionTaskPool:Get()

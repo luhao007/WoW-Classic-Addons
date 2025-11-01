@@ -140,6 +140,7 @@ function GDKPInfo.ADD_RaidInfo(RaidR)
 					0,--6补助金额
 					false,--7需要邮寄
 					false,--8已邮寄
+					false,--9已交易
 				};
 				table.insert(renyuanData[subgroup],renyuaninfo);
 			end

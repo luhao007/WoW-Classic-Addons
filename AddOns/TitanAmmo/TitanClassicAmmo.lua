@@ -60,7 +60,7 @@ local display = {
 	mismatch_text = "",
 	}
 
-local L = LibStub("AceLocale-3.0"):GetLocale("TitanClassic", true)
+local L = LibStub("AceLocale-3.0"):GetLocale("Titan", true)
 
 local debug_flow = false
 

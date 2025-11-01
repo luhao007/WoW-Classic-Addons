@@ -15,39 +15,64 @@ Green - 'header' - Titan or plugin
 Highlight - notes. tips. and details
 --]]
 Titan_Global.recent_changes = ""
-.. TitanUtils_GetGoldText("8.2.1 : 2025/02/03\n")
+.. TitanUtils_GetGoldText("8.4.0 : 2025/09/07\n")
 .. TitanUtils_GetGreenText("Titan : \n")
 .. TitanUtils_GetHighlightText(""
-.. "- Gray (disable) Hide if the bar is the only bar.\n"
+.. "-  Titan : \n"
+.. "-  - : /titan reset working again; no reload needed!\n"
+.. "-  - : Hopefully fix bar transparency values resetting on logout or reload.\n"
+.. "-  - : Moved most bar settings from 'Bars - All' to each bar - use profiles instead.\n"
+.. "-  --- Bar skin / color settings\n"
+.. "-  --- Hide Bar during combat\n"
+.. "-  --- Hide Bar in PvP and BG zones\n"
+.. "-  - : Fix drag & drop of Titan plugins, per an API change in 11.2.0."
+.. "-  Internal : \n"
+.. "-  - : Global profiles should be working again.\n"
+.. "-  - : More debug statements on login, reload, profile reset.\n"
+.. "-  - : Removed code for old DewDrop and Tablet from tooltip code.\n"
 )
-.. TitanUtils_GetGreenText("Gold : \n")
-.. TitanUtils_GetHighlightText(""
-.. "- Another fix when logging into an 'old' toon.\n"
-.. "- Fix error on 'reset database'.\n"
-)
-.. "\n\n"
-.. TitanUtils_GetGoldText("8.2.0 : 2025/01/03\n")
+.. TitanUtils_GetGoldText("8.3.5 : 2025/08/27\n")
 .. TitanUtils_GetGreenText("Titan : \n")
 .. TitanUtils_GetHighlightText(""
-.. "- Internal fixes to prevent timing issues for built-in plugins on init - any splash screen .\n"
+.. "-  Repair : \n"
+.. "-  - : Restore accidently removed 'use guild funds' option.\n"
+.. "-  Loot : \n"
+.. "-  - : Classic : Restore ability to resize Loot window frame.\n"
+.. "-  - : Retail : Get ahead of deprecated APIs GetSpecialization and GetSpecializationInfo into C_SpecializationInfo.\n"
+.. "-  Internal : \n"
+.. "-  - : Config updates to Vars and Bars All when choosing global versus single bar values.\n"
 )
-.. "\n\n"
-.. TitanUtils_GetGoldText("8.1.7 : 2024/12/22\n")
-.. TitanUtils_GetGreenText("Gold : \n")
-.. TitanUtils_GetHighlightText(""
-.. "- Hopefully fix an error on character start ocurring on some systems.\n"
-)
-.. "\n\n"
-.. TitanUtils_GetGoldText("8.1.6 : 2024/12/09\n")
-.. TitanUtils_GetGreenText("Gold : \n")
-.. TitanUtils_GetHighlightText(""
-.. "- Warband gold updated properly in tooltip.\n"
-)
+.. TitanUtils_GetGoldText("8.3.4 : 2025/08/24\n")
 .. TitanUtils_GetGreenText("Titan : \n")
 .. TitanUtils_GetHighlightText(""
-.. "- Update ACE3 libs."
-.. "- Bars - Config Color picker now works; changed in 10.2.5 (Jan 2024).\n"
-.. "- Bars - Config when selecting Skin vs Color the 'other' controls are disabled.\n"
+.. "-  LootType : \n"
+.. "-  - : Fix error per Curse comments (line 179).\n"
+.. "-  ClassicLootType : \n"
+.. "-  - : Prep for API change to GetLootMethod.\n"
+.. "-  Internal : \n"
+.. "-  - : Config updates to Vars and Bars All when choosing skins versus color.\n"
+.. "-  - : New locale strings for the above Config change.\n"
+)
+.. TitanUtils_GetGoldText("8.3.3 : 2025/08/12\n")
+.. TitanUtils_GetGreenText("Titan : \n")
+.. TitanUtils_GetHighlightText(""
+.. "-  LootType : \n"
+.. "-  - : Fix API change to GetLootMethod, retail only.\n"
+.. "-  Location : \n"
+.. "-  - : Fix map coords being off map in retail; Top and Bottom should now work in retail.\n"
+.. "-  - : Fix rare error that shows error on button text.\n"
+.. "-  Internally : \n"
+.. "-  - : Fix profile not saving (#1439).\n"
+.. "-  - : Expand Battle Ground widget adjust (allow 'up').\n"
+.. "-  - : Make Classic TOC show as Classic to help avoid confusion.\n"
+)
+.. TitanUtils_GetGoldText("8.3.2 : 2025/08/01\n")
+.. TitanUtils_GetGreenText("Titan : \n")
+.. TitanUtils_GetHighlightText(""
+.. "-  Ammo : \n"
+.. "-  - : Fix missing icon.\n"
+.. "-  Internally : \n"
+.. "-  - : Several tweaks for MoP.\n"
 )
 .. "\n\n"
 

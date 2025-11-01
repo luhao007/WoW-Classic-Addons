@@ -5,26 +5,43 @@
 -- ------------------------------------------------------------------------------ --
 
 local TSM = select(2, ...) ---@type TSM
-local Operations = TSM:NewPackage("Operations")
-local TempTable = TSM.Include("Util.TempTable")
-local Log = TSM.Include("Util.Log")
-local Database = TSM.Include("Util.Database")
-local TextureAtlas = TSM.Include("Util.TextureAtlas")
+local Operations = TSM:NewPackage("Operations") ---@type AddonPackage
+local Table = TSM.LibTSMUtil:Include("Lua.Table")
+local ClientInfo = TSM.LibTSMWoW:Include("Util.ClientInfo")
+local SessionInfo = TSM.LibTSMWoW:Include("Util.SessionInfo")
+local CustomString = TSM.LibTSMTypes:Include("CustomString")
+local Group = TSM.LibTSMTypes:Include("Group")
+local GroupOperation = TSM.LibTSMTypes:Include("GroupOperation")
+local Operation = TSM.LibTSMTypes:Include("Operation")
+local OperationUtil = TSM.LibTSMSystem:Include("Operation.Util")
+local AuctioningOperation = TSM.LibTSMSystem:Include("AuctioningOperation")
+local CraftingOperation = TSM.LibTSMSystem:Include("CraftingOperation")
+local MailingOperation = TSM.LibTSMSystem:Include("MailingOperation")
+local ShoppingOperation = TSM.LibTSMSystem:Include("ShoppingOperation")
+local SniperOperation = TSM.LibTSMSystem:Include("SniperOperation")
+local VendoringOperation = TSM.LibTSMSystem:Include("VendoringOperation")
+local WarehousingOperation = TSM.LibTSMSystem:Include("WarehousingOperation")
+local Auction = TSM.LibTSMService:Include("Auction")
+local Guild = TSM.LibTSMService:Include("Guild")
+local Mail = TSM.LibTSMService:Include("Mail")
+local BagTracking = TSM.LibTSMService:Include("Inventory.BagTracking")
+local WarbankTracking = TSM.LibTSMService:Include("Inventory.WarbankTracking")
+local ItemInfo = TSM.LibTSMService:Include("Item.ItemInfo")
+local ChatMessage = TSM.LibTSMService:Include("UI.ChatMessage")
+local TextureAtlas = TSM.LibTSMService:Include("UI.TextureAtlas")
+local CustomPrice = TSM.LibTSMApp:Include("Service.CustomPrice")
+local AltTracking = TSM.LibTSMApp:Include("Service.AltTracking")
+local PlayerInfo = TSM.LibTSMApp:Include("Service.PlayerInfo")
+local L = TSM.Locale.GetTable()
 local private = {
-	db = nil,
-	operations = nil,
-	operationInfo = {},
-	operationModules = {},
-	shouldCreateDefaultOperations = false,
-	ignoreProfileUpdate = false,
+	settingsDB = nil,
+	settings = nil,
+	characterKey = nil,
+	connectedCharacterCache = {},
 }
-local COMMON_OPERATION_INFO = {
-	ignorePlayer = { type = "table", default = {} },
-	ignoreFactionrealm = { type = "table", default = {} },
-	relationships = { type = "table", default = {} },
+local BAD_CRAFTING_PRICE_SOURCES = {
+	crafting = true,
 }
-local FACTION_REALM = UnitFactionGroup("player").." - "..GetRealmName()
-local PLAYER_KEY = UnitName("player").." - "..FACTION_REALM
 
 
 
@@ -32,303 +49,44 @@ local PLAYER_KEY = UnitName("player").." - "..FACTION_REALM
 -- Modules Functions
 -- ============================================================================
 
-function Operations.OnInitialize()
-	private.db = Database.NewSchema("OPERATIONS")
-		:AddStringField("moduleName")
-		:AddStringField("operationName")
-		:AddIndex("moduleName")
-		:Commit()
-	if TSM.db.global.coreOptions.globalOperations then
-		private.operations = TSM.db.global.userData.operations
-	else
-		private.operations = TSM.db.profile.userData.operations
-	end
-	private.RebuildDB()
-	private.shouldCreateDefaultOperations = not TSM.db.profile.internalData.createdDefaultOperations
-	TSM.db.profile.internalData.createdDefaultOperations = true
-	TSM.db:RegisterCallback("OnProfileUpdated", private.OnProfileUpdated)
-end
+function Operations.OnInitialize(settingsDB)
+	local factionrealm = SessionInfo.GetFactionrealmName()
+	private.characterKey = SessionInfo.GetCharacterName().." - "..factionrealm
+	Operation.SetPlayerInfo(private.characterKey, factionrealm)
+	private.settingsDB = settingsDB
+	private.settings = settingsDB:NewView()
+		:AddKey("global", "coreOptions", "globalOperations")
+		:AddKey("global", "userData", "sharedOperations")
+		:AddKey("profile", "userData", "operations")
+		:AddKey("profile", "internalData", "createdDefaultOperations")
+		:AddKey("global", "coreOptions", "regionWide")
+		:RegisterCallback("operations", private.OnProfileUpdated)
+	private.LoadDBSettings()
+	Operation.SetShouldCreateDefault(not private.settings.createdDefaultOperations)
+	private.settings.createdDefaultOperations = true
 
-function Operations.Register(moduleName, localizedName, operationInfo, maxOperations, infoCallback, customSanitizeFunction)
-	for key, info in pairs(operationInfo) do
-		assert(type(key) == "string" and type(info) == "table")
-		assert(info.type == type(info.default))
-	end
-	for key, info in pairs(COMMON_OPERATION_INFO) do
-		assert(not operationInfo[key])
-		operationInfo[key] = info
-	end
-	tinsert(private.operationModules, moduleName)
-	private.operationInfo[moduleName] = {
-		info = operationInfo,
-		localizedName = localizedName,
-		maxOperations = maxOperations,
-		infoCallback = infoCallback,
-		customSanitizeFunction = customSanitizeFunction,
-	}
-
-	local shouldCreateDefaultOperations = private.shouldCreateDefaultOperations or not private.operations[moduleName]
-	private.operations[moduleName] = private.operations[moduleName] or {}
-
-	if shouldCreateDefaultOperations and not private.operations[moduleName]["#Default"] then
-		-- create default operation
-		Operations.Create(moduleName, "#Default")
-	end
-	private.ValidateOperations(moduleName)
-	private.RebuildDB()
-end
-
-function Operations.IsCommonKey(key)
-	return COMMON_OPERATION_INFO[key] and true or false
-end
-
-function Operations.IsValidName(operationName)
-	return operationName == strtrim(operationName) and operationName ~= "" and not strmatch(operationName, TSM.CONST.OPERATION_SEP)
-end
-
-function Operations.ModuleIterator()
-	return ipairs(private.operationModules)
-end
-
-function Operations.ModuleExists(moduleName)
-	return private.operationInfo[moduleName] and true or false
-end
-
-function Operations.GetLocalizedName(moduleName)
-	return private.operationInfo[moduleName].localizedName
-end
-
-function Operations.GetMaxNumber(moduleName)
-	return private.operationInfo[moduleName].maxOperations
-end
-
-function Operations.GetSettingDefault(moduleName, key)
-	local info = private.operationInfo[moduleName].info[key]
-	return info.type == "table" and CopyTable(info.default) or info.default
-end
-
-function Operations.OperationIterator(moduleName)
-	local operations = TempTable.Acquire()
-	for operationName in pairs(private.operations[moduleName]) do
-		tinsert(operations, operationName)
-	end
-	sort(operations)
-	return TempTable.Iterator(operations)
-end
-
-function Operations.Exists(moduleName, operationName)
-	return private.operations[moduleName][operationName] and true or false
-end
-
-function Operations.GetSettings(moduleName, operationName)
-	return private.operations[moduleName][operationName]
-end
-
-function Operations.Create(moduleName, operationName)
-	assert(not private.operations[moduleName][operationName])
-	private.operations[moduleName][operationName] = {}
-	Operations.Reset(moduleName, operationName)
-	private.RebuildDB()
-end
-
-function Operations.BulkCreateFromImport(operations, replaceExisting)
-	for moduleName, moduleOperations in pairs(operations) do
-		for operationName, operationSettings in pairs(moduleOperations) do
-			assert(replaceExisting or not private.operations[moduleName][operationName])
-			private.operations[moduleName][operationName] = operationSettings
-		end
-	end
-	private.RebuildDB()
-end
-
-function Operations.Rename(moduleName, oldName, newName)
-	assert(private.operations[moduleName][oldName])
-	private.operations[moduleName][newName] = private.operations[moduleName][oldName]
-	private.operations[moduleName][oldName] = nil
-	-- redirect relationships
-	for _, operation in pairs(private.operations[moduleName]) do
-		for key, target in pairs(operation.relationships) do
-			if target == oldName then
-				operation.relationships[key] = newName
-			end
-		end
-	end
-	TSM.Groups.OperationRenamed(moduleName, oldName, newName)
-	private.RebuildDB()
-end
-
-function Operations.Copy(moduleName, operationName, sourceOperationName)
-	assert(private.operations[moduleName][operationName] and private.operations[moduleName][sourceOperationName])
-	for key, info in pairs(private.operationInfo[moduleName].info) do
-		local sourceValue = private.operations[moduleName][sourceOperationName][key]
-		private.operations[moduleName][operationName][key] = info.type == "table" and CopyTable(sourceValue) or sourceValue
-	end
-	private.RemoveDeadRelationships(moduleName)
-	private.RebuildDB()
-end
-
-function Operations.Delete(moduleName, operationName)
-	assert(private.operations[moduleName][operationName])
-	private.operations[moduleName][operationName] = nil
-	private.RemoveDeadRelationships(moduleName)
-	TSM.Groups.RemoveOperationFromAllGroups(moduleName, operationName)
-	TSM.Groups.RebuildDB()
-	private.RebuildDB()
-end
-
-function Operations.DeleteList(moduleName, operationNames)
-	for _, operationName in ipairs(operationNames) do
-		assert(private.operations[moduleName][operationName])
-		private.operations[moduleName][operationName] = nil
-		private.RemoveDeadRelationships(moduleName)
-		TSM.Groups.RemoveOperationFromAllGroups(moduleName, operationName)
-	end
-	TSM.Groups.RebuildDB()
-	private.RebuildDB()
-end
-
-function Operations.Reset(moduleName, operationName)
-	for key in pairs(private.operationInfo[moduleName].info) do
-		private.operations[moduleName][operationName][key] = Operations.GetSettingDefault(moduleName, key)
-	end
-end
-
-function Operations.Update(moduleName, operationName)
-	for key in pairs(private.operations[moduleName][operationName].relationships) do
-		local operation = private.operations[moduleName][operationName]
-		while operation.relationships[key] do
-			local newOperation = private.operations[moduleName][operation.relationships[key]]
-			if not newOperation then
-				break
-			end
-			operation = newOperation
-		end
-		private.operations[moduleName][operationName][key] = operation[key]
-	end
-end
-
-function Operations.IsCircularRelationship(moduleName, operationName, key)
-	local visited = TempTable.Acquire()
-	while operationName do
-		if visited[operationName] then
-			TempTable.Release(visited)
-			return true
-		end
-		visited[operationName] = true
-		operationName = private.operations[moduleName][operationName].relationships[key]
-	end
-	TempTable.Release(visited)
-	return false
+	OperationUtil.SetFrameTimeFunc(GetTime)
+	AuctioningOperation.Load(L["Auctioning"], ClientInfo.HasFeature(ClientInfo.FEATURES.AH_LIFO), ClientInfo.HasFeature(ClientInfo.FEATURES.AH_SELLERS), ClientInfo.HasFeature(ClientInfo.FEATURES.AH_STACKS) and ItemInfo.GetMaxStack or nil)
+	CraftingOperation.Load(L["Crafting"], private.ValidateCraftingCraftPriceMethod)
+	MailingOperation.Load(L["Mailing"], private.GetMailingTargetQuantity, PlayerInfo.IsPlayer)
+	ShoppingOperation.Load(L["Shopping"], private.GetShoppingInventoryNum)
+	SniperOperation.Load(L["Sniper"])
+	VendoringOperation.Load(L["Vendoring"], private.GetVendoringInventoryNum)
+	WarehousingOperation.Load(L["Warehousing"], private.GetWarehousingBagQuantity)
 end
 
 function Operations.GetFirstOperationByItem(moduleName, itemString)
-	local groupPath = TSM.Groups.GetPathByItem(itemString)
-	for _, operationName in TSM.Groups.OperationIterator(groupPath, moduleName) do
-		Operations.Update(moduleName, operationName)
-		if not private.IsIgnored(moduleName, operationName) then
-			return operationName, private.operations[moduleName][operationName]
+	local groupPath = Group.GetPathByItem(itemString)
+	for _, operationName in GroupOperation.Iterator(groupPath, moduleName) do
+		Operation.UpdateFromRelationships(moduleName, operationName)
+		if not Operation.IsIgnored(moduleName, operationName) then
+			return operationName, Operation.GetSettings(moduleName, operationName)
 		end
 	end
-end
-
-function Operations.GroupOperationIterator(moduleName, groupPath)
-	local operations = TempTable.Acquire()
-	operations.moduleName = moduleName
-	for _, operationName in TSM.Groups.OperationIterator(groupPath, moduleName) do
-		Operations.Update(moduleName, operationName)
-		if not private.IsIgnored(moduleName, operationName) then
-			tinsert(operations, operationName)
-		end
-	end
-	return private.GroupOperationIteratorHelper, operations, 0
-end
-
-function Operations.GroupHasOperation(moduleName, groupPath, targetOperationName)
-	for _, operationName in TSM.Groups.OperationIterator(groupPath, moduleName) do
-		if operationName == targetOperationName then
-			return true
-		end
-	end
-	return false
-end
-
-function Operations.GroupHasAnyOperation(moduleName, groupPath)
-	for _, operationName in TSM.Groups.OperationIterator(groupPath, moduleName) do
-		if not private.IsIgnored(moduleName, operationName) then
-			return true
-		end
-	end
-	return false
-end
-
-function Operations.GetDescription(moduleName, operationName)
-	local operationSettings = private.operations[moduleName][operationName]
-	assert(operationSettings)
-	Operations.Update(moduleName, operationName)
-	return private.operationInfo[moduleName].infoCallback(operationSettings)
-end
-
-function Operations.SanitizeSettings(moduleName, operationName, operationSettings, silentMissingCommonKeys, noRelationshipCheck)
-	local didReset = false
-	local operationInfo = private.operationInfo[moduleName].info
-	if private.operationInfo[moduleName].customSanitizeFunction then
-		private.operationInfo[moduleName].customSanitizeFunction(operationSettings)
-	end
-	for key, value in pairs(operationSettings) do
-		if not noRelationshipCheck and Operations.IsCircularRelationship(moduleName, operationName, key) then
-			Log.Err("Removing circular relationship (%s, %s, %s)", moduleName, operationName, key)
-			operationSettings.relationships[key] = nil
-		end
-		if not operationInfo[key] then
-			operationSettings[key] = nil
-		elseif type(value) ~= operationInfo[key].type then
-			if operationInfo[key].type == "string" and type(value) == "number" then
-				-- some custom price settings were potentially stored as numbers previously, so just convert them
-				operationSettings[key] = tostring(value)
-			else
-				didReset = true
-				Log.Err("Resetting operation setting %s,%s,%s (%s)", moduleName, operationName, tostring(key), tostring(value))
-				operationSettings[key] = operationInfo[key].type == "table" and CopyTable(operationInfo[key].default) or operationInfo[key].default
-			end
-		elseif operationInfo[key].customSanitizeFunction then
-			operationSettings[key] = operationInfo[key].customSanitizeFunction(value)
-		end
-	end
-	for key in pairs(operationInfo) do
-		if operationSettings[key] == nil then
-			-- this key was missing
-			if operationInfo[key].type == "boolean" then
-				-- we previously stored booleans as nil instead of false
-				operationSettings[key] = false
-			else
-				if not silentMissingCommonKeys or not Operations.IsCommonKey(key) then
-					didReset = true
-					Log.Err("Resetting missing operation setting %s,%s,%s", moduleName, operationName, tostring(key))
-				end
-				operationSettings[key] = operationInfo[key].type == "table" and CopyTable(operationInfo[key].default) or operationInfo[key].default
-			end
-		end
-	end
-	return didReset
-end
-
-function Operations.HasRelationship(moduleName, operationName, settingKey)
-	return Operations.GetRelationship(moduleName, operationName, settingKey) and true or false
-end
-
-function Operations.GetRelationship(moduleName, operationName, settingKey)
-	assert(private.operationInfo[moduleName].info[settingKey])
-	return private.operations[moduleName][operationName].relationships[settingKey]
-end
-
-function Operations.SetRelationship(moduleName, operationName, settingKey, targetOperationName)
-	assert(targetOperationName == nil or private.operations[moduleName][targetOperationName])
-	assert(private.operationInfo[moduleName].info[settingKey])
-	private.operations[moduleName][operationName].relationships[settingKey] = targetOperationName
 end
 
 function Operations.GetRelationshipColors(operationType, operationName, settingKey, value)
-	local relationshipSet = Operations.HasRelationship(operationType, operationName, settingKey)
+	local relationshipSet = Operation.HasRelationship(operationType, operationName, settingKey)
 	local linkColor = nil
 	if not value and relationshipSet then
 		linkColor = "INDICATOR_DISABLED"
@@ -343,63 +101,24 @@ function Operations.GetRelationshipColors(operationType, operationName, settingK
 	return relationshipSet, linkTexture, value and not relationshipSet and "TEXT" or "TEXT_DISABLED"
 end
 
-function Operations.IsStoredGlobally()
-	return TSM.db.global.coreOptions.globalOperations
-end
-
 function Operations.SetStoredGlobally(storeGlobally)
-	TSM.db.global.coreOptions.globalOperations = storeGlobally
-	-- we shouldn't be running the OnProfileUpdated callback while switching profiles
-	private.ignoreProfileUpdate = true
+	private.settings.globalOperations = storeGlobally
 	if storeGlobally then
-		-- move current profile to global
-		TSM.db.global.userData.operations = CopyTable(TSM.db.profile.userData.operations)
-		-- clear out old operations
-		local originalProfile = TSM.db:GetCurrentProfile()
-		for _, profile in TSM.db:ScopeKeyIterator("profile") do
-			TSM.db:SetProfile(profile)
-			TSM.db.profile.userData.operations = nil
+		-- Move the current profile operations to global
+		private.settings.sharedOperations = CopyTable(private.settings.operations)
+		-- Clear out old profile operations
+		for _, profile in private.settingsDB:ScopeKeyIterator("profile") do
+			private.settings:SetForScopeKey("operations", nil, profile)
 		end
-		TSM.db:SetProfile(originalProfile)
 	else
-		-- move global to all profiles
-		local originalProfile = TSM.db:GetCurrentProfile()
-		for _, profile in TSM.db:ScopeKeyIterator("profile") do
-			TSM.db:SetProfile(profile)
-			TSM.db.profile.userData.operations = CopyTable(TSM.db.global.userData.operations)
+		-- Copy global operations to all profiles
+		for _, profile in private.settingsDB:ScopeKeyIterator("profile") do
+			private.settings:SetForScopeKey("operations", CopyTable(private.settings.sharedOperations), profile)
 		end
-		TSM.db:SetProfile(originalProfile)
-		-- clear out old operations
-		TSM.db.global.userData.operations = nil
+		-- Clear out old global operations
+		private.settings.sharedOperations = nil
 	end
-	private.ignoreProfileUpdate = false
 	private.OnProfileUpdated()
-end
-
-function Operations.ReplaceProfileOperations(newOperations)
-	for k, v in pairs(newOperations) do
-		TSM.db.profile.userData.operations[k] = v
-	end
-end
-
-function Operations.CreateQuery()
-	return private.db:NewQuery()
-end
-
-function Operations.GroupIterator(moduleName, filterOperationName, overrideOnly)
-	local result = TempTable.Acquire()
-
-	-- check the base group
-	if Operations.GroupHasOperation(moduleName, TSM.CONST.ROOT_GROUP_PATH, filterOperationName) then
-		tinsert(result, TSM.CONST.ROOT_GROUP_PATH)
-	end
-	-- need to filter out the groups without operations
-	for _, groupPath in TSM.Groups.GroupIterator() do
-		if (not overrideOnly or TSM.Groups.HasOperationOverride(groupPath, moduleName)) and Operations.GroupHasOperation(moduleName, groupPath, filterOperationName) then
-			tinsert(result, groupPath)
-		end
-	end
-	return TempTable.Iterator(result)
 end
 
 
@@ -409,76 +128,117 @@ end
 -- ============================================================================
 
 function private.OnProfileUpdated()
-	if private.ignoreProfileUpdate then
-		return
-	end
-	if TSM.db.global.coreOptions.globalOperations then
-		private.operations = TSM.db.global.userData.operations
-	else
-		private.operations = TSM.db.profile.userData.operations
-	end
-	for _, moduleName in Operations.ModuleIterator() do
-		private.ValidateOperations(moduleName)
-	end
-	private.RebuildDB()
-	TSM.Groups.RebuildDatabase()
+	private.LoadDBSettings()
+	TSM.Groups.ReloadSettings()
 end
 
-function private.ValidateOperations(moduleName)
-	if not private.operations[moduleName] then
-		-- this is a new profile
-		private.operations[moduleName] = {}
-		Operations.Create(moduleName, "#Default")
-		return
+function private.LoadDBSettings()
+	if private.settings.globalOperations then
+		Operation.Load(private.settings.sharedOperations)
+	else
+		Operation.Load(private.settings.operations)
 	end
-	for operationName, operationSettings in pairs(private.operations[moduleName]) do
-		if type(operationName) ~= "string" or not Operations.IsValidName(operationName) then
-			Log.Err("Removing %s operation with invalid name: ", moduleName, tostring(operationName))
-			private.operations[moduleName][operationName] = nil
-		else
-			Operations.SanitizeSettings(moduleName, operationName, operationSettings)
-			for key, target in pairs(operationSettings.relationships) do
-				if not private.operations[moduleName][target] then
-					Log.Err("Removing invalid relationship %s,%s,%s -> %s", moduleName, operationName, tostring(key), tostring(target))
-					operationSettings.relationships[key] = nil
+end
+
+function private.ValidateCraftingCraftPriceMethod(value, operationName)
+	local isValid, err = CustomPrice.Validate(value, BAD_CRAFTING_PRICE_SOURCES)
+	if not isValid then
+		ChatMessage.PrintfUser(L["Your craft value method for '%s' was invalid so it has been returned to the default."].." "..err, operationName)
+		return false
+	end
+	return true
+end
+
+function private.GetMailingTargetQuantity(player, itemString, includeGuild, includeBank)
+	if player then
+		-- TODO: Support targets on connected realms
+		player = strtrim(strmatch(player, "^[^-]+"))
+	end
+	local num = AltTracking.GetBagQuantity(itemString, player) + AltTracking.GetMailQuantity(itemString, player) + AltTracking.GetAuctionQuantity(itemString, player)
+	if includeGuild then
+		local guild = PlayerInfo.GetPlayerGuild(player, SessionInfo.GetFactionrealmName())
+		if guild then
+			num = num + AltTracking.GetGuildQuantity(itemString, guild)
+		end
+	end
+	if includeBank then
+		num = num + AltTracking.GetBankQuantity(itemString, player)
+	end
+	return num
+end
+
+function private.GetShoppingInventoryNum(itemString, includeBank, includeAuctions, includeAlts, includeGuild)
+	-- Check the total inventory as an optimization
+	if (CustomString.GetSourceValue("NumInventory", itemString) or 0) == 0 then
+		return 0
+	end
+
+	local numHave = Mail.GetQuantity(itemString)
+	if includeBank then
+		numHave = numHave + BagTracking.GetTotalQuantity(itemString) + WarbankTracking.GetQuantity(itemString)
+	else
+		numHave = numHave + BagTracking.GetBagQuantity(itemString)
+	end
+	if includeGuild then
+		numHave = numHave + Guild.GetQuantity(itemString)
+	end
+	if includeAlts or includeAuctions then
+		if includeAuctions then
+			numHave = numHave + Auction.GetQuantity(itemString)
+		end
+		if private.connectedCharacterCache.time ~= GetTime() then
+			wipe(private.connectedCharacterCache)
+			for _, factionrealm in private.settingsDB:AccessibleRealmIterator("factionrealm", not private.settings.regionWide) do
+				for _, character in private.settingsDB:AccessibleCharacterIterator(nil, factionrealm, true) do
+					tinsert(private.connectedCharacterCache, factionrealm)
+					tinsert(private.connectedCharacterCache, character)
 				end
 			end
+			private.connectedCharacterCache.time = GetTime()
 		end
-	end
-end
-
-function private.IsIgnored(moduleName, operationName)
-	local operationSettings = private.operations[moduleName][operationName]
-	assert(operationSettings)
-	return operationSettings.ignorePlayer[PLAYER_KEY] or operationSettings.ignoreFactionrealm[FACTION_REALM]
-end
-
-function private.GroupOperationIteratorHelper(operations, index)
-	index = index + 1
-	if index > #operations then
-		TempTable.Release(operations)
-		return
-	end
-	local operationName = operations[index]
-	return index, operationName, private.operations[operations.moduleName][operationName]
-end
-
-function private.RemoveDeadRelationships(moduleName)
-	for _, operation in pairs(private.operations[moduleName]) do
-		for key, target in pairs(operation.relationships) do
-			if not private.operations[moduleName][target] then
-				operation.relationships[key] = nil
+		for _, factionrealm, character in Table.StrideIterator(private.connectedCharacterCache, 2) do
+			if includeAlts then
+				numHave = numHave + AltTracking.GetBagQuantity(itemString, character, factionrealm)
+				numHave = numHave + AltTracking.GetBankQuantity(itemString, character, factionrealm)
+				numHave = numHave + AltTracking.GetMailQuantity(itemString, character, factionrealm)
+			end
+			if includeAuctions then
+				numHave = numHave + AltTracking.GetAuctionQuantity(itemString, character, factionrealm)
 			end
 		end
 	end
+	return numHave
 end
 
-function private.RebuildDB()
-	private.db:TruncateAndBulkInsertStart()
-	for moduleName, operations in pairs(private.operations) do
-		for operationName in pairs(operations) do
-			private.db:BulkInsertNewRow(moduleName, operationName)
-		end
+function private.GetVendoringInventoryNum(itemString, includeBank, includeGuild, includeAuctions, includeMail, includeAlts, includeAltAuctions)
+	-- TODO: Need to look into why we're doing this complex query for bags, but not for anything else
+	local numHave = BagTracking.CreateQueryBagsItem(itemString)
+		:VirtualField("autoBaseItemString", "string", Group.TranslateItemString, "itemString")
+		:Equal("autoBaseItemString", itemString)
+		:SumAndRelease("quantity")
+	if includeBank then
+		local _, bankQuantity = BagTracking.GetQuantities(itemString)
+		numHave = numHave + bankQuantity + WarbankTracking.GetQuantity(itemString)
 	end
-	private.db:BulkInsertEnd()
+	if includeGuild then
+		numHave = numHave + Guild.GetQuantity(itemString)
+	end
+	if includeAuctions then
+		numHave = numHave + Auction.GetQuantity(itemString)
+	end
+	if includeMail then
+		numHave = numHave + Mail.GetQuantity(itemString)
+	end
+	if includeAlts or includeAltAuctions then
+		local numAlts, numAltAuctions = AltTracking.GetQuantity(itemString)
+		numHave = numHave + (includeAlts and numAlts or 0) + (includeAltAuctions and numAltAuctions or 0)
+	end
+	return numHave
+end
+
+function private.GetWarehousingBagQuantity(itemString)
+	return BagTracking.CreateQueryBagsItem(itemString)
+		:VirtualField("autoBaseItemString", "string", Group.TranslateItemString, "itemString")
+		:Equal("autoBaseItemString", itemString)
+		:SumAndRelease("quantity")
 end

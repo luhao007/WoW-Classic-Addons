@@ -287,6 +287,7 @@ function GDKPInfo.ADD_UI()
 			RaidR:Update_DongjieBUT()
 			RaidR:GetRiadPlayerInfo()
 			RaidR:RaidInfoShow()
+			RaidR.Update_FenG()
 			RaidR.PlayerList:PlayerList_UP()
 			PIGSendChatRaidParty("人员信息已记录,退组/离线/不影响分G，需邮寄工资请"..L["CHAT_WHISPER"].."<"..PIG_OptionsUI.Name..">: 邮寄工资",true,"W")
 		end,

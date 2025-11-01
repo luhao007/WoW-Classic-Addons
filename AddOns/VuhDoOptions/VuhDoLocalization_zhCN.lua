@@ -652,10 +652,20 @@ VUHDO_I18N_TT.K592 = "Check this to show private aura icons on the health bar.";
 VUHDO_I18N_TT.K593 = "Select a size for your private aura icons.";
 VUHDO_I18N_TT.K594 = "Check to sort pet units last.";
 VUHDO_I18N_TT.K595 = "Show effective HP (health including shields) of player.";
-
--- TBCC game version specific strings (tooltip IDs begin at K900)
-
-VUHDO_I18N_TT.K900 = "使用LibHealComm-4.0显示治疗预估";
+VUHDO_I18N_TT.K596 = "Click to change color to indicate players afflicted by bleed debuffs.";
+VUHDO_I18N_TT.K597 = "Only play a sound if the debuff is removable by yourself.";
+VUHDO_I18N_TT.K598 = "Select a color for HoT Square 8";
+VUHDO_I18N_TT.K599 = "Select a color for HoT Square 9";
+VUHDO_I18N_TT.K600 = "Show debuff icons on friendly units.";
+VUHDO_I18N_TT.K601 = "Show debuff icons on hostile units.";
+VUHDO_I18N_TT.K602 = "Show debuffs cast by you on hostile units.";
+VUHDO_I18N_TT.K603 = "Show debuffs cast by others on hostile units.";
+VUHDO_I18N_TT.K604 = "Check this to use gradient class colors.";
+VUHDO_I18N_TT.K605 = "Check this to use gradient color.";
+VUHDO_I18N_TT.K606 = "Select the maximum gradient color.";
+VUHDO_I18N_TT.K607 = "Click to change color to indicate enemies affected by enrage buffs.";
+VUHDO_I18N_TT.K608 = "Check to ignore purgeable buffs on enemies.";
+VUHDO_I18N_TT.K609 = "Check to only apply HoT slot setup (Panels => HoTs => Order) when spell layout is being loaded.";
 
 VUHDO_I18N_DEFAULT_PROFILE = "预设存档";
 VUHDO_I18N_DEFAULT_LAYOUT = "预设按键配置";
@@ -1067,8 +1077,8 @@ VUHDO_I18N_CLEAR_BINDING = "清除绑定";
 VUHDO_I18N_MACRO_EDITOR = "VuhDo 巨集编辑器";
 VUHDO_I18N_ACCEPT = "接受";
 VUHDO_I18N_DISCARD = "放弃";
-VUHDO_I18N_LKA_HINT_1 = "在巨集中使用这些文字来代替: |c00000000vuhdo|r => 单位自己, |c00000000vdname|r => 单位的名字" justifyH="LEFT" inherits="VuDoButtonFontDark";
-VUHDO_I18N_LKA_HINT_2 = "|c00000000vdtarget, vdtargettarget|r => 单位的目标/目标的目标，|c00000000vdpet|r => 单位的宠物，例子: /cast [@vuhdo] 快速治疗" justifyH="LEFT" inherits="VuDoButtonFontDark";
+VUHDO_I18N_LKA_HINT_1 = "在巨集中使用这些文字来代替: |c00000000vuhdo|r => 单位自己, |c00000000vdname|r => 单位的名字";
+VUHDO_I18N_LKA_HINT_2 = "|c00000000vdtarget, vdtargettarget|r => 单位的目标/目标的目标，|c00000000vdpet|r => 单位的宠物，例子: /cast [@vuhdo] 快速治疗";
 VUHDO_I18N_LKA_CUSTOM_MACRO_DISCARDED = "已放弃自订巨集文字。";
 VUHDO_I18N_NAME_CHANGE_DISCARDED = "已放弃物品名称变更。";
 VUHDO_I18N_LKA_TYPE_CHANGED = "VuhDo 自订巨集、法术或魔兽巨集的类型已经变更。\n是否要放弃自订巨集文字? ";
@@ -1173,7 +1183,7 @@ VUHDO_I18N_HEAL_ABSORB_BAR = "治疗吸收条";
 VUHDO_I18N_PLAYER = "自己";
 VUHDO_I18N_TARGET = "目标单位"
 VUHDO_I18N_TARGET_TARGET = "目标的目标单位"
-VUHDO_I18N_FOCUS = "焦点单位";
+VUHDO_I18N_FOCUS_UNIT = "焦点单位";
 VUHDO_I18N_MOUSEOVER = "鼠标指向单位";
 VUHDO_I18N_MOUSEOVER_TARGET = "鼠标指向的目标单位";
 VUHDO_I18N_MOUSEOVER_TARGET_TARGET = "鼠标指向目标的目标单位";
@@ -1203,6 +1213,22 @@ VUHDO_I18N_PETS_LAST = "Pets last";
 VUHDO_I18N_SHOW_EFFECTIVE = "Show\nEffective";
 VUHDO_I18N_DEBUFF_IGNORE_IMPORTED = "Debuff ignore list successfully imported.";
 
--- TBCC game version specific strings
+VUHDO_I18N_BLEED = "Bleed";
 
-VUHDO_I18N_LIBHEALCOMM = "使用 Lib\nHealComm";
+VUHDO_I18N_SQUARE_8 = "Square 8";
+VUHDO_I18N_SQUARE_9 = "Square 9";
+VUHDO_I18N_SHOW_ON_FRIENDLY = "Show on\nfriendly";
+VUHDO_I18N_SHOW_ON_HOSTILE = "Show on\nhostile";
+VUHDO_I18N_HOSTILE_SPELL_SOURCE = "Hostile Unit Spell Source";
+
+VUHDO_I18N_SEARCH_OPTIONS = "Search Options";
+
+VUHDO_I18N_CLASS_GRADIENT_COLORS = "Class Gradient Colors";
+VUHDO_I18N_CLASS_GRADIENTS = "Class\nGradients";
+VUHDO_I18N_LIFE_GRADIENT = "Life\nGradient";
+VUHDO_I18N_MAX_COLOR = "Max Color";
+
+VUHDO_I18N_ENRAGE = "Enrage";
+VUHDO_I18N_PURGEABLE_BUFFS = "Purgeable\nBuffs";
+
+VUHDO_I18N_LOAD_HOTS_ONLY_SLOTS = "Only Slots";

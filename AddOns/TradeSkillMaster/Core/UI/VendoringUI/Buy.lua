@@ -5,22 +5,22 @@
 -- ------------------------------------------------------------------------------ --
 
 local TSM = select(2, ...) ---@type TSM
-local Buy = TSM.UI.VendoringUI:NewPackage("Buy")
-local Environment = TSM.Include("Environment")
-local L = TSM.Include("Locale").GetTable()
-local Money = TSM.Include("Util.Money")
-local String = TSM.Include("Util.String")
-local Log = TSM.Include("Util.Log")
-local TempTable = TSM.Include("Util.TempTable")
-local Theme = TSM.Include("Util.Theme")
-local ItemString = TSM.Include("Util.ItemString")
-local ItemInfo = TSM.Include("Service.ItemInfo")
-local Settings = TSM.Include("Service.Settings")
-local UIElements = TSM.Include("UI.UIElements")
-local UIUtils = TSM.Include("UI.UIUtils")
+local Buy = TSM.UI.VendoringUI:NewPackage("Buy") ---@type AddonPackage
+local L = TSM.Locale.GetTable()
+local Money = TSM.LibTSMUtil:Include("UI.Money")
+local String = TSM.LibTSMUtil:Include("Lua.String")
+local TempTable = TSM.LibTSMUtil:Include("BaseType.TempTable")
+local Merchant = TSM.LibTSMWoW:Include("API.Merchant")
+local Guild = TSM.LibTSMWoW:Include("API.Guild")
+local ClientInfo = TSM.LibTSMWoW:Include("Util.ClientInfo")
+local ChatMessage = TSM.LibTSMService:Include("UI.ChatMessage")
+local Theme = TSM.LibTSMService:Include("UI.Theme")
+local ItemInfo = TSM.LibTSMService:Include("Item.ItemInfo")
+local Vendor = TSM.LibTSMService:Include("Vendor")
+local UIElements = TSM.LibTSMUI:Include("Util.UIElements")
+local UIUtils = TSM.LibTSMUI:Include("Util.UIUtils")
 local private = {
 	settings = nil,
-	query = nil,
 	filterText = "",
 }
 
@@ -30,14 +30,18 @@ local private = {
 -- Module Functions
 -- ============================================================================
 
-function Buy.OnInitialize()
-	private.settings = Settings.NewView()
+function Buy.OnInitialize(settingsDB)
+	private.settings = settingsDB:NewView()
 		:AddKey("global", "vendoringUIContext", "buyScrollingTable")
+		:AddKey("global", "coreOptions", "regionWide")
+		:AddKey("global", "appearanceOptions", "showTotalMoney")
+		:AddKey("global", "internalData", "warbankMoney")
+		:AddKey("sync", "internalData", "money")
 	TSM.UI.VendoringUI.RegisterTopLevelPage(L["Buy"], private.GetFrame)
 end
 
 function Buy.UpdateCurrency(frame)
-	if not GetMerchantCurrencies() or frame:GetSelectedNavButton() ~= L["Buy"] then
+	if not Merchant.GetCurrencies() or frame:GetSelectedNavButton() ~= L["Buy"] then
 		return
 	end
 	frame:GetElement("content.buy.footer.altCost")
@@ -55,16 +59,7 @@ end
 function private.GetFrame()
 	UIUtils.AnalyticsRecordPathChange("vendoring", "buy")
 	private.filterText = ""
-	if not private.query then
-		private.query = TSM.Vendoring.Buy.CreateMerchantQuery()
-			:VirtualField("name", "string", ItemInfo.GetName, "itemString", "?")
-	end
-	private.query:ResetFilters()
-	private.query:NotEqual("numAvailable", 0)
-	private.query:ResetOrderBy()
-	private.query:OrderBy("name", true)
-
-	local altCost = Environment.IsRetail() and GetMerchantCurrencies()
+	local altCost = ClientInfo.IsRetail() and Merchant.GetCurrencies()
 	local frame = UIElements.New("Frame", "buy")
 		:SetLayout("VERTICAL")
 		:AddChild(UIElements.New("Frame", "filters")
@@ -94,47 +89,12 @@ function private.GetFrame()
 				-- :SetScript("OnClick", private.FilterButtonOnClick)
 			)
 		)
-		:AddChild(UIElements.New("QueryScrollingTable", "items")
-			:SetSettingsContext(private.settings, "buyScrollingTable")
-			:GetScrollingTableInfo()
-				:NewColumn("qty")
-					:SetTitle(L["Qty"])
-					:SetFont("TABLE_TABLE1")
-					:SetJustifyH("RIGHT")
-					:SetTextInfo("stackSize")
-					:SetSortInfo("stackSize")
-					:Commit()
-				:NewColumn("item")
-					:SetTitle(L["Item"])
-					:SetIconSize(12)
-					:SetFont("ITEM_BODY3")
-					:SetJustifyH("LEFT")
-					:SetTextInfo(nil, private.GetItemText)
-					:SetIconInfo("itemString", ItemInfo.GetTexture)
-					:SetTooltipInfo("itemString")
-					:SetSortInfo("name")
-					:SetTooltipLinkingDisabled(true)
-					:DisableHiding()
-					:Commit()
-				:NewColumn("ilvl")
-					:SetTitle(L["ilvl"])
-					:SetFont("TABLE_TABLE1")
-					:SetJustifyH("RIGHT")
-					:SetTextInfo("itemString", ItemInfo.GetItemLevel)
-					:Commit()
-				:NewColumn("cost")
-					:SetTitle(L["Cost"])
-					:SetFont("TABLE_TABLE1")
-					:SetJustifyH("RIGHT")
-					:SetTextInfo(nil, private.GetCostText)
-					:SetTooltipInfo("firstCostItemString", private.GetCostTooltip)
-					:SetSortInfo("price")
-					:SetTooltipLinkingDisabled(true)
-					:Commit()
-				:SetCursor("BUY_CURSOR")
-				:Commit()
-			:SetQuery(private.query)
-			:SetScript("OnRowClick", private.RowOnClick)
+		:AddChild(UIElements.New("VendorBuyScrollTable", "items")
+			:SetSettings(private.settings, "buyScrollingTable")
+			:SetQuery(Vendor.NewScannerQuery()
+				:VirtualField("name", "string", ItemInfo.GetName, "itemString", "?")
+				:VirtualField("itemLevel", "number", ItemInfo.GetItemLevel, "itemString", -1)
+			)
 		)
 		:AddChild(UIElements.New("HorizontalLine", "line"))
 		:AddChild(UIElements.New("Frame", "footer")
@@ -147,7 +107,9 @@ function private.GetFrame()
 				:SetWidth(166)
 				:SetMargin(0, 8, 0, 0)
 				:SetPadding(4)
-				:AddChild(TSM.UI.Views.PlayerGoldText.New("text"))
+				:AddChild(UIElements.New("PlayerGoldText", "text")
+					:SetSettings(private.settings)
+				)
 			)
 			:AddChild(UIElements.New("VerticalLine", "line")
 				:SetHeight(22)
@@ -161,7 +123,7 @@ function private.GetFrame()
 				:SetTooltip(altCost and "currency:"..altCost or nil)
 			)
 			:AddChild(UIElements.New("ActionButton", "repairBtn")
-				:SetDisabled(not TSM.Vendoring.Buy.NeedsRepair())
+				:SetDisabled(not Vendor.NeedsRepair())
 				:SetText(L["Repair"])
 				:SetModifierText(L["Repair from Guild Bank"], "ALT")
 				:SetTooltip(private.GetRepairTooltip)
@@ -177,64 +139,33 @@ function private.GetFrame()
 	return frame
 end
 
-function private.GetItemText(row)
-	local itemString, numAvailable = row:GetFields("itemString", "numAvailable")
-	local itemName = UIUtils.GetDisplayItemName(itemString) or "?"
-	if numAvailable == -1 then
-		return itemName
-	elseif numAvailable > 0 then
-		return itemName..Theme.GetColor("FEEDBACK_RED"):ColorText(" ("..numAvailable..")")
-	else
-		error("Invalid numAvailable: "..numAvailable)
-	end
-end
-
-function private.GetCostText(row)
-	local index, costItemsText, price, stackSize = row:GetFields("index", "costItemsText", "price", "stackSize")
-	local color = TSM.Vendoring.Buy.GetMaxCanAfford(index) < stackSize and Theme.GetColor("FEEDBACK_RED"):GetTextColorPrefix()
-	if costItemsText == "" then
-		-- just a price
-		return Money.ToString(price, color, "OPT_RETAIL_ROUND")
-	elseif price == 0 then
-		-- just an extended cost string
-		return costItemsText
-	else
-		-- both
-		return Money.ToString(price, color, "OPT_RETAIL_ROUND").." "..costItemsText
-	end
-end
-
-function private.GetCostTooltip(itemString)
-	return itemString ~= "" and itemString or nil
-end
-
 function private.GetRepairTooltip()
 	local tooltipLines = TempTable.Acquire()
 	local repairAllCost, canRepair = GetRepairAllCost()
 	if canRepair and repairAllCost > 0 then
 		tinsert(tooltipLines, REPAIR_ALL_ITEMS)
 		if IsAltKeyDown() then
-			local amount = GetGuildBankWithdrawMoney()
-			local guildBankMoney = GetGuildBankMoney()
+			local amount = Guild.GetWidthdrawMoney()
+			local guildBankMoney = Guild.GetMoney()
 			if amount == -1 then
 				amount = guildBankMoney
 			else
 				amount = min(amount, guildBankMoney)
 			end
 			tinsert(tooltipLines, GUILDBANK_REPAIR)
-			tinsert(tooltipLines, Money.ToString(amount, nil, "OPT_RETAIL_ROUND"))
+			tinsert(tooltipLines, Money.ToStringForUI(amount))
 			if repairAllCost > amount then
 				local personalAmount = repairAllCost - amount
 				local personalMoney = GetMoney()
 				if personalMoney >= personalAmount then
 					tinsert(tooltipLines, GUILDBANK_REPAIR_PERSONAL)
-					tinsert(tooltipLines, Money.ToString(personalAmount, nil, "OPT_RETAIL_ROUND"))
+					tinsert(tooltipLines, Money.ToStringForUI(personalAmount))
 				else
 					tinsert(tooltipLines, Theme.GetColor("FEEDBACK_RED"):ColorText(GUILDBANK_REPAIR_INSUFFICIENT_FUNDS))
 				end
 			end
 		else
-			tinsert(tooltipLines, Money.ToString(repairAllCost, nil, "OPT_RETAIL_ROUND"))
+			tinsert(tooltipLines, Money.ToStringForUI(repairAllCost))
 			local personalMoney = GetMoney()
 			if repairAllCost > personalMoney then
 				tinsert(tooltipLines, Theme.GetColor("FEEDBACK_RED"):ColorText(GUILDBANK_REPAIR_INSUFFICIENT_FUNDS))
@@ -252,242 +183,19 @@ end
 -- ============================================================================
 
 function private.InputOnValueChanged(input)
-	local text = input:GetValue()
-	if text == private.filterText then
+	local nameFilter = input:GetValue()
+	if nameFilter == private.filterText then
 		return
 	end
-	private.filterText = text
-
-	private.query:ResetFilters()
-	private.query:NotEqual("numAvailable", 0)
-	if text ~= "" then
-		private.query:Matches("name", String.Escape(text))
-	end
-	input:GetElement("__parent.__parent.items"):UpdateData(true)
-end
-
-function private.RowOnClick(scrollingTable, row, mouseButton)
-	if IsShiftKeyDown() then
-		local itemString = row:GetField("itemString")
-		local dialogFrame = UIElements.New("Frame", "frame")
-			:SetLayout("VERTICAL")
-			:SetSize(328, 214)
-			:SetPadding(12)
-			:AddAnchor("CENTER")
-			:SetContext(row)
-			:SetMouseEnabled(true)
-			:SetRoundedBackgroundColor("FRAME_BG")
-			:AddChild(UIElements.New("Frame", "header")
-				:SetLayout("HORIZONTAL")
-				:SetHeight(24)
-				:SetMargin(0, 0, -4, 10)
-				:AddChild(UIElements.New("Spacer", "spacer")
-					:SetWidth(20)
-				)
-				:AddChild(UIElements.New("Text", "title")
-					:SetJustifyH("CENTER")
-					:SetFont("BODY_BODY1_BOLD")
-					:SetText(L["Purchase Item"])
-				)
-				:AddChild(UIElements.New("Button", "closeBtn")
-					:SetMargin(0, -4, 0, 0)
-					:SetBackgroundAndSize("iconPack.24x24/Close/Default")
-					:SetScript("OnClick", private.PurchaseCloseBtnOnClick)
-				)
-			)
-			:AddChild(UIElements.New("Frame", "item")
-				:SetLayout("HORIZONTAL")
-				:SetPadding(6)
-				:SetMargin(0, 0, 0, 16)
-				:SetRoundedBackgroundColor("PRIMARY_BG_ALT")
-				:AddChild(UIElements.New("Button", "icon")
-					:SetSize(36, 36)
-					:SetMargin(0, 8, 0, 0)
-					:SetBackground(ItemInfo.GetTexture(itemString))
-					:SetTooltip(itemString)
-				)
-				:AddChild(UIElements.New("Text", "name")
-					:SetHeight(36)
-					:SetFont("ITEM_BODY1")
-					:SetText(UIUtils.GetDisplayItemName(itemString))
-				)
-			)
-			:AddChild(UIElements.New("Frame", "qty")
-				:SetLayout("HORIZONTAL")
-				:SetHeight(24)
-				:SetMargin(0, 0, 0, 16)
-				:AddChild(UIElements.New("Text", "text")
-					:SetWidth("AUTO")
-					:SetFont("BODY_BODY2_MEDIUM")
-					:SetText(L["Quantity"]..":")
-				)
-				:AddChild(UIElements.New("Input", "input")
-					:SetWidth(156)
-					:SetMargin(12, 8, 0, 0)
-					:SetBackgroundColor("PRIMARY_BG_ALT")
-					:SetJustifyH("CENTER")
-					:SetSubAddEnabled(true)
-					:SetValidateFunc("NUMBER", "1:99999")
-					:SetValue(1)
-					:SetScript("OnValidationChanged", private.InputQtyOnValidationChanged)
-					:SetScript("OnValueChanged", private.InputQtyOnValueChanged)
-					:SetScript("OnEnterPressed", private.InputQtyOnEnterPressed)
-				)
-				:AddChild(UIElements.New("ActionButton", "max")
-					:SetText(L["Max"])
-					:SetScript("OnClick", private.MaxBtnOnClick)
-				)
-			)
-			:AddChild(UIElements.New("Frame", "cost")
-				:SetLayout("HORIZONTAL")
-				:SetHeight(20)
-				:SetMargin(0, 0, 0, 16)
-				:AddChild(UIElements.New("Spacer", "spacer"))
-				:AddChild(UIElements.New("Text", "label")
-					:SetWidth("AUTO")
-					:SetMargin(0, 8, 0, 0)
-					:SetJustifyH("RIGHT")
-					:SetFont("BODY_BODY2_MEDIUM")
-					:SetText(L["Current Price"]..":")
-				)
-				:AddChild(UIElements.New("Button", "text")
-					:SetWidth("AUTO")
-					:SetJustifyH("RIGHT")
-					:SetFont("TABLE_TABLE1")
-					:SetText(private.GetAltCostText(row, 1))
-					:SetTooltip(private.GetAltCostTooltip(row))
-				)
-			)
-			:AddChild(UIElements.New("ActionButton", "purchaseBtn")
-				:SetHeight(24)
-				:SetText(L["Purchase"])
-				:SetDisabled(TSM.Vendoring.Buy.GetMaxCanAfford(row:GetField("index")) < 1)
-				:SetScript("OnClick", private.PurchaseBtnOnClick)
-			)
-		scrollingTable:GetBaseElement():ShowDialogFrame(dialogFrame)
-		dialogFrame:GetElement("qty.input"):SetFocused(true)
-	elseif mouseButton == "RightButton" then
-		TSM.Vendoring.Buy.BuyItemIndex(row:GetFields("index", "stackSize"))
-	end
-end
-
-function private.PurchaseCloseBtnOnClick(button)
-	button:GetBaseElement():HideDialog()
-end
-
-function private.InputQtyOnValidationChanged(input)
-	local row = input:GetElement("__parent.__parent"):GetContext()
-	if input:IsValid() and tonumber(input:GetValue()) <= TSM.Vendoring.Buy.GetMaxCanAfford(row:GetField("index")) then
-		input:GetElement("__parent.__parent.purchaseBtn")
-			:SetDisabled(false)
-			:Draw()
-	else
-		input:GetElement("__parent.__parent.purchaseBtn")
-			:SetDisabled(true)
-			:Draw()
-	end
-end
-
-function private.InputQtyOnValueChanged(input)
-	local row = input:GetElement("__parent.__parent"):GetContext()
-	local value = tonumber(input:GetValue())
-	input:GetElement("__parent.__parent.cost.text")
-		:SetText(private.GetAltCostText(row, value))
-	input:GetElement("__parent.__parent.cost")
-		:Draw()
-	if input:IsValid() and value <= TSM.Vendoring.Buy.GetMaxCanAfford(row:GetField("index")) then
-		input:GetElement("__parent.__parent.purchaseBtn")
-			:SetDisabled(false)
-			:Draw()
-	else
-		input:GetElement("__parent.__parent.purchaseBtn")
-			:SetDisabled(true)
-			:Draw()
-	end
-end
-
-function private.InputQtyOnEnterPressed(input)
-	input:GetElement("__parent.__parent.purchaseBtn"):Click()
-end
-
-function private.MaxBtnOnClick(button)
-	local row = button:GetElement("__parent.__parent"):GetContext()
-	local value = max(1, min(TSM.Vendoring.Buy.GetMaxCanAfford(row:GetField("index")), ItemInfo.GetMaxStack(row:GetField("itemString")) * CalculateTotalNumberOfFreeBagSlots()))
-	button:GetElement("__parent.input")
-		:SetValue(value)
-		:Draw()
-	private.InputQtyOnValidationChanged(button:GetElement("__parent.input"))
-	button:GetElement("__parent.__parent.cost.text")
-		:SetText(private.GetAltCostText(row, tonumber(value)))
-	button:GetElement("__parent.__parent.cost")
-		:Draw()
-end
-
-function private.GetAltCostText(row, quantity)
-	local index, costItemsText, price, stackSize = row:GetFields("index", "costItemsText", "price", "stackSize")
-	local color = TSM.Vendoring.Buy.GetMaxCanAfford(index) < quantity and Theme.GetColor("FEEDBACK_RED"):GetTextColorPrefix()
-	price = price * quantity / stackSize
-	if costItemsText == "" then
-		-- just a price
-		return Money.ToString(price, color, "OPT_RETAIL_ROUND")
-	elseif price == 0 then
-		-- just an extended cost string
-		return private.GetItemAltCostText(row, quantity)
-	else
-		-- both
-		return Money.ToString(price, color, "OPT_RETAIL_ROUND").." "..private.GetItemAltCostText(row, quantity)
-	end
-end
-
-function private.GetAltCostTooltip(row)
-	return row:GetField("firstCostItemString") or nil
-end
-
-function private.GetItemAltCostText(row, quantity)
-	local index = row:GetField("index")
-	local _, _, _, stackSize, _, _, _, extendedCost = GetMerchantItemInfo(index)
-	local numAltCurrencies = GetMerchantItemCostInfo(index)
-	-- bug with big keech vendor returning extendedCost = true for gold only items
-	if numAltCurrencies == 0 then
-		extendedCost = false
-	end
-	local costItemsText = ""
-	if extendedCost then
-		assert(numAltCurrencies > 0)
-		local costItems = TempTable.Acquire()
-		for j = 1, numAltCurrencies do
-			local _, costNum, costItemLink = GetMerchantItemCostItem(index, j)
-			costNum = costNum * quantity / stackSize
-			local costItemString = ItemString.Get(costItemLink)
-			local texture = nil
-			if costItemString then
-				texture = ItemInfo.GetTexture(costItemString)
-			elseif not Environment.IsVanillaClassic() and strmatch(costItemLink, "currency:") then
-				texture = C_CurrencyInfo.GetCurrencyInfoFromLink(costItemLink).iconFileID
-			else
-				error(format("Unknown item cost (%d, %d, %s)", index, costNum, tostring(costItemLink)))
-			end
-			if TSM.Vendoring.Buy.GetMaxCanAfford(index) < quantity then
-				costNum = Theme.GetColor("FEEDBACK_RED"):ColorText(costNum)
-			end
-			tinsert(costItems, costNum.." |T"..(texture or "")..":12|t")
-		end
-		costItemsText = table.concat(costItems, " ")
-		TempTable.Release(costItems)
-	end
-	return costItemsText
-end
-
-function private.PurchaseBtnOnClick(button)
-	local row = button:GetElement("__parent"):GetContext()
-	TSM.Vendoring.Buy.BuyItemIndex(row:GetField("index"), button:GetElement("__parent.qty.input"):GetValue())
-	button:GetBaseElement():HideDialog()
+	private.filterText = nameFilter
+	nameFilter = String.Escape(nameFilter)
+	input:GetElement("__parent.__parent.items"):SetFilters(nameFilter ~= "" and nameFilter or nil)
 end
 
 function private.GetCurrencyText()
 	local name, amount, texturePath = "", nil, nil
-	if Environment.IsRetail() then
-		local firstCurrency = GetMerchantCurrencies()
+	if ClientInfo.IsRetail() then
+		local firstCurrency = Merchant.GetCurrencies()
 		if firstCurrency then
 			local info = C_CurrencyInfo.GetCurrencyInfo(firstCurrency)
 			name = info.name
@@ -507,12 +215,12 @@ function private.RepairOnClick(button)
 	button:SetDisabled(true)
 
 	if IsAltKeyDown() then
-		if not TSM.Vendoring.Buy.CanGuildRepair() then
-			Log.PrintfUser(L["Cannot repair from the guild bank!"])
+		if not Vendor.CanGuildRepair() then
+			ChatMessage.PrintfUser(L["Cannot repair from the guild bank!"])
 			return
 		end
-		TSM.Vendoring.Buy.DoGuildRepair()
+		Vendor.DoGuildRepair()
 	else
-		TSM.Vendoring.Buy.DoRepair()
+		Vendor.DoRepair()
 	end
 end

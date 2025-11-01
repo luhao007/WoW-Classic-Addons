@@ -1,16 +1,22 @@
 ------------------------------------------------------------------------
-r8 | funkehdude | 2022-05-16 18:44:37 +0000 (Mon, 16 May 2022) | 1 line
+r80 | funkehdude | 2025-06-15 18:00:49 +0000 (Sun, 15 Jun 2025) | 1 line
 Changed paths:
    M /trunk/LibSpecialization/LibSpecialization.lua
 
-Fix the addon prefix being too long to work
+Make sure the guild timer gets cancelled
 ------------------------------------------------------------------------
-r7 | funkehdude | 2022-04-25 17:02:56 +0000 (Mon, 25 Apr 2022) | 1 line
+r79 | funkehdude | 2025-06-15 15:22:57 +0000 (Sun, 15 Jun 2025) | 1 line
 Changed paths:
-   M /trunk/LibSpecialization.toc
-   M /trunk/LibSpecialization_TBC.toc
-   M /trunk/LibSpecialization_Vanilla.toc
+   M /trunk/LibSpecialization/LibSpecialization.lua
 
-Link to license
+Use proper timers and make sure we schedule guild requests
+------------------------------------------------------------------------
+r78 | funkehdude | 2025-06-11 17:09:32 +0000 (Wed, 11 Jun 2025) | 1 line
+Changed paths:
+   M /trunk/.luacheckrc
+   M /trunk/LibSpecialization/LibSpecialization.lua
+   M /trunk/LibSpecialization.toc
+
+Add support for guild comms
 ------------------------------------------------------------------------
 

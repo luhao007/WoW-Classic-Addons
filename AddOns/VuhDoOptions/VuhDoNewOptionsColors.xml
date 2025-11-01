@@ -116,11 +116,29 @@
 						</Scripts>
 					</CheckButton>
 
-					<CheckButton name="$parentRaidIconsRadioButton" text="VUHDO_I18N_RAID_ICON" inherits="VuhDoTabRadioButtonTemplate">
+					<CheckButton name="$parentClassGradientsRadioButton" text="VUHDO_I18N_CLASS_GRADIENTS" inherits="VuhDoTabRadioButtonTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
 									<AbsDimension x="3" y="-231" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								self.tabPanel = "VuhDoNewOptionsColorsClassGradients";
+								VUHDO_lnfCheckButtonOnLoad(self);
+								VUHDO_lnfSetTooltip(self, VUHDO_I18N_TT.K609);
+							</OnLoad>
+						</Scripts>
+					</CheckButton>
+
+
+					<CheckButton name="$parentRaidIconsRadioButton" text="VUHDO_I18N_RAID_ICON" inherits="VuhDoTabRadioButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="3" y="-269" />
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -137,7 +155,7 @@
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
-									<AbsDimension x="3" y="-269" />
+									<AbsDimension x="3" y="-307" />
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -175,6 +193,8 @@
 					<Frame name="VuhDoNewOptionsColorsHotCharges" hidden="true" setAllPoints="true" inherits="VuhDoNewOptionsColorsHotChargesTemplate">
 					</Frame>
 					<Frame name="VuhDoNewOptionsColorsClasses" hidden="true" setAllPoints="true" inherits="VuhDoNewOptionsColorsClassesTemplate">
+					</Frame>
+					<Frame name="VuhDoNewOptionsColorsClassGradients" hidden="true" setAllPoints="true" inherits="VuhDoNewOptionsColorsClassGradientsTemplate">
 					</Frame>
 					<Frame name="VuhDoNewOptionsColorsRaidIcons" hidden="true" setAllPoints="true" inherits="VuhDoNewOptionsColorsRaidIconsTemplate">
 					</Frame>

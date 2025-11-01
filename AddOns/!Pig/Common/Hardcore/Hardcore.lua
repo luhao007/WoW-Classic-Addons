@@ -279,6 +279,10 @@ fujiF.Deaths.Clear:HookScript("OnClick", function ()
 	PIGA["Hardcore"]["Deaths"]["Player"]={}
 	HardcoreDeaths.Update_List()
 end);
+fujiF.Deaths.CZINFO = PIGButton(fujiF.Deaths,{"LEFT",fujiF.Deaths.Clear,"RIGHT",100,0},{60,20},"重置")
+fujiF.Deaths.CZINFO:HookScript("OnClick", function ()
+	Create.PIG_ResPoint(UIname)
+end);
 fujiF:HookScript("OnShow", function(self)
 	self.AutoCVars:SetChecked(PIGA["Hardcore"]["CVars"]["Open"])
 	self.AutoCVars.NameMin:PIGSetValue(PIGA["Hardcore"]["CVars"]["NameMinV"])

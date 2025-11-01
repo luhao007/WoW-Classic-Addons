@@ -9,7 +9,7 @@ local function GetAchievementIconAndColor(completed, state, sameAchievement)
 	if completed then
 		icon = "|T136814:0|t";
 		color = sameAchievement and addon.Util.Colors.LightGreenRGB or addon.Util.Colors.GreenRGB;
-	elseif state and (not state or state == "Past") then
+	elseif state == "Past" then
 		icon = "|T136813:0|t";
 		color = sameAchievement and addon.Util.Colors.LightRedRGB or addon.Util.Colors.RedRGB;
 	else
@@ -27,7 +27,7 @@ local function GetCurrentCharacterIcon(showCurrentCharacterIcons, wasEarnedByMe,
 	local currentCharacterIcon
 	if wasEarnedByMe then
 		currentCharacterIcon = "|T136814:0|t";
-	elseif state and (not state or state == "Past") then
+	elseif state == "Past" then
 		currentCharacterIcon = "|T136813:0|t";
 	else
 		currentCharacterIcon = "|T136815:0|t";
@@ -41,10 +41,7 @@ function tooltip:AddAchievementLine(currentAchievement, otherAchievementId, show
 	completed = otherFactionAchievementCompleted or completed;
 
 	local sameAchievement = otherAchievementId == currentAchievement.Id;
-	local state;
-	if currentAchievement.TemporaryObtainable then
-		state = currentAchievement.TemporaryObtainable.Obtainable();
-	end
+	local state = currentAchievement:GetObtainableState();
 	local icon, color = GetAchievementIconAndColor(completed, state, sameAchievement);
 	local currentCharacterIcon = GetCurrentCharacterIcon(showCurrentCharacterIcons, wasEarnedByMe, state)
 
@@ -128,6 +125,12 @@ function tooltip:ShowTooltip(anchor, achievement)
 			sect:Add(achievement);
 		end
 	end
+
+	-- if addon.Diagnostics.DebugEnabled() then
+	-- 	GameTooltip_AddBlankLineToTooltip(GameTooltip);
+	-- 	GameTooltip:AddDoubleLine("", achievement.Id);
+	-- 	GameTooltip_AddBlankLineToTooltip(GameTooltip);
+	-- end
 
 	GameTooltip:Show();
 end

@@ -1,11 +1,15 @@
-## Interface: 30405
+## Interface: 50502
 ## Author: arith, Dynaletik, dubcat
 ## Version: v1.52.04
 
 ## Title: Atlas |r|cFF0099FF[Transportation]|r
 ## Notes: Transportation Maps
-## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r |cFFFFFFFF副本地图|r |cFF69CCF0交通|r
+## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r|cFFFFFFFF副本地图|r |cFF69CCF0交通|r
 ## Notes-zhCN: 交通地图
+
+## IconTexture: Interface\WorldMap\WorldMap-Icon
+
+## Category-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r
 
 ## RequiredDeps: Atlas
 

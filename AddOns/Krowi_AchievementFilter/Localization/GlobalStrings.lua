@@ -29,13 +29,23 @@ function addon.GetCategoryInfoTitle(categoryId)
     return categoryId;
 end
 
-function addon.GetLFGDungeonInfo(dungeonID)
-    return GetLFGDungeonInfo and GetLFGDungeonInfo(dungeonID) or dungeonID;
+function addon.GetLFGDungeonInfo(dungeonId)
+    return GetLFGDungeonInfo and GetLFGDungeonInfo(dungeonId) or dungeonId;
 end
 
-function addon.GetMapName(uiMapID)
-    local mapInfo = C_Map.GetMapInfo(uiMapID);
-    return mapInfo and mapInfo.name or uiMapID;
+function addon.GetMapName(uiMapId)
+    local mapInfo = C_Map.GetMapInfo(uiMapId);
+    return mapInfo and mapInfo.name or uiMapId;
+end
+
+function addon.GetLFGActivityFullName(activityId)
+    local activityInfo = C_LFGList.GetActivityInfoTable(activityId);
+    return activityInfo and activityInfo.fullName or activityInfo;
+end
+
+function addon.GetLFGActivityShortName(activityId)
+    local activityInfo = C_LFGList.GetActivityInfoTable(activityId);
+    return activityInfo and activityInfo.shortName or activityInfo;
 end
 
 if not addon.Util.IsClassicWithAchievements then -- Wrath Classic does not have these and no fallback exists
@@ -54,6 +64,7 @@ L["Legion"] = EXPANSION_NAME6;
 L["Battle for Azeroth"] = EXPANSION_NAME7;
 L["Shadowlands"] = EXPANSION_NAME8;
 L["Dragonflight"] = EXPANSION_NAME9;
+L["The War Within"] = EXPANSION_NAME10;
 L["Scenarios"] = SCENARIOS;
 L["Garrison"] = GARRISON_LOCATION_TOOLTIP;
 L["Cities"] = BUG_CATEGORY4;
@@ -121,3 +132,12 @@ L["Wednesday"] = WEEKDAY_WEDNESDAY;
 L["Thursday"] = WEEKDAY_THURSDAY;
 L["Friday"] = WEEKDAY_FRIDAY;
 L["Saturday"] = WEEKDAY_SATURDAY;
+L["Warband"] = REPUTATION_SORT_TYPE_ACCOUNT
+L["Yes"] = YES
+L["No"] = NO
+L["Mount"] = MOUNT
+L["Pet"] = PET
+L["Tabard"] = TABARDSLOT
+L["Title"] = LFG_LIST_TITLE
+L["Toy"] = TOY
+L["Transmog"] = PERKS_VENDOR_CATEGORY_TRANSMOG

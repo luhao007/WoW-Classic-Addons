@@ -12,7 +12,7 @@ BACKDROP_VUHDO_COLOR_PICKER_SLIDER_8_8_1111 = {
 	tile = true,
 	tileSize = 8,
 	edgeSize = 8,
-	insets = {  left = 1, right = 1, top = 1, bottom = 1 },
+	insets = { left = 1, right = 1, top = 1, bottom = 1 },
 };
 
 --

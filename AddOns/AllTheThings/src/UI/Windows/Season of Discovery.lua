@@ -15,7 +15,7 @@ end
 app:CreateWindow("Season of Discovery", {
 	Commands = { "attsod" },
 	OnInit = function(self, handlers)
-		self.data = app.CreateNPC(app.HeaderConstants.SEASON_OF_DISCOVERY, {
+		self.data = app.CreateCustomHeader(app.HeaderConstants.SEASON_OF_DISCOVERY, {
 			visible = true, 
 			expanded = true,
 			back = 1,

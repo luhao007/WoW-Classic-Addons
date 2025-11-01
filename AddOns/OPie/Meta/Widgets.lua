@@ -113,3 +113,90 @@ do -- OPie:RadioSet
 	end
 	XU:RegisterFactory("OPie:RadioSet", CreateRadioSet)
 end
+do -- OPie:OptionsSlider
+	local OptionsSliderData, OptionsSlider = {}, {}
+
+	local function Thumb_OnLeave(self)
+		local d = getWidgetData(self:GetParent(), OptionsSliderData)
+		d.HiThumb:Hide()
+		if GameTooltip:IsOwned(d.self) then
+			GameTooltip:Hide()
+		end
+	end
+	local function Thumb_OnEnter(self)
+		local d = getWidgetData(self:GetParent(), OptionsSliderData)
+		d.HiThumb:Show()
+		local v, f = d.self:GetValue(), d.tipValueFormatter
+		if type(f) == "function" then
+			v = v(f)
+		elseif f then
+			v = string.format(f, v)
+		end
+		if v and v ~= "" then
+			-- MEH[5.5.0]: Classic doesn't let Textures own Tooltips
+			GameTooltip:SetOwner(d.self, "ANCHOR_NONE")
+			GameTooltip:ClearAllPoints()
+			GameTooltip:SetPoint("BOTTOM", self, "TOP", 0, 4)
+			GameTooltip:SetText(v)
+		end
+	end
+	local function OptionsSlider_OnValueChanged(self, nv, ...)
+		local d = assert(getWidgetData(self, OptionsSliderData), "Invalid object type")
+		CallObjectScript(d.self, "OnValueChanged", nv, ...)
+		if GameTooltip:IsOwned(d.self) then
+			Thumb_OnEnter(d.Thumb)
+		end
+	end
+
+	function OptionsSlider:SetRangeLabelText(lo, hi)
+		assert((lo == nil or type(lo) == "string") and (hi == nil or type(hi) == "string"), 'Syntax: OptionsSlider:SetRangeLabelText("lo", "hi")')
+		local d = assert(getWidgetData(self, OptionsSliderData), "Invalid object type")
+		d.lo:SetText(lo or "")
+		d.hi:SetText(hi or "")
+	end
+	function OptionsSlider:GetRangeLabelText()
+		local d = assert(getWidgetData(self, OptionsSliderData), "Invalid object type")
+		return d.lo:GetText(), d.hi:GetText()
+	end
+	function OptionsSlider:SetTipValueFormat(fmt)
+		local d = assert(getWidgetData(self, OptionsSliderData), "Invalid object type")
+		assert(fmt == nil or type(fmt) == "string" or type(fmt) == "function", 'Syntax: OptionsSlider:SetTipValueFormat("fmt")')
+		d.tipValueFormatter = fmt
+		if GameTooltip:IsOwned(d.self) then
+			Thumb_OnEnter(d.Thumb)
+		end
+	end
+
+	local OptionsSliderProps = {
+		api=OptionsSlider,
+		scripts={"OnValueChanged"},
+	}
+	AddObjectMethods({"OptionsSlider"}, OptionsSliderProps)
+	local function CreateOptionsSlider(name, parent, outerTemplate, id)
+		outerTemplate = outerTemplate and ("MinimalSliderTemplate" .. "," .. outerTemplate) or "MinimalSliderTemplate"
+		local s, d, t = CreateFrame("Slider", name, parent, outerTemplate, id)
+		s:SetScript("OnValueChanged", OptionsSlider_OnValueChanged)
+		d = newWidgetData(s, OptionsSliderData, OptionsSliderProps)
+		t = s:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+		t, d.lo = s:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall"), t
+		d.hi = t
+		d.lo:SetTextColor(0.8, 0.8, 0.8)
+		d.hi:SetTextColor(0.8, 0.8, 0.8)
+		d.lo:SetPoint("RIGHT", s, "LEFT", -2, 0)
+		d.hi:SetPoint("LEFT", s, "RIGHT", 2, 0)
+		d.lo:SetText(LOW)
+		d.hi:SetText(HIGH)
+		s.Thumb:SetScript("OnEnter", Thumb_OnEnter)
+		s.Thumb:SetScript("OnLeave", Thumb_OnLeave)
+		s.Thumb:SetMouseClickEnabled(false)
+		t = s:CreateTexture(nil, "OVERLAY")
+		t:SetAllPoints(s.Thumb)
+		t:SetAtlas("Minimal_SliderBar_Button")
+		t:SetBlendMode("ADD")
+		t:SetVertexColor(1,1, 0.65, 0.35)
+		t:Hide()
+		d.HiThumb, d.Thumb = t, s.Thumb
+		return s, 4, s:GetHeight()/2
+	end
+	XU:RegisterFactory("OPie:OptionsSlider", CreateOptionsSlider)
+end

@@ -10,7 +10,7 @@ local GetItemInfoInstant=GetItemInfoInstant or C_Item and C_Item.GetItemInfoInst
 ---------------
 local FramePlusfun=addonTable.FramePlusfun
 function FramePlusfun.Roll()
-	if PIG_MaxTocversion(50000,true) then return end
+	if PIG_MaxTocversion(60000,true) then return end
 	if not PIGA["FramePlus"]["Roll"] then return end
 	if ElvUI or NDui then return end
 	UIParent:UnregisterEvent("START_LOOT_ROLL")

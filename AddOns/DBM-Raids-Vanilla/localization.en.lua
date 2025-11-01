@@ -17,11 +17,6 @@ L = DBM:GetModLocalization("ThreeBugs")
 L:SetGeneralLocalization{
 	name = "Bug Trio"
 }
-L:SetMiscLocalization{
-	Yauj = "Princess Yauj",
-	Vem = "Vem",
-	Kri = "Lord Kri"
-}
 
 -------------
 -- Sartura --
@@ -126,7 +121,6 @@ L:SetOptionLocalization{
 }
 L:SetMiscLocalization{
 	Stomach		= "Stomach",
-	Eye			= "Eye of C'Thun",
 	FleshTent	= "Flesh Tentacle",--Localized so it shows on frame in users language, not senders
 	Weakened 	= "weaken",
 	NotValid	= "AQ40 partially cleared. %s optional bosses remain."
@@ -141,8 +135,7 @@ L:SetGeneralLocalization{
 }
 L:SetWarningLocalization{
 	WarnSubmerge		= "Submerge",
-	WarnEmerge			= "Emerge",
-	SpecWarnEye			= "Look away",
+	WarnEmerge			= "Emerge"
 }
 L:SetTimerLocalization{
 	TimerSubmerge		= "Submerge",
@@ -715,10 +708,7 @@ L:SetOptionLocalization({
 L:SetMiscLocalization({
 	PriestDied	= "%s dies.",
 	YellPhase2	= "Shirvallah, fill me with your RAGE!",
-	YellKill	= "Hakkar binds me no more!  Peace at last!",
-	Thekal		= "High Priest Thekal",
-	Zath		= "Zealot Zath",
-	LorKhan		= "Zealot Lor'Khan"
+	YellKill	= "Hakkar binds me no more!  Peace at last!"
 })
 
 -------------------
@@ -830,14 +820,10 @@ L:SetGeneralLocalization({
 	name = "Anub'Rekhan"
 })
 
-L:SetOptionLocalization({
-	ArachnophobiaTimer	= "Show timer for Arachnophobia (achievement)"
-})
-
 L:SetMiscLocalization({
-	ArachnophobiaTimer	= "Arachnophobia",
 	Pull1				= "Yes, run! It makes the blood pump faster!",
-	Pull2				= "Just a little taste..."
+	Pull2				= "Just a little taste...",
+	Pull3				= "There is no way out."
 })
 
 ----------------------------
@@ -887,10 +873,6 @@ L:SetOptionLocalization({
 	TimerSpider			= "Show timer for next Maexxna Spiderlings"
 })
 
-L:SetMiscLocalization({
-	ArachnophobiaTimer	= "Arachnophobia"
-})
-
 ------------------------------
 --  Noth the Plaguebringer  --
 ------------------------------
@@ -918,10 +900,9 @@ L:SetOptionLocalization({
 })
 
 L:SetMiscLocalization({
-	Pull				= "Die, trespasser!",
-	AddsYell			= "Rise, my soldiers! Rise and fight once more!",
-	Adds				= "summons forth Skeletal Warriors!",
-	AddsTwo				= "raises more skeletons!"
+	Pull1				= "Die, trespasser!",
+	Pull2				= "Glory to the master!",
+	AddsYell			= "Rise, my soldiers! Rise and fight once more!"
 })
 
 --------------------------
@@ -949,7 +930,8 @@ L:SetOptionLocalization({
 })
 
 L:SetMiscLocalization({
-	Pull				= "You are mine now."
+	Pull1				= "You are mine now.",
+	Pull2				= "I see you..."
 })
 
 ---------------
@@ -1019,8 +1001,6 @@ L:SetMiscLocalization({
 	Yell	= "Stalagg crush you!",
 	Emote	= "%s overloads!",
 	Emote2	= "Tesla Coil overloads!",
-	Boss1	= "Feugen",
-	Boss2	= "Stalagg",
 	Charge1 = "negative",
 	Charge2 = "positive"
 })
@@ -1130,13 +1110,6 @@ L:SetWarningLocalization({
 	SpecialWarningMarkOnPlayer	= "%s: %s"
 })
 
-L:SetMiscLocalization({
-	Korthazz	= "Thane Korth'azz",
-	Rivendare	= "Baron Rivendare",
-	Blaumeux	= "Lady Blaumeux",
-	Zeliek		= "Sir Zeliek"
-})
-
 -----------------
 --  Sapphiron  --
 -----------------
@@ -1154,10 +1127,6 @@ L:SetOptionLocalization({
 	TimerLanding		= "Show timer for landing",
 	TimerIceBlast		= "Show timer for Frost Breath",
 	WarningDeepBreath	= "Show special warning for Frost Breath"
-})
-
-L:SetMiscLocalization({
-	EmoteBreath			= "%s takes a deep breath."
 })
 
 L:SetWarningLocalization({

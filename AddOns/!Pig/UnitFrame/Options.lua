@@ -141,7 +141,7 @@ mubiaoF.Yisu:SetScript("OnClick", function (self)
 end);
 local function BigDebuff()
 	if PIGA["UnitFrame"]["TargetFrame"]["BigDebuff"] then
-		if PIG_MaxTocversion(50000) then
+		if PIG_MaxTocversion() then
 			TargetFrameToT:SetPoint("BOTTOMRIGHT", TargetFrame, "BOTTOMRIGHT", -4, -12);
 			hooksecurefunc("TargetFrame_UpdateDebuffAnchor", function(self, debuffName, index)
 				local buff = _G[debuffName..index];
@@ -152,10 +152,11 @@ local function BigDebuff()
 			end)
 		else
 			hooksecurefunc("TargetFrame_UpdateDebuffAnchor", function(_, buff)
-				local auraInstanceID = buff.auraInstanceID
-				local UnitP = C_UnitAuras.GetAuraDataByAuraInstanceID("target", auraInstanceID)
-				if UnitP["sourceUnit"] == "player" then
-					buff:SetSize(30,30)
+				if buff and buff.auraInstanceID then
+					local UnitP = C_UnitAuras.GetAuraDataByAuraInstanceID("target", buff.auraInstanceID)
+					if UnitP and UnitP["sourceUnit"] == "player" then
+						buff:SetSize(30,30)
+					end
 				end
 			end)
 		end

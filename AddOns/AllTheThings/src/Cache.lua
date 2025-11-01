@@ -99,58 +99,11 @@ local cacheSpellID = function(group, spellID)
 	CacheField(group, "spellID", spellID);
 end
 if app.Debugging and app.Version == "[Git]" then
-	local referenceCounter = {};
-	app.ReferenceCounter = referenceCounter;
-	local tonumber = tonumber
-	app.CheckReferenceCounters = function()
-		local CUSTOM_HEADERS = {};
-		for id,count in pairs(referenceCounter) do
-			if type(id) == "number" and tonumber(id) < 1 and tonumber(id) > -100000 then
-				CUSTOM_HEADERS[#CUSTOM_HEADERS + 1] = { id, count }
-			end
-		end
-		for id,_ in pairs(L.HEADER_NAMES) do
-			if not referenceCounter[id] then
-				referenceCounter[id] = 1;
-				CUSTOM_HEADERS[#CUSTOM_HEADERS + 1] = { id, 0 }
-			end
-		end
-		for id,_ in pairs(L.HEADER_DESCRIPTIONS) do
-			if not referenceCounter[id] then
-				CUSTOM_HEADERS[#CUSTOM_HEADERS + 1] = { id, 0, " and only exists as a description..." }
-			end
-		end
-		for id,_ in pairs(L.HEADER_ICONS) do
-			if not referenceCounter[id] then
-				CUSTOM_HEADERS[#CUSTOM_HEADERS + 1] = { id, 0, " and only exists as an icon..." }
-			end
-		end
-		app.Sort(CUSTOM_HEADERS, function(a, b)
-			return (a[1] or 0) < (b[1] or 0);
-		end);
-		for _,data in ipairs(CUSTOM_HEADERS) do
-			local id = data[1];
-			local header = {};
-			if L.HEADER_NAMES[id] then header.name = L.HEADER_NAMES[id]; end
-			if L.HEADER_ICONS[id] then header.icon = L.HEADER_ICONS[id]; end
-			if L.HEADER_DESCRIPTIONS[id] then header.description = L.HEADER_DESCRIPTIONS[id]; end
-			print("Header " .. id .. " has " .. data[2] .. " references" .. (data[3] or "."), header.name);
-			data[#data + 1] = header
-		end
-	end
-	cacheCreatureID = function(group, creatureID)
-		if creatureID > 0 then
-			CacheField(group, "creatureID", creatureID);
-		else
-			referenceCounter[creatureID] = (referenceCounter[creatureID] or 0) + 1;
-		end
-	end
 	cacheHeaderID = function(group, headerID)
 		if not group.type and not L.HEADER_NAMES[headerID] then
 			print("Header Missing Name ", headerID);
 			L.HEADER_NAMES[headerID] = "Header #" .. headerID;
 		end
-		referenceCounter[headerID] = (referenceCounter[headerID] or 0) + 1;
 		CacheField(group, "headerID", headerID);
 	end
 	cacheObjectID = function(group, objectID)
@@ -775,9 +728,32 @@ CacheFields = function(group, skipMapCaching)
 	return group;
 end
 
--- This data type requires additional processing.
-fieldConverters.otherQuestData = function(group, value)
-	_CacheFields(value);
+do
+	-- we need special handling since the data in the 'otherQuestData' needs to cache against the 'group' not the other data itself
+	local IgnoredOtherFactionFields = {
+		coords = 1,
+		coord = 1,
+		maps = 1,
+		g = 1,
+	}
+	-- otherwise this leads to raw data tables being cached against costs and providers etc.
+	local function CacheOtherFactionData(group, otherFactionData)
+		-- if the other faction data was actually made into a Type, then cache it against itself
+		if otherFactionData.__type then
+			_CacheFields(otherFactionData)
+		else
+			for key,value in pairs(otherFactionData) do
+				_converter = not IgnoredOtherFactionFields[key] and fieldConverters[key]
+				if _converter then
+					_converter(group, value)
+				end
+			end
+		end
+	end
+	-- This data type requires additional processing.
+	fieldConverters.otherQuestData = function(group, value)
+		CacheOtherFactionData(group, value)
+	end
 end
 
 -- Performance Tracking for Caching

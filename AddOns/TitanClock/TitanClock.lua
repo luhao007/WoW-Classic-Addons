@@ -33,6 +33,20 @@ local function SetColor(text)
 	return label;
 end
 
+local function GetLocalTime()
+	-- Linux seems to return UTC w/o DST when using GetGameTime
+	local label = ""
+	local hour = ""
+	local mins = ""
+
+	-- IsLinuxClient(), IsMacClient(), and IsWindowsClient
+	local now = C_DateAndTime.GetServerTimeLocal()
+	hour = date("%H", now)
+	mins = date("%M", now)
+
+	return tonumber(hour), tonumber(mins)
+end
+
 ---@param displaytype string Server | Local
 ---@param offset number User selected offset
 ---@return nil 
@@ -67,9 +81,15 @@ local function FormatTime(displaytype, offset)
 		else
 			offsethour = offset;
 		end
-	else
+	elseif displaytype == "Local" then
 		-- no offset for local time
+--		hour, minute = GetLocalTime()
 		hour, minute = tonumber(date("%H")), tonumber(date("%M"));
+		offsethour = 0;
+	else
+		-- invalid param, return something :)
+		hour = 0
+		minute = 0
 		offsethour = 0;
 	end
 
@@ -534,7 +554,7 @@ local function Create_Frames()
 	config:SetFrameStrata("FULLSCREEN") -- FULLSCREEN
 	config:Hide()                    --
 	config:SetWidth(90)
-	config:SetHeight(200)
+	config:SetHeight(170)
 
 	config:SetScript("OnShow", function(self)
 	end)

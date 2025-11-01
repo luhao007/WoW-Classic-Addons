@@ -1,9 +1,9 @@
 local mod	= DBM:NewMod("DelveTrashCommon", "DBM-Delves-WarWithin")
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20250429172117")
+mod:SetRevision("20251023050431")
 mod:SetZone(DBM_DISABLE_ZONE_DETECTION)--Stays active in all zones for zone change handlers, but registers events based on dungeon ids
-local validZones = {[2664] = true, [2679] = true, [2680] = true, [2681] = true, [2683] = true, [2684] = true, [2685] = true, [2686] = true, [2687] = true, [2688] = true, [2689] = true, [2690] = true, [2767] = true, [2768] = true, [2815] = true, [2826] = true}
+local validZones = {[2664] = true, [2679] = true, [2680] = true, [2681] = true, [2683] = true, [2684] = true, [2685] = true, [2686] = true, [2687] = true, [2688] = true, [2689] = true, [2690] = true, [2767] = true, [2768] = true, [2815] = true, [2826] = true, [2803] = true, [2951] = true}
 for v, _ in pairs(validZones) do
 	mod:RegisterZoneCombat(v)
 end
@@ -23,7 +23,9 @@ mod:RegisterEvents(
 --TODO: timer for Armored Core from WCL
 --TODO, is https://www.wowhead.com/spell=453149/gossamer-webbing worth adding, Brann seems to think so
 --TODO, detect and alert https://www.wowhead.com/npc=217208/zekvir spawning in your delve with a large warning
+--TODO, add https://www.wowhead.com/spell=455380/sprocket-punch ? it doesn't seem consiquential and that mob already has 3 abilities added
 --TODO, add/confirm timers for random spawn version of zekvir for nameplate timers
+--TODO, add https://www.wowhead.com/spell=1231893/crushing-stomp ?
 local warnDebilitatingVenom					= mod:NewTargetNoFilterAnnounce(424614, 3)--Brann will dispel this if healer role
 local warnCastigate							= mod:NewTargetNoFilterAnnounce(418297, 4)
 local warnSpearFish							= mod:NewTargetNoFilterAnnounce(430036, 2)
@@ -46,12 +48,17 @@ local warnMagmaHammer						= mod:NewCastAnnounce(445718, 3)
 local warnShadowSmash						= mod:NewCastAnnounce(474511, 3)
 local warnLureoftheVoid						= mod:NewCastAnnounce(474482, 3, nil, nil, nil, nil, nil, 12)
 local warnConcussiveSmash					= mod:NewCastAnnounce(474223, 3)
+local warnCrankshaftAssault					= mod:NewCastAnnounce(455613, 4)--Annoying but not deadly. Overcharged Delve ability
+local warnKyvezzaSpawn						= mod:NewCastAnnounce(1245156, 4)
 local warnEnrage							= mod:NewSpellAnnounce(448161, 3)
 local warnThrowDyno							= mod:NewSpellAnnounce(448600, 3)
 local warnIllusionStep						= mod:NewSpellAnnounce(444915, 3)
 
 local specWarnSpearFish						= mod:NewSpecialWarningYou(430036, nil, nil, nil, 2, 12)
 local specWarnFungalBloom					= mod:NewSpecialWarningSpell(415250, nil, nil, nil, 2, 2)
+local specWarnDarkMassacre					= mod:NewSpecialWarningSpell(1245203, nil, nil, nil, 2, 2)
+local specWarnBurnAway						= mod:NewSpecialWarningSpell(450142, nil, nil, nil, 2, 2)
+local specWarnNexusDaggers					= mod:NewSpecialWarningDodge(1245240, nil, nil, nil, 2, 2)
 local specWarnFearfulShriek					= mod:NewSpecialWarningDodge(433410, nil, nil, nil, 2, 2)
 local specWarnHidousLaughter				= mod:NewSpecialWarningDodge(372529, nil, nil, nil, 2, 2)
 local specWarnJaggedBarbs					= mod:NewSpecialWarningDodge(450714, nil, nil, nil, 2, 15)--8.5-26
@@ -80,12 +87,23 @@ local specWarnTheresTheDoor					= mod:NewSpecialWarningDodge(1216806, nil, nil, 
 local specWarnHeedlessCharge				= mod:NewSpecialWarningDodge(1217301, nil, nil, nil, 2, 2)
 local specWarnRecklessCharge				= mod:NewSpecialWarningDodge(473972, nil, nil, nil, 2, 2)--Insufficent data for timers
 local specWarnRocketBarrage					= mod:NewSpecialWarningDodge(473550, nil, nil, nil, 2, 2)
+local specWarnGolemSmash					= mod:NewSpecialWarningDodge(1239731, nil, nil, nil, 2, 15)--Overcharged Delve ability
+local specWarnOverchargedSlam				= mod:NewSpecialWarningDodge(1220665, nil, nil, nil, 2, 15)--Overcharged Delve ability
+local specWarnSandCrash						= mod:NewSpecialWarningDodge(1243017, nil, nil, nil, 2, 2)--S3
+local specWarnVorpalCleave					= mod:NewSpecialWarningDodge(1236256, nil, nil, nil, 2, 15)--S3
+local specWarnNullBreath					= mod:NewSpecialWarningDodge(1231144, nil, nil, nil, 2, 15)--S3
+local specWarnArcaneGeyser					= mod:NewSpecialWarningDodge(1236770, nil, nil, nil, 2, 2)--S3
+local specWarnEssenceCleave					= mod:NewSpecialWarningDodge(1238737, nil, nil, nil, 2, 15)
+local specWarnGravityShatter				= mod:NewSpecialWarningDodge(1238713, nil, nil, nil, 2, 2)
+local specWarnChargeThrough					= mod:NewSpecialWarningDodge(1244249, nil, nil, nil, 2, 2)
+local specWarnForwardCharge					= mod:NewSpecialWarningDodge(1216790, nil, nil, nil, 2, 2)
 local specWarnBloodbath						= mod:NewSpecialWarningRun(473995, nil, nil, nil, 4, 2)
 local specWarnEchoofRenilash				= mod:NewSpecialWarningRun(434281, nil, nil, nil, 4, 2)
 local specWarnNecroticEnd					= mod:NewSpecialWarningRun(445252, nil, nil, nil, 4, 2)
 local specWarnHorrendousRoar				= mod:NewSpecialWarningRun(450492, nil, nil, nil, 4, 2)
 local specWarnCurseoftheDepths				= mod:NewSpecialWarningDispel(440622, "RemoveCurse", nil, nil, 1, 2)
 local specWarnEnrageDispel					= mod:NewSpecialWarningDispel(448161, "RemoveEnrage", nil, nil, 1, 2)
+local specWarnOverchargedDispel				= mod:NewSpecialWarningDispel(1220472, "RemoveEnrage", nil, nil, 1, 2)--Overcharged Delve ability
 local specWarnBlessingofDuskDispel			= mod:NewSpecialWarningDispel(470592, "MagicDispeller", nil, nil, 1, 2)--Used by most speakers, boss and trash alike
 local specWarnShadowsofStrife				= mod:NewSpecialWarningInterrupt(449318, "HasInterrupt", nil, nil, 1, 2)--High Prio Interrupt
 local specWarnWebbedAegis					= mod:NewSpecialWarningInterrupt(450546, "HasInterrupt", nil, nil, 1, 2)
@@ -96,8 +114,12 @@ local specWarnHolyLight						= mod:NewSpecialWarningInterrupt(459421, "HasInterr
 local specWarnArmoredShell					= mod:NewSpecialWarningInterrupt(448179, "HasInterrupt", nil, nil, 1, 2)
 local specWarnBlessingofDusk				= mod:NewSpecialWarningInterrupt(470592, "HasInterrupt", nil, nil, 1, 2)--Speaker Davenruth
 local specWarnZap							= mod:NewSpecialWarningInterrupt(1216805, "HasInterrupt", nil, nil, 1, 2)
+local specWarnSandsOfKaresh					= mod:NewSpecialWarningInterrupt(1242469, "HasInterrupt", nil, nil, 1, 2)--S3
 local specWarnEnfeeblingSpittleInterrupt	= mod:NewSpecialWarningInterrupt(450505, nil, nil, nil, 1, 2)
 local specWarnHardenShell					= mod:NewSpecialWarningInterrupt(1214238, nil, nil, nil, 1, 2)
+local specWarnOverchargeKick				= mod:NewSpecialWarningInterrupt(1220472, nil, nil, nil, 1, 2)--Overcharged Delve ability
+local specWarnTerrifyingScreech				= mod:NewSpecialWarningInterrupt(1244108, nil, nil, nil, 1, 2)
+local specWarnAlphaCannon					= mod:NewSpecialWarningInterrupt(1216794, nil, nil, nil, 1, 2)--S2 (no timer, insufficient data and inconsiquential)
 
 local timerFearfulShriekCD					= mod:NewCDPNPTimer(13.4, 433410, nil, nil, nil, 3)
 local timerHidousLaughterCD					= mod:NewCDPNPTimer(25.4, 372529, nil, nil, nil, 3)--25.4-29.8
@@ -149,11 +171,27 @@ local timerTakeASelfieCD					= mod:NewCDNPTimer(13.3, 1217326, nil, nil, nil, 3)
 local timerTheresTheDoorCD					= mod:NewCDNPTimer(14.6, 1216806, nil, nil, nil, 3)--14.6-18.1
 local timerZapCD							= mod:NewCDNPTimer(19.4, 1216805, nil, nil, nil, 4, nil, DBM_COMMON_L.INTERRUPT_ICON)--19.4-25
 local timerHeedlessChargeCD					= mod:NewCDNPTimer(15.8, 1217301, nil, nil, nil, 3)--15.8-26.7
---local timerRecklessChargeCD					= mod:NewCDNPTimer(15.8, 473972, nil, nil, nil, 3)--Need more data
+--local timerRecklessChargeCD				= mod:NewCDNPTimer(15.8, 473972, nil, nil, nil, 3)--Need more data
 local timerBloodBathCD						= mod:NewCDNPTimer(15.8, 473995, nil, nil, nil, 3)--40-43
 local timerRocketBarrageCD					= mod:NewCDNPTimer(19.4, 473550, nil, nil, nil, 3)--19.4-21.8
 local timerHardenShellCD					= mod:NewCDNPTimer(30.4, 1214238, nil, nil, nil, 3)
 local timerCrushingPinchCD					= mod:NewCDNPTimer(8.1, 1214246, nil, nil, nil, 3)
+local timerGolemSmashCD						= mod:NewCDNPTimer(13.3, 1239731, nil, nil, nil, 3)--13.3-15
+local timerOverchargedSlamCD				= mod:NewCDNPTimer(21.8, 1220665, nil, nil, nil, 3)--21.8-23.1
+local timerCrankshaftAssaultCD				= mod:NewCDNPTimer(21.8, 455613, nil, nil, nil, 3)--21.8-23.1
+local timerOverchargeCD						= mod:NewCDNPTimer(21.8, 1220472, nil, nil, nil, 4, nil, DBM_COMMON_L.INTERRUPT_ICON)--21.8-23.1
+--local timerTerrifyingScreechCD			= mod:NewCDNPTimer(15.8, 1244108, nil, nil, nil, 3)--Unknown
+local timerSandCrashCD						= mod:NewCDNPTimer(19.9, 1243017, nil, nil, nil, 3)
+--local timerVorpalCleaveCD					= mod:NewCDNPTimer(15.8, 1236256, nil, nil, nil, 3)--Unknown
+--local timerNullBreathCD					= mod:NewCDNPTimer(15.8, 1231144, nil, nil, nil, 3)--Unknown
+--local timerSandsOfKareshCD				= mod:NewCDNPTimer(15.8, 1242469, nil, nil, nil, 4)--Unknown
+--local timerArcaneGeyserCD					= mod:NewCDNPTimer(15.8, 1236770, nil, nil, nil, 3)--Unknown
+local timerEssenceCleaveCD					= mod:NewCDNPTimer(11.4, 1238737, nil, nil, nil, 3)
+--local timerGravityShatterCD				= mod:NewCDNPTimer(15.8, 1238713, nil, nil, nil, 3)--Unknown
+local timerKyvezzaSpawnCast					= mod:NewCastTimer(6, 1245156, nil, nil, nil, 1)
+local timerDarkMassacreCD					= mod:NewCDNPTimer(30.3, 1245203, nil, nil, nil, 5)
+local timerNexusDaggersCD					= mod:NewCDNPTimer(30.3, 1245240, nil, nil, nil, 3)
+local timerBurnAwayCD						= mod:NewCDPNPTimer(24.2, 450142, nil, nil, nil, 2)
 
 --Antispam IDs for this mod: 1 run away, 2 dodge, 3 dispel, 4 incoming damage, 5 you/role, 6 misc, 7 off interrupt
 
@@ -164,10 +202,10 @@ do
 		if not force and validZones[currentZone] and not eventsRegistered then
 			eventsRegistered = true
 			self:RegisterShortTermEvents(
-                "SPELL_CAST_START 449318 450546 433410 450714 445781 415253 425040 424704 424798 414944 418791 424891 450197 448399 445191 455932 445492 434281 450637 445210 448528 449071 462686 459421 448179 445774 443292 450492 450519 450505 450509 448155 448161 418295 415250 434740 470592 443482 458879 445718 451913 445771 372529 474004 473541 474511 474482 474325 474223 474206 1217361 1217326 1216806 1216805 1217301 473550 1214238",
-                "SPELL_CAST_SUCCESS 414944 424614 418791 424891 427812 450546 450197 415253 449318 445191 430036 445252 425040 424704 448399 448528 433410 445492 462686 447392 459421 448179 450509 415250 443162 443292 451913 444915 445406 372529 473541 1216806 1216805 1217361 1217326 474206 474004 473995 473550 474482 418295 1214238 1214246",--474325
+                "SPELL_CAST_START 449318 450546 433410 450714 445781 415253 425040 424704 424798 414944 418791 424891 450197 448399 445191 455932 445492 434281 450637 445210 448528 449071 462686 459421 448179 445774 443292 450492 450519 450505 450509 448155 448161 418295 415250 434740 470592 443482 458879 445718 451913 445771 372529 474004 473541 474511 474482 474325 474223 474206 1217361 1217326 1216806 1216805 1217301 473550 1214238 1239731 455613 1220472 1243017 1236256 1231144 1242469 1242469 1236770 1238737 1238713 1245203 1245156 1245240 1244249 450142 1216794 1216790",
+                "SPELL_CAST_SUCCESS 414944 424614 418791 424891 427812 450546 450197 415253 449318 445191 430036 445252 425040 424704 448399 448528 433410 445492 462686 447392 459421 448179 450509 415250 443162 443292 451913 444915 445406 372529 473541 1216806 1216805 1217361 1217326 474206 474004 473995 473550 474482 418295 1214238 1214246 1243017 1238737 474223",--474325
 				"SPELL_INTERRUPT",
-                "SPELL_AURA_APPLIED 424614 449071 418297 430036 440622 441129 448161 470592 443482 458879 445407",
+                "SPELL_AURA_APPLIED 424614 449071 418297 430036 440622 441129 448161 470592 443482 458879 445407 1220472",
                 --"SPELL_AURA_REMOVED",
                 --"SPELL_PERIODIC_DAMAGE",
                 "UNIT_DIED"
@@ -193,9 +231,8 @@ do
 end
 
 ---@param self DBMMod
-local function workAroundLuaLimitation(self, spellId, sourceName, sourceGUID)
+local function workAroundLuaLimitation(self, spellId, sourceName, sourceGUID, args)
 	if spellId == 474223 and self:IsValidWarning(sourceGUID) then
-		timerConcussiveSmashCD:Start(nil, sourceGUID)
 		if self:AntiSpam(3, 5) then
 			warnConcussiveSmash:Show()
 		end
@@ -250,6 +287,105 @@ local function workAroundLuaLimitation(self, spellId, sourceName, sourceGUID)
 		if self:CheckInterruptFilter(sourceGUID, false, true) then
 			specWarnHardenShell:Show(sourceName)
 			specWarnHardenShell:Play("kickcast")
+		end
+	elseif spellId == 1239731 then
+		timerGolemSmashCD:Start(nil, sourceGUID)
+		if self:AntiSpam(3, 2) then
+			specWarnGolemSmash:Show()
+			specWarnGolemSmash:Play("frontal")
+		end
+	elseif spellId == 1220665 then
+		timerOverchargedSlamCD:Start(nil, sourceGUID)
+		if self:AntiSpam(3, 2) then
+			specWarnOverchargedSlam:Show()
+			specWarnOverchargedSlam:Play("watchstep")
+		end
+	elseif spellId == 455613 then
+		timerCrankshaftAssaultCD:Start(nil, sourceGUID)
+		if self:AntiSpam(3, 6) then
+			warnCrankshaftAssault:Show()
+		end
+	elseif spellId == 1220472 then
+		timerOverchargeCD:Start(nil, sourceGUID)--Seems to go on CD whether it's kicked or not
+		if self:CheckInterruptFilter(sourceGUID, false, true) then
+			specWarnOverchargeKick:Show(sourceName)
+			specWarnOverchargeKick:Play("kickcast")
+		end
+	elseif spellId == 1244108 then
+		if self:CheckInterruptFilter(sourceGUID, false, true) then
+			specWarnTerrifyingScreech:Show(sourceName)
+			specWarnTerrifyingScreech:Play("kickcast")
+		end
+	elseif spellId == 1243017 then
+		if self:AntiSpam(3, 2) then
+			specWarnSandCrash:Show()
+			specWarnSandCrash:Play("watchstep")
+		end
+	elseif spellId == 1236256 then
+		if self:AntiSpam(3, 2) then
+			specWarnVorpalCleave:Show()
+			specWarnVorpalCleave:Play("frontal")
+		end
+	elseif spellId == 1231144 then
+		if self:AntiSpam(3, 2) then
+			specWarnNullBreath:Show()
+			specWarnNullBreath:Play("frontal")
+		end
+	elseif spellId == 1242469 then
+		if self:CheckInterruptFilter(sourceGUID, false, true) then
+			specWarnSandsOfKaresh:Show(sourceName)
+			specWarnSandsOfKaresh:Play("kickcast")
+		end
+	elseif spellId == 1236770 then
+		if self:AntiSpam(3, 2) then
+			specWarnArcaneGeyser:Show()
+			specWarnArcaneGeyser:Play("watchstep")
+		end
+	elseif spellId == 1238737 then
+		if self:AntiSpam(3, 2) then
+			specWarnEssenceCleave:Show()
+			specWarnEssenceCleave:Play("frontal")
+		end
+	elseif spellId == 1238713 then
+		if self:AntiSpam(3, 2) then
+			specWarnGravityShatter:Show()
+			specWarnGravityShatter:Play("watchstep")
+		end
+	elseif spellId == 1245203 then
+		timerDarkMassacreCD:Start(nil, sourceGUID)
+		if self:AntiSpam(3, 5) then
+			specWarnDarkMassacre:Show()
+			specWarnDarkMassacre:Play("ghostsoon")
+		end
+	elseif spellId == 1245156 then
+		warnKyvezzaSpawn:Show()
+		timerKyvezzaSpawnCast:Start()
+	elseif spellId == 1245240 and args:GetSrcCreatureID() == 244755 then
+		timerNexusDaggersCD:Start(nil, sourceGUID)
+		if self:AntiSpam(3, 2) then
+			specWarnNexusDaggers:Show()
+			specWarnNexusDaggers:Play("farfromline")
+		end
+	elseif spellId == 1244249 then
+		if self:AntiSpam(3, 2) then
+			specWarnChargeThrough:Show()
+			specWarnChargeThrough:Play("farfromline")
+		end
+	elseif spellId == 450142 then
+		if self:AntiSpam(3, 4) then
+			specWarnBurnAway:Show()
+			specWarnBurnAway:Play("aesoon")
+		end
+		timerBurnAwayCD:Start(nil, args.sourceGUID)
+	elseif spellId == 1216794 then
+		if self:CheckInterruptFilter(sourceGUID, false, true) then
+			specWarnAlphaCannon:Show(sourceName)
+			specWarnAlphaCannon:Play("kickcast")
+		end
+	elseif spellId == 1216790 then
+		if self:AntiSpam(3, 2) then
+			specWarnForwardCharge:Show()
+			specWarnForwardCharge:Play("chargemove")
 		end
 	end
 end
@@ -487,7 +623,7 @@ function mod:SPELL_CAST_START(args)
 			specWarnAbyssalGrasp:Play("watchstep")
 		end
 	else
-		workAroundLuaLimitation(self, args.spellId, args.sourceName, args.sourceGUID)
+		workAroundLuaLimitation(self, args.spellId, args.sourceName, args.sourceGUID, args)
 	end
 end
 
@@ -594,6 +730,12 @@ function mod:SPELL_CAST_SUCCESS(args)
 		timerHardenShellCD:Start(30.4, args.sourceGUID)
 	elseif args.spellId == 1214246 then
 		timerCrushingPinchCD:Start(8.1, args.sourceGUID)
+	elseif args.spellId == 1243017 then
+		timerSandCrashCD:Start(19.9, args.sourceGUID)
+	elseif args.spellId == 1238737 then
+		timerEssenceCleaveCD:Start(11.4, args.sourceGUID)
+	elseif args.spellId == 474223 and self:IsValidWarning(args.sourceGUID) then
+		timerConcussiveSmashCD:Start(12, args.sourceGUID)
 	end
 end
 
@@ -674,6 +816,9 @@ function mod:SPELL_AURA_APPLIED(args)
 		else
 			warnEnrage:Show()
 		end
+	elseif args.spellId == 1220472 then
+		specWarnOverchargedDispel:Show(args.destName)
+		specWarnOverchargedDispel:Play("enrage")
 	elseif (args.spellId == 470592 or args.spellId == 443482 or args.spellId == 458879) and args:IsDestTypeHostile() then
 		specWarnBlessingofDuskDispel:Show(args.destName)
 		specWarnBlessingofDuskDispel:Play("dispelboss")
@@ -793,6 +938,22 @@ function mod:UNIT_DIED(args)
 	elseif cid == 236892 then--Treasure Crap
 		timerHardenShellCD:Stop(args.destGUID)
 		timerCrushingPinchCD:Stop(args.destGUID)
+	elseif cid == 239412 then--Awakened Defensive Construct
+		timerGolemSmashCD:Stop(args.destGUID)
+	elseif cid == 236838 then--Overcharged Bot
+		timerOverchargedSlamCD:Stop(args.destGUID)
+		timerCrankshaftAssaultCD:Stop(args.destGUID)
+		timerOverchargeCD:Stop(args.destGUID)
+	elseif cid == 244415 then--Pactsworn Dustblade
+		timerSandCrashCD:Stop(args.destGUID)
+	elseif cid == 244448 then--Invasive Phasecrawler
+		timerEssenceCleaveCD:Stop(args.destGUID)
+		--timerGravityShatterCD:Stop(args.destGUID)
+	elseif cid == 244755 then--Nexus-Princess Ky'veza
+		timerDarkMassacreCD:Stop(args.destGUID)
+		timerNexusDaggersCD:Stop(args.destGUID)
+	elseif cid == 247486 then--Waxface Variant in 3 boss room
+		timerBurnAwayCD:Stop(args.destGUID)
 	end
 end
 
@@ -881,11 +1042,27 @@ function mod:StartEngageTimers(guid, cid, delay)
 	elseif cid == 236892 then--Treasure Crap
 		timerCrushingPinchCD:Start(2-delay, guid)--2-5
 --		timerHardenShellCD:Start(13-delay, guid)--i think first one is health based due to large variations
+	elseif cid == 239412 then--Awakened Defensive Construct
+		timerGolemSmashCD:Start(14-delay, guid)
+	elseif cid == 236838 then--Overcharged Bot
+		timerOverchargeCD:Start(6-delay, guid)
+		timerCrankshaftAssaultCD:Start(9.5-delay, guid)
+		timerOverchargedSlamCD:Start(22.9-delay, guid)
+	elseif cid == 244415 then--Pactsworn Dustblade
+		timerSandCrashCD:Start(9.8-delay, guid)
+	elseif cid == 244448 then--Invasive Phasecrawler
+		timerEssenceCleaveCD:Start(6.8-delay, guid)
+		--timerGravityShatterCD:Start(10.6-delay, guid)
+	elseif cid == 244755 then--Nexus-Princess Ky'veza
+		timerDarkMassacreCD:Start(15.5-delay, guid)
+		timerNexusDaggersCD:Start(29.8-delay, guid)
+	elseif cid == 247486 then--Waxface Variant in 3 boss room
+		timerBurnAwayCD:Start(18.2-delay, guid)
 	end
 end
 
 --Abort timers when all players out of combat, so NP timers clear on a wipe
---Caveat, it won't calls top with GUIDs, so while it might terminate bar objects, it may leave lingering nameplate icons
+--Caveat, it won't call stop with GUIDs, so while it might terminate bar objects, it may leave lingering nameplate icons
 function mod:LeavingZoneCombat()
 	self:Stop(true)
 end

@@ -1,6 +1,5 @@
 <Ui>
 	<Script file="Options.lua" />
-	<Script file="AddonList.lua" />
 	<Script file="LootFrame.lua" />
 	<Script file="RollFrame.lua" />
 	<Script file="BuffTime.lua" />
@@ -12,5 +11,4 @@
 	<Script file="MacroFrame.lua" />
 	<Script file="TalentFrame.lua" />
 	<Script file="CharacterFrame.lua" />
-	<Script file="WowUIMove.lua" />
 </Ui>

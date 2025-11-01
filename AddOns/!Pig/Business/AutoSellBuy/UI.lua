@@ -24,7 +24,7 @@ local BusinessInfo=addonTable.BusinessInfo
 local GnName,GnUI,GnIcon,FrameLevel = unpack(BusinessInfo.AutoSellBuyData)
 local Width,Height,biaotiH  = 300, 550, 21;
 --父框架
-function BusinessInfo.AutoSellBuy_ADDUI()
+function BusinessInfo.AutoSellBuy_ADDUI(QuickButUI_index)
 	if not PIGA["AutoSellBuy"]["Open"] then return end
 	if _G[GnUI] then return end	
 	PIGModbutton(GnName,GnIcon,GnUI,FrameLevel)
@@ -36,16 +36,15 @@ function BusinessInfo.AutoSellBuy_ADDUI()
 	SellBuy:SetFrameLevel(FrameLevel)
 	--标题
 	SellBuy.biaoti = PIGFontString(SellBuy,{"TOP", SellBuy, "TOP", 0, -4},GnName)
-	PIGLine(SellBuy,"TOP",-biaotiH)
 	--内容显示
 	SellBuy.F=PIGOptionsList_RF(SellBuy,biaotiH,"Left")
 	--
 	BusinessInfo.AutoSell()
 	BusinessInfo.AutoBuy()
-	BusinessInfo.FastDrop()
-	BusinessInfo.FastOpen()
-	BusinessInfo.FastFen()
-	BusinessInfo.FastXuan()
+	BusinessInfo.FastDrop(QuickButUI_index)
+	BusinessInfo.FastOpen(QuickButUI_index+1)
+	BusinessInfo.FastFen(QuickButUI_index+2)
+	BusinessInfo.FastXuan(QuickButUI_index+3)
 	BusinessInfo.FastSave()
 end
 function BusinessInfo.ADDScroll(fuFrame,text,hangName,hang_NUM,Config1)
@@ -133,7 +132,7 @@ function BusinessInfo.ADDScroll(fuFrame,text,hangName,hang_NUM,Config1)
 				end
 			end
 		elseif hangName=="Fen" then
-			if quality>1 and classID==2 or classID==4 then
+			if quality>1 and classID==2 or classID==4 or classID==19 then
 				return true
 			else
 				return false,"物品无法分解"
@@ -302,7 +301,7 @@ function BusinessInfo.ADDScroll(fuFrame,text,hangName,hang_NUM,Config1)
 	fuFrame.List.addList.NR.ButList={}
 	for id = 1, addBag_hang_NUM do
 		local hang = CreateFrame("Frame", nil, fuFrame.List.addList.NR);
-		fuFrame.List.addList.NR.ButList[id]=hang--hangName.."addList"..id
+		fuFrame.List.addList.NR.ButList[id]=hang
 		hang:SetSize(Width-40, hang_Height);
 		if id==1 then
 			hang:SetPoint("TOP",fuFrame.List.addList.NR.Scroll,"TOP",0,-2);
@@ -321,6 +320,7 @@ function BusinessInfo.ADDScroll(fuFrame,text,hangName,hang_NUM,Config1)
 			self.itemLink=itemLink
 			local ItemLevel = GetDetailedItemLevelInfo(itemLink)
 			local ItemLevel=ItemLevel or "*"
+			print(itemLink)
 			self.link:SetText(ItemLevel..itemLink);	
 		end
 	end
@@ -381,7 +381,8 @@ function BusinessInfo.ADDScroll(fuFrame,text,hangName,hang_NUM,Config1)
 	    		hang.check:SetID(dangqianH);
 		    	hang.icon:SetTexture(bagshujuy[dangqianH][3]);
 		    	hang.itemID=bagshujuy[dangqianH][1]
-				Fun.HY_ShowItemLink(hang,bagshujuy[dangqianH][1],bagshujuy[dangqianH][2])
+		    	hang.link:SetText(bagshujuy[dangqianH][7]..bagshujuy[dangqianH][2]);
+				--Fun.HY_ShowItemLink(hang,bagshujuy[dangqianH][1],bagshujuy[dangqianH][2])
 				if fuFrame.List.addList.lx=="filtra" then
 					hang.check.icon:SetSize(hang_Height-9,hang_Height-9);
 					hang.check.icon:SetTexture("interface/common/voicechat-muted.blp");

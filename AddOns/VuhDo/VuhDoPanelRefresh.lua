@@ -2,16 +2,12 @@
 -- BURST CACHE ---------------------------------------------------
 local _G = _G;
 local table = table;
-local floor = floor;
 local ipairs = ipairs;
 local twipe = table.wipe;
 
 local VUHDO_CONFIG;
 local VUHDO_PANEL_SETUP;
-local VUHDO_RAID;
 
-local VUHDO_getHeaderPos;
-local VUHDO_customizeHeader;
 local VUHDO_getDynamicModelArray;
 local VUHDO_getGroupMembersSorted;
 local VUHDO_getHealButton;
@@ -23,12 +19,10 @@ local VUHDO_getTargetButton;
 local VUHDO_getTotButton;
 local VUHDO_getOrCreateHealButton;
 local VUHDO_updateAllCustomDebuffs;
-local VUHDO_getHeaderWidth;
 local VUHDO_initAllEventBouquets;
 local VUHDO_getActionPanelOrStub;
 local VUHDO_isPanelPopulated;
 local VUHDO_updateAllRaidBars;
-local VUHDO_isTableHeaderOrFooter;
 local VUHDO_fixFrameLevels;
 local VUHDO_resetNameTextCache;
 local VUHDO_reloadRaidMembers;
@@ -43,10 +37,7 @@ function VUHDO_panelRefreshInitLocalOverrides()
 
 	VUHDO_CONFIG = _G["VUHDO_CONFIG"];
 	VUHDO_PANEL_SETUP = _G["VUHDO_PANEL_SETUP"];
-	VUHDO_RAID = _G["VUHDO_RAID"];
 
-	VUHDO_getHeaderPos = _G["VUHDO_getHeaderPos"];
-	VUHDO_customizeHeader = _G["VUHDO_customizeHeader"];
 	VUHDO_getDynamicModelArray = _G["VUHDO_getDynamicModelArray"];
 	VUHDO_getGroupMembersSorted = _G["VUHDO_getGroupMembersSorted"];
 	VUHDO_getHealButton = _G["VUHDO_getHealButton"];
@@ -58,12 +49,10 @@ function VUHDO_panelRefreshInitLocalOverrides()
 	VUHDO_getTotButton = _G["VUHDO_getTotButton"];
 	VUHDO_getOrCreateHealButton = _G["VUHDO_getOrCreateHealButton"];
 	VUHDO_updateAllCustomDebuffs = _G["VUHDO_updateAllCustomDebuffs"];
-	VUHDO_getHeaderWidth = _G["VUHDO_getHeaderWidth"];
 	VUHDO_initAllEventBouquets = _G["VUHDO_initAllEventBouquets"];
 	VUHDO_getActionPanelOrStub = _G["VUHDO_getActionPanelOrStub"];
 	VUHDO_isPanelPopulated = _G["VUHDO_isPanelPopulated"];
 	VUHDO_updateAllRaidBars = _G["VUHDO_updateAllRaidBars"];
-	VUHDO_isTableHeaderOrFooter = _G["VUHDO_isTableHeaderOrFooter"];
 	VUHDO_fixFrameLevels = _G["VUHDO_fixFrameLevels"];
 	VUHDO_resetNameTextCache = _G["VUHDO_resetNameTextCache"];
 	VUHDO_reloadRaidMembers = _G["VUHDO_reloadRaidMembers"];
@@ -219,7 +208,6 @@ function VUHDO_refreshUiNoMembers()
 		VUHDO_rebuildTargets();
 	end
 	VUHDO_initAllEventBouquets();
-	VUHDO_resetDebuffIconDispenser();
 end
 local VUHDO_refreshUiNoMembers = VUHDO_refreshUiNoMembers;
 
@@ -243,7 +231,6 @@ local tPrivateAuraAnchor;
 local tPanelSetup;
 local tBarScaling;
 local tPrivateAuraSetup;
-local tWidth, tHeight;
 function VUHDO_refreshPrivateAuras(aPanelNum, aButton, aUnit)
 
 	if not C_UnitAuras or not aPanelNum or not aButton or not aUnit then

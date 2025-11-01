@@ -1,15 +1,25 @@
-## Interface: 50500
+## Interface: 50502
+## Author: Zensunim of Dragonblight
+## Version: 5.19.4
+
 ## Title: GTFO
 ## Notes: GTFO, you're dying!
-## Author: Zensunim of Dragonblight
-## Version: 5.17.4
-## DefaultState: Enabled
-## SavedVariables: GTFOData
+## Title-zhCN: |cFFFFE00A<|r|cFFC79C6E战斗|r|cFFFFE00A>|r|cFFFFFFFF伤害警报|r |cFFFFE00AGTFO|r
+## Notes-zhCN: 当你站在错误的位置时发出警报
+
+## IconTexture: Interface\Icons\spell_fire_fire
+
 ## Category: Combat
-## X-WoWI-ID: 17996 
+## Category-zhCN: |cFFFFE00A<|r|cFFC79C6E战斗|r|cFFFFE00A>|r
+
+## DefaultState: Enabled
+
+## SavedVariables: GTFOData
+
+## X-WoWI-ID: 17996
 ## X-Curse-Project-ID: 20697
 ## X-Wago-ID: PANz0MK4
-## IconTexture: Interface\Icons\spell_fire_fire
+
 Localization\enUS.lua
 Localization\esES.lua
 Localization\esMX.lua

@@ -6,9 +6,9 @@
 
 local TSM = select(2, ...) ---@type TSM
 local Sniper = TSM.MainUI.Operations:NewPackage("Sniper")
-local L = TSM.Include("Locale").GetTable()
-local UIElements = TSM.Include("UI.UIElements")
-local UIUtils = TSM.Include("UI.UIUtils")
+local L = TSM.Locale.GetTable()
+local UIElements = TSM.LibTSMUI:Include("Util.UIElements")
+local UIUtils = TSM.LibTSMUI:Include("Util.UIUtils")
 local private = {
 	currentOperationName = nil,
 }
@@ -16,6 +16,9 @@ local MAX_PRICE_VALIDATE_CONTEXT = {
 	badSources = {
 		sniperopmax = true,
 	}
+}
+local SETTING_TOOLTIPS = {
+	belowPrice = L["The maximum price of an auction to be included in the sniper results."],
 }
 
 
@@ -41,7 +44,7 @@ function private.GetSniperOperationSettings(operationName)
 		:SetPadding(8, 8, 8, 0)
 		:SetBackgroundColor("PRIMARY_BG")
 		:AddChild(TSM.MainUI.Operations.CreateExpandableSection("Sniper", "settings", L["General Options"], L["Set what items are shown during a Sniper scan."])
-			:AddChild(TSM.MainUI.Operations.CreateLinkedPriceInput("belowPrice", L["Maximum price"], MAX_PRICE_VALIDATE_CONTEXT))
+			:AddChild(TSM.MainUI.Operations.CreateLinkedPriceInput("belowPrice", L["Maximum price"], MAX_PRICE_VALIDATE_CONTEXT, nil, nil, SETTING_TOOLTIPS.belowPrice))
 		)
 		:AddChild(TSM.MainUI.Operations.GetOperationManagementElements("Sniper", private.currentOperationName))
 end

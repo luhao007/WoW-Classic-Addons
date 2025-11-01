@@ -6,7 +6,6 @@ local VUHDO_CONFIG;
 local VUHDO_INDICATOR_CONFIG;
 
 
-local tonumber = tonumber;
 local ipairs = ipairs;
 local pairs = pairs;
 local strfind = strfind;
@@ -192,7 +191,7 @@ end
 
 
 --
-local tBackdrop, tBorderCol;
+local tBackdrop;
 local tWidth, tGap;
 local tPanelNum;
 local function VUHDO_initPlayerTargetBorder(aButton, aBorderFrame, anIsNoIndicator)
@@ -223,7 +222,7 @@ local function VUHDO_initPlayerTargetBorder(aButton, aBorderFrame, anIsNoIndicat
 	aBorderFrame.backdropInfo = tBackdrop;
 	aBorderFrame:ApplyBackdrop();
 
-	aBorderFrame.backdropBorderColor = CreateColor(0, 0, 0);
+	aBorderFrame.backdropBorderColor = VUHDO_getOrCreateCachedColor(0, 0, 0);
 	aBorderFrame.backdropBorderColorAlpha = 1;
 	aBorderFrame:SetBackdropBorderColor(0, 0, 0, 1);
 
@@ -265,7 +264,7 @@ local function VUHDO_initClusterBorder(aButton)
 	tClusterFrame.backdropInfo = tBackdropCluster;
 	tClusterFrame:ApplyBackdrop();
 
-	tClusterFrame.backdropBorderColor = CreateColor(0, 0, 0);
+	tClusterFrame.backdropBorderColor = VUHDO_getOrCreateCachedColor(0, 0, 0);
 	tClusterFrame.backdropBorderColorAlpha = 0;
 	tClusterFrame:SetBackdropBorderColor(0, 0, 0, 0);
 
@@ -274,7 +273,6 @@ end
 
 
 --
-local tIncBar;
 function VUHDO_positionHealButton(aButton, aBarScaling)
 	aButton:SetWidth((aBarScaling or sBarScaling)["barWidth"]);
 	aButton:SetHeight((aBarScaling or sBarScaling)["barHeight"]);
@@ -321,7 +319,7 @@ local function VUHDO_initButtonButtonFacade(aButton)
 	for tCnt = 1, 5 do
 		VUHDO_registerFacadeIcon(aButton, tCnt, VUHDO_I18N_HOTS);
 	end
-	for tCnt = 9, 10 do
+	for tCnt = 9, 12 do -- VUHDO_MAX_HOTS
 		VUHDO_registerFacadeIcon(aButton, tCnt, VUHDO_I18N_HOTS);
 	end
 	tIcon = VUHDO_getBarIcon(aButton, 1);
@@ -334,12 +332,10 @@ end
 
 
 --
-local tBorderCol;
 local tXPos,  tYPos;
 local tHealButton;
 local tGroupArray;
-local tGroupIndex, tColIdx, tBtnIdx;
-local tBorderCol;
+local tColIdx, tBtnIdx;
 local tModelArray;
 local tPanelName;
 local tDebuffFrame;
@@ -350,15 +346,13 @@ local function VUHDO_positionAllHealButtons(aPanel, aPanelNum)
 	tColIdx = 1;
 	tBtnIdx = 1;
 
-	tBorderCol  = nil;
-
 	for tModelIndex,  tModelId  in ipairs(tModelArray)  do
 		tGroupArray = VUHDO_getGroupMembersSorted(tModelId, sSortCriterion, aPanelNum, tModelIndex);
-		tGroupIndex = 1;
+
 		for tGroupIndex, tUnit  in ipairs(tGroupArray)  do
 			tHealButton = VUHDO_getHealButton(tBtnIdx, aPanelNum);
 
-			tBtnIdx  = tBtnIdx  + 1;
+			tBtnIdx = tBtnIdx  + 1;
 			VUHDO_positionHealButton(tHealButton);
 
 			VUHDO_setupAllHealButtonAttributes(tHealButton, tUnit, false, 70 == tModelId, false, false); -- VUHDO_ID_VEHICLES
@@ -989,6 +983,7 @@ local VUHDO_initHealButton = VUHDO_initHealButton;
 local tHealButton;
 local tGroupPanel;
 local tNumButtons;
+local tCnt;
 local function VUHDO_initAllHealButtons(aPanel, aPanelNum)
 	tNumButtons = VUHDO_getNumButtonsPanel(aPanelNum);
 	for tCnt  = 1, tNumButtons do
@@ -1081,7 +1076,7 @@ local function VUHDO_initPanel(aPanel, aPanelNum)
 	aPanel.backdropInfo = VUHDO_STD_BACKDROP;
 	aPanel:ApplyBackdrop();
 
-	aPanel.backdropBorderColor = CreateColor(VUHDO_backColor(tPanelColor["BORDER"]));
+	aPanel.backdropBorderColor = VUHDO_getOrCreateCachedColor(VUHDO_backColor(tPanelColor["BORDER"]));
 	aPanel.backdropBorderColorAlpha = tPanelColor["BORDER"]["O"] or 1;
 	aPanel:SetBackdropBorderColor(VUHDO_backColor(tPanelColor["BORDER"]));
 
@@ -1099,14 +1094,14 @@ local function VUHDO_initPanel(aPanel, aPanelNum)
 			aPanel.backdropInfo = VUHDO_DESIGN_BACKDROP;
 			aPanel:ApplyBackdrop();
 
-			aPanel.backdropBorderColor = CreateColor(1, 1, 1);
+			aPanel.backdropBorderColor = VUHDO_getOrCreateCachedColor(1, 1, 1);
 			aPanel.backdropBorderColorAlpha = 1;
 			aPanel:SetBackdropBorderColor(VUHDO_backColor(tPanelColor["BORDER"]));
 		else
 			aPanel.backdropInfo = VUHDO_STD_BACKDROP;
 			aPanel:ApplyBackdrop();
 			
-			aPanel.backdropBorderColor = CreateColor(VUHDO_backColor(tPanelColor["BORDER"]));
+			aPanel.backdropBorderColor = VUHDO_getOrCreateCachedColor(VUHDO_backColor(tPanelColor["BORDER"]));
 			aPanel.backdropBorderColorAlpha = tPanelColor["BORDER"]["O"] or 1;
 			aPanel:SetBackdropBorderColor(VUHDO_backColor(tPanelColor["BORDER"]));
 
@@ -1142,6 +1137,7 @@ end
 
 
 --
+local tPanel;
 function VUHDO_redrawPanel(aPanelNum, anIsFixAllFrameLevels)
 
 	if VUHDO_isPanelPopulated(aPanelNum) then
@@ -1176,14 +1172,14 @@ local VUHDO_redrawPanel = VUHDO_redrawPanel;
 --
 function VUHDO_redrawAllPanels(anIsFixAllFrameLevels)
 	VUHDO_resetMacroCaches();
-	resetSizeCalcCaches();
+	VUHDO_resetSizeCalcCaches();
 	twipe(VUHDO_UNIT_BUTTONS);
 	twipe(VUHDO_UNIT_BUTTONS_PANEL);
 
 	tBackdrop = nil;
 	tBackdropCluster = nil;
-	for tCnt  = 1, 10 do -- VUHDO_MAX_PANELS
-		VUHDO_redrawPanel(tCnt, anIsFixAllFrameLevels);
+	for tPanelNum = 1, 10 do -- VUHDO_MAX_PANELS
+		VUHDO_redrawPanel(tPanelNum, anIsFixAllFrameLevels);
 	end
 
 	VUHDO_setupAllButtonsUnitWatch(VUHDO_CONFIG["HIDE_EMPTY_BUTTONS"] and not VUHDO_IS_PANEL_CONFIG and not VUHDO_isConfigDemoUsers());
@@ -1201,7 +1197,6 @@ function VUHDO_redrawAllPanels(anIsFixAllFrameLevels)
 
 	-- Direction arrow
 	VuhDoDirectionFrameArrow:SetVertexColor(VUHDO_backColor(VUHDO_PANEL_SETUP["BAR_COLORS"]["DIRECTION"]));
-	VuhDoDirectionFrameText:SetFont(VUHDO_getFont(VUHDO_PANEL_SETUP["HOTS"]["TIMER_TEXT"]["FONT"]), 6, "OUTLINE");
 	VuhDoDirectionFrameText:SetPoint("TOP", "VuhDoDirectionFrameArrow", "CENTER", 5,  -2);
 	VuhDoDirectionFrameText:SetText("");
 	VuhDoDirectionFrame:SetFrameStrata("TOOLTIP");

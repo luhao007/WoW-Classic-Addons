@@ -18,6 +18,7 @@ local GetItemInfo = app.WOWAPI.GetItemInfo;
 local GetItemIcon = app.WOWAPI.GetItemIcon;
 local GetItemCount = app.WOWAPI.GetItemCount;
 local GetFactionBonusReputation = app.WOWAPI.GetFactionBonusReputation;
+local IsBoAOverride = C_Item.IsItemBindToAccountUntilEquip
 
 -- Class locals
 
@@ -29,23 +30,29 @@ local GetFactionBonusReputation = app.WOWAPI.GetFactionBonusReputation;
 -- Ex. 87654 (ModID 23)=> 87654.023
 -- Ex. 102938 (ModID 1) (BonusID 4746) => 102938.00104746
 local function GetGroupItemIDWithModID(t, rawItemID, rawModID, rawBonusID)
-	local i, m, b;
+	local i, m, b, e
 	if t then
-		i = t.itemID or 0;
-		m = t.modID;
-		b = t.bonusID;
+		i = t.itemID or 0
+		m = t.modID
+		b = t.bonusID
+		e = t.extraID
 	else
-		i = rawItemID and tonumber(rawItemID) or 0;
-		m = rawModID and tonumber(rawModID);
-		b = rawBonusID and tonumber(rawBonusID);
+		i = rawItemID and tonumber(rawItemID) or 0
+		m = rawModID and tonumber(rawModID)
+		b = rawBonusID and tonumber(rawBonusID)
+	end
+	-- e can only exist in absence of m and b, but needs to not overlap modID space
+	if e then
+		i = i + (e/1000000)
+		return i
 	end
 	if m then
-		i = i + (m / 1000);
+		i = i + (m / 1000)
 	end
 	if b and b ~= 3524 then
-		i = i + (b / 100000000);
+		i = i + (b / 100000000)
 	end
-	return i;
+	return i
 end
 app.GetGroupItemIDWithModID = GetGroupItemIDWithModID;
 -- Returns the ItemID, ModID, BonusID of the provided ModItemID
@@ -84,7 +91,6 @@ local function GroupMatchesParams(group, key, value, ignoreModID)
 		if group.otherFactionQuestID == value then return true; end
 	-- NPCID can be contained in other fields as well (for now)
 	elseif key == "npcID" or key == "creatureID" then
-		if group.creatureID == value then return true; end
 		if group.npcID == value then return true; end
 		-- treat encounters with this NPC as a match for the NPC
 		if group.encounterID then
@@ -141,29 +147,41 @@ end
 -- Imports the raw information from the rawlink into the specified group
 app.ImportRawLink = function(group, rawlink, ignoreSource)
 	rawlink = rawlink and rawlink:match("item[%-?%d:]+");
-	if rawlink and group then
-		group.rawlink = rawlink;
-		-- importing a rawlink will clear any cached upgrade info for the group
-		group._up = nil;
-		local _, linkItemID, enchantId, gemId1, gemId2, gemId3, gemId4, suffixId, uniqueId, linkLevel, specializationID, upgradeId, modID, bonusCount, bonusID1 = (":"):split(rawlink);
-		if linkItemID then
-			-- app.PrintDebug("IRL+",rawlink,linkItemID,modID,bonusCount,bonusID1);
-			-- set raw fields in the group based on the link
-			group.itemID = tonumber(linkItemID);
-			group.modID = modID and tonumber(modID) or nil;
-			-- only set the bonusID if there is actually bonusIDs indicated
-			if (tonumber(bonusCount) or 0) > 0 then
-				-- Don't use bonusID 3524 as an actual bonusID
-				local b = bonusID1 and tonumber(bonusID1) or nil;
-				if b ~= 3524 and b ~= 0 then
-					group.bonusID = b;
-				end
-			end
-			group.modItemID = nil;
-			if not ignoreSource then
-				-- maybe make this a class method...
-				app.GetGroupSourceID(group)
-			end
+	if not rawlink or not group then return end
+
+	group.rawlink = rawlink;
+	-- specific versions of a given Item can actually be BoA while the base version is typically BoP
+	-- so store the BoA flag for this instance of the Item
+	if IsBoAOverride(rawlink) then
+		group.b = 3
+	end
+	-- importing a rawlink will clear any cached upgrade info for the group
+	group._up = nil;
+	local _, linkItemID, enchantId, gemId1, gemId2, gemId3, gemId4, suffixId, uniqueId, linkLevel, specializationID, upgradeId, modID, bonusCount, bonusID1 = (":"):split(rawlink);
+	if not linkItemID then return end
+
+	-- app.PrintDebug("IRL+",rawlink,linkItemID,modID,bonusCount,bonusID1);
+	-- set raw fields in the group based on the link
+	group.itemID = tonumber(linkItemID);
+	group.modID = modID and tonumber(modID) or nil;
+	-- only set the bonusID if there is actually bonusIDs indicated
+	if (tonumber(bonusCount) or 0) > 0 then
+		-- Don't use bonusID 3524 as an actual bonusID
+		local b = bonusID1 and tonumber(bonusID1) or nil;
+		if b ~= 3524 and b ~= 0 then
+			group.bonusID = b;
+		end
+	end
+	group.modItemID = nil;
+	if not ignoreSource then
+		-- maybe make this a class method...
+		app.GetGroupSourceID(group)
+	end
+	-- really weird situations where both modID and bonusID are empty but item has a 'special' extra ID to distinguish (like artifactID)
+	if not group.modID and not group.modID then
+		local extraID = tonumber(rawlink:match(":::1:8:(%d+)"))
+		if extraID then
+			group.extraID = extraID
 		end
 	end
 end
@@ -187,53 +205,19 @@ api.CleanLink = CleanLink
 local CLASS = "Item"
 local KEY = "itemID"
 local cache = app.CreateCache("modItemID");
--- Consolidated function to cache available Item information
-local function RawSetItemInfoFromLink(t, rawlink, attemptRefresh)
-	if attemptRefresh then app.DirectGroupRefresh(t, true) end
-	local name, link, quality, _, _, _, _, _, _, icon, _, _, _, b = GetItemInfo(rawlink);
-	-- app.PrintDebug("RawSetLink:=",rawlink,"->",link)
+local function ItemAsyncRefreshFunc(t)
 	local _t, id = cache.GetCached(t)
-	if link then
-		-- app.PrintDebug("rawset item info",id,link,name,quality,b)
-		_t.name = name;
-		_t.link = link;
-		_t.title = nil
-		_t.icon = icon;
-		_t.q = quality;
-		if quality > 6 then
-			-- heirlooms return as 1 but are technically BoE for our concern
-			_t.b = 2;
-		else
-			_t.b = b;
-		end
-		return link;
-	end
-	if not _t.__RawSetItemInfoFromLink then
-		_t.__RawSetItemInfoFromLink = true
-		-- app.PrintDebug("__RawSetItemInfoFromLink.set.fresh",t.hash,t.__RawSetItemInfoFromLink,canretry)
-		-- app.PrintDebug("Item Callback", id)
-		ItemEventListener:AddCallback(math_floor(id), function()
-			-- app.PrintDebug("Item Loaded", id)
-			RawSetItemInfoFromLink(t, rawlink, true)
-		end)
-		return
-	end
-	if _t.NoServerData or not t.CanRetry then
-		if _t.name then
-			return
-		end
-		local itemName = t.baselink or L.ITEM_NAMES[id] or (t.sourceID and L.SOURCE_NAMES and L.SOURCE_NAMES[t.sourceID])
-			or "Item #" .. tostring(id) .. "*";
-		_t.title = L.FAILED_ITEM_INFO;
-		_t.link = nil;
-		_t.sourceID = nil;
-		-- save the "name" field in the source group to prevent further requests to the cache
-		if _t.NoServerData then
-			_t.name = itemName;
-			-- app.PrintDebug("NoItemInfo",t.hash)
-		end
-		return
-	end
+	if _t.__Retrieved then return end
+
+	_t.__Retrieved = true
+	-- app.PrintDebug("RetrievalFunc",t.hash)
+	-- app.PrintDebug("Item Callback", id)
+	ItemEventListener:AddCallback(math_floor(id), function()
+		-- app.PrintDebug("Item Loaded", id)
+		app.DirectGroupRefresh(t, true)
+		app.ReshowGametooltip()
+	end)
+	return true
 end
 app.AddEventRegistration("ITEM_DATA_LOAD_RESULT", function(itemID, success)
 	if not success then
@@ -242,13 +226,12 @@ app.AddEventRegistration("ITEM_DATA_LOAD_RESULT", function(itemID, success)
 		_t.NoServerData = true
 	end
 end)
-local function default_link(t)
+-- Consolidated function to cache available Item information
+local function CacheInfo(t, field)
 	local itemLink = t.rawlink
-	-- item already has a pre-determined itemLink so use that
-	if itemLink then return RawSetItemInfoFromLink(t, itemLink); end
-	-- need to 'create' a valid accurate link for this item
-	itemLink = t.itemID;
-	if itemLink then
+	if not itemLink then
+		-- need to 'create' a valid accurate link for this item
+		itemLink = t.itemID
 		local modID, bonusID;
 		-- sometimes the raw itemID is actually a modItemID, so try splitting that here as a final adjustment
 		itemLink, modID, bonusID = GetItemIDAndModID(itemLink);
@@ -262,8 +245,14 @@ local function default_link(t)
 			modID = nil;
 			t.modID = nil;
 		end
+		local rawbonuses = rawget(t, "bonuses")
 		-- app.PrintDebug("default_link",itemLink,modID,bonusID)
-		if bonusID then
+		if rawbonuses then
+			local bonusesString = #rawbonuses..":"..app.TableConcat(rawbonuses, nil, nil, ":")
+			itemLink = ("item:%d:::::::::::%s:%s:"):format(itemLink, modID or "", bonusesString)
+			-- set the bonusID to the first bonusID
+			t.bonusID = rawbonuses[1]
+		elseif bonusID then
 			itemLink = ("item:%d:::::::::::%s:1:%d:"):format(itemLink, modID or "", bonusID);
 		elseif modID then
 			-- bonusID 3524 seems to imply "use ModID to determine SourceID" since without it, everything with ModID resolves as the base SourceID from links
@@ -272,24 +261,55 @@ local function default_link(t)
 			itemLink = ("item:%d"):format(itemLink);
 		end
 		-- save this link so it doesn't need to be built again
-		t.rawlink = itemLink;
-		return RawSetItemInfoFromLink(t, itemLink);
+		t.rawlink = itemLink
+		t.modItemID = nil
 	end
-end
-cache.DefaultFunctions.link = default_link
-local function default_icon(t)
-	return t.itemID and GetItemIcon(t.itemID) or 134400;
-end
-local function default_b(t, field, _t)
-	-- TODO: 'b' is accessed during update process, but might not yet be available from server
-	-- can we wait and do TLUG on any Item which determines b=1 later on?
-	if default_link(t) then
-		local b = _t.b
-		if b and b ~= 2 and t.__canretry then
 
+	local name, link, quality, _, _, _, _, _, _, icon, _, _, _, b = GetItemInfo(itemLink);
+	-- app.PrintDebug("RawSetLink:=",itemLink,"->",link)
+	local _t, id = cache.GetCached(t)
+	if link then
+		-- app.PrintDebug("rawset item info",id,link,name,quality,b)
+		_t.name = name;
+		_t.link = link;
+		_t.title = nil
+		_t.icon = icon;
+		_t.q = quality;
+		if quality > 6 then
+			-- heirlooms return as 1 but are technically BoE for our concern
+			_t.b = 2;
+		else
+			-- specific versions of a given Item can actually be BoA while the base version is typically BoP
+			-- so store the BoA flag for this instance of the Item
+			if b and IsBoAOverride(itemLink) then
+				t.b = 3
+			else
+				_t.b = b
+			end
+		end
+	else
+		local icon = id and GetItemIcon(id) or 134400
+		_t.icon = icon
+		if _t.NoServerData or not t.CanRetry then
+			if not _t.name then
+				local itemName = t.baselink or L.ITEM_NAMES[id] or (t.sourceID and L.SOURCE_NAMES and L.SOURCE_NAMES[t.sourceID])
+					or "Item #" .. tostring(id) .. "*";
+				_t.title = L.FAILED_ITEM_INFO;
+				_t.link = nil;
+				_t.sourceID = nil;
+				-- save the "name" field in the source group to prevent further requests to the cache
+				if _t.NoServerData then
+					_t.name = itemName;
+					-- app.PrintDebug("NoItemInfo",t.hash)
+				end
+			end
 		end
 	end
+	if field then return _t[field] end
 end
+cache.DefaultFunctions.link = CacheInfo
+cache.DefaultFunctions.name = CacheInfo
+cache.DefaultFunctions.icon = CacheInfo
 local function default_specs(t)
 	return app.GetFixedItemSpecInfo(t.itemID);
 end
@@ -335,8 +355,11 @@ local itemFields = {
 	_cache = function(t)
 		return cache;
 	end,
+	AsyncRefreshFunc = function()
+		return ItemAsyncRefreshFunc
+	end,
 	icon = function(t)
-		return cache.GetCachedField(t, "icon", default_icon);
+		return cache.GetCachedField(t, "icon");
 	end,
 	link = function(t)
 		return cache.GetCachedField(t, "link");
@@ -496,7 +519,7 @@ local CreateCostItem = app.CreateClass("CostItem", KEY, {
 	IsClassIsolated = true,
 	-- import the link field from Item so that loading works properly
 	ImportFrom = "Item",
-	ImportFields = { "link" },
+	ImportFields = { "link", "AsyncRefreshFunc" },
 	-- total is the count of the cost item required
 	total = function(t)
 		return t.count or 1;

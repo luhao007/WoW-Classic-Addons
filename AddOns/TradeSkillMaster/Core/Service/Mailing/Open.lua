@@ -5,20 +5,19 @@
 -- ------------------------------------------------------------------------------ --
 
 local TSM = select(2, ...) ---@type TSM
-local Open = TSM.Mailing:NewPackage("Open")
-local Environment = TSM.Include("Environment")
-local L = TSM.Include("Locale").GetTable()
-local Delay = TSM.Include("Util.Delay")
-local String = TSM.Include("Util.String")
-local Money = TSM.Include("Util.Money")
-local Log = TSM.Include("Util.Log")
-local ItemString = TSM.Include("Util.ItemString")
-local Theme = TSM.Include("Util.Theme")
-local DefaultUI = TSM.Include("Service.DefaultUI")
-local Threading = TSM.Include("Service.Threading")
-local ItemInfo = TSM.Include("Service.ItemInfo")
-local MailTracking = TSM.Include("Service.MailTracking")
-local Settings = TSM.Include("Service.Settings")
+local Open = TSM.Mailing:NewPackage("Open") ---@type AddonPackage
+local ClientInfo = TSM.LibTSMWoW:Include("Util.ClientInfo")
+local L = TSM.Locale.GetTable()
+local DelayTimer = TSM.LibTSMWoW:IncludeClassType("DelayTimer")
+local TempTable = TSM.LibTSMUtil:Include("BaseType.TempTable")
+local Money = TSM.LibTSMUtil:Include("UI.Money")
+local ItemString = TSM.LibTSMTypes:Include("Item.ItemString")
+local ChatMessage = TSM.LibTSMService:Include("UI.ChatMessage")
+local Theme = TSM.LibTSMService:Include("UI.Theme")
+local DefaultUI = TSM.LibTSMWoW:Include("UI.DefaultUI")
+local Threading = TSM.LibTSMTypes:Include("Threading")
+local Inbox = TSM.LibTSMWoW:Include("API.Inbox")
+local Mail = TSM.LibTSMService:Include("Mail")
 local private = {
 	settings = nil,
 	thread = nil,
@@ -27,8 +26,12 @@ local private = {
 	moneyCollected = 0,
 	checkInboxTimer = nil,
 }
-local INBOX_SIZE = Environment.IsRetail() and 100 or 50
-local MAIL_REFRESH_TIME = Environment.IsRetail() and 15 or 60
+local MAIL_REFRESH_TIME = ClientInfo.IsRetail() and 15 or 60
+local MANUAL_MAIL_TYPES = {
+	[Inbox.MAIL_TYPE.OTHER.GOLD_AND_ITEMS] = true,
+	[Inbox.MAIL_TYPE.OTHER.ITEMS] = true,
+	[Inbox.MAIL_TYPE.OTHER.GOLD] = true,
+}
 
 
 
@@ -36,12 +39,12 @@ local MAIL_REFRESH_TIME = Environment.IsRetail() and 15 or 60
 -- Module Functions
 -- ============================================================================
 
-function Open.OnInitialize()
-	private.settings = Settings.NewView()
+function Open.OnInitialize(settingsDB)
+	private.settings = settingsDB:NewView()
 		:AddKey("global", "mailingOptions", "inboxMessages")
 		:AddKey("global", "mailingOptions", "keepMailSpace")
 	private.thread = Threading.New("MAIL_OPENING", private.OpenMailThread)
-	private.checkInboxTimer = Delay.CreateTimer("MAILING_OPEN_CHECK_INBOX", private.CheckInbox)
+	private.checkInboxTimer = DelayTimer.New("MAILING_OPEN_CHECK_INBOX", private.CheckInbox)
 	DefaultUI.RegisterMailVisibleCallback(private.FrameVisibleCallback)
 end
 
@@ -73,8 +76,8 @@ end
 -- ============================================================================
 
 function private.OpenMailThread(autoRefresh, keepMoney, filterText, filterType)
-	local isLastLoop = false
 	while true do
+		local preLeftMail, preTotalMail = Inbox.GetNumItems()
 		local query = TSM.Mailing.Inbox.CreateQuery()
 		query:ResetOrderBy()
 			:OrderBy("index", false)
@@ -85,7 +88,7 @@ function private.OpenMailThread(autoRefresh, keepMoney, filterText, filterType)
 			:Select("index")
 
 		if filterType then
-			query:Equal("icon", filterType)
+			query:Equal("type", filterType)
 		end
 
 		local mails = Threading.AcquireSafeTempTable()
@@ -95,15 +98,12 @@ function private.OpenMailThread(autoRefresh, keepMoney, filterText, filterType)
 		query:Release()
 
 		private.OpenMails(mails, keepMoney, filterType)
-		Threading.ReleaseSafeTempTable(mails)
+		TempTable.Release(mails)
 
-		if not autoRefresh or isLastLoop then
+		local postLeftMail, postTotalMail = Inbox.GetNumItems()
+		if not autoRefresh or (preLeftMail == postLeftMail and preTotalMail == postTotalMail and postTotalMail == postLeftMail) then
+			Threading.Sleep(1)
 			break
-		end
-
-		local numLeftMail, totalLeftMail = GetInboxNumItems()
-		if totalLeftMail == numLeftMail or numLeftMail == INBOX_SIZE then
-			isLastLoop = true
 		end
 
 		CheckInbox()
@@ -123,19 +123,34 @@ function private.OpenMails(mails, keepMoney, filterType)
 		local index = mails[i]
 		Threading.WaitForFunction(private.CanOpenMail)
 
-		local mailType = MailTracking.GetMailType(index)
-		local matchesFilter = (not filterType and mailType) or (filterType and filterType == mailType)
-		local hasBagSpace = not MailTracking.GetInboxItemLink(index) or CalculateTotalNumberOfFreeBagSlots() > private.settings.keepMailSpace
+		local mailType = Inbox.GetMailType(index)
+		local matchesFilter = (not filterType and mailType) or (filterType == mailType)
+		local hasBagSpace = not Mail.GetInboxItemLink(index) or CalculateTotalNumberOfFreeBagSlots() > private.settings.keepMailSpace
 		if matchesFilter and hasBagSpace then
-			local _, _, _, _, money = GetInboxHeaderInfo(index)
-			if not keepMoney or (keepMoney and money <= 0) then
-				-- marks the mail as read
-				GetInboxText(index)
+			local _, money, cod, numItems, _, _, textCreated = Inbox.GetHeaderInfo(index)
+			if cod == 0 and (not keepMoney or (keepMoney and money <= 0)) then
+				local message = private.settings.inboxMessages and private.GetOpenMailMessage(index) or nil
+				-- Marks the mail as read
+				Inbox.GetText(index)
 				AutoLootMailItem(index)
 				private.moneyCollected = private.moneyCollected + money
 
-				if Threading.WaitForEvent("CLOSE_INBOX_ITEM", "MAIL_FAILED") ~= "MAIL_FAILED" and private.settings.inboxMessages then
-					private.PrintOpenMailMessage(index)
+				local event = nil
+				if money > 0 or numItems > 0 then
+					if mailType == Inbox.MAIL_TYPE.BUY.CRAFTING_ORDER or MANUAL_MAIL_TYPES[mailType] then
+						event = "MAIL_SUCCESS"
+					elseif textCreated and mailType ~= Inbox.MAIL_TYPE.OTHER.TEMP_INVOICE then
+						-- Temporary invoices are not auto deleted
+						event = "CLOSE_INBOX_ITEM"
+					end
+				end
+				if event and Threading.WaitForEvent(event, "MAIL_FAILED") ~= "MAIL_FAILED" then
+					if message then
+						ChatMessage.PrintUser(message)
+					end
+					if textCreated and event == "MAIL_SUCCESS" then
+						private.DeleteEmptyMail(index)
+					end
 				end
 			end
 		end
@@ -170,58 +185,95 @@ end
 
 function private.PrintMoneyCollected()
 	if private.settings.inboxMessages and private.moneyCollected > 0 then
-		Log.PrintfUser(L["Total Gold Collected: %s"], Money.ToString(private.moneyCollected))
+		ChatMessage.PrintfUser(L["Total Gold Collected: %s"], Money.ToStringForUI(private.moneyCollected))
 	end
 	private.moneyCollected = 0
 end
 
-function private.PrintOpenMailMessage(index)
-	local _, _, sender, subject, money, cod, _, hasItem = GetInboxHeaderInfo(index)
-	sender = sender or "?"
-	local _, _, _, _, isInvoice = GetInboxText(index)
-	if isInvoice then
-		-- it's an invoice
-		local invoiceType, itemName, playerName, bid, _, _, ahcut, _, _, _, quantity = GetInboxInvoiceInfo(index)
-		playerName = playerName or (invoiceType == "buyer" and AUCTION_HOUSE_MAIL_MULTIPLE_SELLERS or AUCTION_HOUSE_MAIL_MULTIPLE_BUYERS)
-		if invoiceType == "buyer" then
-			local itemLink = MailTracking.GetInboxItemLink(index) or "["..itemName.."]"
-			Log.PrintfUser(L["Bought %sx%d for %s from %s"], itemLink, quantity, Money.ToString(bid, Theme.GetColor("FEEDBACK_RED"):GetTextColorPrefix()), playerName)
-		elseif invoiceType == "seller" then
-			Log.PrintfUser(L["Sold [%s]x%d for %s to %s"], itemName, quantity, Money.ToString(bid - ahcut, Theme.GetColor("FEEDBACK_GREEN"):GetTextColorPrefix()), playerName)
+function private.GetOpenMailMessage(index)
+	local mailType = Inbox.GetMailType(index)
+	if mailType == Inbox.MAIL_TYPE.BUY.AUCTION then
+		local itemName, seller, bid, _, _, _, _, _, quantity = Inbox.GetInvoiceInfo(index)
+		seller = seller or AUCTION_HOUSE_MAIL_MULTIPLE_SELLERS
+		local itemLink = Mail.GetInboxItemLink(index) or "["..itemName.."]"
+		return format(L["Bought %sx%d for %s from %s"], itemLink, quantity, private.FormatMoney(bid, "FEEDBACK_RED"), seller)
+	elseif mailType == Inbox.MAIL_TYPE.SALE.AUCTION then
+		local itemName, buyer, bid, _, _, ahcut, _, _, quantity = Inbox.GetInvoiceInfo(index)
+		buyer = buyer or AUCTION_HOUSE_MAIL_MULTIPLE_BUYERS
+		local itemLink = "["..itemName.."]"
+		return format(L["Sold %sx%d for %s to %s"], itemLink, quantity, private.FormatMoney(bid - ahcut, "FEEDBACK_GREEN"), buyer)
+	elseif mailType == Inbox.MAIL_TYPE.BUY.CRAFTING_ORDER then
+		local _, commission, crafter = Inbox.GetCraftingOrderInfo(index)
+		return format(L["Crafting order bought for %s from %s"], private.FormatMoney(commission, "FEEDBACK_RED"), crafter)
+	elseif mailType == Inbox.MAIL_TYPE.SALE.CRAFTING_ORDER then
+		local _, commission, customer = Inbox.GetCraftingOrderInfo(index)
+		return format(L["Crafting order sold for %s to %s"], private.FormatMoney(commission, "FEEDBACK_GREEN"), customer)
+	elseif mailType == Inbox.MAIL_TYPE.CANCEL.AUCTION then
+		local numItems, itemLink, quantity = private.GetMailItemInfo(index)
+		if numItems == 1 and quantity > 0 then
+			return format(L["Cancelled auction of %sx%d"], itemLink, quantity)
 		end
-	elseif hasItem then
-		local itemLink
-		local quantity = 0
-		for i = 1, hasItem do
-			local link = GetInboxItemLink(index, i)
-			itemLink = itemLink or link
-			quantity = quantity + (select(4, GetInboxItem(index, i)) or 0)
-			if ItemString.Get(itemLink) ~= ItemString.Get(link) then
-				itemLink = L["Multiple Items"]
-				quantity = -1
-				break
-			end
+	elseif mailType == Inbox.MAIL_TYPE.EXPIRE.AUCTION then
+		local numItems, itemLink, quantity = private.GetMailItemInfo(index)
+		if numItems == 1 and itemLink and quantity > 0 then
+			return format(L["Your auction of %sx%s expired"], itemLink, quantity)
 		end
-		if hasItem == 1 then
-			itemLink = MailTracking.GetInboxItemLink(index) or itemLink
-		end
-		local itemName = ItemInfo.GetName(itemLink) or "?"
-		local itemDesc = (quantity > 0 and format("%sx%d", itemLink, quantity)) or (quantity == -1 and "Multiple Items") or "?"
-		if hasItem == 1 and itemLink and strfind(subject, "^" .. String.Escape(format(AUCTION_EXPIRED_MAIL_SUBJECT, itemName))) then
-			Log.PrintfUser(L["Your auction of %s expired"], itemDesc)
-		elseif hasItem == 1 and quantity > 0 and (subject == format(AUCTION_REMOVED_MAIL_SUBJECT.."x%d", itemName, quantity) or subject == format(AUCTION_REMOVED_MAIL_SUBJECT, itemName)) then
-			Log.PrintfUser(L["Cancelled auction of %sx%d"], itemLink, quantity)
-		elseif cod > 0 then
-			Log.PrintfUser(L["%s sent you a COD of %s for %s"], sender, Money.ToString(cod, Theme.GetColor("FEEDBACK_RED"):GetTextColorPrefix()), itemDesc)
-		elseif money > 0 then
-			Log.PrintfUser(L["%s sent you %s and %s"], sender, itemDesc, Money.ToString(money, Theme.GetColor("FEEDBACK_GREEN"):GetTextColorPrefix()))
+	elseif mailType == Inbox.MAIL_TYPE.OTHER.GOLD_AND_ITEMS then
+		local sender, money = Inbox.GetHeaderInfo(index)
+		sender = sender or "?"
+		local _, itemLink, quantity = private.GetMailItemInfo(index)
+		if quantity > 0 then
+			return format(L["%s sent you %sx%d and %s"], sender, itemLink, quantity, private.FormatMoney(money, "FEEDBACK_GREEN"))
+		elseif quantity == -1 then
+			return format(L["%s sent you multiple items and %s"], sender, private.FormatMoney(money, "FEEDBACK_GREEN"))
 		else
-			Log.PrintfUser(L["%s sent you %s"], sender, itemDesc)
+			return format(L["%s sent you %s"], sender, private.FormatMoney(money, "FEEDBACK_GREEN"))
 		end
-	elseif money > 0 then
-		Log.PrintfUser(L["%s sent you %s"], sender, Money.ToString(money, Theme.GetColor("FEEDBACK_GREEN"):GetTextColorPrefix()))
-	elseif subject then
-		Log.PrintfUser(L["%s sent you a message: %s"], sender, subject)
+	elseif mailType == Inbox.MAIL_TYPE.OTHER.ITEMS then
+		local sender = Inbox.GetHeaderInfo(index)
+		sender = sender or "?"
+		local _, itemLink, quantity = private.GetMailItemInfo(index)
+		if quantity > 0 then
+			return format(L["%s sent you %sx%d"], sender, itemLink, quantity)
+		elseif quantity == -1 then
+			return format(L["%s sent you multiple items"], sender)
+		end
+	elseif mailType == Inbox.MAIL_TYPE.OTHER.GOLD then
+		local sender, money = Inbox.GetHeaderInfo(index)
+		sender = sender or "?"
+		return format(L["%s sent you %s"], sender, private.FormatMoney(money, "FEEDBACK_GREEN"))
+	end
+end
+
+function private.FormatMoney(amount, color)
+	return Money.ToStringExact(amount, Theme.GetColor(color):GetTextColorPrefix())
+end
+
+function private.GetMailItemInfo(index)
+	local _, _, _, numItems = Inbox.GetHeaderInfo(index)
+	local itemLink = nil
+	local quantity = 0
+	for i = 1, numItems do
+		local link, count = Inbox.GetAttachment(index, i)
+		itemLink = itemLink or link
+		quantity = quantity + (count or 0)
+		if ItemString.Get(itemLink) ~= ItemString.Get(link) then
+			itemLink = L["Multiple Items"]
+			quantity = -1
+			break
+		end
+	end
+	if numItems == 1 then
+		itemLink = Mail.GetInboxItemLink(index) or itemLink
+	end
+	return numItems, itemLink, quantity
+end
+
+function private.DeleteEmptyMail(index)
+	local _, money, _, itemCount = Inbox.GetHeaderInfo(index)
+	-- Only force delete completely empty mails
+	if money == 0 and not itemCount then
+		DeleteInboxItem(index)
 	end
 end
 

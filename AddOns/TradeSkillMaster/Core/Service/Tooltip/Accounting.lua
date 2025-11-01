@@ -6,10 +6,10 @@
 
 local TSM = select(2, ...) ---@type TSM
 local Accounting = TSM.Tooltip:NewPackage("Accounting")
-local L = TSM.Include("Locale").GetTable()
-local Math = TSM.Include("Util.Math")
-local ItemString = TSM.Include("Util.ItemString")
-local CustomPrice = TSM.Include("Service.CustomPrice")
+local L = TSM.Locale.GetTable()
+local Math = TSM.LibTSMUtil:Include("Lua.Math")
+local ItemString = TSM.LibTSMTypes:Include("Item.ItemString")
+local CustomString = TSM.LibTSMTypes:Include("CustomString")
 local private = {}
 
 
@@ -18,7 +18,7 @@ local private = {}
 -- Module Functions
 -- ============================================================================
 
-function Accounting.OnInitialize()
+function Accounting.OnEnable()
 	TSM.Tooltip.Register(TSM.Tooltip.CreateInfo()
 		:SetHeadings(L["TSM Accounting"])
 		:SetSettingsModule("Accounting")
@@ -55,8 +55,8 @@ function private.PopulateSaleLines(tooltip, itemString)
 		avgSalePrice = totalPrice and Math.Round(totalPrice / totalSaleNum) or nil
 		lastSaleTime = TSM.Accounting.Transactions.GetLastSaleTime(itemString)
 		if not showTotals then
-			minSellPrice = CustomPrice.GetSourcePrice(itemString, "MinSell") or 0
-			maxSellPrice = CustomPrice.GetSourcePrice(itemString, "MaxSell") or 0
+			minSellPrice = CustomString.GetSourceValue("MinSell", itemString) or 0
+			maxSellPrice = CustomString.GetSourceValue("MaxSell", itemString) or 0
 		end
 	end
 
@@ -109,7 +109,7 @@ function private.PopulateSaleRateLine(tooltip, itemString)
 		-- example tooltip
 		saleRate = 0.7
 	else
-		saleRate = CustomPrice.GetSourcePrice(itemString, "SaleRate")
+		saleRate = CustomString.GetSourceValue("SaleRate", itemString)
 		if not saleRate then
 			return
 		end
@@ -129,14 +129,14 @@ function private.PopulatePurchaseLines(tooltip, itemString)
 		maxPrice = 55
 		lastBuyTime = time() - 3600
 	else
-		smartAvgPrice = CustomPrice.GetSourcePrice(itemString, "SmartAvgBuy")
+		smartAvgPrice = CustomString.GetSourceValue("SmartAvgBuy", itemString)
 		totalPrice, totalNum = TSM.Accounting.Transactions.GetBuyStats(itemString, false)
 		if not totalPrice then
 			return
 		end
 		if not showTotals then
-			minPrice = CustomPrice.GetSourcePrice(itemString, "MinBuy") or 0
-			maxPrice = CustomPrice.GetSourcePrice(itemString, "MaxBuy") or 0
+			minPrice = CustomString.GetSourceValue("MinBuy", itemString) or 0
+			maxPrice = CustomString.GetSourceValue("MaxBuy", itemString) or 0
 		end
 		lastBuyTime = TSM.Accounting.Transactions.GetLastBuyTime(itemString)
 	end

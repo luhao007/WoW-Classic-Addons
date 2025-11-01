@@ -157,8 +157,7 @@ function ActionFun.Update_Cooldown(self)
 		local SimID=self.SimID
 		if Type=="spell" then
 			local start, duration, enabled = PIGGetSpellCooldown(SimID);
-			if enabled==0 then
-			else
+			if enabled~=0 and start and duration then
 				self.cooldown:SetCooldown(start, duration);
 			end
 		elseif Type=="item" then
@@ -171,8 +170,7 @@ function ActionFun.Update_Cooldown(self)
 			local hongSpellID = GetMacroSpell(SimID)
 			if hongSpellID then
 				local start, duration, enabled = PIGGetSpellCooldown(hongSpellID);
-				if enabled==0 then
-				else
+				if enabled~=0 and start and duration then
 					self.cooldown:SetCooldown(start, duration);
 				end
 			else
@@ -180,8 +178,7 @@ function ActionFun.Update_Cooldown(self)
 				if ItemName then
 					local ItemID = GetItemInfoInstant(ItemLink)
 					local start, duration, enabled = GetItemCooldown(ItemID);
-					if enabled==0 then
-					else
+					if enabled~=0 and start and duration then
 						self.cooldown:SetCooldown(start or 0, duration or 0);
 					end
 				end

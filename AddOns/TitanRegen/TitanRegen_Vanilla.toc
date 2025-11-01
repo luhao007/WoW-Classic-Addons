@@ -1,16 +1,15 @@
-## Interface: 30405
+## Interface: 50502
 ## Author: Titan Panel Development Team (http://www.titanpanel.org)
-## Version: 8.0.12
+## Version: 8.4.1
 
-## Title: Titan Panel [|cffeda55fRegen|r] |cff00aa008.0.12|r
+## Title: Titan Panel [|cffeda55fRegen|r] |cff00aa008.4.1|r
 ## Notes: Adds a regen monitor to Titan Panel to show HP/MANA regen - Classic versions only
-## Title-zhCN: |cFFFFE00A<|r|cFFA330C9界面|r|cFFFFE00A>|r |cFFFFFFFF泰坦面板|r |cFF69CCF0恢复|r
+## Title-zhCN: |cFFFFE00A<|r|cFFA330C9界面|r|cFFFFE00A>|r|cFFFFFFFF泰坦面板|r |cFF69CCF0恢复|r
 ## Notes-zhCN: 泰坦面板的恢复模块
 
-## Dependencies: TitanClassic
-## OptionalDeps: 
+## Category-zhCN: |cFFFFE00A<|r|cFFA330C9界面|r|cFFFFE00A>|r
 
-## SavedVariables: 
+## Dependencies: Titan
 
 ## X-Part-Of: Titan
 

@@ -106,6 +106,12 @@ function Create.PIGSlider(fuF,Point,data,WH,UIName)--,{["Right"]="%"}
 	SliderF.Slider:HookScript("OnValueChanged", function(self, arg1)
 		self:GetParent().Value=arg1
 	end)
+	hooksecurefunc(SliderF, "Enable", function(self)
+		self.Slider:Enable();
+	end)
+	hooksecurefunc(SliderF, "Disable", function(self)
+		self.Slider:Disable()
+	end)
 	function SliderF:GetValue()
 		return self.Value or 0
 	end

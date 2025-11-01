@@ -1,9 +1,30 @@
-## Interface: 90200
-## Version: v9.2.2
+## Interface: 11506, 11507, 20504, 30405, 40402, 40401, 50500, 110105, 110107, 110200
+## Version: v11.2.0
 ## Title: Lib: Specialization
-## Notes: A library for transmitting and receiving talent specialization information of players in your group.
-## Author: Funkydude
-## X-Category: Library
-## X-License: Ace3 Style BSD: https://www.curseforge.com/project/13376/license
+## Notes: A library for transmitting your talent string and specialization to other players, that developers can embed in their addons.
+# Notes-deDE: A library for transmitting your talent string and specialization to other players, that developers can embed in their addons.
+# Notes-esES: A library for transmitting your talent string and specialization to other players, that developers can embed in their addons.
+# Notes-esMX: A library for transmitting your talent string and specialization to other players, that developers can embed in their addons.
+# Notes-frFR: A library for transmitting your talent string and specialization to other players, that developers can embed in their addons.
+# Notes-itIT: A library for transmitting your talent string and specialization to other players, that developers can embed in their addons.
+# Notes-koKR: A library for transmitting your talent string and specialization to other players, that developers can embed in their addons.
+# Notes-ptBR: A library for transmitting your talent string and specialization to other players, that developers can embed in their addons.
+# Notes-ruRU: A library for transmitting your talent string and specialization to other players, that developers can embed in their addons.
+# Notes-zhCN: A library for transmitting your talent string and specialization to other players, that developers can embed in their addons.
+# Notes-zhTW: A library for transmitting your talent string and specialization to other players, that developers can embed in their addons.
+## Category: Libraries
+## Category-deDE: Bibliotheken
+## Category-esES: Bibliotecas
+## Category-esMX: Bibliotecas
+## Category-frFR: Bibliothèques
+# Category-itIT: Libraries
+# Category-koKR: Libraries
+## Category-ptBR: Bibliotecas
+## Category-ruRU: Библиотеки
+## Category-zhCN: 函数库
+## Category-zhTW: 函式庫
+## Author: Funkeh
+## AllowLoadGameType: mainline, mists, cata
+## X-Curse-Project-ID: 615588
 
-LibSpecialization\LibSpecialization.xml
+LibSpecialization\LibSpecialization.lua

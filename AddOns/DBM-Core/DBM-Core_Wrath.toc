@@ -1,15 +1,20 @@
-## Interface: 30405
+## Interface: 50502
 ## Author: MysticalOS, QartemisT
-## Version: 11.2.2
+## Version: 12.0.2
 
 ## Title: |cffffe00a<|r|cffff7d0aDBM Core|r|cffffe00a>|r |cff69ccf0Main Core|r
 ## Notes: Deadly Boss Mods
-## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r |cFFFFFFFF副本助手|r |cFFFFE00ADBM|r
+## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r|cFFFFFFFF副本助手|r |cFFFFE00ADBM|r
 ## Notes-zhCN: 功能强大的副本助手，支持所有Boss。
 
 ## IconTexture: Interface\AddOns\DBM-Core\textures\dbm_airhorn
 
+## Category: DBM
+## Category-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r
+## Group: DBM-Core
+
 ## Dependencies: DBM-StatusBarTimers
+## OptionalDependencies: LibStub, CallbackHandler-1.0, LibSharedMedia-3.0, LibChatAnims, LibDBIcon-1.0, LibDeflate, LibSerialize, LibSpecialization, Masque, ChatThrottleLib
 ## LoadOnDemand: 0
 ## DefaultState: enabled
 
@@ -18,7 +23,6 @@
 
 ## X-Min-Interface: 30403
 ## X-Curse-Project-ID: 3358
-## X-WoWI-ID: 8814
 ## X-Wago-ID: qv633o6b
 ## X-Website: https://deadlybossmods.com
 ## X-Part-Of: DBM-Core
@@ -70,6 +74,10 @@ DBM-RangeCheck.lua
 DBM-InfoFrame.lua
 DBM-HudMap.lua
 DBM-Nameplate.lua
+
+# GUI Features
+modules\gui\Latency.lua
+modules\gui\Durability.lua
 
 # Modules
 modules\Commands.lua

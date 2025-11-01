@@ -90,8 +90,8 @@ local function Show_Glyphinfo(self,fwid,from)
 	end
 end
 function TalentData.add_TalentUI(frameX)
-	frameX.TalentF = PIGFrame(frameX,{"TOPLEFT", frameX, "TOPRIGHT", -3, 0},{TalentData.tianfuW+140,TalentData.tianfuH});
-	frameX.TalentF:PIGSetBackdrop(1,nil,nil,nil,0);
+	frameX.TalentF = PIGFrame(frameX,{"TOPLEFT", frameX, "TOPRIGHT", -3, 0},{TalentData.tianfuW+140,TalentData.tianfuH},nil,nil,nil,{["ElvUI"]={0,0,0,0},["NDui"]={0,0,0,0}});
+	frameX.TalentF:PIGSetBackdrop(1);
 	frameX.TalentF:SetFrameLevel(frameX.TalentF:GetFrameLevel()+6)
 	frameX.TalentF:Hide()
 	frameX.TalentF:PIGClose()
@@ -146,10 +146,10 @@ function TalentData.add_TalentUI(frameX)
 		frameX.TalentF.ButListDian[ixx]=PIGFontString(frameX.TalentF,{"TOPLEFT", frameX.TalentF, "TOPLEFT", 214*(ixx-1)+84,-27});
 	end
 	if PIG_MaxTocversion(30000,true) and PIG_MaxTocversion(50000) then 
-		frameX.TalentF.Glyph = PIGFrame(frameX.TalentF,{"BOTTOMLEFT", frameX.TalentF, "TOPLEFT", 0, 1},{TalentData.tianfuW+140,34});
+		frameX.TalentF.Glyph = PIGFrame(frameX.TalentF,{"BOTTOMLEFT", frameX.TalentF, "TOPLEFT", 0, -2},{TalentData.tianfuW+140,38},nil,nil,nil,{["ElvUI"]={0,0,0,0},["NDui"]={0,0,0,0}});
 		frameX.TalentF.Glyph:PIGSetBackdrop(1);
 
-		frameX.TalentF.Glyph.biaoti2 = PIGFontString(frameX.TalentF.Glyph,{"BOTTOMLEFT", frameX.TalentF.Glyph, "BOTTOMLEFT", 4,2},MINOR_GLYPH..": ");
+		frameX.TalentF.Glyph.biaoti2 = PIGFontString(frameX.TalentF.Glyph,{"BOTTOMLEFT", frameX.TalentF.Glyph, "BOTTOMLEFT", 4,6},MINOR_GLYPH..": ");
 		frameX.TalentF.Glyph.Glyph2 = PIGFontString(frameX.TalentF.Glyph,{"LEFT", frameX.TalentF.Glyph.biaoti2, "RIGHT", 0,0});
 		frameX.TalentF.Glyph.Glyph3 = PIGFontString(frameX.TalentF.Glyph,{"LEFT", frameX.TalentF.Glyph.biaoti2, "RIGHT", 180,0});
 		frameX.TalentF.Glyph.Glyph5 = PIGFontString(frameX.TalentF.Glyph,{"LEFT", frameX.TalentF.Glyph.biaoti2, "RIGHT", 360,0});
@@ -672,19 +672,32 @@ end
 ---通告属性=================
 --1坦克/2治疗/3法系DPS/4近战物理DPS/5远程物理DPS
 local TalentTabRole = {
-	["DEATHKNIGHT"]={["鲜血"]=1,["冰霜"]=4,["邪恶"]=4},
-	["DRUID"] ={["平衡"]=3,["野性战斗"]=4,["恢复"]=2},
-	["EVOKER"] = {["恩护"]=2,["湮灭"]=3,["增辉"]=3}, 
-	["HUNTER"] ={["野兽控制"]=5,["射击"]=5,["生存"]=5},
-	["MAGE"] ={["奥术"]=3,["火焰"]=3,["冰霜"]=3},
-	["PALADIN"] ={["神圣"]=2,["防护"]=1,["惩戒"]=4},
-	["PRIEST"] ={["戒律"]=2,["神圣"]=2,["暗影"]=3},
-	["ROGUE"] ={["刺杀"]=4,["战斗"]=4,["敏锐"]=4},
-	["SHAMAN"] ={["元素"]=3,["增强"]=4,["恢复"]=2},
-	["WARLOCK"] ={["痛苦"]=3,["恶魔学识"]=3,["毁灭"]=3},
-	["WARRIOR"] ={["武器"]=4,["狂怒"]=4,["防护"]=1},
-	["MONK"] = {["酒仙"]=1,["织雾"]=2,["踏风"]=4},
-	["DEMONHUNTER"] = {["浩劫"]=4,["复仇"]=1},
+	-- ["DEATHKNIGHT"]={["鲜血"]=1,["冰霜"]=4,["邪恶"]=4},
+	-- ["DRUID"] ={["平衡"]=3,["野性战斗"]=4,["恢复"]=2},
+	-- ["EVOKER"] = {["恩护"]=2,["湮灭"]=3,["增辉"]=3}, 
+	-- ["HUNTER"] ={["野兽控制"]=5,["射击"]=5,["生存"]=5},
+	-- ["MAGE"] ={["奥术"]=3,["火焰"]=3,["冰霜"]=3},
+	-- ["PALADIN"] ={["神圣"]=2,["防护"]=1,["惩戒"]=4},
+	-- ["PRIEST"] ={["戒律"]=2,["神圣"]=2,["暗影"]=3},
+	-- ["ROGUE"] ={["刺杀"]=4,["战斗"]=4,["敏锐"]=4},
+	-- ["SHAMAN"] ={["元素"]=3,["增强"]=4,["恢复"]=2},
+	-- ["WARLOCK"] ={["痛苦"]=3,["恶魔学识"]=3,["毁灭"]=3},
+	-- ["WARRIOR"] ={["武器"]=4,["狂怒"]=4,["防护"]=1},
+	-- ["MONK"] = {["酒仙"]=1,["织雾"]=2,["踏风"]=4},
+	-- ["DEMONHUNTER"] = {["浩劫"]=4,["复仇"]=1},
+	["DEATHKNIGHT"]={[1]=1,[2]=4,[3]=4},
+	["DRUID"] ={[1]=3,[2]=4,[3]=2},
+	["EVOKER"] = {[1]=2,[2]=3,[3]=3}, 
+	["HUNTER"] ={[1]=5,[2]=5,[3]=5},
+	["MAGE"] ={[1]=3,[2]=3,[3]=3},
+	["PALADIN"] ={[1]=2,[2]=1,[3]=4},
+	["PRIEST"] ={[1]=2,[2]=2,[3]=3},
+	["ROGUE"] ={[1]=4,[2]=4,[3]=4},
+	["SHAMAN"] ={[1]=3,[2]=4,[3]=2},
+	["WARLOCK"] ={[1]=3,[2]=3,[3]=3},
+	["WARRIOR"] ={[1]=4,[2]=4,[3]=1},
+	["MONK"] = {[1]=1,[2]=2,[3]=4},
+	["DEMONHUNTER"] = {[1]=4,[2]=1},
 	
 };
 local TalentIDRole = {
@@ -705,7 +718,7 @@ local TalentIDRole = {
 };
 local function Player_Stats_1(activeGroup,guancha)
 	local txt = ""
-	local zuidazhi = {"--",0,""}
+	local zuidazhi = {"--",0,"",1}
 	local numTabs = GetNumTalentTabs(guancha)
 	for i=1,numTabs do
 		local _, name, _, icon, pointsSpent, background, previewPointsSpent = GetTalentTabInfo(i,guancha,false,activeGroup);
@@ -717,9 +730,10 @@ local function Player_Stats_1(activeGroup,guancha)
 		if pointsSpent>zuidazhi[2] then
 			zuidazhi[1]=name
 			zuidazhi[2]=pointsSpent
+			zuidazhi[4]=i
 		end
 	end
-	return zuidazhi[1],zuidazhi[3]
+	return zuidazhi[1],zuidazhi[3],zuidazhi[4]
 end
 local function PIG_GetSpellCritChance()
 	local holySchool = 2
@@ -817,9 +831,9 @@ local function GetStatsData(role)
 	end	
 	return shuxing
 end
-local function Player_Stats_2(tianfuID)
+local function Player_Stats_2(tianfuID,TalentRoleX)
 	local classFilename, classId = UnitClassBase("player");
-	local role=TalentIDRole[classFilename][tianfuID]
+	local role=TalentRoleX[classFilename][tianfuID]
 	return GetStatsData(role)
 end
 function TalentData.Player_Stats()
@@ -830,7 +844,7 @@ function TalentData.Player_Stats()
 		local tianfutxt = " "..TALENT
 		local numGroup = GetNumTalentGroups(false, false)
 		local activeGroup = GetActiveTalentGroup(false, false)
-		local zhutianfu1,zhutianfu2=Player_Stats_1(activeGroup,false)
+		local zhutianfu1,zhutianfu2,tabindex=Player_Stats_1(activeGroup,false)
 		tianfutxt = tianfutxt..zhutianfu1..zhutianfu2
 		if numGroup>1 then
 			if activeGroup==1 then
@@ -841,12 +855,12 @@ function TalentData.Player_Stats()
 				tianfutxt = tianfutxt.."/"..futianfu1..futianfu2
 			end
 		end
-		Info =Info..tianfutxt.." "..Player_Stats_2(zhutianfu1)
+		Info =Info..tianfutxt.." "..Player_Stats_2(tabindex,TalentTabRole)
 	else
 		local specIndex = GetSpecialization()--当前专精
 		local specId, name, description, icon = GetSpecializationInfo(specIndex)
 		local name=name ~= "" and name or NONE
-		Info =Info.." "..SPECIALIZATION..":"..name.." "..Player_Stats_2(specId)
+		Info =Info.." "..SPECIALIZATION..":"..name.." "..Player_Stats_2(specId,TalentIDRole)
 	end
 	return Info
 end

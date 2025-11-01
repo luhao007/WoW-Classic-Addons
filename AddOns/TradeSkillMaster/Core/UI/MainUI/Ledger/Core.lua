@@ -5,18 +5,16 @@
 -- ------------------------------------------------------------------------------ --
 
 local TSM = select(2, ...) ---@type TSM
-local Ledger = TSM.MainUI:NewPackage("Ledger")
-local L = TSM.Include("Locale").GetTable()
-local TempTable = TSM.Include("Util.TempTable")
-local Table = TSM.Include("Util.Table")
-local Money = TSM.Include("Util.Money")
-local Theme = TSM.Include("Util.Theme")
-local TextureAtlas = TSM.Include("Util.TextureAtlas")
-local Log = TSM.Include("Util.Log")
-local ItemInfo = TSM.Include("Service.ItemInfo")
-local Settings = TSM.Include("Service.Settings")
-local UIElements = TSM.Include("UI.UIElements")
-local UIUtils = TSM.Include("UI.UIUtils")
+local Ledger = TSM.MainUI:NewPackage("Ledger") ---@type AddonPackage
+local L = TSM.Locale.GetTable()
+local TempTable = TSM.LibTSMUtil:Include("BaseType.TempTable")
+local Table = TSM.LibTSMUtil:Include("Lua.Table")
+local Money = TSM.LibTSMUtil:Include("UI.Money")
+local Theme = TSM.LibTSMService:Include("UI.Theme")
+local TextureAtlas = TSM.LibTSMService:Include("UI.TextureAtlas")
+local ItemInfo = TSM.LibTSMService:Include("Item.ItemInfo")
+local UIElements = TSM.LibTSMUI:Include("Util.UIElements")
+local UIUtils = TSM.LibTSMUI:Include("Util.UIUtils")
 local SECONDS_PER_DAY = 24 * 60 * 60
 local private = {
 	settings = nil,
@@ -36,8 +34,8 @@ local PAGE_PATH_SEP = "`"
 -- Module Functions
 -- ============================================================================
 
-function Ledger.OnInitialize()
-	private.settings = Settings.NewView()
+function Ledger.OnInitialize(settingsDB)
+	private.settings = settingsDB:NewView()
 		:AddKey("global", "mainUIContext", "ledgerDetailScrollingTable")
 	TSM.MainUI.RegisterTopLevelPage(L["Ledger"], private.GetLedgerFrame)
 end
@@ -189,8 +187,8 @@ end
 
 function private.GetItemDetail()
 	local query = TSM.Accounting.Transactions.CreateQuery()
-		:Equal("itemString", private.contextItemString)
-		:OrderBy("time", false)
+		:Equal("filteredItemString", private.contextItemString)
+		:VirtualField("totalPrice", "number", private.TotalPriceVirtualField)
 
 	local topPlayersQuantity = TempTable.Acquire()
 	local topPlayers = TempTable.Acquire()
@@ -341,20 +339,20 @@ function private.GetItemDetail()
 						:SetMargin(0, 8, 0, 0)
 						:SetFont("TABLE_TABLE1")
 						:SetJustifyH("RIGHT")
-						:SetText(Money.ToString(TSM.Accounting.Transactions.GetAveragePrice(private.contextItemString, nil, private.itemDetailType), nil, "OPT_RETAIL_ROUND"))
+						:SetText(Money.ToStringForUI(TSM.Accounting.Transactions.GetAveragePrice(private.contextItemString, nil, private.itemDetailType)))
 					)
 					:AddChild(UIElements.New("Text", "last7")
 						:SetWidth(120)
 						:SetMargin(0, 8, 0, 0)
 						:SetFont("TABLE_TABLE1")
 						:SetJustifyH("RIGHT")
-						:SetText(Money.ToString(TSM.Accounting.Transactions.GetAveragePrice(private.contextItemString, SECONDS_PER_DAY * 7, private.itemDetailType), nil, "OPT_RETAIL_ROUND"))
+						:SetText(Money.ToStringForUI(TSM.Accounting.Transactions.GetAveragePrice(private.contextItemString, SECONDS_PER_DAY * 7, private.itemDetailType)))
 					)
 					:AddChild(UIElements.New("Text", "last30")
 						:SetWidth(120)
 						:SetFont("TABLE_TABLE1")
 						:SetJustifyH("RIGHT")
-						:SetText(Money.ToString(TSM.Accounting.Transactions.GetAveragePrice(private.contextItemString, SECONDS_PER_DAY * 30, private.itemDetailType), nil, "OPT_RETAIL_ROUND"))
+						:SetText(Money.ToStringForUI(TSM.Accounting.Transactions.GetAveragePrice(private.contextItemString, SECONDS_PER_DAY * 30, private.itemDetailType)))
 					)
 				)
 				:AddChild(UIElements.New("Frame", "totalPrice")
@@ -372,20 +370,20 @@ function private.GetItemDetail()
 						:SetMargin(0, 8, 0, 0)
 						:SetFont("TABLE_TABLE1")
 						:SetJustifyH("RIGHT")
-						:SetText(Money.ToString(TSM.Accounting.Transactions.GetTotalPrice(private.contextItemString, nil, private.itemDetailType), nil, "OPT_RETAIL_ROUND"))
+						:SetText(Money.ToStringForUI(TSM.Accounting.Transactions.GetTotalPrice(private.contextItemString, nil, private.itemDetailType)))
 					)
 					:AddChild(UIElements.New("Text", "last7")
 						:SetWidth(120)
 						:SetMargin(0, 8, 0, 0)
 						:SetFont("TABLE_TABLE1")
 						:SetJustifyH("RIGHT")
-						:SetText(Money.ToString(TSM.Accounting.Transactions.GetTotalPrice(private.contextItemString, SECONDS_PER_DAY * 7, private.itemDetailType), nil, "OPT_RETAIL_ROUND"))
+						:SetText(Money.ToStringForUI(TSM.Accounting.Transactions.GetTotalPrice(private.contextItemString, SECONDS_PER_DAY * 7, private.itemDetailType)))
 					)
 					:AddChild(UIElements.New("Text", "last30")
 						:SetWidth(120)
 						:SetFont("TABLE_TABLE1")
 						:SetJustifyH("RIGHT")
-						:SetText(Money.ToString(TSM.Accounting.Transactions.GetTotalPrice(private.contextItemString, SECONDS_PER_DAY * 30, private.itemDetailType), nil, "OPT_RETAIL_ROUND"))
+						:SetText(Money.ToStringForUI(TSM.Accounting.Transactions.GetTotalPrice(private.contextItemString, SECONDS_PER_DAY * 30, private.itemDetailType)))
 					)
 				)
 				:AddChild(UIElements.New("Frame", "top")
@@ -406,56 +404,10 @@ function private.GetItemDetail()
 				)
 			)
 		)
-		:AddChild(UIElements.New("QueryScrollingTable", "scrollingTable")
-			:SetSettingsContext(private.settings, "ledgerDetailScrollingTable")
-			:GetScrollingTableInfo()
-				:NewColumn("activityType")
-					:SetTitle(L["Activity Type"])
-					:SetFont("ITEM_BODY3")
-					:SetJustifyH("LEFT")
-					:SetTextInfo("type", private.TableGetActivityTypeText)
-					:Commit()
-				:NewColumn("source")
-					:SetTitle(L["Source"])
-					:SetFont("ITEM_BODY3")
-					:SetJustifyH("LEFT")
-					:SetTextInfo("source")
-					:Commit()
-				:NewColumn("buyerSeller")
-					:SetTitle(L["Buyer/Seller"])
-					:SetFont("ITEM_BODY3")
-					:SetJustifyH("LEFT")
-					:SetTextInfo("otherPlayer")
-					:Commit()
-				:NewColumn("qty")
-					:SetTitle(L["Qty"])
-					:SetFont("ITEM_BODY3")
-					:SetJustifyH("RIGHT")
-					:SetTextInfo("quantity")
-					:Commit()
-				:NewColumn("perItem")
-					:SetTitle(L["Per Item"])
-					:SetFont("ITEM_BODY3")
-					:SetJustifyH("RIGHT")
-					:SetTextInfo(nil, private.TableGetPerItemText)
-					:Commit()
-				:NewColumn("totalPrice")
-					:SetTitle(L["Total Price"])
-					:SetFont("ITEM_BODY3")
-					:SetJustifyH("RIGHT")
-					:SetTextInfo(nil, private.TableGetTotalPriceText)
-					:Commit()
-				:NewColumn("time")
-					:SetTitle(L["Time"])
-					:SetFont("ITEM_BODY3")
-					:SetJustifyH("RIGHT")
-					:SetTextInfo("time", private.TableGetTimeframeText)
-					:Commit()
-				:Commit()
+		:AddChild(UIElements.New("LedgerDetailScrollTable", "scrollingTable")
+			:SetSettings(private.settings, "ledgerDetailScrollingTable")
 			:SetQuery(query)
-			:SetAutoReleaseQuery(true)
-			:SetSelectionDisabled(true)
-			:SetScript("OnRowClick", private.ItemDetailScrollingTableOnRowClick)
+			:SetDeleteFunctions(TSM.Accounting.Transactions.CanDeleteByUUID, TSM.Accounting.Transactions.RemoveRowByUUID)
 		)
 end
 
@@ -468,55 +420,6 @@ function private.ItemDetailTabOnClick(button)
 	button:GetParentElement():GetParentElement():GetParentElement():GetParentElement():GetParentElement():ReloadContent()
 end
 
-function private.ItemDetailScrollingTableOnRowClick(scrollingTable, row, button)
-	if button ~= "RightButton" then
-		return
-	elseif not TSM.Accounting.Transactions.CanDeleteByUUID(row:GetUUID()) then
-		Log.PrintUser(L["This record belongs to another account and can only be deleted on that account."])
-		return
-	end
-	local subtitle = nil
-	local recordType, itemString, quantity, otherPlayer, price = row:GetFields("type", "itemString", "quantity", "otherPlayer", "price")
-	local name = UIUtils.GetDisplayItemName(itemString) or "?"
-	local amount = Money.ToString(price * quantity, nil, "OPT_RETAIL_ROUND")
-	if recordType == "sale" then
-		subtitle = format(L["Sold %d of %s to %s for %s"], quantity, name, otherPlayer, amount)
-	elseif recordType == "buy" then
-		subtitle = format(L["Bought %d of %s from %s for %s"], quantity, name, otherPlayer, amount)
-	else
-		error("Unexpected Type: "..tostring(recordType))
-	end
-	scrollingTable:GetBaseElement():ShowConfirmationDialog(L["Delete Record?"], subtitle, private.DeleteRecordConfirmed, row:GetUUID())
-end
-
-function private.DeleteRecordConfirmed(uuid)
-	TSM.Accounting.Transactions.RemoveRowByUUID(uuid)
-end
-
-
-
--- ============================================================================
--- Scrolling Table Helper Functions
--- ============================================================================
-
-function private.TableGetActivityTypeText(recordType)
-	if recordType == "sale" then
-		return L["Sale"]
-	elseif recordType == "buy" then
-		return L["Buy"]
-	else
-		error("Unexpected Type: "..tostring(recordType))
-	end
-end
-
-function private.TableGetTimeframeText(timestamp)
-	return SecondsToTime(time() - timestamp)
-end
-
-function private.TableGetTotalPriceText(row)
-	return Money.ToString(row:GetField("price") * row:GetField("quantity"), nil, "OPT_RETAIL_ROUND")
-end
-
-function private.TableGetPerItemText(row)
-	return Money.ToString(row:GetField("price"), nil, "OPT_RETAIL_ROUND")
+function private.TotalPriceVirtualField(row)
+	return row:GetField("price") * row:GetField("quantity")
 end

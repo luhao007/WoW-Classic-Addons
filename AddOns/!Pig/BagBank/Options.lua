@@ -84,6 +84,10 @@ BagBankF.Zhenghe:SetScript("OnClick", function (self)
 		PIG_OptionsUI.RLUI:Show()
 	end	
 end);
+BagBankF.SetListline = PIGLine(BagBankF,"TOP",-60)
+BagBankF.SetListF = PIGFrame(BagBankF)
+BagBankF.SetListF:SetPoint("TOPLEFT",BagBankF.SetListline,"BOTTOMLEFT",0,0);
+BagBankF.SetListF:SetPoint("BOTTOMRIGHT",BagBankF,"BOTTOMRIGHT",0,30);
 --背包剩余-------------
 local function gengxinbeibaoshengyugeshu()
 	if MainMenuBarBackpackButton.freeSlots<10 then
@@ -97,27 +101,25 @@ local function BagKongyu()
 		MainMenuBarBackpackButton.pigbagkongyu=true
 		SetCVar("displayFreeBagSlots", "1")
 		MainMenuBarBackpackButton.Count:Show()
-		MainMenuBarBackpackButton.Count:SetTextScale(18/14);
+		if not MainMenuBarBackpackButton.PigLayoutOpen then
+			MainMenuBarBackpackButton.Count:SetFont(ChatFontNormal:GetFont(), 18,"OUTLINE")
+		end
 		gengxinbeibaoshengyugeshu()
 	else
 		SetCVar("displayFreeBagSlots", "0")
 		MainMenuBarBackpackButton.Count:Hide()
 	end
 end
-----
-BagBankF.SetListline = PIGLine(BagBankF,"TOP",-60)
-BagBankF.SetListF = PIGFrame(BagBankF)
-BagBankF.SetListF:SetPoint("TOPLEFT",BagBankF.SetListline,"BOTTOMLEFT",0,0);
-BagBankF.SetListF:SetPoint("BOTTOMRIGHT",BagBankF,"BOTTOMRIGHT",0,30);
 MainMenuBarBackpackButton:HookScript("OnEvent", function(self,event,arg1)
-	if event=="PLAYER_ENTERING_WORLD" then
-		BagKongyu()
-	elseif event=="BAG_UPDATE" then
+	if event == "BAG_UPDATE" then
 		if self.pigbagkongyu then
 			gengxinbeibaoshengyugeshu()
 		end
+	elseif event == "PLAYER_ENTERING_WORLD" then
+		BagKongyu()
 	end
 end)
+----
 BagBankF.SetListF.BagKongyu = PIGCheckbutton_R(BagBankF.SetListF,{"显示背包剩余空间","在行囊显示背包剩余空间(大于等于10显示绿色,小于10显示红色)"})
 BagBankF.SetListF.BagKongyu:SetScript("OnClick", function (self)
 	if self:GetChecked() then

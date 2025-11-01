@@ -1,18 +1,19 @@
-## Interface: 30405
+## Interface: 50502
 ## Author: ykiigor
-## Version: 4840
+## Version: 5220
 
 ## Title: Method Raid Tools
 ## Notes: Method Raid Tools
-## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r |cFFFFFFFFMethod团队助手|r |cFFFFE00AMRT|r
+## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r|cFFFFFFFFMethod团队助手|r |cFFFFE00AMRT|r
 ## Notes-zhCN: 提供团队和小队的一些辅助功能
 
 ## IconTexture: Interface\AddOns\MRT\media\MiniMap.tga
 
+## Category-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r
+
 ## AddonCompartmentFunc: MRT_MinimapClickFunction
 
 ## SavedVariables: VMRT
-
 
 core.lua
 Functions.lua
@@ -24,7 +25,9 @@ localization\localization.de.lua
 localization\localization.cn.lua
 localization\localization.tw.lua
 localization\localization.kr.lua
+localization\localization.it.lua
 localization\localization.lua
+Data.lua
 BlizzFix.lua
 Options.lua
 Note.lua

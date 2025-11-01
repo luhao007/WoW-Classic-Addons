@@ -1,5 +1,5 @@
 local appName, app = ...;
-local L = app.L.SETTINGS_MENU;
+local L = app.L;
 local settings = app.Settings;
 
 -- Settings Class
@@ -101,6 +101,19 @@ local GeneralSettingsBase = {
 		["Window:BorderColor"] = { r = 1, g = 1, b = 1, a = 1 },
 		["Window:UseClassForBorder"] = false,
 		["PresetRestore"] = {},
+		-- Expansion Filters (disabled by default)
+		["ExpansionFilter:Enabled"] = false,
+		["ExpansionFilter:Classic"] = true,
+		["ExpansionFilter:TBC"] = app.GameBuildVersion >= 20000,
+		["ExpansionFilter:Wrath"] = app.GameBuildVersion >= 30000,
+		["ExpansionFilter:Cata"] = app.GameBuildVersion >= 40000,
+		["ExpansionFilter:MoP"] = app.GameBuildVersion >= 50000,
+		["ExpansionFilter:WoD"] = app.GameBuildVersion >= 60000,
+		["ExpansionFilter:Legion"] = app.GameBuildVersion >= 70000,
+		["ExpansionFilter:BfA"] = app.GameBuildVersion >= 80000,
+		["ExpansionFilter:SL"] = app.GameBuildVersion >= 90000,
+		["ExpansionFilter:DF"] = app.GameBuildVersion >= 100000,
+		["ExpansionFilter:TWW"] = app.GameBuildVersion >= 110000,
 	},
 };
 local FilterSettingsBase = {
@@ -115,11 +128,14 @@ local TooltipSettingsBase = {
 		["Auto:AH"] = false,
 		["Celebrate"] = true,
 		["Channel"] = "Master",
+		["Cost"] = true,
 		["Screenshot"] = false,
 		["DisplayInCombat"] = true,
 		["Enabled"] = true,
 		["Enabled:Mod"] = "None",
+		["EnablePetCageTooltips"] = true,
 		["Expand:Difficulty"] = true,
+		["Expand:MiniList"] = true,
 		["IncludeOriginalSource"] = true,
 		["LootSpecializations"] = true,
 		["WorldMapButton"] = true,
@@ -135,6 +151,7 @@ local TooltipSettingsBase = {
 		["MainListScale"] = 1,
 		["MiniListScale"] = 1,
 		["Objectives"] = false,
+		["Owned Pets"] = true,
 		["Precision"] = 2,
 		["PlayDeathSound"] = false,
 		["Progress"] = true,
@@ -212,6 +229,11 @@ local TooltipSettingsBase = {
 		["u"] = true,
 	},
 };
+local UnobtainableSettingsBase = {
+	__index = {
+		[7] = true,	-- Trading Post
+	}
+};
 
 local RawSettings;
 local function SetupRawSettings()
@@ -222,6 +244,7 @@ local function SetupRawSettings()
 	setmetatable(RawSettings.General, GeneralSettingsBase)
 	setmetatable(RawSettings.Tooltips, TooltipSettingsBase)
 	setmetatable(RawSettings.Filters, FilterSettingsBase)
+	setmetatable(RawSettings.Unobtainable, UnobtainableSettingsBase)
 end
 settings.Initialize = function(self)
 	-- app.PrintDebug("settings.Initialize")
@@ -298,6 +321,9 @@ settings.Initialize = function(self)
 		GeneralSettingsBase.__index[accountWideThing] = true
 		settings.AccountWide[thing] = true
 	end
+
+	-- Remove obsolete Settings keys
+	settings:Set("ExpansionFilter:Enabled", nil)
 
 	app._SettingsRefresh = GetTimePreciseSec()
 	settings._Initialize = true
@@ -391,41 +417,36 @@ settings.SetProfile = function(self, key)
 end
 -- Applies the profile for the current character as the base settings table
 settings.ApplyProfile = function()
-	if AllTheThingsProfiles then
-		local key = settings:GetProfile()
-		RawSettings = AllTheThingsProfiles.Profiles[key] or settings:NewProfile(key)
-		if RawSettings then
-			SetupRawSettings()
+	if not AllTheThingsProfiles then return end
 
-			-- apply window positions when applying a Profile
-			if RawSettings.Windows then
-				for suffix,_ in pairs(RawSettings.Windows) do
-					settings.SetWindowFromProfile(suffix)
-				end
+	local key = settings:GetProfile()
+	RawSettings = AllTheThingsProfiles.Profiles[key] or settings:NewProfile(key)
+	if RawSettings then
+		SetupRawSettings()
+
+		-- apply window positions when applying a Profile
+		if RawSettings.Windows then
+			for suffix,_ in pairs(RawSettings.Windows) do
+				settings.SetWindowFromProfile(suffix)
 			end
-
-			-- when applying a profile, clean out any 'false' Unobtainable keys for cleaner settings storage
-			-- since there are no situations where Unobtainables are included by default
-			local unobCopy = app.CloneDictionary(RawSettings.Unobtainable)
-			-- this key is no longer used
-			unobCopy.DoFiltering = false
-			for unobID,set in pairs(unobCopy) do
-				if not set then
-					RawSettings.Unobtainable[unobID] = nil
-				end
-			end
-
-			-- 'Seasonal' set of filters is no longer used
-			RawSettings.Seasonal = nil
-
-			if app.IsReady and settings:Get("Profile:ShowProfileLoadedMessage") then
-				app.print(L.PROFILE..":",settings:GetProfile(true))
-			end
-			return true
-		else
-			return false
 		end
+
+		-- when applying a profile, clean out any 'false' Unobtainable keys for cleaner settings storage
+		-- for non-defaulted fields
+		local unobCopy = app.CloneDictionary(RawSettings.Unobtainable)
+		-- this key is no longer used
+		unobCopy.DoFiltering = false
+		for unobID,set in pairs(unobCopy) do
+			if not set and not UnobtainableSettingsBase.__index[unobID] then
+				RawSettings.Unobtainable[unobID] = nil
+			end
+		end
+
+		-- 'Seasonal' set of filters is no longer used
+		RawSettings.Seasonal = nil
 	end
+	app.HandleEvent("Settings.OnApplyProfile", key)
+	return RawSettings and true or nil
 end
 -- Allows moving an ATT window based on the position stored in the current Profile
 -- This would be used when creating a Window initially during a game session
@@ -469,6 +490,23 @@ settings.SetWindowFromProfile = function(suffix)
 		settings.ApplyWindowColors(window)
 	end
 end
+app.ChatCommands.Add("reset-window", function(args)
+	local windowSuffix = args[2]
+	if not windowSuffix then
+		app.print("Usage: /att reset-window <WindowSuffix>");
+		return
+	end
+	if RawSettings and RawSettings.Windows and RawSettings.Windows[windowSuffix] then
+		RawSettings.Windows[windowSuffix] = nil
+		app.print("Reset window position for",windowSuffix)
+		app.print("Please reload your UI when ready. (/rl)")
+		return
+	end
+	app.print("Window position for",windowSuffix,"has not been stored in current Profile!")
+end, {
+	"Usage : /att reset-window <WindowSuffix>",
+	"Allows resetting the position of a specific ATT window stored in your current Profile.",
+});
 settings.Get = function(self, setting, container)
 	return RawSettings.General[setting]
 end
@@ -571,13 +609,16 @@ settings.GetModeString = function(self)
 		local totalThingCount, thingCount, things = 0, 0, {};
 		for key,_ in pairs(GeneralSettingsBase.__index) do
 			keyPrefix, thingName = (":"):split(key)
-			if keyPrefix == "Thing" then
+			if keyPrefix == "Thing" or keyPrefix == "ExpansionFilter" then
 				totalThingCount = totalThingCount + 1
 				thingActive = settings:Get(key);
 				if thingActive then
 					-- Heirloom Upgrades only count when Heirlooms are enabled
 					-- This prevents the heirloom uprades and quests locked from being displayed as a mode.
-					if key ~= "Thing:HeirloomUpgrades" or settings:Get("Thing:Heirlooms") then
+					-- Only 'Things' in General settings count towards the mode string
+					if (key ~= "Thing:HeirloomUpgrades" or settings:Get("Thing:Heirlooms"))
+						and keyPrefix == "Thing"
+					then
 						thingCount = thingCount + 1
 						table.insert(things, thingName)
 					end
@@ -663,10 +704,12 @@ settings.GetShortModeString = function(self)
 		local totalThingCount = 0
 		local keyPrefix, thingName, thingActive
 		local insaneTotalCount, insaneCount = 0, 0;
+		local rankedTotalCount, rankedCount = 0, 0;
+		local coreTotalCount, coreCount = 0, 0;
 		local solo = not app.MODE_DEBUG_OR_ACCOUNT
 		for key,_ in pairs(GeneralSettingsBase.__index) do
 			keyPrefix, thingName = (":"):split(key)
-			if keyPrefix == "Thing" then
+			if keyPrefix == "Thing" or keyPrefix == "ExpansionFilter" then
 				totalThingCount = totalThingCount + 1
 				thingActive = settings:Get(key);
 				if thingActive then
@@ -680,8 +723,24 @@ settings.GetShortModeString = function(self)
 						insaneTotalCount = insaneTotalCount + 1;
 						insaneCount = insaneCount + 1;
 					end
-				elseif self.RequiredForInsaneMode[thingName] then
-					insaneTotalCount = insaneTotalCount + 1;
+					if self.RequiredForRankedMode[thingName] then
+						rankedTotalCount = rankedTotalCount + 1;
+						rankedCount = rankedCount + 1;
+					end
+					if self.RequiredForCoreMode[thingName] then
+						coreTotalCount = coreTotalCount + 1;
+						coreCount = coreCount + 1;
+					end
+				else
+					if self.RequiredForInsaneMode[thingName] then
+						insaneTotalCount = insaneTotalCount + 1;
+					end
+					if self.RequiredForRankedMode[thingName] then
+						rankedTotalCount = rankedTotalCount + 1;
+					end
+					if self.RequiredForCoreMode[thingName] then
+						coreTotalCount = coreTotalCount + 1;
+					end
 				end
 			elseif solo and keyPrefix == "AccountWide"
 				and not settings.ForceAccountWide[thingName]
@@ -722,7 +781,7 @@ settings.GetShortModeString = function(self)
 		end
 		-- Waiting on Refresh to properly show values
 		if self.NeedsRefresh then
-			style = "R:" .. " " .. style
+			style = "R: " .. style
 		end
 		if self:Get("Completionist") then
 			if app.MODE_ACCOUNT then
@@ -790,7 +849,7 @@ settings.GetUnobtainableFilter = function(self, u)
 	return not u or RawSettings.Unobtainable[u]
 end
 settings.SetUnobtainableFilter = function(self, u, value)
-	self:SetValue("Unobtainable", u, value and true or nil)
+	self:SetValue("Unobtainable", u, value)
 	self:UpdateMode(1);
 end
 
@@ -1160,7 +1219,7 @@ end
 
 Mixin(settings, ATTSettingsPanelMixin);
 
-local Categories, AddOnCategoryID, RootCategoryID = {}, appName, nil;
+local OptionsPages, AddOnCategoryID, RootCategoryID = {}, appName, nil;
 local openToCategory = Settings and Settings.OpenToCategory or InterfaceOptionsFrame_OpenToCategory;
 settings.Open = function(self)
 	if not openToCategory(RootCategoryID or AddOnCategoryID) then
@@ -1183,7 +1242,7 @@ settings.CreateOptionsPage = function(self, text, parentCategory, isRootCategory
 			Settings.RegisterAddOnCategory(category);
 			AddOnCategoryID = category.ID;
 		else
-			parentCategory = Categories[parentCategory or appName];
+			parentCategory = OptionsPages[parentCategory or appName];
 			category = Settings.RegisterCanvasLayoutSubcategory(parentCategory.category, subcategory, text)
 			if isRootCategory then RootCategoryID = category.ID; end
 		end
@@ -1194,7 +1253,7 @@ settings.CreateOptionsPage = function(self, text, parentCategory, isRootCategory
 		if text ~= appName then subcategory.parent = parentCategory or appName; end
 		InterfaceOptions_AddCategory(subcategory);
 	end
-	Categories[text] = subcategory;
+	OptionsPages[text] = subcategory;
 
 	-- Common Header
 	local logo = subcategory:CreateTexture(nil, "ARTWORK");
@@ -1553,4 +1612,11 @@ app.AddEventHandler("OnRecalculateDone", function()
 		LastSettingsChangeUpdate = app._SettingsRefresh
 		app.HandleEvent("OnRecalculate_NewSettings")
 	end
+end)
+app.AddEventHandler("OnReady", function()
+	app.AddEventHandler("Settings.OnApplyProfile", function()
+		if settings:Get("Profile:ShowProfileLoadedMessage") then
+			app.print(L.PROFILE..":",settings:GetProfile(true))
+		end
+	end)
 end)

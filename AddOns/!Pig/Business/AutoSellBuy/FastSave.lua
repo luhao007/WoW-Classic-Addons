@@ -61,12 +61,12 @@ function BusinessInfo.FastSave()
 	local function SavezhixingFun(typeid,itemID,bag,slot,cfvv)
 		if itemID then
 			local itemID, itemType, itemSubType, itemEquipLoc, icon, classID, subclassID = GetItemInfoInstant(itemID) 
-			--local itemName,itemLink = GetItemInfo(itemID) 
-			--print(itemLink,itemType, itemSubType, classID, subclassID)
+			-- local itemID, itemLink, icon, stackCount, quality=PIGGetContainerItemInfo(bag,slot)
+			-- print(itemLink,classID, subclassID,itemType, itemSubType)
 			if NewItemTypeLsit[typeid][2]=="diy" then
 				for ib=1,#cfvv do
 					if itemID==cfvv[ib][1] then
-						UseContainerItem(bag,slot,nil, BankFrame.GetActiveBankType and BankFrame:GetActiveBankType() or nil, BankFrame:IsShown() and BankFrame.selectedTab == 2);
+						UseContainerItem(bag,slot,nil, BankFrame.GetActiveBankType and BankFrame:GetActiveBankType() or nil, false);
 					end
 				end
 			else
@@ -76,7 +76,7 @@ function BusinessInfo.FastSave()
 							if PIG_MaxTocversion(20000) then
 								UseContainerItem(bag,slot,nil, nil, BankFrame:IsShown() and (BankFrame.selectedTab == 2));
 							else
-								UseContainerItem(bag,slot,nil, BankFrame.GetActiveBankType and BankFrame:GetActiveBankType(), BankFrame:IsShown() and BankFrame.selectedTab == 2);
+								UseContainerItem(bag,slot,nil, BankFrame.GetActiveBankType and BankFrame:GetActiveBankType(), false);
 							end
 						end
 					else
@@ -84,7 +84,7 @@ function BusinessInfo.FastSave()
 							if PIG_MaxTocversion(20000) then
 								UseContainerItem(bag,slot,nil, nil, BankFrame:IsShown() and (BankFrame.selectedTab == 2));
 							else
-								UseContainerItem(bag,slot,nil, BankFrame.GetActiveBankType and BankFrame:GetActiveBankType(), BankFrame:IsShown() and BankFrame.selectedTab == 2);
+								UseContainerItem(bag,slot,nil, BankFrame.GetActiveBankType and BankFrame:GetActiveBankType(), false);
 							end
 						end
 					end
@@ -93,7 +93,7 @@ function BusinessInfo.FastSave()
 		end
 	end
 	local function PIGRunUseItem(button,typeid,data)
-		--if PIG_MaxTocversion(20000) then PIG_OptionsUI:ErrorMsg("功能正在修复...") return end
+		if PIG_MaxTocversion(20000) then PIG_OptionsUI:ErrorMsg("经典版物品子分类异常，功能受限...") return end
 		local shujudata={{},{}}
 		if button=="LeftButton" then
 			if NewItemTypeLsit[typeid][2]=="G" then
@@ -113,23 +113,22 @@ function BusinessInfo.FastSave()
 				C_Bank.WithdrawMoney(BankFrame:GetActiveBankType(), PIGA_Per["AutoSellBuy"][_GNE_Take.."_Money"]);
 			else
 				shujudata[2]=PIGA_Per["AutoSellBuy"][_GNE_Take.."_List"]
-				if BankFrame.activeTabIndex==1 then
-					for bag=1,#bankID do
-						local bganum=GetContainerNumSlots(bankID[bag])
+				local BankFrameBankType=BankFrame:GetActiveBankType()
+				if BankFrameBankType==0 then
+					for bagid=6,11 do
+						local bganum=GetContainerNumSlots(bagid)
 						for slot=1,bganum do
-							local itemID=GetContainerItemID(bankID[bag], slot)
-							SavezhixingFun(typeid,itemID,bankID[bag], slot, shujudata[2])
+							local itemID=GetContainerItemID(bagid, slot)
+							SavezhixingFun(typeid,itemID,bagid, slot, shujudata[2])
 						end
 					end
-				elseif BankFrame.activeTabIndex==2 then
-					for slot=1, GetContainerNumSlots(REAGENTBANK_CONTAINER) do--ReagentBankFrame.size
-						local itemID=GetContainerItemID(REAGENTBANK_CONTAINER, slot)
-						SavezhixingFun(typeid,itemID,REAGENTBANK_CONTAINER, slot, shujudata[2])
-					end
-				elseif BankFrame.activeTabIndex==3 then
-					for slot = 1, GetContainerNumSlots(AccountBankPanel.selectedTabID) do
-						local itemID=GetContainerItemID(AccountBankPanel.selectedTabID, slot)
-						SavezhixingFun(typeid,itemID,AccountBankPanel.selectedTabID, slot, shujudata[2])
+				elseif BankFrameBankType==2 then
+					for bagid=12,17 do
+						local bganum=GetContainerNumSlots(bagid)
+						for slot=1,bganum do
+							local itemID=GetContainerItemID(bagid, slot)
+							SavezhixingFun(typeid,itemID,bagid, slot, shujudata[2])
+						end
 					end
 				end
 			end
@@ -143,13 +142,16 @@ function BusinessInfo.FastSave()
 		local savebut = CreateFrame("Button",nil,fujiUI, "TruncatedButtonTemplate",ib);
 		savebut:SetHighlightTexture("Interface/Buttons/ButtonHilight-Square");
 		savebut:SetNormalTexture(NewItemTypeLsit[ib][1])
+		if PIG_OptionsUI.IsOpen_ElvUI() or PIG_OptionsUI.IsOpen_NDui() then
+			savebut:GetNormalTexture():SetTexCoord(0.1,0.9,0.1,0.9)
+		end
 		savebut:SetSize(www,hhh);
 		BankFrame.typeList[ib]=savebut
 		if ib==#NewItemTypeLsit then
 			if PIG_MaxTocversion() then
 				savebut:SetPoint("TOPRIGHT",fujiUI,"TOPRIGHT",-56,-40);
 			else
-				savebut:SetPoint("TOPRIGHT",fujiUI,"TOPRIGHT",-50,-29);
+				savebut:SetPoint("BOTTOMRIGHT", BankPanel.NineSlice, "BOTTOMRIGHT", -24, 10);
 			end
 			PIGEnter(savebut,savebut,KEY_BUTTON1.." \124cff00FF00一键存"..NewItemTypeLsit[ib][3].."\124r\n"..KEY_BUTTON2.." \124cff00FF00一键取"..NewItemTypeLsit[ib][3].."\124r","SHIFT+"..KEY_BUTTON1.."-\124cff00FFFF"..NewItemTypeLsit[ib][3].._GN.."物品\124r\n".."SHIFT+"..KEY_BUTTON2.."-\124cff00FFFF"..NewItemTypeLsit[ib][3].._GN_Take.."物品\124r")
 		else

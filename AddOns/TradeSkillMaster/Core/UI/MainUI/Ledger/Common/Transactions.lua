@@ -5,16 +5,15 @@
 -- ------------------------------------------------------------------------------ --
 
 local TSM = select(2, ...) ---@type TSM
-local Transactions = TSM.MainUI.Ledger.Common:NewPackage("Transactions")
-local L = TSM.Include("Locale").GetTable()
-local Money = TSM.Include("Util.Money")
-local String = TSM.Include("Util.String")
-local Table = TSM.Include("Util.Table")
-local Theme = TSM.Include("Util.Theme")
-local ItemInfo = TSM.Include("Service.ItemInfo")
-local Settings = TSM.Include("Service.Settings")
-local UIElements = TSM.Include("UI.UIElements")
-local UIUtils = TSM.Include("UI.UIUtils")
+local Transactions = TSM.MainUI.Ledger.Common:NewPackage("Transactions") ---@type AddonPackage
+local L = TSM.Locale.GetTable()
+local Money = TSM.LibTSMUtil:Include("UI.Money")
+local String = TSM.LibTSMUtil:Include("Lua.String")
+local Table = TSM.LibTSMUtil:Include("Lua.Table")
+local Theme = TSM.LibTSMService:Include("UI.Theme")
+local ItemInfo = TSM.LibTSMService:Include("Item.ItemInfo")
+local UIElements = TSM.LibTSMUI:Include("Util.UIElements")
+local UIUtils = TSM.LibTSMUI:Include("Util.UIUtils")
 local SECONDS_PER_DAY = 24 * 60 * 60
 local private = {
 	settings = nil,
@@ -26,7 +25,8 @@ local private = {
 	groupFilter = {},
 	rarityFilter = {},
 	timeFrameFilter = 30 * SECONDS_PER_DAY,
-	type = nil
+	type = nil,
+	filteredItemMode = "specific", --luacheck: ignore 1005
 }
 local TYPE_LIST = { L["Auction"], COD, TRADE, L["Vendor"] }
 local TYPE_KEYS = { "Auction", "COD", "Trade", "Vendor" }
@@ -50,8 +50,8 @@ local TIME_KEYS = { 0, 3 * SECONDS_PER_DAY, 7 * SECONDS_PER_DAY, 14 * SECONDS_PE
 -- Module Functions
 -- ============================================================================
 
-function Transactions.OnInitialize()
-	private.settings = Settings.NewView()
+function Transactions.OnInitialize(settingsDB)
+	private.settings = settingsDB:NewView()
 		:AddKey("global", "mainUIContext", "ledgerTransactionsScrollingTable")
 	TSM.MainUI.Ledger.Expenses.RegisterPage(L["Purchases"], private.DrawPurchasesPage)
 	TSM.MainUI.Ledger.Revenue.RegisterPage(L["Sales"], private.DrawSalesPage)
@@ -89,17 +89,15 @@ function private.DrawTransactionPage()
 	end
 
 	private.query:Reset()
-		:VirtualField("name", "string", ItemInfo.GetName, "itemString", "?")
-		:VirtualField("quality", "number", ItemInfo.GetQuality, "itemString", 0)
-		:LeftJoin(TSM.Groups.GetItemDBForJoin(), "itemString")
+	TSM.Accounting.Transactions.AddSmartMap(private.query)
+	TSM.Accounting.Transactions.UpdateSmartMap(private.filteredItemMode)
+
+	private.query:VirtualField("name", "string", ItemInfo.GetName, "filteredItemString", "?")
+		:VirtualField("quality", "number", ItemInfo.GetQuality, "filteredItemString", 0)
 		:VirtualField("total", "number", private.GetTotal)
 		:VirtualField("auctions", "number", private.GetAuctions)
-		:OrderBy("time", false)
-	private.UpdateQuery()
-	local numItems = private.query:Sum("quantity")
-	local total = private.query:Sum("total")
 
-	return UIElements.New("Frame", "content")
+	local frame = UIElements.New("Frame", "content")
 		:SetLayout("VERTICAL")
 		:AddChild(UIElements.New("Frame", "row1")
 			:SetLayout("HORIZONTAL")
@@ -114,9 +112,19 @@ function private.DrawTransactionPage()
 				:SetValue(private.searchFilter)
 				:SetScript("OnValueChanged", private.SearchFilterChanged)
 			)
+			:AddChild(UIElements.New("SelectionDropdown", "itemMode")
+				:SetWidth(220)
+				:SetMargin(0, 8, 0, 0)
+				:AddItem(L["Specific Item"], "specific")
+				:AddItem(L["Item Level"], "level")
+				:AddItem(L["Base Item"], "base")
+				:SetSettingInfo(private, "filteredItemMode")
+				:SetScript("OnSelectionChanged", private.ItemModeOnSelectionChanged)
+			)
 			:AddChild(UIElements.New("GroupSelector", "group")
 				:SetWidth(240)
 				:SetHintText(L["Filter by groups"])
+				:SetSelection(next(private.groupFilter) and private.groupFilter or nil)
 				:SetScript("OnSelectionChanged", private.GroupFilterChanged)
 			)
 		)
@@ -129,93 +137,35 @@ function private.DrawTransactionPage()
 				:SetItems(TYPE_LIST, TYPE_KEYS)
 				:SetSettingInfo(private, "typeFilter")
 				:SetSelectionText(L["No Types"], L["%d Types"], L["All Types"])
-				:SetScript("OnSelectionChanged", private.DropdownCommonOnSelectionChanged)
+				:SetScript("OnSelectionChanged", private.HandleFilterChanged)
 			)
 			:AddChild(UIElements.New("MultiselectionDropdown", "rarity")
 				:SetMargin(0, 8, 0, 0)
 				:SetItems(RARITY_LIST, RARITY_KEYS)
 				:SetSettingInfo(private, "rarityFilter")
 				:SetSelectionText(L["No Rarities"], L["%d Rarities"], L["All Rarities"])
-				:SetScript("OnSelectionChanged", private.DropdownCommonOnSelectionChanged)
+				:SetScript("OnSelectionChanged", private.HandleFilterChanged)
 			)
 			:AddChild(UIElements.New("MultiselectionDropdown", "character")
 				:SetMargin(0, 8, 0, 0)
 				:SetItems(private.characters, private.characters)
 				:SetSettingInfo(private, "characterFilter")
 				:SetSelectionText(L["No Characters"], L["%d Characters"], L["All Characters"])
-				:SetScript("OnSelectionChanged", private.DropdownCommonOnSelectionChanged)
+				:SetScript("OnSelectionChanged", private.HandleFilterChanged)
 			)
 			:AddChild(UIElements.New("SelectionDropdown", "time")
 				:SetItems(TIME_LIST, TIME_KEYS)
 				:SetSelectedItemByKey(private.timeFrameFilter)
 				:SetSettingInfo(private, "timeFrameFilter")
-				:SetScript("OnSelectionChanged", private.DropdownCommonOnSelectionChanged)
+				:SetScript("OnSelectionChanged", private.HandleFilterChanged)
 			)
 		)
-		:AddChild(UIElements.New("QueryScrollingTable", "scrollingTable")
-			:SetSettingsContext(private.settings, "ledgerTransactionsScrollingTable")
-			:GetScrollingTableInfo()
-				:NewColumn("item")
-					:SetTitle(L["Item"])
-					:SetFont("ITEM_BODY3")
-					:SetJustifyH("LEFT")
-					:SetTextInfo("itemString", UIUtils.GetDisplayItemName)
-					:SetTooltipInfo("itemString")
-					:SetSortInfo("name")
-					:DisableHiding()
-					:Commit()
-				:NewColumn("player")
-					:SetTitle(PLAYER)
-					:SetFont("ITEM_BODY3")
-					:SetJustifyH("LEFT")
-					:SetTextInfo("otherPlayer")
-					:SetSortInfo("otherPlayer")
-					:Commit()
-				:NewColumn("type")
-					:SetTitle(L["Type"])
-					:SetFont("ITEM_BODY3")
-					:SetJustifyH("LEFT")
-					:SetTextInfo("source")
-					:SetSortInfo("source")
-					:Commit()
-				:NewColumn("stack")
-					:SetTitle(L["Stack"])
-					:SetFont("ITEM_BODY3")
-					:SetJustifyH("RIGHT")
-					:SetTextInfo("stackSize")
-					:SetSortInfo("stackSize")
-					:Commit()
-				:NewColumn("auctions")
-					:SetTitle(L["Auctions"])
-					:SetFont("ITEM_BODY3")
-					:SetJustifyH("RIGHT")
-					:SetTextInfo("auctions")
-					:SetSortInfo("auctions")
-					:Commit()
-				:NewColumn("perItem")
-					:SetTitle(L["Per Item"])
-					:SetFont("ITEM_BODY3")
-					:SetJustifyH("RIGHT")
-					:SetTextInfo("price", private.TableGetPriceText)
-					:SetSortInfo("price")
-					:Commit()
-				:NewColumn("total")
-					:SetTitle(L["Total"])
-					:SetFont("ITEM_BODY3")
-					:SetJustifyH("RIGHT")
-					:SetTextInfo("total", private.TableGetPriceText)
-					:SetSortInfo("total")
-					:Commit()
-				:NewColumn("time")
-					:SetTitle(L["Time Frame"])
-					:SetFont("ITEM_BODY3")
-					:SetJustifyH("RIGHT")
-					:SetTextInfo("time", private.TableGetTimeframeText)
-					:SetSortInfo("time")
-					:Commit()
-				:Commit()
+		:AddChild(UIElements.New("LedgerTransactionsScrollTable", "scrollingTable")
+			:SetSettings(private.settings, "ledgerTransactionsScrollingTable")
+			:SetCreatedGroupName(L["Ledger"].." - "..(private.type == "sale" and L["Sales"] or L["Purchases"]))
 			:SetQuery(private.query)
-			:SetScript("OnRowClick", private.TableSelectionChanged)
+			:SetFilters(private.GetScrollTableFilters())
+			:SetScript("OnItemRowClick", private.TableHandleItemRowClick)
 		)
 		:AddChild(UIElements.New("HorizontalLine", "line"))
 		:AddChild(UIElements.New("Frame", "footer")
@@ -226,7 +176,6 @@ function private.DrawTransactionPage()
 			:AddChild(UIElements.New("Text", "num")
 				:SetWidth("AUTO")
 				:SetFont("BODY_BODY2_MEDIUM")
-				:SetText(format(private.type == "sale" and L["%s Items Sold"] or L["%s Items Bought"], Theme.GetColor("INDICATOR"):ColorText(FormatLargeNumber(numItems))))
 			)
 			:AddChild(UIElements.New("VerticalLine", "line")
 				:SetMargin(4, 8, 0, 0)
@@ -234,24 +183,15 @@ function private.DrawTransactionPage()
 			:AddChild(UIElements.New("Text", "profit")
 				:SetWidth("AUTO")
 				:SetFont("BODY_BODY2_MEDIUM")
-				:SetText(format(L["%s Total"], Money.ToString(total, nil, "OPT_RETAIL_ROUND")))
 			)
 			:AddChild(UIElements.New("Spacer", "spacer"))
 		)
-end
 
-
-
--- ============================================================================
--- Scrolling Table Helper Functions
--- ============================================================================
-
-function private.TableGetPriceText(price)
-	return Money.ToString(price, nil, "OPT_RETAIL_ROUND")
-end
-
-function private.TableGetTimeframeText(record)
-	return SecondsToTime(time() - record)
+	local numItems = private.query:Sum("quantity")
+	local total = private.query:Sum("total")
+	frame:GetElement("footer.num"):SetText(format(private.type == "sale" and L["%s Items Sold"] or L["%s Items Bought"], Theme.GetColor("INDICATOR"):ColorText(FormatLargeNumber(numItems))))
+	frame:GetElement("footer.profit"):SetText(format(L["%s Total"], Money.ToStringForUI(total)))
+	return frame
 end
 
 
@@ -260,21 +200,20 @@ end
 -- Local Script Handlers
 -- ============================================================================
 
-function private.DropdownCommonOnSelectionChanged(dropdown)
-	private.UpdateQuery()
+function private.HandleFilterChanged(element)
+	local content = element:GetParentElement():GetParentElement()
+	content:GetElement("scrollingTable"):SetFilters(private.GetScrollTableFilters())
 	local numItems = private.query:Sum("quantity")
 	local total = private.query:Sum("total")
-	dropdown:GetElement("__parent.__parent.scrollingTable")
-		:UpdateData(true)
-	local footer = dropdown:GetElement("__parent.__parent.footer")
+	local footer = content:GetElement("footer")
 	footer:GetElement("num"):SetText(format(private.type == "sale" and L["%s Items Sold"] or L["%s Items Bought"], Theme.GetColor("INDICATOR"):ColorText(FormatLargeNumber(numItems))))
-	footer:GetElement("profit"):SetText(format(L["%s Total"], Money.ToString(total, nil, "OPT_RETAIL_ROUND")))
+	footer:GetElement("profit"):SetText(format(L["%s Total"], Money.ToStringForUI(total)))
 	footer:Draw()
 end
 
 function private.SearchFilterChanged(input)
 	private.searchFilter = input:GetValue()
-	private.DropdownCommonOnSelectionChanged(input)
+	private.HandleFilterChanged(input)
 end
 
 function private.GroupFilterChanged(groupSelector)
@@ -282,7 +221,7 @@ function private.GroupFilterChanged(groupSelector)
 	for groupPath in groupSelector:SelectedGroupIterator() do
 		private.groupFilter[groupPath] = true
 	end
-	private.DropdownCommonOnSelectionChanged(groupSelector)
+	private.HandleFilterChanged(groupSelector)
 end
 
 
@@ -299,29 +238,22 @@ function private.GetAuctions(row)
 	return row:GetField("quantity") / row:GetField("stackSize")
 end
 
-function private.UpdateQuery()
-	private.query:ResetFilters()
-		:Equal("type", private.type)
-	if private.searchFilter ~= "" then
-		private.query:Matches("name", String.Escape(private.searchFilter))
-	end
-	if Table.Count(private.typeFilter) ~= #TYPE_KEYS then
-		private.query:InTable("source", private.typeFilter)
-	end
-	if Table.Count(private.rarityFilter) ~= #RARITY_LIST then
-		private.query:InTable("quality", private.rarityFilter)
-	end
-	if Table.Count(private.characterFilter) ~= #private.characters then
-		private.query:InTable("player", private.characterFilter)
-	end
-	if private.timeFrameFilter ~= 0 then
-		private.query:GreaterThan("time", time() - private.timeFrameFilter)
-	end
-	if next(private.groupFilter) then
-		private.query:InTable("groupPath", private.groupFilter)
-	end
+function private.GetScrollTableFilters()
+	local name = String.Escape(private.searchFilter)
+	name = name ~= "" and name or nil
+	local source = Table.Count(private.typeFilter) ~= #TYPE_KEYS and private.typeFilter or nil
+	local quality = Table.Count(private.rarityFilter) ~= #RARITY_LIST and private.rarityFilter or nil
+	local player = Table.Count(private.characterFilter) ~= #private.characters and private.characterFilter or nil
+	local minTimeFrame = private.timeFrameFilter ~= 0 and private.timeFrameFilter or nil
+	local group = next(private.groupFilter) and private.groupFilter or nil
+	return private.type, name, source, quality, player, minTimeFrame, group
 end
 
-function private.TableSelectionChanged(scrollingTable, row)
-	TSM.MainUI.Ledger.ShowItemDetail(scrollingTable:GetParentElement():GetParentElement(), row:GetField("itemString"), private.type)
+function private.TableHandleItemRowClick(scrollTable, itemString)
+	TSM.MainUI.Ledger.ShowItemDetail(scrollTable:GetParentElement():GetParentElement(), itemString, private.type)
+end
+
+function private.ItemModeOnSelectionChanged(dropDown)
+	TSM.Accounting.Transactions.UpdateSmartMap(private.filteredItemMode)
+	private.HandleFilterChanged(dropDown)
 end

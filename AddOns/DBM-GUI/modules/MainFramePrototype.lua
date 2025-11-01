@@ -17,6 +17,7 @@ local DBM = DBM
 
 ---@class DBMOptionsFrame: Frame
 ---@field tabs table
+---@field LoadAndShowFrame fun(self: DBMOptionsFrame, subFrame: Frame)
 local frame = CreateFrame("Frame", "DBM_GUI_OptionsFrame", UIParent, "NineSlicePanelTemplate")
 
 local selectedPagePerTab = {}
@@ -267,9 +268,19 @@ function frame:CreateTab(tab)
 	end)
 end
 
+local _count = 0
 function frame:ShowTab(tab)
 	self.tab = tab
 	self:UpdateMenuFrame()
+	if (tab == 1 and _count % 2 == 0) or (tab == 2 and _count % 2 == 1) then
+		_count = _count + 1
+		if _count == 5 then
+			_count = 0
+			DBM:PlaySoundFile(1304911, true)
+		end
+	else
+		_count = 0
+	end
 	if isRetail then
 		PanelTemplates_SetTab(self, tab)
 	else
@@ -283,5 +294,10 @@ function frame:ShowTab(tab)
 	elseif DBM_GUI.currentViewing then
 		DBM_GUI.currentViewing:Hide()
 		DBM_GUI.currentViewing = nil
+	end
+	if not selectedPagePerTab[tab] and tab == 1 then -- Core Options, default show "Core & GUI" frame
+		self:LoadAndShowFrame(DBM_GUI.tabs[self.tab].buttons[2].frame)
+	elseif not selectedPagePerTab[tab] and tab == 6 then -- Tools
+		self:LoadAndShowFrame(DBM_GUI.tabs[self.tab].buttons[1].frame)
 	end
 end

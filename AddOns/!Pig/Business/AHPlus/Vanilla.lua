@@ -202,6 +202,9 @@ function BusinessInfo.AHPlus_Vanilla()
 	AuctionFrameBrowse.bgtex = CreateFrame("Frame", nil, AuctionFrameBrowse,"BackdropTemplate")
 	if ElvUI and AuctionFrameBrowse.LeftBackground then
 		AuctionFrameBrowse.LeftBackground:SetPoint("BOTTOMRIGHT",AuctionFrameBrowse,"BOTTOMRIGHT",-636,33.61);
+	elseif NDui then
+		AuctionFrameBrowse.bgtex:SetBackdrop({bgFile = "interface/chatframe/chatframebackground.blp"});
+		AuctionFrameBrowse.bgtex:SetBackdropColor(0.1, 0.1, 0.1, 0.5);
 	else
 		AuctionFrameBrowse.bgtex:SetBackdrop({bgFile = "interface/framegeneral/ui-background-rock.blp"});
 		AuctionFrameBrowse.bgtex:SetBackdropColor(0.4, 0.4, 0.4, 1);
@@ -216,9 +219,9 @@ function BusinessInfo.AHPlus_Vanilla()
 	BrowseScrollFrame:SetPoint("TOPRIGHT",AuctionFrameBrowse.bgtex,"TOPRIGHT",-28,0);
 	BrowseScrollFrame:SetPoint("BOTTOMLEFT",AuctionFrameBrowse.bgtex,"BOTTOMLEFT",0,0);
 	--
-	AuctionFrameBrowse.qushiUI=PIGFrame(AuctionFrameBrowse)
+	AuctionFrameBrowse.qushiUI=PIGFrame(AuctionFrameBrowse,nil,nil,nil,nil,nil,{["ElvUI"]={0,0,0,0},["NDui"]={0,0,0,0}})
 	AuctionFrameBrowse.qushiUI:SetSize(328,204);
-	AuctionFrameBrowse.qushiUI:PIGSetBackdrop(1,nil,nil,nil,0)
+	AuctionFrameBrowse.qushiUI:PIGSetBackdrop(1)
 	AuctionFrameBrowse.qushiUI:SetFrameStrata("HIGH")
 	AuctionFrameBrowse.qushiUI.qushiF=BusinessInfo.ADD_qushi(AuctionFrameBrowse.qushiUI,true)
 	AuctionFrameBrowse.qushiUI.qushiF:SetPoint("TOPLEFT", AuctionFrameBrowse.qushiUI, "TOPLEFT",4, -24);
@@ -508,7 +511,7 @@ function BusinessInfo.AHPlus_Vanilla()
 		_G[biaotiLsit[7]]:SetShown(AuctionFrameBrowse.ShowHideOT.open)
 		_G[biaotiLsit[8]]:SetShown(AuctionFrameBrowse.ShowHideOT.open)
 	end
-	AuctionFrameBrowse.ShowHideOT = PIGButton(AuctionFrameBrowse,{"TOPRIGHT",AuctionFrameBrowse,"TOPRIGHT",70,-80},{28,21},"+",nil,nil,nil,nil,0);
+	AuctionFrameBrowse.ShowHideOT = PIGButton(AuctionFrameBrowse,{"TOPRIGHT",AuctionFrameBrowse,"TOPRIGHT",70,-80},{24,21},"+",nil,nil,nil,nil,0);
 	AuctionFrameBrowse.ShowHideOT.open=false
 	AuctionFrameBrowse.ShowHideOT:SetScript("OnClick", function(self)
 		if AuctionFrameBrowse.ShowHideOT.open then
@@ -762,13 +765,10 @@ function BusinessInfo.AHPlus_Vanilla()
 			self.list:Show()
 		end
 	end);
-	coll.list=PIGFrame(coll,{"TOPLEFT",AuctionFrameBrowse,"TOPRIGHT",72,-12},{200,426})
-	if ElvUI and AuctionFrame.backdrop then
-		coll.list:SetPoint("TOPLEFT",AuctionFrameBrowse,"TOPRIGHT",75,0);
-	elseif NDui then
-		coll.list:SetPoint("TOPLEFT",AuctionFrameBrowse,"TOPRIGHT",76,-10);
-	end
-	coll.list:PIGSetBackdrop(nil,nil,nil,nil,0)
+	coll.list=PIGFrame(coll,{"TOPLEFT",AuctionFrameBrowse,"TOPRIGHT",72,-12},nil,nil,nil,nil,{["ElvUI"]={1,12,1,-9},["NDui"]={2,2,2,1}})
+	coll.list:PIGSetPoint({"BOTTOMLEFT",AuctionFrameBrowse,"BOTTOMRIGHT",72,9})
+	coll.list:SetWidth(200);
+	coll.list:PIGSetBackdrop()
 	coll.list:PIGClose()
 	coll.list:Hide()
 	coll.list:EnableMouse(true)
@@ -875,9 +875,9 @@ function BusinessInfo.AHPlus_Vanilla()
 	end
 
 	---拍卖页==============================
-	AuctionFrameAuctions.SellList=PIGFrame(AuctionFrameAuctions,{"TOPLEFT",AuctionFrameAuctions,"TOPLEFT",216,-222})
+	AuctionFrameAuctions.SellList=PIGFrame(AuctionFrameAuctions,{"TOPLEFT",AuctionFrameAuctions,"TOPLEFT",216,-222},nil,nil,nil,nil,{["ElvUI"]={0,0,0,0},["NDui"]={0,0,0,0}})
 	AuctionFrameAuctions.SellList:SetPoint("BOTTOMRIGHT",AuctionFrameAuctions,"BOTTOMRIGHT",66,38);
-	AuctionFrameAuctions.SellList:PIGSetBackdrop(nil,nil,nil,nil,0)
+	AuctionFrameAuctions.SellList:PIGSetBackdrop()
 	AuctionFrameAuctions.SellList:PIGClose()
 
 	local SellListF=AuctionFrameAuctions.SellList

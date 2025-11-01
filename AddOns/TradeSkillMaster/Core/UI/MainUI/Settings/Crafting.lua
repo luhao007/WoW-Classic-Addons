@@ -5,12 +5,13 @@
 -- ------------------------------------------------------------------------------ --
 
 local TSM = select(2, ...) ---@type TSM
-local Crafting = TSM.MainUI.Settings:NewPackage("Crafting")
-local L = TSM.Include("Locale").GetTable()
-local PlayerInfo = TSM.Include("Service.PlayerInfo")
-local UIElements = TSM.Include("UI.UIElements")
-local UIUtils = TSM.Include("UI.UIUtils")
+local Crafting = TSM.MainUI.Settings:NewPackage("Crafting") ---@type AddonPackage
+local L = TSM.Locale.GetTable()
+local PlayerInfo = TSM.LibTSMApp:Include("Service.PlayerInfo")
+local UIElements = TSM.LibTSMUI:Include("Util.UIElements")
+local UIUtils = TSM.LibTSMUI:Include("Util.UIUtils")
 local private = {
+	settings = nil,
 	altCharacters = {},
 	altGuilds = {},
 }
@@ -20,6 +21,12 @@ local BAD_MAT_PRICE_SOURCES = {
 local BAD_CRAFT_VALUE_PRICE_SOURCES = {
 	crafting = true,
 }
+local SETTING_TOOLTIPS = {
+	ignoreCharacters = L["Select characters which Crafting should ignore the inventory of for materials and crafted items."],
+	ignoreGuilds = L["Select guilds which Crafting should ignore the inventory of for materials and crafted items."],
+	defaultMatCostMethod = L["A custom string which defines how TSM determines the cost of acquiring a material by default. This can be overridden on a per-material basis within the 'Crafting Reports' tab of the Crafting UI."],
+	defaultCraftPriceMethod = L["A custom string which defines how TSM determines the value of a crafted item. This can be overridden within a Crafting operation."],
+}
 
 
 
@@ -27,7 +34,12 @@ local BAD_CRAFT_VALUE_PRICE_SOURCES = {
 -- Module Functions
 -- ============================================================================
 
-function Crafting.OnInitialize()
+function Crafting.OnInitialize(settingsDB)
+	private.settings = settingsDB:NewView()
+		:AddKey("global", "craftingOptions", "defaultMatCostMethod")
+		:AddKey("global", "craftingOptions", "defaultCraftPriceMethod")
+		:AddKey("global", "craftingOptions", "ignoreCharacters")
+		:AddKey("global", "craftingOptions", "ignoreGuilds")
 	TSM.MainUI.Settings.RegisterSettingPage(L["Crafting"], "middle", private.GetCraftingSettingsFrame)
 end
 
@@ -71,36 +83,27 @@ function private.GetCraftingSettingsFrame()
 				:AddChild(UIElements.New("MultiselectionDropdown", "charDropdown")
 					:SetMargin(0, 12, 0, 0)
 					:SetItems(private.altCharacters, private.altCharacters)
-					:SetSettingInfo(TSM.db.global.craftingOptions, "ignoreCharacters")
+					:SetSettingInfo(private.settings, "ignoreCharacters")
 					:SetSelectionText(L["No Characters"], L["%d Characters"], L["All Characters"])
+					:SetTooltip(SETTING_TOOLTIPS.ignoreCharacters)
 				)
 				:AddChild(UIElements.New("MultiselectionDropdown", "guildDropdown")
 					:SetItems(private.altGuilds, private.altGuilds)
-					:SetSettingInfo(TSM.db.global.craftingOptions, "ignoreGuilds")
+					:SetSettingInfo(private.settings, "ignoreGuilds")
 					:SetSelectionText(L["No Guilds"], L["%d Guilds"], L["All Guilds"])
+					:SetTooltip(SETTING_TOOLTIPS.ignoreGuilds)
 				)
 			)
 		)
 		:AddChild(TSM.MainUI.Settings.CreateExpandableSection("Crafting", "price", L["Default price configuration"], "")
-			:AddChild(TSM.MainUI.Settings.CreateMultiInputWithReset("mastCostFrame", L["Default material cost method"], "global.craftingOptions.defaultMatCostMethod", BAD_MAT_PRICE_SOURCES))
-			:AddChild(TSM.MainUI.Settings.CreateMultiInputWithReset("craftPriceFrame", L["Default craft value method"], "global.craftingOptions.defaultCraftPriceMethod", BAD_CRAFT_VALUE_PRICE_SOURCES))
+			:AddChild(TSM.MainUI.Settings.CreateMultiInputWithReset("mastCostFrame", L["Default material cost method"], private.settings, "defaultMatCostMethod", BAD_MAT_PRICE_SOURCES, SETTING_TOOLTIPS.defaultMatCostMethod))
+			:AddChild(TSM.MainUI.Settings.CreateMultiInputWithReset("craftPriceFrame", L["Default craft value method"], private.settings, "defaultCraftPriceMethod", BAD_CRAFT_VALUE_PRICE_SOURCES, SETTING_TOOLTIPS.defaultCraftPriceMethod))
 		)
-		:AddChild(TSM.MainUI.Settings.CreateExpandableSection("Crafting", "cooldowns", L["Ignored Cooldowns"], L["Use this list to manage what cooldowns you'd like TSM to ignore from crafting."])
-			:AddChild(UIElements.New("QueryScrollingTable", "items")
-				:SetHeight(126)
-				:GetScrollingTableInfo()
-					:NewColumn("item")
-						:SetTitle(L["Cooldown"])
-						:SetFont("BODY_BODY3")
-						:SetJustifyH("LEFT")
-						:SetTextInfo(nil, private.CooldownGetText)
-						:DisableHiding()
-						:Commit()
-					:Commit()
+		:AddChild(TSM.MainUI.Settings.CreateExpandableSection("Crafting", "cooldowns", L["Ignored Cooldowns"], L["Click on a cooldown below to unignore it for display in the Task List UI."])
+			:AddChild(UIElements.New("IgnoredCooldownList", "items")
+				:SetHeight(106)
 				:SetQuery(TSM.Crafting.CreateIgnoredCooldownQuery())
-				:SetAutoReleaseQuery(true)
-				:SetSelectionDisabled(true)
-				:SetScript("OnRowClick", private.IgnoredCooldownOnRowClick)
+				:SetScript("OnRemoveCooldown", private.RemoveCooldown)
 			)
 		)
 end
@@ -111,10 +114,6 @@ end
 -- Private Helper Functions
 -- ============================================================================
 
-function private.CooldownGetText(row)
-	return row:GetField("characterKey").." - "..TSM.Crafting.GetName(row:GetField("craftString"))
-end
-
-function private.IgnoredCooldownOnRowClick(_, row)
-	TSM.Crafting.RemoveIgnoredCooldown(row:GetFields("characterKey", "craftString"))
+function private.RemoveCooldown(_, characterKey, craftString)
+	TSM.Crafting.RemoveIgnoredCooldown(characterKey, craftString)
 end

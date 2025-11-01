@@ -1,3 +1,6 @@
+local GetSpellName = C_Spell.GetSpellName or VUHDO_getSpellName;
+local GetSpecialization = VUHDO_getSpecialization;
+local GetSpecializationInfo = VUHDO_getSpecializationInfo;
 local pairs = pairs;
 local _;
 
@@ -9,17 +12,21 @@ VUHDO_GLOBAL_CONFIG = {
 --
 local tHotCfg, tHotSlots;
 function VUHDO_fixHotSettings()
-	tHotSlots = VUHDO_PANEL_SETUP["HOTS"]["SLOTS"];
-	tHotCfg = VUHDO_PANEL_SETUP["HOTS"]["SLOTCFG"];
 
-	for tCnt2 = 1, 10 do
-		if not tHotCfg["" .. tCnt2]["mine"] and not tHotCfg["" .. tCnt2]["others"] then
-			if tHotSlots[tCnt2] then
-				tHotCfg["" .. tCnt2]["mine"] = true;
-				tHotCfg["" .. tCnt2]["others"] = VUHDO_EXCLUSIVE_HOTS[tHotSlots[tCnt2]];
+	for tPanelNum = 1, 10 do -- VUHDO_MAX_PANELS
+		tHotSlots = VUHDO_PANEL_SETUP[tPanelNum]["HOTS"]["SLOTS"];
+		tHotCfg = VUHDO_PANEL_SETUP[tPanelNum]["HOTS"]["SLOTCFG"];
+
+		for tCnt2 = 1, 12 do -- VUHDO_MAX_HOTS
+			if not tHotCfg["" .. tCnt2]["mine"] and not tHotCfg["" .. tCnt2]["others"] then
+				if tHotSlots[tCnt2] then
+					tHotCfg["" .. tCnt2]["mine"] = true;
+					tHotCfg["" .. tCnt2]["others"] = VUHDO_EXCLUSIVE_HOTS[tHotSlots[tCnt2]];
+				end
 			end
 		end
 	end
+
 end
 
 
@@ -143,7 +150,7 @@ local VUHDO_DEFAULT_RANGE_SPELLS = {
 	},
 	["SHAMAN"] = {
 		["HELPFUL"] = { VUHDO_SPELL_ID.HEALING_WAVE },
-		["HARMFUL"] = { VUHDO_SPELL_ID.LIGHTNING_BOLT },
+		["HARMFUL"] = { VUHDO_SPELL_ID.FLAME_SHOCK, VUHDO_SPELL_ID.LIGHTNING_BOLT },
 	},
 	["DRUID"] = {
 		["HELPFUL"] = { VUHDO_SPELL_ID.REJUVENATION },
@@ -151,14 +158,14 @@ local VUHDO_DEFAULT_RANGE_SPELLS = {
 	},
 	["PRIEST"] = {
 		["HELPFUL"] = { VUHDO_SPELL_ID.FLASH_HEAL },
-		["HARMFUL"] = { VUHDO_SPELL_ID.SMITE },
+		["HARMFUL"] = { VUHDO_SPELL_ID.SHADOW_WORD_PAIN, VUHDO_SPELL_ID.SMITE },
 	},
 	["DEATHKNIGHT"] = {
 		["HELPFUL"] = { 47541 }, -- VUHDO_SPELL_ID.DEATH_COIL
 		["HARMFUL"] = { 47541, 49576 }, -- VUHDO_SPELL_ID.DEATH_COIL, VUHDO_SPELL_ID.DEATH_GRIP
 	},
 	["MONK"] = {
-		["HELPFUL"] = { VUHDO_SPELL_ID.DETOX },
+		["HELPFUL"] = { VUHDO_SPELL_ID.VIVIFY, VUHDO_SPELL_ID.DETOX },
 		["HARMFUL"] = { VUHDO_SPELL_ID.PROVOKE },
 	},
 	["DEMONHUNTER"] = {
@@ -166,8 +173,8 @@ local VUHDO_DEFAULT_RANGE_SPELLS = {
 		["HARMFUL"] = { VUHDO_SPELL_ID.THROW_GLAIVE },
 	},
 	["EVOKER"] = {
-		["HELPFUL"] = { VUHDO_SPELL_ID.LIVING_FLAME },
-		["HARMFUL"] = { VUHDO_SPELL_ID.LIVING_FLAME },
+		["HELPFUL"] = { VUHDO_SPELL_ID.EMERALD_BLOSSOM, VUHDO_SPELL_ID.LIVING_FLAME },
+		["HARMFUL"] = { VUHDO_SPELL_ID.AZURE_STRIKE, VUHDO_SPELL_ID.LIVING_FLAME },
 	},
 };
 
@@ -181,115 +188,115 @@ local VUHDO_DEFAULT_SPELLS_KEYBOARD = {};
 
 local VUHDO_CLASS_DEFAULT_SPELL_ASSIGNMENT = {
 	["PALADIN"] = {
-		["1"] = {"", "1", VUHDO_SPELL_ID.FLASH_OF_LIGHT},
-		["2"] = {"", "2", VUHDO_SPELL_ID.PALA_CLEANSE},
-		["3"] = {"", "3", "menu"},
-		["4"] = {"", "4", VUHDO_SPELL_ID.LIGHT_OF_DAWN},
+		["1"] = { "", "1", VUHDO_SPELL_ID.FLASH_OF_LIGHT },
+		["2"] = { "", "2", VUHDO_SPELL_ID.HOLY_SHOCK },
+		["3"] = { "", "3", "dropdown" },
 
-		["alt1"] = {"alt-", "1", "target"},
+		["alt1"] = { "alt-", "1", "target" },
+		["alt2"] = { "alt-", "2", "focus" },
+		["alt3"] = { "alt-", "3", "menu" },
 
-		["ctrl1"] = {"ctrl-", "1", VUHDO_SPELL_ID.HOLY_LIGHT},
-		["ctrl2"] = {"ctrl-", "2", VUHDO_SPELL_ID.HOLY_SHOCK},
+		["ctrl1"] = { "ctrl-", "1", VUHDO_SPELL_ID.HOLY_LIGHT },
+		["ctrl2"] = { "ctrl-", "2", VUHDO_SPELL_ID.LAY_ON_HANDS },
+		["ctrl3"] = { "ctrl-", "3", "menu" },
 
-		["shift1"] = {"shift-", "1", VUHDO_SPELL_ID.HOLY_RADIANCE},
-		["shift2"] = {"shift-", "2", VUHDO_SPELL_ID.LAY_ON_HANDS},
+		["shift1"] = { "shift-", "1", VUHDO_SPELL_ID.LIGHT_OF_DAWN },
+		["shift2"] = { "shift-", "2", VUHDO_SPELL_ID.PALA_CLEANSE },
+		["shift3"] = { "shift-", "3", "menu" },
 	},
 
 	["SHAMAN"] = {
-		["1"] = {"", "1", VUHDO_SPELL_ID.HEALING_WAVE},
-		["2"] = {"", "2", VUHDO_SPELL_ID.CHAIN_HEAL},
-		["3"] = {"", "3", "menu"},
+		["1"] = { "", "1", VUHDO_SPELL_ID.HEALING_WAVE },
+		["2"] = { "", "2", VUHDO_SPELL_ID.CHAIN_HEAL },
+		["3"] = { "", "3", "dropdown" },
 
-		["alt1"] = {"alt-", "1", VUHDO_SPELL_ID.BUFF_EARTH_SHIELD},
-		["alt2"] = {"alt-", "2", VUHDO_SPELL_ID.GIFT_OF_THE_NAARU},
-		["alt3"] = {"alt-", "3", "menu"},
+		["alt1"] = { "alt-", "1", "target" },
+		["alt2"] = { "alt-", "2", "focus" },
+		["alt3"] = { "alt-", "3", "menu" },
 
-		["ctrl1"] = {"ctrl-", "1", "target"},
-		["ctrl2"] = {"ctrl-", "2", "target"},
-		["ctrl3"] = {"ctrl-", "3", "menu"},
+		["ctrl1"] = { "ctrl-", "1", VUHDO_SPELL_ID.BUFF_EARTH_SHIELD },
+		["ctrl2"] = { "ctrl-", "2", VUHDO_SPELL_ID.GIFT_OF_THE_NAARU },
+		["ctrl3"] = { "ctrl-", "3", "menu" },
 
-		["shift1"] = {"shift-", "1", VUHDO_SPELL_ID.HEALING_WAVE},
-		["shift2"] = {"shift-", "2", VUHDO_SPELL_ID.CHAIN_HEAL},
-		["shift3"] = {"shift-", "3", "menu" },
-
-		["altctrl1"] = {"alt-ctrl-", "1", VUHDO_SPELL_ID.PURIFY_SPIRIT},
-		["altctrl2"] = {"alt-ctrl-", "2", VUHDO_SPELL_ID.PURIFY_SPIRIT},
+		["shift1"] = { "shift-", "1", VUHDO_SPELL_ID.RIPTIDE },
+		["shift2"] = { "shift-", "2", VUHDO_SPELL_ID.PURIFY_SPIRIT },
+		["shift3"] = { "shift-", "3", "menu" },
 	},
 
 	["PRIEST"] = {
-		["1"] = {"", "1", VUHDO_SPELL_ID.FLASH_HEAL},
-		["2"] = {"", "2", VUHDO_SPELL_ID.GREATER_HEAL},
-		["3"] = {"", "3", VUHDO_SPELL_ID.DESPERATE_PRAYER},
-		["4"] = {"", "4", VUHDO_SPELL_ID.RENEW},
-		["5"] = {"", "5", VUHDO_SPELL_ID.BINDING_HEAL},
+		["1"] = { "", "1", VUHDO_SPELL_ID.FLASH_HEAL },
+		["2"] = { "", "2", VUHDO_SPELL_ID.RENEW },
+		["3"] = { "", "3", "dropdown" },
+		["4"] = { "", "4", VUHDO_SPELL_ID.PRAYER_OF_MENDING },
 
-		["alt1"] = {"alt-", "1", "target"},
-		["alt2"] = {"alt-", "2", "focus"},
-		["alt3"] = {"alt-", "3", VUHDO_SPELL_ID.POWERWORD_SHIELD},
-		["alt4"] = {"alt-", "4", VUHDO_SPELL_ID.POWERWORD_SHIELD},
-		["alt5"] = {"alt-", "5", VUHDO_SPELL_ID.POWERWORD_SHIELD},
+		["alt1"] = { "alt-", "1", "target" },
+		["alt2"] = { "alt-", "2", "focus" },
+		["alt3"] = { "alt-", "3", "menu" },
 
-		["ctrl1"] = {"ctrl-", "1", VUHDO_SPELL_ID.PRAYER_OF_HEALING},
-		["ctrl2"] = {"ctrl-", "2", VUHDO_SPELL_ID.CIRCLE_OF_HEALING},
-		["ctrl3"] = {"ctrl-", "3", "menu"},
-		["ctrl4"] = {"ctrl-", "4", VUHDO_SPELL_ID.PRAYER_OF_MENDING},
-		["ctrl5"] = {"ctrl-", "5", VUHDO_SPELL_ID.PRAYER_OF_MENDING},
+		["ctrl1"] = { "ctrl-", "1", VUHDO_SPELL_ID.PRAYER_OF_HEALING },
+		["ctrl2"] = { "ctrl-", "2", VUHDO_SPELL_ID.CIRCLE_OF_HEALING },
+		["ctrl3"] = { "ctrl-", "3", "menu" },
 
-		["shift2"] = {"shift-", "2", VUHDO_SPELL_ID.PURIFY},
-		["shift3"] = {"shift-", "3", "menu"},
+		["shift1"] = { "shift-", "1", VUHDO_SPELL_ID.POWERWORD_SHIELD },
+		["shift2"] = { "shift-", "2", VUHDO_SPELL_ID.PURIFY },
+		["shift3"] = { "shift-", "3", "menu" },
 	},
 
 	["DRUID"] = {
-		["1"] = {"", "1", VUHDO_SPELL_ID.HEALING_TOUCH},
-		["2"] = {"", "2", VUHDO_SPELL_ID.REJUVENATION},
-		["3"] = {"", "3", "menu"},
-		["4"] = {"", "4", VUHDO_SPELL_ID.INNERVATE},
-		["5"] = {"", "5", VUHDO_SPELL_ID.INNERVATE},
+		["1"] = { "", "1", VUHDO_SPELL_ID.REGROWTH },
+		["2"] = { "", "2", VUHDO_SPELL_ID.REJUVENATION },
+		["3"] = { "", "3", "dropdown" },
 
-		["alt1"] = {"alt-", "1", "target"},
-		["alt2"] = {"alt-", "2", "focus"},
-		["alt3"] = {"alt-", "3", "menu"},
+		["alt1"] = { "alt-", "1", "target" },
+		["alt2"] = { "alt-", "2", "focus" },
+		["alt3"] = { "alt-", "3", "menu" },
 
-		["ctrl1"] = {"ctrl-", "1", VUHDO_SPELL_ID.REGROWTH},
-		["ctrl2"] = {"ctrl-", "2", VUHDO_SPELL_ID.LIFEBLOOM},
-		["ctrl4"] = {"ctrl-", "4", VUHDO_SPELL_ID.TRANQUILITY},
-		["ctrl5"] = {"ctrl-", "5", VUHDO_SPELL_ID.TRANQUILITY},
+		["ctrl1"] = { "ctrl-", "1", VUHDO_SPELL_ID.INNERVATE },
+		["ctrl2"] = { "ctrl-", "2", VUHDO_SPELL_ID.LIFEBLOOM },
+		["ctrl3"] = { "ctrl-", "3", "menu" },
 
-		["shift2"] = {"shift-", "2", VUHDO_SPELL_ID.NATURES_CURE},
+		["shift1"] = { "shift-", "1", VUHDO_SPELL_ID.TRANQUILITY },
+		["shift2"] = { "shift-", "2", VUHDO_SPELL_ID.NATURES_CURE },
+		["shift3"] = { "shift-", "3", "menu" },
 	},
 
 	["MONK"] = {
-		["1"] = { "", "1", VUHDO_SPELL_ID.SURGING_MIST },
+		["1"] = { "", "1", VUHDO_SPELL_ID.RENEWING_MIST },
 		["2"] = { "", "2", VUHDO_SPELL_ID.ENVELOPING_MIST },
-		["3"] = { "", "3", "menu"},
-		["4"] = { "", "4", VUHDO_SPELL_ID.RENEWING_MIST },
+		["3"] = { "", "3", "dropdown" },
+		["4"] = { "", "4", VUHDO_SPELL_ID.CHI_WAVE },
 		["5"] = { "", "5", VUHDO_SPELL_ID.SOOTHING_MIST },
 
 		["alt1"] = { "alt-", "1", "target" },
-		["alt2"] = { "alt-", "2", VUHDO_SPELL_ID.CHI_WAVE },
+		["alt2"] = { "alt-", "2", "focus" },
+		["alt3"] = { "alt-", "3", "menu" },
 
-		["ctrl1"] = { "ctrl-", "1", VUHDO_SPELL_ID.DETOX },
+		["ctrl1"] = { "ctrl-", "1", VUHDO_SPELL_ID.REVIVAL },
 		["ctrl2"] = { "ctrl-", "2", VUHDO_SPELL_ID.LIFE_COCOON },
+		["ctrl3"] = { "ctrl-", "3", "menu" },
 
-		["shift1"] = { "shift-", "1", VUHDO_SPELL_ID.UPLIFT },
-		["shift2"] = { "shift-", "2", VUHDO_SPELL_ID.REVIVAL },
+		["shift1"] = { "shift-", "1", VUHDO_SPELL_ID.VIVIFY },
+		["shift2"] = { "shift-", "2", VUHDO_SPELL_ID.DETOX },
+		["shift3"] = { "shift-", "3", "menu" },
 	},
 
 	["EVOKER"] = {
 		["1"] = { "", "1", VUHDO_SPELL_ID.LIVING_FLAME },
 		["2"] = { "", "2", VUHDO_SPELL_ID.EMERALD_BLOSSOM },
-		["3"] = { "", "3", "menu"},
+		["3"] = { "", "3", "dropdown" },
 		["4"] = { "", "4", VUHDO_SPELL_ID.ECHO },
-		["5"] = { "", "5", VUHDO_SPELL_ID.DREAM_BREATH },
 
 		["alt1"] = { "alt-", "1", "target" },
 		["alt2"] = { "alt-", "2", "focus" },
+		["alt3"] = { "alt-", "3", "menu" },
 
-		["ctrl1"] = { "ctrl-", "1", VUHDO_SPELL_ID.NATURALIZE },
-		["ctrl2"] = { "ctrl-", "2", VUHDO_SPELL_ID.CAUTERIZING_FLAME },
+		["ctrl1"] = { "ctrl-", "1", VUHDO_SPELL_ID.DREAM_BREATH },
+		["ctrl2"] = { "ctrl-", "2", VUHDO_SPELL_ID.DREAM_FLIGHT },
+		["ctrl3"] = { "ctrl-", "3", "menu" },
 
-		["shift1"] = { "shift-", "1", VUHDO_SPELL_ID.ZEPHYR },
-		["shift2"] = { "shift-", "2", VUHDO_SPELL_ID.DREAM_FLIGHT },
+		["shift1"] = { "shift-", "1", VUHDO_SPELL_ID.CAUTERIZING_FLAME },
+		["shift2"] = { "shift-", "2", VUHDO_SPELL_ID.NATURALIZE },
+		["shift3"] = { "shift-", "3", "menu" },
 	},
 };
 
@@ -297,11 +304,11 @@ local VUHDO_CLASS_DEFAULT_SPELL_ASSIGNMENT = {
 
 --
 local VUHDO_GLOBAL_DEFAULT_SPELL_ASSIGNMENT = {
-	["1"] = {"", "1", "target"},
-	["2"] = {"", "2", "assist"},
-	["3"] = {"", "3", "focus"},
-	["4"] = {"", "4", "menu"},
-	["5"] = {"", "5", "menu"},
+	["1"] = { "", "1", "target" },
+	["2"] = { "", "2", "dropdown" },
+	["3"] = { "", "3", "focus" },
+	["4"] = { "", "4", "menu" },
+	["5"] = { "", "5", "assist" },
 };
 
 
@@ -322,6 +329,7 @@ VUHDO_DEFAULT_SPELL_CONFIG = {
 	["FIRE_CUSTOM_2_SPELL"] = "",
 	["IS_TOOLTIP_INFO"] = false,
 	["IS_LOAD_HOTS"] = false,
+	["IS_LOAD_HOTS_ONLY_SLOTS"] = false,
 	["smartCastModi"] = "all",
 	["autoBattleRez"] = true,
 	["custom1Unit"] = "@player",
@@ -390,14 +398,27 @@ end
 
 
 --
+local tSpecId;
+local tClass;
+local tDefaultAssignments;
 local function VUHDO_assignDefaultSpells()
-	local _, tClass = UnitClass("player");
 
-	VUHDO_SPELL_ASSIGNMENTS = VUHDO_deepCopyTable(VUHDO_CLASS_DEFAULT_SPELL_ASSIGNMENT[tClass] ~= nil
-		and VUHDO_CLASS_DEFAULT_SPELL_ASSIGNMENT[tClass] or VUHDO_GLOBAL_DEFAULT_SPELL_ASSIGNMENT);
+	tSpecId = GetSpecializationInfo(GetSpecialization() or 0);
+	_, tClass = UnitClass("player");
+
+	if tSpecId and VUHDO_CLASS_DEFAULT_SPELL_ASSIGNMENT[tSpecId] then
+		tDefaultAssignments = VUHDO_CLASS_DEFAULT_SPELL_ASSIGNMENT[tSpecId];
+	elseif tClass and VUHDO_CLASS_DEFAULT_SPELL_ASSIGNMENT[tClass] then
+		tDefaultAssignments = VUHDO_CLASS_DEFAULT_SPELL_ASSIGNMENT[tClass];
+	else
+		tDefaultAssignments = VUHDO_GLOBAL_DEFAULT_SPELL_ASSIGNMENT;
+	end
+
+	VUHDO_SPELL_ASSIGNMENTS = VUHDO_deepCopyTable(tDefaultAssignments);
 
 	VUHDO_CLASS_DEFAULT_SPELL_ASSIGNMENT = nil;
 	VUHDO_GLOBAL_DEFAULT_SPELL_ASSIGNMENT = nil;
+
 end
 
 
@@ -529,23 +550,23 @@ end
 
 
 --
-local function VUHDO_addCustomSpellIds(aVersion, ...)
-	if ((VUHDO_CONFIG["CUSTOM_DEBUFF"].version or 0) < aVersion) then
+local tName;
+local function VUHDO_addCustomSpellIds(aVersion, aDebuffs)
+
+	if (VUHDO_CONFIG["CUSTOM_DEBUFF"].version or 0) < aVersion then
 		VUHDO_CONFIG["CUSTOM_DEBUFF"].version = aVersion;
 
-		local tArg;
-		for tCnt = 1, select("#", ...) do
-			tArg = select(tCnt, ...);
-
-			if (type(tArg) == "number") then
-				-- make sure the spell ID is still added as a string
-				-- otherwise getKeyFromValue look-ups w/ spell ID string fail later
-				tArg = tostring(tArg);
+		for tSpellId, tIsAddBySpellId in pairs(aDebuffs) do
+			if tIsAddBySpellId then
+				tName = tostring(tSpellId);
+			else
+				tName = GetSpellName(tSpellId);
 			end
 
-			VUHDO_tableUniqueAdd(VUHDO_CONFIG["CUSTOM_DEBUFF"]["STORED"], tArg);
+			VUHDO_tableUniqueAdd(VUHDO_CONFIG["CUSTOM_DEBUFF"]["STORED"], tName);
 		end
 	end
+
 end
 
 
@@ -606,7 +627,7 @@ local VUHDO_DEFAULT_CONFIG = {
 	["LOCK_PANELS"] = false,
 	["LOCK_CLICKS_THROUGH"] = false,
 	["LOCK_IN_FIGHT"] = true,
-	["PARSE_COMBAT_LOG"] = true,
+	["PARSE_COMBAT_LOG"] = false,
 	["HIDE_EMPTY_BUTTONS"] = false,
 
 	["MODE"] = VUHDO_MODE_NEUTRAL,
@@ -617,7 +638,6 @@ local VUHDO_DEFAULT_CONFIG = {
 	["SHOW_OVERHEAL"] = true,
 	["SHOW_OWN_INCOMING"] = true,
 	["SHOW_TEXT_OVERHEAL"] = true,
-	["SHOW_LIBHEALCOMM_INCOMING"] = true,
 	["SHOW_SHIELD_BAR"] = true,
 	["SHOW_OVERSHIELD_BAR"] = false,
 	["SHOW_HEAL_ABSORB_BAR"] = true,
@@ -625,15 +645,17 @@ local VUHDO_DEFAULT_CONFIG = {
 	["RANGE_CHECK_DELAY"] = 260,
 
 	["SOUND_DEBUFF"] = nil,
+	["SOUND_DEBUFF_REMOVABLE_ONLY"] = false,
 	["DETECT_DEBUFFS_REMOVABLE_ONLY"] = true,
 	["DETECT_DEBUFFS_REMOVABLE_ONLY_ICONS"] = true,
 	["DETECT_DEBUFFS_IGNORE_BY_CLASS"] = true,
 	["DETECT_DEBUFFS_IGNORE_NO_HARM"] = true,
 	["DETECT_DEBUFFS_IGNORE_MOVEMENT"] = true,
 	["DETECT_DEBUFFS_IGNORE_DURATION"] = true,
+	["DETECT_DEBUFFS_IGNORE_PURGEABLE_BUFFS"] = false,
 
 	["SMARTCAST_RESURRECT"] = true,
-	["SMARTCAST_CLEANSE"] = true,
+	["SMARTCAST_CLEANSE"] = false,
 	["SMARTCAST_BUFF"] = false,
 
 	["SHOW_PLAYER_TAGS"] = true,
@@ -669,15 +691,18 @@ local VUHDO_DEFAULT_CONFIG = {
 
 	["CUSTOM_DEBUFF"] = {
 		["scale"] = 0.8,
-		["animate"] = true,
+		["animate"] = false,
 		["timer"] = true,
 		["max_num"] = 3,
 		["isNoRangeFade"] = false,
 		["isIcon"] = true,
 		["isColor"] = false,
-		["isStacks"] = false,
+		["isStacks"] = true,
 		["isName"] = false, 
-		["isShowOnlyForFriendly"] = false, 
+		["isShowFriendly"] = true,
+		["isShowHostile"] = true,
+		["isHostileMine"] = true,
+		["isHostileOthers"] = true,
 		["blacklistModi"] = "ALT-CTRL-SHIFT",
 		["SELECTED"] = "",
 		["point"] = "TOPRIGHT",
@@ -733,7 +758,7 @@ local VUHDO_DEFAULT_CONFIG = {
 	},
 
 	["CLUSTER"] = {
-		["REFRESH"] = 180,
+		["REFRESH"] = 500,
 		["RANGE"] = 30,
 		["RANGE_JUMP"] = 11,
 		["BELOW_HEALTH_PERC"] = 85,
@@ -746,7 +771,7 @@ local VUHDO_DEFAULT_CONFIG = {
 		["CHAIN_MAX_JUMP"] = 3,
 		["COOLDOWN_SPELL"] = "",
 		["CONE_DEGREES"] = 360,
-        ["ARE_TARGETS_RANDOM"] = true,
+		["ARE_TARGETS_RANDOM"] = true,
 
 		["TEXT"] = {
 			["ANCHOR"] = "BOTTOMRIGHT",
@@ -796,27 +821,27 @@ local VUHDO_DEFAULT_CONFIG = {
 
 		["config"] = {
 			["coh"] = {
-				["enable"] = true,
+				["enable"] = false,
 				["thresh"] = 15000,
 			},
 			["poh"] = {
-				["enable"] = true,
+				["enable"] = false,
 				["thresh"] = 20000,
 			},
 			["ch"] = {
-				["enable"] = true,
+				["enable"] = false,
 				["thresh"] = 15000,
 			},
 			["wg"] = {
-				["enable"] = true,
+				["enable"] = false,
 				["thresh"] = 15000,
 			},
 			["tq"] = {
-				["enable"] = true,
+				["enable"] = false,
 				["thresh"] = 15000,
 			},
 			["lod"] = {
-				["enable"] = true,
+				["enable"] = false,
 				["thresh"] = 8000,
 			},
 			["hr"] = {
@@ -845,7 +870,7 @@ local VUHDO_DEFAULT_CU_DE_STORED_SETTINGS = {
 	["isIcon"] = true,
 	["isColor"] = false,
 --	["SOUND"] = "",
-	["animate"] = true,
+	["animate"] = false,
 	["timer"] = true,
 	["isStacks"] = true,
 	["isAliveTime"] = false,
@@ -912,8 +937,7 @@ end
 
 --
 function VUHDO_loadDefaultConfig()
-	local tClass;
-	_, tClass = UnitClass("player");
+	local _, tClass = UnitClass("player");
 
 	if (VUHDO_CONFIG == nil) then
 		VUHDO_CONFIG = VUHDO_decompressOrCopy(VUHDO_DEFAULT_CONFIG);
@@ -927,7 +951,27 @@ function VUHDO_loadDefaultConfig()
 	VUHDO_CONFIG["BLIZZ_UI_HIDE_RAID"] = VUHDO_convertToTristate(VUHDO_CONFIG["BLIZZ_UI_HIDE_RAID"], 3, 2);
 	VUHDO_CONFIG["BLIZZ_UI_HIDE_RAID_MGR"] = VUHDO_convertToTristate(VUHDO_CONFIG["BLIZZ_UI_HIDE_RAID_MGR"], 3, 2);
 
+	VUHDO_DEFAULT_CONFIG = VUHDO_decompressIfCompressed(VUHDO_DEFAULT_CONFIG);
 	VUHDO_CONFIG = VUHDO_ensureSanity("VUHDO_CONFIG", VUHDO_CONFIG, VUHDO_DEFAULT_CONFIG);
+
+	-- deprecate "show only for friendly" option in favor of distinct show on friendly and hostile options
+	if VUHDO_CONFIG["CUSTOM_DEBUFF"] and VUHDO_DEFAULT_CONFIG["CUSTOM_DEBUFF"] then
+		-- FIXME: VUHDO_ensureSanity() skips creating booleans but fixing this breaks some models
+		for tKey, tValue in pairs(VUHDO_DEFAULT_CONFIG["CUSTOM_DEBUFF"]) do
+			if type(tValue) == "boolean" and VUHDO_CONFIG["CUSTOM_DEBUFF"][tKey] == nil then
+				VUHDO_CONFIG["CUSTOM_DEBUFF"][tKey] = tValue;
+			end
+		end
+
+		if VUHDO_CONFIG["CUSTOM_DEBUFF"]["isShowOnlyForFriendly"] ~= nil then
+			if VUHDO_CONFIG["CUSTOM_DEBUFF"]["isShowOnlyForFriendly"] then
+				VUHDO_CONFIG["CUSTOM_DEBUFF"]["isShowHostile"] = false;
+			end
+
+			VUHDO_CONFIG["CUSTOM_DEBUFF"]["isShowOnlyForFriendly"] = nil;
+		end
+	end
+
 	VUHDO_DEFAULT_CONFIG = VUHDO_compressAndPackTable(VUHDO_DEFAULT_CONFIG);
 
 	if ((VUHDO_CONFIG["VERSION"] or 1) < 4) then
@@ -942,12 +986,14 @@ function VUHDO_loadDefaultConfig()
 			if VUHDO_strempty(VUHDO_CONFIG["RANGE_SPELL"][tUnitReaction]) then
 				for _, tRangeSpell in pairs(tRangeSpells) do
 					if type(tRangeSpell) == "number" then
-						tRangeSpell = IsPlayerSpell(tRangeSpell) and GetSpellInfo(tRangeSpell) or "!";
+						tRangeSpell = IsPlayerSpell(tRangeSpell) and GetSpellName(tRangeSpell) or "!";
 					end
 
 					if tRangeSpell ~= "!" then
 						VUHDO_CONFIG["RANGE_SPELL"][tUnitReaction] = tRangeSpell;
 						tIsGuessRange = false;
+
+						break;
 					end
 				end
 
@@ -957,160 +1003,160 @@ function VUHDO_loadDefaultConfig()
 	end
 
 	-- 3.4.0 - Wrath of the Lich King Classic - phase 1
-	VUHDO_addCustomSpellIds(54, 
+	VUHDO_addCustomSpellIds(54, {
 		-- [[ Obsidian Sanctum ]]
-		60708,  -- Fade Armor
-		57491,  -- Flame Tsunami
+		[60708] = true,  -- Fade Armor
+		[57491] = true,  -- Flame Tsunami
 		-- 58766,  -- Gift of Twilight
 		-- 60430,  -- Molten Fury
 		-- 58105,  -- Power of Shadron
 		-- 61248,  -- Power of Tenebron
 		-- 61251,  -- Power of Vesperon
-		56910,  -- Tail Lash
-		58957,  -- Tail Lash
+		[56910] = true,  -- Tail Lash
+		[58957] = true,  -- Tail Lash
 		-- 61885,  -- Twilight Residue
 		-- 60639,  -- Twilight Revenge
 		-- 61254,  -- Will of Sartharion
-		57634,  -- Magma
+		[57634] = true,  -- Magma
 		-- [[ Eye of Eternity ]]
-		56272,  -- Arcane Breath
-		60072,  -- Arcane Breath
+		[56272] = true,  -- Arcane Breath
+		[60072] = true,  -- Arcane Breath
 		-- 56438,  -- Arcane Overload
 		-- 57060,  -- Haste
 		-- 55849,  -- Power Spark
 		-- 56152,  -- Power Spark
-		57428,  -- Static Field
-		55849,  -- Surge of Power
+		[57428] = true,  -- Static Field
+		[55849] = true,  -- Surge of Power
 		-- 61071,  -- Vortex
 		-- 61072,  -- Vortex
 		-- 61073,  -- Vortex
 		-- 61074,  -- Vortex
 		-- 61075,  -- Vortex
-		60936,  -- Surge of Power
+		[60936] = true,  -- Surge of Power
 		-- [[ Naxxramas ]]
 		-- Trash
-		28467,  -- Mortal Wound
-		55334,  -- Strangulate
-		55314,  -- Strangulate
-		54714,  -- Acid Volley
-		29325,  -- Acid Volley
-		54331,  -- Acidic Sludge
-		27891,  -- Acidic Sludge
-		55322,  -- Blood Plague
-		55264,  -- Blood Plague
-		28440,  -- Veil of Shadow
-		53803,  -- Veil of Shadow
-		54708,  -- Rend
-		54703,  -- Rend
-		59899,  -- Poison Charge
-		56674,  -- Poison Charge
-		54326,  -- Bile Vomit
-		27807,  -- Bile Vomit
-		54709,  -- Flesh Rot
-		56674,  -- Flesh Rot
-		56624,  -- Virulent Poison
-		56605,  -- Virulent Poison
-		54772,  -- Putrid Bite
-		30113,  -- Putrid Bite
-		33661,  -- Crush Armor
-		54769,  -- Slime Burst
-		30109,  -- Slime Burst
-		54805,  -- Mind Flay
-		28310,  -- Mind Flay
-		29407,  -- Mind Flay
-		16856,  -- Mortal Strike
-		56427,  -- War Stomp
-		27758,  -- War Stomp
-		30091,  -- Flamestrike
-		56538,  -- Plague Splash
-		54780,  -- Plague Splash
-		55318,  -- Pierce Armor
-		29848,  -- Polymorph
-		6713,   -- Disarm
-		28169,  -- Mutating Injection
-		30080,  -- Retching Plague
-		30081,  -- Retching Plague
-		56444,  -- Retching Plague
+		[28467] = true,  -- Mortal Wound
+		[55334] = true,  -- Strangulate
+		[55314] = true,  -- Strangulate
+		[54714] = true,  -- Acid Volley
+		[29325] = true,  -- Acid Volley
+		[54331] = true,  -- Acidic Sludge
+		[27891] = true,  -- Acidic Sludge
+		[55322] = true,  -- Blood Plague
+		[55264] = true,  -- Blood Plague
+		[28440] = true,  -- Veil of Shadow
+		[53803] = true,  -- Veil of Shadow
+		[54708] = true,  -- Rend
+		[54703] = true,  -- Rend
+		[59899] = true,  -- Poison Charge
+		[56674] = true,  -- Poison Charge
+		[54326] = true,  -- Bile Vomit
+		[27807] = true,  -- Bile Vomit
+		[54709] = true,  -- Flesh Rot
+		[56674] = true,  -- Flesh Rot
+		[56624] = true,  -- Virulent Poison
+		[56605] = true,  -- Virulent Poison
+		[54772] = true,  -- Putrid Bite
+		[30113] = true,  -- Putrid Bite
+		[33661] = true,  -- Crush Armor
+		[54769] = true,  -- Slime Burst
+		[30109] = true,  -- Slime Burst
+		[54805] = true,  -- Mind Flay
+		[28310] = true,  -- Mind Flay
+		[29407] = true,  -- Mind Flay
+		[16856] = true,  -- Mortal Strike
+		[56427] = true,  -- War Stomp
+		[27758] = true,  -- War Stomp
+		[30091] = true,  -- Flamestrike
+		[56538] = true,  -- Plague Splash
+		[54780] = true,  -- Plague Splash
+		[55318] = true,  -- Pierce Armor
+		[29848] = true,  -- Polymorph
+		[6713] = true,   -- Disarm
+		[28169] = true,  -- Mutating Injection
+		[30080] = true,  -- Retching Plague
+		[30081] = true,  -- Retching Plague
+		[56444] = true,  -- Retching Plague
 		-- Anub'Rekhan
-		56098,  -- Acid Spit
-		28969,  -- Acid Spit
+		[56098] = true,  -- Acid Spit
+		[28969] = true,  -- Acid Spit
 		-- 28783,  -- Impale
-		54022,  -- Locust Swarm
-		28786,  -- Locust Swarm
+		[54022] = true,  -- Locust Swarm
+		[28786] = true,  -- Locust Swarm
 		-- 28991,  -- Web
 		-- Grand Widow Faerlina
 		-- 22886,  -- Berserker Charge
-		28796,  -- Poison Bolt Volley
-		54098,  -- Poison Bolt Volley
+		[28796] = true,  -- Poison Bolt Volley
+		[54098] = true,  -- Poison Bolt Volley
 		-- 28794,  -- Rain of Fire
 		-- 30225,  -- Silence
 		-- Maexxna
-		54121,  -- Necrotic Poison
-		28776,  -- Necrotic Poison
+		[54121] = true,  -- Necrotic Poison
+		[28776] = true,  -- Necrotic Poison
 		-- 29484,  -- Web Spray
-		28622,  -- Web Wrap
+		[28622] = true,  -- Web Wrap
 		-- Noth the Plaguebringer
-		54814,  -- Cripple
-		29212,  -- Cripple
-		32736,  -- Mortal Strike
-		29213,  -- Curse of the Plaguebringer
-		54835,  -- Curse of the Plaguebringer
-		29214,  -- Wrath of the Plaguebringer
-		54836,  -- Wrath of the Plaguebringer
+		[54814] = true,  -- Cripple
+		[29212] = true,  -- Cripple
+		[32736] = true,  -- Mortal Strike
+		[29213] = true,  -- Curse of the Plaguebringer
+		[54835] = true,  -- Curse of the Plaguebringer
+		[29214] = true,  -- Wrath of the Plaguebringer
+		[54836] = true,  -- Wrath of the Plaguebringer
 		-- Heigan the Unclean
-		29998,  -- Decrepit Fever
-		55011,  -- Decrepit Fever
-		29310,  -- Spell Disruption
+		[29998] = true,  -- Decrepit Fever
+		[55011] = true,  -- Decrepit Fever
+		[29310] = true,  -- Spell Disruption
 		-- 29371,  -- Eruption
-		54772,  -- Putrid Bite
-		54769,  -- Slime Burst
-		56538,  -- Plague Splash
+		[54772] = true,  -- Putrid Bite
+		[54769] = true,  -- Slime Burst
+		[56538] = true,  -- Plague Splash
 		-- Loatheb
-		29204,  -- Inevitable Doom
-		55052,  -- Inevitable Doom
-		55593,  -- Necrotic Aura
+		[29204] = true,  -- Inevitable Doom
+		[55052] = true,  -- Inevitable Doom
+		[55593] = true,  -- Necrotic Aura
 		-- 29865,  -- Deathbloom
 		-- 55053,  -- Deathbloom
 		-- Instructor Razuvious
-		55470,  -- Unbalancing Strike
-		55550,  -- Jagged Knife
+		[55470] = true,  -- Unbalancing Strike
+		[55550] = true,  -- Jagged Knife
 		-- Gothik the Harvester
-		27994,  -- Drain Life
-		55646,  -- Drain Life
-		27825,  -- Shadow Mark
-		27993,  -- Stomp
+		[27994] = true,  -- Drain Life
+		[55646] = true,  -- Drain Life
+		[27825] = true,  -- Shadow Mark
+		[27993] = true,  -- Stomp
 		-- The Four Horsemen
-		28882,  -- Unholy Shadow
-		57369,  -- Unholy Shadow
+		[28882] = true,  -- Unholy Shadow
+		[57369] = true,  -- Unholy Shadow
 		-- Patchwerk
 		-- Grobbulus
 		-- 28153,  -- Disease Cloud
 		-- 28206,  -- Mutagen Explosion
-		28169,  -- Mutating Injection
+		[28169] = true,  -- Mutating Injection
 		-- Gluth
-		54378,	-- Mortal Wound
-		29306,  -- Infected Wound
+		[54378] = true,	-- Mortal Wound
+		[29306] = true,  -- Infected Wound
 		-- Thaddius
 		-- 28059,  -- Positive Charge
 		-- 28084,	-- Negative Charge
 		-- Sapphiron
-		28542,  -- Life Drain
-		55665,  -- Life Drain
-		15847,  -- Tail Sweep
-		28547,  -- Chill
-		55699,  -- Chill
-		28522,  -- Icebolt
+		[28542] = true,  -- Life Drain
+		[55665] = true,  -- Life Drain
+		[15847] = true,  -- Tail Sweep
+		[28547] = true,  -- Chill
+		[55699] = true,  -- Chill
+		[28522] = true,  -- Icebolt
 		-- Kel'Thuzad
 		-- 29879,  -- Frost Blast
 		-- 10187,  -- Blizzard
 		-- 28479,  -- Frostbolt
 		-- 28478,  -- Frostbolt
-		27819,  -- Detonate Mana
-		27808,  -- Frost Blast
+		[27819] = true,  -- Detonate Mana
+		[27808] = true,  -- Frost Blast
 		-- 28408,  -- Chains of Kel'Thuzad
 		-- 28409,  -- Chains of Kel'Thuzad
-		28410   -- Chains of Kel'Thuzad
-	);
+		[28410] = true,  -- Chains of Kel'Thuzad
+	} );
 
 	local debuffRemovalList = {};
 
@@ -1147,7 +1193,7 @@ function VUHDO_loadDefaultConfig()
 		194509  -- Power Word: Radiance
 	);
 
-	for tIndex, tName in pairs(VUHDO_CONFIG["SPELL_TRACE"]["STORED"]) do
+	for _, tName in pairs(VUHDO_CONFIG["SPELL_TRACE"]["STORED"]) do
 		VUHDO_spellTraceAddDefaultSettings(tName);
 
 		VUHDO_CONFIG["SPELL_TRACE"]["STORED_SETTINGS"][tName] = VUHDO_ensureSanity(
@@ -1179,54 +1225,7 @@ local VUHDO_DEFAULT_PANEL_SETUP = {
 	},
 
 	["HOTS"] = {
-		["radioValue"] = 13,
-		["iconRadioValue"] = 1,
-		["stacksRadioValue"] = 2,
-
-		["TIMER_TEXT"] = {
-			["ANCHOR"] = "BOTTOMRIGHT",
-			["X_ADJUST"] = 25,
-			["Y_ADJUST"] = 0,
-			["SCALE"] = 60,
-			["FONT"] = "Interface\\AddOns\\VuhDo\\Fonts\\ariblk.ttf",
-			["USE_SHADOW"] = false,
-			["USE_OUTLINE"] = true,
-			["USE_MONO"] = false,
-		},
-
-		["COUNTER_TEXT"] = {
-			["ANCHOR"] = "TOP",
-			["X_ADJUST"] = -25,
-			["Y_ADJUST"] = 0,
-			["SCALE"] = 66,
-			["FONT"] = "Interface\\AddOns\\VuhDo\\Fonts\\ariblk.ttf",
-			["USE_SHADOW"] = false,
-			["USE_OUTLINE"] = true,
-			["USE_MONO"] = false,
-		},
-
-		["SLOTS"] = {
-			["firstFlood"] = true,
-		},
-
-		["SLOTCFG"] = {
-			["firstFlood"] = true,
-			["1"] = { ["mine"] = true, ["others"] = false, ["scale"] = 1 },
-			["2"] = { ["mine"] = true, ["others"] = false, ["scale"] = 1 },
-			["3"] = { ["mine"] = true, ["others"] = false, ["scale"] = 1 },
-			["4"] = { ["mine"] = true, ["others"] = false, ["scale"] = 1 },
-			["5"] = { ["mine"] = true, ["others"] = false, ["scale"] = 1 },
-			["6"] = { ["mine"] = true, ["others"] = false, ["scale"] = 1 },
-			["7"] = { ["mine"] = true, ["others"] = false, ["scale"] = 1 },
-			["8"] = { ["mine"] = true, ["others"] = false, ["scale"] = 1 },
-			["9"] = { ["mine"] = true, ["others"] = false, ["scale"] = 1 },
-			["10"] = { ["mine"] = true, ["others"] = false, ["scale"] = 1.5 },
-		},
-
-		["BARS"] = {
-			["radioValue"] = 1,
-			["width"] = 25,
-		},
+		["VERSION"] = 2,
 	},
 
 	["PANEL_COLOR"] = {
@@ -1243,6 +1242,11 @@ local VUHDO_DEFAULT_PANEL_SETUP = {
 			["useBackground"] = true, ["useOpacity"] = true,
 		},
 		["classColorsName"] = false,
+		["isSolidGradient"] = false,
+		["solidMaxColor"] = {
+			["R"] = 1, ["G"] = 1, ["B"] = 1, ["O"] = 1,
+			["useBackground"] = true, ["useOpacity"] = true,
+		},
 	},
 
 	["BAR_COLORS"] = {
@@ -1311,6 +1315,8 @@ local VUHDO_DEFAULT_PANEL_SETUP = {
 		["DEBUFF" .. VUHDO_DEBUFF_TYPE_CURSE] = VUHDO_makeFullColor(0.7, 0, 0.7, 1,   1, 0, 1, 1),
 		["DEBUFF" .. VUHDO_DEBUFF_TYPE_MAGIC] = VUHDO_makeFullColor(0.4, 0.4, 0.8, 1,   0.329, 0.957, 1, 1),
 		["DEBUFF" .. VUHDO_DEBUFF_TYPE_CUSTOM] = VUHDO_makeFullColor(0.6, 0.3, 0, 1,   0.8, 0.5, 0, 1),
+		["DEBUFF" .. VUHDO_DEBUFF_TYPE_BLEED] = VUHDO_makeFullColor(1, 0.2, 0, 1,   1, 0.2, 0.4, 1),
+		["DEBUFF" .. VUHDO_DEBUFF_TYPE_ENRAGE] = VUHDO_makeFullColor(0.95, 0.95, 0.32, 1,   1, 1, 0, 1),
 		["DEBUFF_BAR_GLOW"] = VUHDO_makeFullColor(0.95, 0.95, 0.32, 1,   1, 1, 0, 1),
 		["DEBUFF_ICON_GLOW"] = VUHDO_makeFullColor(0.95, 0.95, 0.32, 1,   1, 1, 0, 1),
 		["CHARMED"] = VUHDO_makeFullColor(0.51, 0.082, 0.263, 1,   1, 0.31, 0.31, 1),
@@ -1326,8 +1332,8 @@ local VUHDO_DEFAULT_PANEL_SETUP = {
 		},
 
 		["HOTS"] = {
-			["useColorText"] = true,
-			["useColorBack"] = true,
+			["useColorText"] = false,
+			["useColorBack"] = false,
 			["isFadeOut"] = false,
 			["isFlashWhenLow"] = false,
 			["showShieldAbsorb"] = true,
@@ -1363,6 +1369,8 @@ local VUHDO_DEFAULT_PANEL_SETUP = {
 
 		["HOT9"] = VUHDO_makeHotColor(0.3, 1, 1, 1,   0.6, 1, 1, 1),
 		["HOT10"] = VUHDO_makeHotColor(0.3, 1, 0.3, 1,   0.6, 1, 0.3, 1),
+		["HOT11"] = VUHDO_makeHotColor(0.890, 0.408, 0.133, 1,   0.992, 0.443, 0.063, 1),
+		["HOT12"] = VUHDO_makeHotColor(0.2, 0.576, 0.498, 1,   0.3, 0.676, 0.598, 1),
 
 		["HOT_CHARGE_2"] = VUHDO_makeFullColorWoOpacity(1, 1, 0.3, 1,   1, 1, 0.6, 1),
 		["HOT_CHARGE_3"] = VUHDO_makeFullColorWoOpacity(0.3, 1, 0.3, 1,   0.6, 1, 0.6, 1),
@@ -1427,6 +1435,56 @@ local VUHDO_DEFAULT_PANEL_SETUP = {
 local VUHDO_DEFAULT_PER_PANEL_SETUP = {
 	["HOTS"] = {
 		["size"] = 40,
+		["radioValue"] = 13,
+		["iconRadioValue"] = 1,
+		["stacksRadioValue"] = 2,
+
+		["TIMER_TEXT"] = {
+			["ANCHOR"] = "BOTTOMRIGHT",
+			["X_ADJUST"] = 25,
+			["Y_ADJUST"] = 0,
+			["SCALE"] = 60,
+			["FONT"] = "Interface\\AddOns\\VuhDo\\Fonts\\ariblk.ttf",
+			["USE_SHADOW"] = false,
+			["USE_OUTLINE"] = true,
+			["USE_MONO"] = false,
+		},
+
+		["COUNTER_TEXT"] = {
+			["ANCHOR"] = "TOP",
+			["X_ADJUST"] = -25,
+			["Y_ADJUST"] = 0,
+			["SCALE"] = 66,
+			["FONT"] = "Interface\\AddOns\\VuhDo\\Fonts\\ariblk.ttf",
+			["USE_SHADOW"] = false,
+			["USE_OUTLINE"] = true,
+			["USE_MONO"] = false,
+		},
+
+		["SLOTS"] = {
+			["firstFlood"] = true,
+		},
+
+		["SLOTCFG"] = {
+			["firstFlood"] = true,
+			["1"] = { ["mine"] = true, ["others"] = false, ["scale"] = 1 },
+			["2"] = { ["mine"] = true, ["others"] = false, ["scale"] = 1 },
+			["3"] = { ["mine"] = true, ["others"] = false, ["scale"] = 1 },
+			["4"] = { ["mine"] = true, ["others"] = false, ["scale"] = 1 },
+			["5"] = { ["mine"] = true, ["others"] = false, ["scale"] = 1 },
+			["6"] = { ["mine"] = true, ["others"] = false, ["scale"] = 1 },
+			["7"] = { ["mine"] = true, ["others"] = false, ["scale"] = 1 },
+			["8"] = { ["mine"] = true, ["others"] = false, ["scale"] = 1 },
+			["9"] = { ["mine"] = true, ["others"] = false, ["scale"] = 1 },
+			["10"] = { ["mine"] = true, ["others"] = false, ["scale"] = 1 },
+			["11"] = { ["mine"] = true, ["others"] = false, ["scale"] = 1 },
+			["12"] = { ["mine"] = true, ["others"] = false, ["scale"] = 1 },
+		},
+
+		["BARS"] = {
+			["radioValue"] = 1,
+			["width"] = 25,
+		},
 	},
 	["MODEL"] = {
 		["ordering"] = VUHDO_ORDERING_STRICT,
@@ -1666,9 +1724,29 @@ function VUHDO_loadDefaultPanelSetup()
 			};
 		end
 
+		if VUHDO_PANEL_SETUP["HOTS"] and not VUHDO_PANEL_SETUP["HOTS"]["VERSION"] then
+			local tHotSize;
+
+			tAktPanel = VUHDO_PANEL_SETUP[tPanelNum];
+
+			if tAktPanel["HOTS"] and tAktPanel["HOTS"]["size"] then
+				tHotSize = tAktPanel["HOTS"]["size"];
+			end
+
+			tAktPanel["HOTS"] = VUHDO_decompressOrCopy(VUHDO_PANEL_SETUP["HOTS"]);
+
+			if tHotSize then
+				tAktPanel["HOTS"]["size"] = tHotSize;
+			end
+		end
+
 		VUHDO_PANEL_SETUP[tPanelNum] = VUHDO_ensureSanity("VUHDO_PANEL_SETUP[" .. tPanelNum .. "]", VUHDO_PANEL_SETUP[tPanelNum], VUHDO_DEFAULT_PER_PANEL_SETUP);
 	end
-	
+
+	if VUHDO_PANEL_SETUP["HOTS"] and not VUHDO_PANEL_SETUP["HOTS"]["VERSION"] then
+		VUHDO_PANEL_SETUP["HOTS"] = nil;
+	end
+
 	VUHDO_PANEL_SETUP = VUHDO_ensureSanity("VUHDO_PANEL_SETUP", VUHDO_PANEL_SETUP, VUHDO_DEFAULT_PANEL_SETUP);
 	VUHDO_DEFAULT_PANEL_SETUP = VUHDO_compressAndPackTable(VUHDO_DEFAULT_PANEL_SETUP);
 	VUHDO_DEFAULT_PER_PANEL_SETUP = VUHDO_compressAndPackTable(VUHDO_DEFAULT_PER_PANEL_SETUP);
@@ -1687,7 +1765,7 @@ local VUHDO_DEFAULT_BUFF_CONFIG = {
 	["BAR_COLORS_BACKGROUND"] = true,
 	["BAR_COLORS_IN_FIGHT"] = false,
 	["HIDE_CHARGES"] = false,
-	["REFRESH_SECS"] = 1,
+	["REFRESH_SECS"] = 2,
 	["POSITION"] = {
 		["x"] = 130,
 		["y"] = -130,
@@ -1743,15 +1821,117 @@ VUHDO_DEFAULT_USER_CLASS_COLORS = {
 	["petClassColor"] = false,
 }
 
+-- Gradient Color "min":
+
+-- DK: 0.498, 0.075, 0.149
+-- DH: 0.365, 0.137, 0.573
+-- DD: 1, 0.239, 0.008
+-- EV: 0.196, 0.467, 0.537
+-- HU: 0.404, 0.537, 0.224
+-- MA: 0, 0.333, 0.537
+-- MO: 0.016, 0.608, 0.369
+-- PA: 1, 0.267, 0.537
+-- PR: 0.357, 0.357, 0.357
+-- SH: 0, 0.259, 0.51
+-- WA: 0.263, 0.267, 0.467
+-- WR: 0.427, 0.137, 0.09
+-- RO: 1, 0.686, 0
+
+-- Gradient Color 'max":
+
+-- DK: 1, 0.184, 0.239
+-- DH: 0.745, 0.192, 1
+-- DD: 1, 0.486, 0.039
+-- EV: 0.2, 0.576, 0.498
+-- HU: 0.671, 0.929, 0.31
+-- MA: 0.49, 0.871, 1
+-- MO: 0, 1, 0.588
+-- PA: 0.957, 0.549, 0.729
+-- PR: 0.988, 0.988, 0.988
+-- SH: 0, 0.439, 0.871
+-- WA: 0.663, 0.392, 0.784
+-- WR: 0.565, 0.431, 0.247
+-- RO: 1, 0.831, 0.255
+
+VUHDO_DEFAULT_USER_CLASS_GRADIENT_COLORS = {
+	[VUHDO_ID_DRUIDS] = {
+		["min"] = VUHDO_makeFullColor(1,    0.24, 0.01, 1,   1,    0.6,  0.04, 1),
+		["max"] = VUHDO_makeFullColor(1,    0.49, 0.04, 1,   1,    0.6,  0.04, 1),
+	},
+	[VUHDO_ID_HUNTERS] = {
+		["min"] = VUHDO_makeFullColor(0.40, 0.54, 0.22, 1,   0.77, 0.93, 0.55, 1),
+		["max"] = VUHDO_makeFullColor(0.67, 0.93, 0.31, 1,   0.77, 0.93, 0.55, 1),
+	},
+	[VUHDO_ID_MAGES] = {
+		["min"] = VUHDO_makeFullColor(0,    0.33, 0.54, 1,   0.51, 0.9,  1,    1),
+		["max"] = VUHDO_makeFullColor(0.49, 0.87, 1,    1,   0.51, 0.9,  1,    1),
+	},
+	[VUHDO_ID_PALADINS] = {
+		["min"] = VUHDO_makeFullColor(1,    0.28, 0.54, 1,   1,    0.65, 0.83, 1),
+		["max"] = VUHDO_makeFullColor(0.96, 0.55, 0.73, 1,   1,    0.65, 0.83, 1),
+	},
+	[VUHDO_ID_PRIESTS] = {
+		["min"] = VUHDO_makeFullColor(0.36, 0.36, 0.36, 1,   1,    1,    1,    1),
+		["max"] = VUHDO_makeFullColor(0.99, 0.99, 0.99, 1,   1,    1,    1,    1),
+	},
+	[VUHDO_ID_ROGUES] = {
+		["min"] = VUHDO_makeFullColor(1,    0.69, 0,    1,   1,    1,    0.51, 1),
+		["max"] = VUHDO_makeFullColor(1,    0.83, 0.26, 1,   1,    1,    0.51, 1),
+	},
+	[VUHDO_ID_SHAMANS] = {
+		["min"] = VUHDO_makeFullColor(0,    0.26, 0.51, 1,   0.24, 0.45, 1,    1),
+		["max"] = VUHDO_makeFullColor(0,    0.44, 0.87, 1,   0.24, 0.45, 1,    1),
+	},
+	[VUHDO_ID_WARLOCKS] = {
+		["min"] = VUHDO_makeFullColor(0.26, 0.27, 0.47, 1,   0.68, 0.61, 0.89, 1),
+		["max"] = VUHDO_makeFullColor(0.66, 0.39, 0.78, 1,   0.68, 0.61, 0.89, 1),
+	},
+	[VUHDO_ID_WARRIORS] = {
+		["min"] = VUHDO_makeFullColor(0.43, 0.14, 0.09, 1,   0.88, 0.71, 0.53, 1),
+		["max"] = VUHDO_makeFullColor(0.57, 0.43, 0.25, 1,   0.88, 0.71, 0.53, 1),
+	},
+	[VUHDO_ID_DEATH_KNIGHT] = {
+		["min"] = VUHDO_makeFullColor(0.5,  0.08, 0.15, 1,   0.87, 0.22, 0.33, 1),
+		["max"] = VUHDO_makeFullColor(1,    0.18, 0.24, 1,   0.87, 0.22, 0.33, 1),
+	},
+	[VUHDO_ID_MONKS] = {
+		["min"] = VUHDO_makeFullColor(0.02, 0.61, 0.37, 1,   0,    1,    0.69, 1),
+		["max"] = VUHDO_makeFullColor(0,    1,    0.59, 1,   0,    1,    0.69, 1),
+	},
+	[VUHDO_ID_DEMON_HUNTERS] = {
+		["min"] = VUHDO_makeFullColor(0.37, 0.14, 0.57, 1,   0.64, 0.19, 0.79, 1),
+		["max"] = VUHDO_makeFullColor(0.75, 0.19, 1,    1,   0.64, 0.19, 0.79, 1),
+	},
+	[VUHDO_ID_EVOKERS] = {
+		["min"] = VUHDO_makeFullColor(0.2,  0.47, 0.54, 1,   0.20, 0.58, 0.50, 1),
+		["max"] = VUHDO_makeFullColor(0.2,  0.58, 0.5,  1,   0.20, 0.58, 0.50, 1),
+	},
+	[VUHDO_ID_PETS] = {
+		["min"] = VUHDO_makeFullColor(0.4,  0.6,  0.4,  1,   0.5,  0.9,  0.5,  1),
+		["max"] = VUHDO_makeFullColor(0.4,  0.6,  0.4,  1,   0.5,  0.9,  0.5,  1),
+	},
+	["isClassGradient"] = false,
+};
+
 
 
 --
 function VUHDO_initClassColors()
+
 	if not VUHDO_USER_CLASS_COLORS then
 		VUHDO_USER_CLASS_COLORS = VUHDO_decompressOrCopy(VUHDO_DEFAULT_USER_CLASS_COLORS);
 	end
+
 	VUHDO_USER_CLASS_COLORS = VUHDO_ensureSanity("VUHDO_USER_CLASS_COLORS", VUHDO_USER_CLASS_COLORS, VUHDO_DEFAULT_USER_CLASS_COLORS);
 	VUHDO_DEFAULT_USER_CLASS_COLORS = VUHDO_compressAndPackTable(VUHDO_DEFAULT_USER_CLASS_COLORS);
+
+	if not VUHDO_USER_CLASS_GRADIENT_COLORS then
+		VUHDO_USER_CLASS_GRADIENT_COLORS = VUHDO_decompressOrCopy(VUHDO_DEFAULT_USER_CLASS_GRADIENT_COLORS);
+	end
+
+	VUHDO_USER_CLASS_GRADIENT_COLORS = VUHDO_ensureSanity("VUHDO_USER_CLASS_GRADIENT_COLORS", VUHDO_USER_CLASS_GRADIENT_COLORS, VUHDO_DEFAULT_USER_CLASS_GRADIENT_COLORS);
+	VUHDO_DEFAULT_USER_CLASS_GRADIENT_COLORS = VUHDO_compressAndPackTable(VUHDO_DEFAULT_USER_CLASS_GRADIENT_COLORS);
+
 end
 
 

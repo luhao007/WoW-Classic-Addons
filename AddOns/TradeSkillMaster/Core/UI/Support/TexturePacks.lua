@@ -6,9 +6,9 @@
 
 local TSM = select(2, ...) ---@type TSM
 local TexturePacks = TSM.UI:NewPackage("TexturePacks")
-local NineSlice = TSM.Include("Util.NineSlice")
-local Rectangle = TSM.Include("UI.Rectangle")
-local TextureAtlas = TSM.Include("Util.TextureAtlas")
+local NineSlice = TSM.LibTSMUI:IncludeClassType("NineSlice")
+local Rectangle = TSM.LibTSMUI:IncludeClassType("Rectangle")
+local TextureAtlas = TSM.LibTSMService:Include("UI.TextureAtlas")
 local TEXTURE_FILE_INFO = {
 	uiFrames = {
 		path = "Interface\\Addons\\TradeSkillMaster\\Media\\UIFrames.tga",

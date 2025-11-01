@@ -2,6 +2,8 @@ local addonName, platerInternal = ...
 
 local Plater = Plater
 local GameCooltip = GameCooltip2
+
+---@type detailsframework
 local DF = DetailsFramework
 local _
 local unpack = _G.unpack
@@ -9,6 +11,13 @@ local tremove = _G.tremove
 local CreateFrame = _G.CreateFrame
 local tinsert = _G.tinsert
 local GetSpellInfo = GetSpellInfo or function(spellID) if not spellID then return nil end local si = C_Spell.GetSpellInfo(spellID) if si then return si.name, nil, si.iconID, si.castTime, si.minRange, si.maxRange, si.spellID, si.originalIconID end end
+
+---@class searchdata : table
+---@field [1] number data index within the profile.script_data table
+---@field [2] scriptdata
+---@field [3] scriptname
+---@field [4] number -- 1 enabled or 0 if disabled
+---@field [5] number -- 1 has or 0 if not
 
 --sort scripts
 function Plater.SortScripts (t1, t2)
@@ -128,6 +137,15 @@ Plater.APIList = {
 	{Name = "RestoreCVar", 			Signature = "Plater.RestoreCVar (variableName)", 					Desc = "Restore the value a CVar had before Plater.SafeSetCVar() was called."},
 	
 	{Name = "SetAnchor", 			Signature = "Plater.SetAnchor (frame, config, attachTo, centered)", 					Desc = "Anchor the 'frame' to the 'attachTo' frame according to the given 'config' ('config = {x = 0, y = 0, side = 1}', where 'side' is one of the following:\nTOP_LEFT = 1, LEFT = 2, BOTTOM_LEFT = 3, BOTTOM = 4, BOTTOM_RIGHT = 5, RIGHT = 6, TOP_RIGHT = 7, TOP = 8, CENTER = 9, INNER_LEFT = 10, INNER_RIGHT = 11, INNER_TOP = 12, INNER_BOTTOM = 13)"},
+	
+	{Name = "StartGlow", 			Signature = "Plater.StartGlow(frame, color, options, key)", 					Desc = "Starts a glow on the given frame with the given parameters.\n\n--type 'pixel'\noptions = {\n    glowType = 'pixel',\n    color = 'white', -- all plater color types accepted, from lib: {r,g,b,a}, color of lines and opacity, from 0 to 1. Defaul value is {0.95, 0.95, 0.32, 1}\n    N = 8, -- number of lines. Defaul value is 8;\n    frequency = 0.25, -- frequency, set to negative to inverse direction of rotation. Default value is 0.25;\n    length = 4, -- length of lines. Default value depends on region size and number of lines;\n    th = 2, -- thickness of lines. Default value is 2;\n    xOffset = 0,\n    yOffset = 0, -- offset of glow relative to region border;\n    border = false, -- set to true to create border under lines;\n    key = '', -- key of glow, allows for multiple glows on one frame;\n}\n\n-- type 'ants'\noptions = {\n    glowType = 'ants',\n    color = 'white', -- all plater color types accepted, from lib: {r,g,b,a}, color of lines and opacity, from 0 to 1. Defaul value is {0.95, 0.95, 0.32, 1}\n    N = 4, -- number of particle groups. Each group contains 4 particles. Defaul value is 4;\n    \n    frequency = 0.125, -- frequency, set to negative to inverse direction of rotation. Default value is 0.125;\n    scale = 1, -- scale of particles\n    xOffset = 0,\n    yOffset = 0, -- offset of glow relative to region border;\n    \n    key = '', -- key of glow, allows for multiple glows on one frame;\n}\n\n-- type 'button'\noptions = {\n    glowType = 'button',\n    color = 'white', -- all plater color types accepted, from lib: {r,g,b,a}, color of lines and opacity, from 0 to 1. Defaul value is {0.95, 0.95, 0.32, 1}\n    frequency = 0.125, -- frequency, set to negative to inverse direction of rotation. Default value is 0.125;\n}"},
+	{Name = "StopGlow", 			Signature = "Plater.StopGlow(frame, glowType, key)", 					Desc = "Stops a glow with the specified glowType and/or key on the given frame. All are stopped, if omitted."},
+	{Name = "StartPixelGlow", 			Signature = "Plater.StartPixelGlow(frame, color, options, key)", 					Desc = "--type 'pixel'\noptions = {\n    glowType = 'pixel',\n    color = 'white', -- all plater color types accepted, from lib: {r,g,b,a}, color of lines and opacity, from 0 to 1. Defaul value is {0.95, 0.95, 0.32, 1}\n    N = 8, -- number of lines. Defaul value is 8;\n    frequency = 0.25, -- frequency, set to negative to inverse direction of rotation. Default value is 0.25;\n    length = 4, -- length of lines. Default value depends on region size and number of lines;\n    th = 2, -- thickness of lines. Default value is 2;\n    xOffset = 0,\n    yOffset = 0, -- offset of glow relative to region border;\n    border = false, -- set to true to create border under lines;\n    key = '', -- key of glow, allows for multiple glows on one frame;\n}"},
+	{Name = "StartAntsGlow", 			Signature = "Plater.StartAntsGlow(frame, color, options, key)", 					Desc = "-- type 'ants'\noptions = {\n    glowType = 'ants',\n    color = 'white', -- all plater color types accepted, from lib: {r,g,b,a}, color of lines and opacity, from 0 to 1. Defaul value is {0.95, 0.95, 0.32, 1}\n    N = 4, -- number of particle groups. Each group contains 4 particles. Defaul value is 4;\n    \n    frequency = 0.125, -- frequency, set to negative to inverse direction of rotation. Default value is 0.125;\n    scale = 1, -- scale of particles\n    xOffset = 0,\n    yOffset = 0, -- offset of glow relative to region border;\n    \n    key = '', -- key of glow, allows for multiple glows on one frame;\n}"},
+	{Name = "StartButtonGlow", 			Signature = "Plater.StartButtonGlow(frame, color, options, key)", 					Desc = "-- type 'button'\noptions = {\n    glowType = 'button',\n    color = 'white', -- all plater color types accepted, from lib: {r,g,b,a}, color of lines and opacity, from 0 to 1. Defaul value is {0.95, 0.95, 0.32, 1}\n    frequency = 0.125, -- frequency, set to negative to inverse direction of rotation. Default value is 0.125;\n}"},
+	{Name = "StopButtonGlow", 			Signature = "Plater.StopButtonGlow(frame, key)", 					Desc = "Stops a button-glow with the specified glowType and/or key on the given frame. All are stopped, if omitted."},
+	{Name = "StopPixelGlow", 			Signature = "Plater.StopPixelGlow(frame, key)", 					Desc = "Stops a pixel-glow with the specified glowType and/or key on the given frame. All are stopped, if omitted."},
+	{Name = "StopAntsGlow", 			Signature = "Plater.StopAntsGlow(frame, key)", 					Desc = "Stops an ants-glow with the specified glowType and/or key on the given frame. All are stopped, if omitted."},
 }
 
 Plater.FrameworkList = {
@@ -239,12 +257,15 @@ Plater.NameplateComponents = {
 		"unit",
 		"ThrottleUpdate",
 		"SpellName",
+		"SpellNameRenamed",
 		"SpellID",
 		"SpellTexture",
 		"SpellStartTime",
 		"SpellEndTime",
 		"CanInterrupt",
 		"IsInterrupted",
+		"InterruptSourceName",
+		"InterruptSourceGUID",
 	},
 	
 	["castBar - Frames"] = {
@@ -293,7 +314,6 @@ Plater.TriggerDefaultMembers = {
 }
 
 function platerInternal.Scripts.GetDefaultScriptForSpellId(spellId)
-	--platerInternal.Scripts.DefaultCastScripts
 	local allScripts = Plater.db.profile.script_data
 	for i = 1, #allScripts do
 		local scriptObject = allScripts[i]
@@ -786,7 +806,7 @@ end
 		wipe(stashData)
 		
 		for slug, entry in pairs(stash) do
-			local isAlreadyImported = is_wago_stash_slug_already_imported(slug)
+			local isAlreadyImported, isScipt, isMod, isProfile = is_wago_stash_slug_already_imported(slug)
 			
 			if not isAlreadyImported then
 				local newScriptObject = { -- Dummy data --~prototype ~new ~create ñew
@@ -1273,25 +1293,38 @@ end
 	end
 	
 	--refresh the list of scripts already created
-	local refresh_script_scrollbox = function (self, data, offset, total_lines)
+	local refresh_script_scrollbox = function (self, data, offset, totalLines)
 		--get the main frame
 		local mainFrame = self:GetParent()
-		
+
 		--alphabetical order
+		---@type searchdata[]
 		local dataInOrder = {}
-		
-		if (mainFrame.SearchString ~= "") then
+
+		---@type string
+		local searchingText = mainFrame.SearchString
+
+		--data = profile.script_data
+		---@cast data scriptdata
+
+		if (searchingText ~= "") then
+			offset = 0
+
+			---scripts that match the search text
+			---@type table<scriptname, boolean>
 			local scriptsFound = {}
+
 			for i = 1, #data do
 				if not data[i].hidden then
 					local bFoundMatch = false
 					local triggerSpellIdList = data[i].SpellIds
+
 					if (triggerSpellIdList and type(triggerSpellIdList) == "table") then
 						for o, spellId in ipairs(triggerSpellIdList) do
 							local spellName = GetSpellInfo(spellId)
 							if (spellName) then
 								spellName = spellName:lower()
-								if (spellName:find(mainFrame.SearchString) and not scriptsFound[data[i].Name]) then
+								if (spellName:find(searchingText) and not scriptsFound[data[i].Name]) then
 									dataInOrder[#dataInOrder+1] = {i, data [i], data[i].Name, data[i].Enabled and 1 or 0, data[i].hasWagoUpdateFromImport and 1 or 0}
 									bFoundMatch = true
 									scriptsFound[data[i].Name] = true
@@ -1299,15 +1332,17 @@ end
 							end
 						end
 					end
-					
+
 					if (not bFoundMatch) then
 						local name = data[i].FullName or data[i].Name or ""
-						if (name:lower():find (mainFrame.SearchString)) then
+						if (name:lower():find (searchingText)) then
 							dataInOrder [#dataInOrder+1] = {i, data [i], data[i].Name, data[i].Enabled and 1 or 0, data[i].hasWagoUpdateFromImport and 1 or 0}
 						end
 					end
 				end
 			end
+
+			--print("found matches:", #dataInOrder) --debug
 		else
 			for i = 1, #data do
 				if not data[i].hidden then
@@ -1319,9 +1354,9 @@ end
 		table.sort (dataInOrder, Plater.SortScripts)
 		
 		local currentScript = mainFrame.GetCurrentScriptObject()
-		
+
 		--update the scroll
-		for i = 1, total_lines do
+		for i = 1, totalLines do
 			local index = i + offset
 			local t = dataInOrder [index]
 			if (t) then
@@ -1529,7 +1564,7 @@ end
 		local script_prio_label = DF:CreateLabel (parent, "Priority:", DF:GetTemplate ("font", "ORANGE_FONT_TEMPLATE"))
 		local script_prio_entry = DF:CreateSlider (parent, 191, 20, 1, 99, 1, 99, false, "ScriptPrioritySlider", _, _, options_slider_template, _)
 		script_prio_entry:SetPoint ("topleft", script_prio_label, "bottomleft", 0, -2)
-		script_prio_entry.tooltip = "Lower number -> higher priority.\nRight Click to Type the Value"
+		script_prio_entry.tooltip = "Lower number -> higher priority.\nHigher priority runs before lower priority.\nRight Click to Type the Value"
 		mainFrame.ScriptPrioSlideEntry = script_prio_entry
 
 		--options button
@@ -1700,6 +1735,19 @@ end
 		add_FW_dropdown:SetPoint ("right", add_API_label, "left", -10, 0)
 		add_FW_label:SetPoint ("right", add_FW_dropdown, "left", -2, 0)
 		
+		---@type df_button
+		local toggleCastBarButton = DF:CreateButton(parent,
+			function()
+				if (Plater.IsShowingCastBarTest) then
+					Plater.StopCastBarTest()
+				else
+					Plater.StartCastBarTest()
+				end
+			end, 
+			100, 20, DF.Language.CreateLocTable(addonName, "OPTIONS_CASTBAR_TOGGLE_TEST", true), 0, nil, nil, nil, nil, nil, options_button_template, DF:GetTemplate ("font", "PLATER_BUTTON"))
+		toggleCastBarButton:SetPoint ("right", add_FW_dropdown, "left", -10, 38)
+
+
 		--error text
 		local errortext_frame = CreateFrame ("frame", nil, code_editor, BackdropTemplateMixin and "BackdropTemplate")
 		errortext_frame:SetPoint ("bottomleft", code_editor, "bottomleft", 1, 1)
@@ -2514,7 +2562,7 @@ function Plater.CreateHookingPanel()
 		--add the hook to the script object
 		if (not scriptObject.Hooks [hookName]) then
 			local defaultScript
-			if (hookName == "Load Screen" or hookName == "Player Logon" or hookName == "Initialization" or hookName == "Deinitialization" or hookName == "Option Changed") then
+			if (hookName == "Load Screen" or hookName == "Player Logon" or hookName == "Initialization" or hookName == "Deinitialization" or hookName == "Option Changed" or hookName == "Mod Option Changed") then
 				defaultScript = hookFrame.DefaultScriptNoNameplate
 
 			elseif (hookName == "Player Power Update") then
@@ -4003,6 +4051,13 @@ function Plater.CreateScriptingPanel()
 					scriptingFrame.UpdateOverlapButton()
 				end
 			
+			-- 3d model for the units
+				local npc3DFrame = CreateFrame ("playermodel", "", nil, "ModelWithControlsTemplate")
+				npc3DFrame:SetSize (200, 250)
+				npc3DFrame:EnableMouse (false)
+				npc3DFrame:EnableMouseWheel (false)
+				npc3DFrame:Hide()
+			
 			--when the user hover over a scrollbox line
 				local onenter_trigger_line = function (self)
 					if (self.SpellID) then
@@ -4010,12 +4065,39 @@ function Plater.CreateScriptingPanel()
 						GameTooltip:SetSpellByID (self.SpellID)
 						GameTooltip:AddLine (" ")
 						GameTooltip:Show()
+					elseif self.NpcID then
+						local npcID = tonumber(self.NpcID)
+						if not npcID then -- assume name -> search
+							for id, data in pairs(Plater.db.profile.npc_cache) do
+								if data[1] == self.NpcID then
+									npcID = id
+									break
+								end
+							end
+						end
+						GameTooltip:SetOwner (self, "ANCHOR_RIGHT")
+						GameTooltip:SetHyperlink (("unit:Creature-0-0-0-0-%d"):format(npcID))
+						GameTooltip:AddLine (" ")
+						if npcID and Plater.db.profile.npc_cache[npcID] then
+							GameTooltip:AddLine (Plater.db.profile.npc_cache[npcID][2] or "???")
+							GameTooltip:AddLine (" ")
+						end
+						if npcID then
+							npc3DFrame:SetCreature(npcID)
+							npc3DFrame:SetParent(GameTooltip)
+							npc3DFrame:SetPoint ("top", GameTooltip, "bottom", 0, -10)
+							npc3DFrame:Show()
+							GameTooltip:Show()
+						end
 					end
 					self:SetBackdropColor (.3, .3, .3, 0.7)
 				end
 			
 			--when the user leaves a scrollbox line from a hover over
 				local onleave_trigger_line = function (self)
+					npc3DFrame:SetParent(nil)
+					npc3DFrame:ClearAllPoints()
+					npc3DFrame:Hide()
 					GameTooltip:Hide()
 					self:SetBackdropColor (unpack (scrollbox_line_backdrop_color))
 				end
@@ -4032,6 +4114,7 @@ function Plater.CreateScriptingPanel()
 					self.Icon:SetDesaturated (false)
 					self.Icon:SetAlpha (1)
 					self.SpellID = trigger
+					self.NpcID = nil
 					self.TriggerName:SetText (spellName)
 					self.TriggerID:SetText (trigger)
 					
@@ -4042,8 +4125,16 @@ function Plater.CreateScriptingPanel()
 					self.Icon:SetDesaturated (true)
 					self.Icon:SetAlpha (0.5)
 					self.SpellID = nil
-					self.TriggerName:SetText (trigger)
-					self.TriggerID:SetText ("")
+					self.NpcID = trigger
+					
+					local npcData = tonumber(trigger) and Plater.db.profile.npc_cache[tonumber(trigger)]
+					if npcData and npcData[1] then
+						self.TriggerName:SetText (npcData[1])
+						self.TriggerID:SetText (trigger)
+					else
+						self.TriggerName:SetText (trigger)
+						self.TriggerID:SetText ("")
+					end
 				end
 				
 				self.TriggerId = trigger_id
@@ -4730,3 +4821,4 @@ function Plater.CreateScriptingPanel()
 end
 
 --endd ends
+

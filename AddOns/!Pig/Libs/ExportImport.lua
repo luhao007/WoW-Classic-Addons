@@ -163,6 +163,53 @@ local function string_to_table(NdataT)
 	local NdataT = deserialize(NdataT)
 	return NdataT
 end
+local function string_to_table_ALL(NdataT)
+	local txtx, txtx_Per = strsplit("@", NdataT);
+	local tabX=string_to_table(txtx)
+	local tabX_Per=string_to_table(txtx_Per)
+	return tabX,tabX_Per
+end
+--
+local function Del_notnilList2()
+	PIGA["Chat"]["QuickChat_ButHide"]={}
+	PIGA["PigLayout"]["topMenu"]["HideBut"]={}
+	PIGA["PigLayout"]["topInfoL"]["HideBut"]={}
+	PIGA["PigLayout"]["topInfoR"]["HideBut"]={}
+	PIGA["PigLayout"]["MicroMenu"]["HideBut"]={}
+	PIGA["PigLayout"]["TopBar"]["JG"]={}
+	PIGA["PigLayout"]["ActionBar"]["HideBarBG"]=nil
+	PIGA["PigLayout"]["ActionBar"]["HideBarExpBG"]=nil
+	PIGA["PigLayout"]["MicroMenu"]["MoveTime"]=nil
+	PIGA["PigLayout"]["TopBar"]["FontMiaobian"]=nil
+	PIGA["PigLayout"]["topMenu"]["TimeBGHide"]=nil
+
+	PIGA["Chat"]["QuickChat_ButHide"]={}
+	PIGA["MailPlus"]["BagOpen"]=nil
+	PIGA["Other"]["AFK"]["TispTXT"]=nil
+	PIGA["FramePlus"]["AddonQuickBut"]=nil
+	--
+	PIGA_Per["CombatPlus"]["PetFoodList"]={}
+end
+local function PrintDebugFun(dataxx)
+	for k1,v1 in pairs(dataxx) do
+		if type(v1) == "table" then
+			for k2,v2 in pairs(v1) do
+				if type(v2) == "table" then
+					for k3,v3 in pairs(v2) do
+						print(k1,k2,k3,v3)
+						if type(v3) == "table" then
+							--print(k1,k2,k3,unpack(v3))
+						end
+					end
+				else
+					print(k1,k2,v2)
+				end
+			end
+		else
+			print(k1,v1)
+		end
+	end
+end
 local function Load_ImportInfo2(newV,DqCF)
 	for k,v in pairs(newV) do
 		if DqCF[k]==nil then DqCF[k]=v end
@@ -177,46 +224,21 @@ local function Load_ImportInfo2(newV,DqCF)
 		end
 	end
 end
-local function ceshishuchu(dataxx)
-	for k1,v1 in pairs(dataxx) do
-		if type(v1) == "table" then
-			for k2,v2 in pairs(v1) do
-				if type(v2) == "table" then
-					for k3,v3 in pairs(v2) do
-						print(k1,k2,k3,v3)
-						if type(v3) == "table" then
-							--print(k1,k2,k3,unpack(v3))
-						end
-					end
-				else
-					print(k1,k2,v2)
-				end
-				
-			end
-		else
-			print(k1,v1)
-		end
-	end
-end
----
-local function string_to_table_ALL(NdataT)
-	local txtx, txtx_Per = strsplit("@", NdataT);
-	local tabX=string_to_table(txtx)
-	--ceshishuchu(tabX)
-	local tabX_Per=string_to_table(txtx_Per)
-	--ceshishuchu(tabX_Per)
-	return tabX,tabX_Per
-end
 local function Import_ConfigData(NdataT,RL)
 	local tabX,tabX_Per=string_to_table_ALL(NdataT)
-	if EIUI.ClickButFunX then
+	-- PrintDebugFun(tabX)
+	-- print("Per=========================")
+	-- PrintDebugFun(tabX_Per)
+	if EIUI.ClickButFunX then--来自点击导入
 		local tabX,tabX_Per=EIUI.ClickButFunX(tabX,tabX_Per)
+		Del_notnilList2(PIGA)
 		Load_ImportInfo2(tabX,PIGA)
-		Load_ImportInfo2(tabX_Per,PIGA_Per)
+		Load_ImportInfo2(tabX_Per,PIGA_Per,true)
 		if RL then ReloadUI() end
-	else
+	else--加载导入
+		Del_notnilList2(PIGA)
 		Load_ImportInfo2(tabX,PIGA)
-		Load_ImportInfo2(tabX_Per,PIGA_Per)
+		Load_ImportInfo2(tabX_Per,PIGA_Per,true)
 		if RL then ReloadUI() end
 	end
 end

@@ -1,6 +1,6 @@
 ---@diagnostic disable: duplicate-set-field
 -- **************************************************************************
--- * TitanClassicRegen.lua
+-- * TitanRegen.lua
 -- *
 -- * By: TitanMod, Dark Imakuni, Adsertor and the Titan Panel Development Team
 -- **************************************************************************

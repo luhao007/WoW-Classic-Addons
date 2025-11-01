@@ -1,7 +1,0 @@
-## Interface: 11302
-## Title: LibClassicCasterino
-## Version: 1.20
-## Author: d87
-
-
-LibClassicCasterino.lua

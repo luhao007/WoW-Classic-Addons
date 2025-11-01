@@ -1,4 +1,5 @@
 local addonName, addonTable = ...;
+local Fun=addonTable.Fun
 local Create=addonTable.Create
 local PIGCheckbutton=Create.PIGCheckbutton
 local PIGFontString=Create.PIGFontString
@@ -224,20 +225,20 @@ local function TalentFrame_Update_Pig(TFID)
 		local buttonName = talentFrameTalentName..i;
 		local button = _G[buttonName];
 		if ( i <= numTalents ) then
-			local talentName, iconTexture, tier, column, rank, maxRank, meetsPrereq, previewRank, meetsPreviewPrereq, isExceptional =
+			local talentName, iconTexture, tier, column, rank, maxRank, meetsPrereq, previewRank, meetsPreviewPrereq, isExceptional,_,talentID =
 				GetTalentInfo(selectedTab, i, TalentFrame.inspect, TalentFrame.pet, TalentFrame.talentGroup);
-			if ( name ) then
+			if ( talentName ) then
+				button.talentID=talentID
 				local displayRank;
 				if ( preview ) then
 					displayRank = previewRank;
 				else
 					displayRank = rank;
 				end
-
 				_G[buttonName.."Rank"]:SetText(displayRank);
 				SetTalentButtonLocation(button, tier, column);
 				TalentFrame.TALENT_BRANCH_ARRAY[tier][column].id = button:GetID();
-
+				
 				if ( (unspentPoints <= 0 or not isActiveTalentGroup) and displayRank == 0 ) then
 				forceDesaturated = 1;
 			else
@@ -543,8 +544,11 @@ local function Uptate_FrameX()
 			TalentBut:RegisterEvent("PET_TALENT_UPDATE");
 			local function PlayerTalentFrameTalent_OnEvent_pig(self, event, ...)
 				if ( GameTooltip:IsOwned(self) ) then
-					GameTooltip:SetTalent(tfID, self:GetID(),
-						PlayerTalentFrame.inspect, PlayerTalentFrame.pet, PlayerTalentFrame.talentGroup, GetCVarBool(UIdataWHXY.previewT));
+					if PIG_MaxTocversion(30000,true) and PIG_MaxTocversion(40000) then
+						GameTooltip:SetTalent(tfID, self:GetID(),PlayerTalentFrame.inspect, PlayerTalentFrame.pet, PlayerTalentFrame.talentGroup, GetCVarBool(UIdataWHXY.previewT));
+					else
+						GameTooltip:SetTalent(TalentBut.talentID,PlayerTalentFrame.inspect, PlayerTalentFrame.pet, PlayerTalentFrame.talentGroup, GetCVarBool(UIdataWHXY.previewT));
+					end
 				end
 			end
 			TalentBut:SetScript("OnEvent", PlayerTalentFrameTalent_OnEvent_pig);
@@ -575,8 +579,11 @@ local function Uptate_FrameX()
 			end);
 			local function PlayerTalentFrameTalent_OnEnter_pig(self)
 				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-				GameTooltip:SetTalent(tfID, self:GetID(),
-					PlayerTalentFrame.inspect, PlayerTalentFrame.pet, PlayerTalentFrame.talentGroup, GetCVarBool(UIdataWHXY.previewT));
+				if PIG_MaxTocversion(30000,true) and PIG_MaxTocversion(40000) then
+					GameTooltip:SetTalent(tfID, self:GetID(),PlayerTalentFrame.inspect, PlayerTalentFrame.pet, PlayerTalentFrame.talentGroup, GetCVarBool(UIdataWHXY.previewT));
+				else
+					GameTooltip:SetTalent(TalentBut.talentID,PlayerTalentFrame.inspect, PlayerTalentFrame.pet, PlayerTalentFrame.talentGroup, GetCVarBool(UIdataWHXY.previewT));
+				end
 				self.UpdateTooltip = PlayerTalentFrameTalent_OnEnter_pig;
 			end
 			TalentBut:SetScript("OnEnter", PlayerTalentFrameTalent_OnEnter_pig);
@@ -616,17 +623,8 @@ end
 function FramePlusfun.Talent()
 	if PIG_MaxTocversion(40000) then
 		if not PIGA["FramePlus"]["Talent"] then return end
-		if IsAddOnLoaded("Blizzard_TalentUI") then
-			Uptate_FrameX()
-		else
-			local tianfuFrame = CreateFrame("Frame")
-			tianfuFrame:RegisterEvent("ADDON_LOADED")
-			tianfuFrame:SetScript("OnEvent", function(self, event, arg1)
-			    if arg1 == "Blizzard_TalentUI" then
-					Uptate_FrameX()
-			        self:UnregisterEvent("ADDON_LOADED")
-			    end
-			end)
-		end
+		Fun.IsAddOnLoaded("Blizzard_TalentUI",function()
+	        Uptate_FrameX()
+		end)
 	end
 end

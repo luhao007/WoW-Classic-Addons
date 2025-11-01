@@ -6,13 +6,14 @@
 
 local TSM = select(2, ...) ---@type TSM
 local Crafting = TSM.Tooltip:NewPackage("Crafting")
-local L = TSM.Include("Locale").GetTable()
-local ItemString = TSM.Include("Util.ItemString")
-local MatString = TSM.Include("Util.MatString")
-local Theme = TSM.Include("Util.Theme")
-local TempTable = TSM.Include("Util.TempTable")
-local CustomPrice = TSM.Include("Service.CustomPrice")
+local L = TSM.Locale.GetTable()
+local ItemString = TSM.LibTSMTypes:Include("Item.ItemString")
+local MatString = TSM.LibTSMTypes:Include("Crafting.MatString")
+local Theme = TSM.LibTSMService:Include("UI.Theme")
+local TempTable = TSM.LibTSMUtil:Include("BaseType.TempTable")
+local CustomString = TSM.LibTSMTypes:Include("CustomString")
 local private = {}
+local CONCENTRATION_ICON = "Interface\\ICONS\\UI_Concentration"
 
 
 
@@ -20,7 +21,7 @@ local private = {}
 -- Module Functions
 -- ============================================================================
 
-function Crafting.OnInitialize()
+function Crafting.OnEnable()
 	TSM.Tooltip.Register(TSM.Tooltip.CreateInfo()
 		:SetHeadings(L["TSM Crafting"])
 		:SetSettingsModule("Crafting")
@@ -72,7 +73,7 @@ function private.PopulateDetailedMatsLines(tooltip, itemString)
 
 	local optionalMats = TempTable.Acquire()
 	local qualityMats = TempTable.Acquire()
-	local _, craftString = TSM.Crafting.Cost.GetLowestCostByItem(itemString, optionalMats, qualityMats)
+	local _, craftString, concentration = TSM.Crafting.Cost.GetLowestCostByItem(itemString, optionalMats, qualityMats)
 	for _, matItemString in ipairs(qualityMats) do
 		tinsert(optionalMats, matItemString)
 	end
@@ -96,13 +97,16 @@ function private.PopulateDetailedMatsLines(tooltip, itemString)
 	tooltip:StartSection()
 	local numResult = TSM.Crafting.GetNumResult(craftString)
 	for _, matItemString, matQuantity in TSM.Crafting.MatIterator(craftString) do
-		tooltip:AddSubItemValueLine(matItemString, CustomPrice.GetSourcePrice(matItemString, "MatPrice"), matQuantity / numResult)
+		tooltip:AddSubItemValueLine(matItemString, CustomString.GetSourceValue("MatPrice", matItemString), matQuantity / numResult)
 	end
 	for _, matItemString in ipairs(optionalMats) do
 		if hasOptionalMat[matItemString] then
 			local matQuantity = TSM.Crafting.GetOptionalMatQuantity(craftString, ItemString.ToId(matItemString))
-			tooltip:AddSubItemValueLine(matItemString, CustomPrice.GetSourcePrice(matItemString, "MatPrice"), matQuantity / numResult)
+			tooltip:AddSubItemValueLine(matItemString, CustomString.GetSourceValue("MatPrice", matItemString), matQuantity / numResult)
 		end
+	end
+	if (concentration or 0) > 0 then
+		tooltip:AddLine("|T"..CONCENTRATION_ICON..":0|t "..tooltip:ApplyValueColor(PROFESSIONS_CRAFTING_STAT_CONCENTRATION))
 	end
 	TempTable.Release(hasOptionalMat)
 	TempTable.Release(optionalMats)
@@ -116,7 +120,7 @@ function private.PopulateMatPriceLine(tooltip, itemString)
 		-- example tooltip
 		matCost = 17
 	else
-		matCost = CustomPrice.GetSourcePrice(itemString, "MatPrice")
+		matCost = CustomString.GetSourceValue("MatPrice", itemString)
 	end
 	if matCost then
 		tooltip:AddItemValueLine(L["Material Cost"], matCost)

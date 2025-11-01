@@ -1,6 +1,6 @@
 local _, addonTable = ...;
 local BusinessInfo=addonTable.BusinessInfo
-function BusinessInfo.FastFen()
+function BusinessInfo.FastFen(QuickButUI_index)
 	local L=addonTable.locale
 	local Data=addonTable.Data
 	local Fun=addonTable.Fun
@@ -78,7 +78,7 @@ function BusinessInfo.FastFen()
 	fujiF.QkBut:SetScript("OnClick", function (self)
 		if self:GetChecked() then
 			PIGA["AutoSellBuy"][_GNE.."_QkBut"]=true;
-			QuickButUI.ButList[11]()
+			QuickButUI.ButList[QuickButUI_index]()
 			self.RL:Hide()
 		else
 			PIGA["AutoSellBuy"][_GNE.."_QkBut"]=false;
@@ -93,7 +93,7 @@ function BusinessInfo.FastFen()
 	fujiF:HookScript("OnShow", function (self)
 		self.QkBut:SetChecked(PIGA["AutoSellBuy"][_GNE.."_QkBut"])
 	end);
-	QuickButUI.ButList[11]=function()
+	QuickButUI.ButList[QuickButUI_index]=function()
 		if PIGA["QuickBut"]["Open"] and PIGA["AutoSellBuy"]["Open"] and PIGA["AutoSellBuy"][_GNE.."_QkBut"] then
 			if QuickButUI[_GNE] then return end
 			QuickButUI[_GNE]=true

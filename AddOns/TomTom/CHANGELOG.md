@@ -1,8 +1,22 @@
 # TomTom
 
-## [v4.0.12-release](https://github.com/jnwhiteh/TomTom/tree/v4.0.12-release) (2025-07-03)
-[Full Changelog](https://github.com/jnwhiteh/TomTom/commits/v4.0.12-release) [Previous Releases](https://github.com/jnwhiteh/TomTom/releases)
+## [v4.1.3-release](https://github.com/jnwhiteh/TomTom/tree/v4.1.3-release) (2025-10-27)
+[Full Changelog](https://github.com/jnwhiteh/TomTom/commits/v4.1.3-release) [Previous Releases](https://github.com/jnwhiteh/TomTom/releases)
 
+- Fix an issue with the purple ring theme  
+- Update HereBeDragons  
+- Add support for minimap and worldmap themes  
+- Add support for modern and modern-top-down themes  
+- Move some small util functions  
+- Add new modern theme, as default  
+- Add credits to addon options panel  
+- Update TomTom Logo and add license for new assets  
+- Update TOC for 11.2.5  
+- Initial support for Midnight  
+- Update embedded libraries  
+- Fix remove waypoint  
+- Re-implement dropdowns using MenuUtil  
+- Update TOC for 11.2  
 - Update TOC for Mists  
 - Fix an issue with release  
 - Update for 11.0.7  
@@ -680,21 +694,3 @@
 - * Made changes to allow for better operations with 2.4  
 - Moving over to AceDB and removing dependecy on Dongle  
     * Reconfigured options screens  
-- Removed override of GetBuildInfo.  
-- * Fixed the size of the tooltip.. thanks Kergoth  
-- * Fixed a bug that could occur when zoning into instances  
-- * Merging all changes from 2.4 branch  
-    * Configuration dialog should work on 2.3 and 2.4  
-- * Updating externals  
-- * Re-generated the localiztion file  
-- I changed things  
-- * Added an option to clear waypoints (set the distance > 0)  
-    * Altered the callback system to allow for arbitrary distance callbacks  
-- * Re-working the internals of TomTom yet again.  Tooltips for minimap nodes should work  
-- * Uhh.. return  
-- * Fixed the error upon login  
-    * Added a middle color, which is used for proper shading between good and bad  
-    * Fixed the coloring of the crazy arrow so it properly turns green when you're "Arrived"  
-- * Updated Astrolabe externals  
-- * Reworking of the Waypoints API... callbacks are broken as a result  
-- * Enable a /way command, fix a bunch of things, control-right click works  

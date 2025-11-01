@@ -6,19 +6,30 @@
 
 local TSM = select(2, ...) ---@type TSM
 local AuctionDB = TSM:NewPackage("AuctionDB")
-local L = TSM.Include("Locale").GetTable()
-local Log = TSM.Include("Util.Log")
-local Table = TSM.Include("Util.Table")
-local ItemString = TSM.Include("Util.ItemString")
-local Threading = TSM.Include("Service.Threading")
-local ItemInfo = TSM.Include("Service.ItemInfo")
-local CustomPrice = TSM.Include("Service.CustomPrice")
+local L = TSM.Locale.GetTable()
+local Log = TSM.LibTSMUtil:Include("Util.Log")
+local ChatMessage = TSM.LibTSMService:Include("UI.ChatMessage")
+local Table = TSM.LibTSMUtil:Include("Lua.Table")
+local TempTable = TSM.LibTSMUtil:Include("BaseType.TempTable")
+local ItemString = TSM.LibTSMTypes:Include("Item.ItemString")
+local Threading = TSM.LibTSMTypes:Include("Threading")
+local ItemInfo = TSM.LibTSMService:Include("Item.ItemInfo")
+local CustomString = TSM.LibTSMTypes:Include("CustomString")
+local AppHelper = TSM.LibTSMApp:Include("Service.AppHelper")
 local private = {
 	realmData = {},
 	realmUpdateTime = nil,
 	regionData = {},
 	regionUpdateTime = nil,
+	altRealmData = {},
 	lastScanTemp = {},
+}
+local UPDATE_TIME_KEYS = {
+	AUCTIONDB_NON_COMMODITY_DATA = true,
+	AUCTIONDB_NON_COMMODITY_SCAN_STAT = true,
+	AUCTIONDB_REGION_STAT = true,
+	AUCTIONDB_REGION_HISTORICAL = true,
+	AUCTIONDB_REGION_SALE = true,
 }
 
 
@@ -28,76 +39,13 @@ local private = {
 -- ============================================================================
 
 function AuctionDB.OnEnable()
-	local realmData, realmScanStat, realmHistorical, regionCommodity, regionStat, regionHistorical, regionSale = TSM.AppHelper.GetAuctionDBData()
-	if realmData then
-		local loadedData, updateTime = private.LoadAppData(realmData)
-		for field in pairs(loadedData.fieldLookup) do
-			assert(not private.realmData[field])
-			private.realmData[field] = loadedData
-		end
-		private.realmUpdateTime = max(private.realmUpdateTime or 0, updateTime)
-		Log.Info("Loaded realm data (%s)", SecondsToTime(time() - updateTime).." ago")
-	end
-	if realmScanStat then
-		local loadedData, updateTime = private.LoadAppData(realmScanStat)
-		for field in pairs(loadedData.fieldLookup) do
-			assert(not private.realmData[field])
-			private.realmData[field] = loadedData
-		end
-		Log.Info("Loaded realm scan stat (%s)", SecondsToTime(time() - updateTime).." ago")
-	end
-	if realmHistorical then
-		local loadedData, updateTime = private.LoadAppData(realmHistorical)
-		for field in pairs(loadedData.fieldLookup) do
-			assert(not private.realmData[field])
-			private.realmData[field] = loadedData
-		end
-		Log.Info("Loaded realm historical (%s)", SecondsToTime(time() - updateTime).." ago")
-	end
-	if regionCommodity then
-		local loadedData, updateTime = private.LoadAppData(regionCommodity)
-		if realmData then
-			-- Merge items into existing realmData
-			local existing = private.realmData[next(loadedData.fieldLookup)]
-			assert(Table.Equal(existing.fieldLookup, loadedData.fieldLookup))
-			for itemString, data in pairs(loadedData.itemLookup) do
-				if existing.itemLookup[itemString] then
-					error("Duplicate data for item: "..tostring(itemString))
-				end
-				existing.itemLookup[itemString] = data
-			end
-		else
-			for field in pairs(loadedData.fieldLookup) do
-				assert(not private.realmData[field])
-				private.realmData[field] = loadedData
-			end
-		end
-		Log.Info("Loaded region commodity (%s)", SecondsToTime(time() - updateTime).." ago")
-	end
-	if regionStat then
-		local loadedData, updateTime = private.LoadAppData(regionStat)
-		for field in pairs(loadedData.fieldLookup) do
-			assert(not private.regionData[field])
-			private.regionData[field] = loadedData
-		end
-		private.regionUpdateTime = updateTime
-		Log.Info("Loaded region stat (%s)", SecondsToTime(time() - updateTime).." ago")
-	end
-	if regionHistorical then
-		local loadedData, updateTime = private.LoadAppData(regionHistorical)
-		for field in pairs(loadedData.fieldLookup) do
-			assert(not private.regionData[field])
-			private.regionData[field] = loadedData
-		end
-		Log.Info("Loaded region historical (%s)", SecondsToTime(time() - updateTime).." ago")
-	end
-	if regionSale then
-		local loadedData, updateTime = private.LoadAppData(regionSale)
-		for field in pairs(loadedData.fieldLookup) do
-			assert(not private.regionData[field])
-			private.regionData[field] = loadedData
-		end
-		Log.Info("Loaded region sale (%s)", SecondsToTime(time() - updateTime).." ago")
+	local realmData, regionData, commodityData, altRealmData = AppHelper.GetAuctionDBData()
+	private.realmUpdateTime = private.LoadRegionRealmAppData(private.realmData, realmData)
+	private.regionUpdateTime = private.LoadRegionRealmAppData(private.regionData, regionData)
+	private.LoadRegionRealmAppData(private.realmData, commodityData)
+	private.LoadRegionRealmAppData(private.altRealmData, altRealmData)
+	if next(private.altRealmData) then
+		private.LoadRegionRealmAppData(private.altRealmData, commodityData)
 	end
 
 	-- Pre-fetch item info for items currently on the AH
@@ -107,24 +55,24 @@ function AuctionDB.OnEnable()
 		end
 	end
 
-	if not private.realmUpdateTime then
-		Log.PrintfUser(L["TSM doesn't currently have any AuctionDB pricing data for your realm. We recommend you download the TSM Desktop Application from %s to automatically update your AuctionDB data (and auto-backup your TSM settings)."], Log.ColorUserAccentText("https://tradeskillmaster.com"))
+	if private.realmUpdateTime == 0 then
+		ChatMessage.PrintfUser(L["TSM doesn't currently have any AuctionDB pricing data for your realm. We recommend you download the TSM Desktop Application from %s to automatically update your AuctionDB data (and auto-backup your TSM settings)."], ChatMessage.ColorUserAccentText("https://tradeskillmaster.com"))
 	end
 
-	CustomPrice.OnSourceChange("DBMarket")
-	CustomPrice.OnSourceChange("DBMinBuyout")
-	CustomPrice.OnSourceChange("DBHistorical")
-	CustomPrice.OnSourceChange("DBRecent")
-	CustomPrice.OnSourceChange("DBRegionMarketAvg")
-	CustomPrice.OnSourceChange("DBRegionHistorical")
-	CustomPrice.OnSourceChange("DBRegionSaleAvg")
-	CustomPrice.OnSourceChange("DBRegionSaleRate")
-	CustomPrice.OnSourceChange("DBRegionSoldPerDay")
+	CustomString.InvalidateCache("DBMarket")
+	CustomString.InvalidateCache("DBMinBuyout")
+	CustomString.InvalidateCache("DBHistorical")
+	CustomString.InvalidateCache("DBRecent")
+	CustomString.InvalidateCache("DBRegionMarketAvg")
+	CustomString.InvalidateCache("DBRegionHistorical")
+	CustomString.InvalidateCache("DBRegionSaleAvg")
+	CustomString.InvalidateCache("DBRegionSaleRate")
+	CustomString.InvalidateCache("DBRegionSoldPerDay")
 	collectgarbage()
 end
 
 function AuctionDB.GetAppDataUpdateTimes()
-	return private.realmUpdateTime or 0, private.regionUpdateTime or 0
+	return private.realmUpdateTime, private.regionUpdateTime
 end
 
 function AuctionDB.LastScanIteratorThreaded()
@@ -150,7 +98,7 @@ function AuctionDB.LastScanIteratorThreaded()
 	for itemString in pairs(baseItems) do
 		private.lastScanTemp[itemString] = nil
 	end
-	Threading.ReleaseSafeTempTable(baseItems)
+	TempTable.Release(baseItems)
 
 	return pairs(private.lastScanTemp)
 end
@@ -167,11 +115,43 @@ function AuctionDB.GetRegionItemData(itemString, key)
 	return result
 end
 
+function AuctionDB.GetAltRealmItemData(itemString, key)
+	return private.GetItemDataHelper(private.altRealmData[key], key, itemString)
+end
+
 
 
 -- ============================================================================
 -- Private Helper Functions
 -- ============================================================================
+
+function private.LoadRegionRealmAppData(tbl, appData)
+	local maxUpdateTime = 0
+	for key, data in pairs(appData) do
+		local loadedData, updateTime = private.LoadAppData(data)
+		local existing = tbl[next(loadedData.fieldLookup)]
+		if existing then
+			-- Merge items into existing realmData
+			assert(Table.Equal(existing.fieldLookup, loadedData.fieldLookup))
+			for itemString, itemData in pairs(loadedData.itemLookup) do
+				if existing.itemLookup[itemString] then
+					error("Duplicate data for item: "..tostring(itemString))
+				end
+				existing.itemLookup[itemString] = itemData
+			end
+		else
+			for field in pairs(loadedData.fieldLookup) do
+				assert(not tbl[field])
+				tbl[field] = loadedData
+			end
+		end
+		Log.Info("Loaded %s data (%s)", key, SecondsToTime(time() - updateTime).." ago")
+		if UPDATE_TIME_KEYS[key] then
+			maxUpdateTime = max(maxUpdateTime, updateTime)
+		end
+	end
+	return maxUpdateTime
+end
 
 function private.LoadAppData(appData)
 	-- Extract the metadata from the start of the string
@@ -204,36 +184,18 @@ function private.GetItemDataHelper(tbl, key, itemString)
 	if not fieldIndex then
 		return nil
 	end
-	itemString = ItemString.Filter(itemString)
-	if not tbl.itemLookup[itemString] and not strmatch(itemString, "^[ip]:[0-9]+$") then
-		-- first try to get the data for the level itemString (if there is an explicit one)
-		local levelItemString = ItemString.ToLevel(itemString)
-		levelItemString = ItemString.IsLevel(levelItemString) and levelItemString or nil
-		if levelItemString and tbl.itemLookup[levelItemString] then
-			itemString = levelItemString
-		else
-			-- try the base item
-			itemString = private.GetBaseItemHelper(itemString)
-			if not itemString then
-				return nil
-			end
+	-- Convert to a level item string
+	itemString = ItemString.ToLevel(itemString)
+	if not tbl.itemLookup[itemString] then
+		-- Try the base item
+		itemString = ItemString.GetBaseFast(itemString)
+		if not tbl.itemLookup[itemString] then
+			return nil
 		end
 	end
 	local data = private.UnpackData(tbl, itemString)
 	local value = data and data[fieldIndex] or 0
 	return value > 0 and value or nil
-end
-
-function private.GetBaseItemHelper(itemString)
-	local quality = ItemInfo.GetQuality(itemString)
-	local itemLevel = ItemInfo.GetItemLevel(itemString)
-	local classId = ItemInfo.GetClassId(itemString)
-	if quality and quality >= 2 and itemLevel and itemLevel >= TSM.CONST.MIN_BONUS_ID_ITEM_LEVEL and (classId == Enum.ItemClass.Weapon or classId == Enum.ItemClass.Armor) then
-		if strmatch(itemString, "^i:[0-9]+:[0-9%-]*:") then
-			return nil
-		end
-	end
-	return ItemString.GetBaseFast(itemString)
 end
 
 function private.UnpackData(tbl, itemString)

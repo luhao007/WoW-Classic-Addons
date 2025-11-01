@@ -5,9 +5,9 @@ local EXPANSION_ID = BtWQuests.Constant.Expansions.TheBurningCrusade;
 local CATEGORY_ID = BtWQuests.Constant.Category.TheBurningCrusade.ShadowmoonValley;
 local Chain = BtWQuests.Constant.Chain.TheBurningCrusade.ShadowmoonValley;
 local ALLIANCE_RESTRICTIONS, HORDE_RESTRICTIONS = BtWQuests.Constant.Restrictions.Alliance, BtWQuests.Constant.Restrictions.Horde;
-local MAP_ID = 1948
+local MAP_ID = 104
 local ACHIEVEMENT_ID = 1195
-local CONTINENT_ID = 1945
+local CONTINENT_ID = 1467
 local LEVEL_RANGE = {25, 30}
 local LEVEL_PREREQUISITES = {
     {

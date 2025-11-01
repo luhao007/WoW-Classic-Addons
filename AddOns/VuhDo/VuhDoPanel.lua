@@ -20,7 +20,7 @@ BACKDROP_VUHDO_PLAYER_TARGET_FRAME = {
 	tile = false,
 	tileSize = 16,
 	edgeSize = 1,
-	insets = {  left = 10, right = 10, top = 10, bottom = 10 },
+	insets = { left = 10, right = 10, top = 10, bottom = 10 },
 };
 
 BACKDROP_BORDER_COLOR_VUHDO_PLAYER_TARGET_FRAME = CreateColor(0.6, 0.6, 0.6);
@@ -31,7 +31,7 @@ BACKDROP_VUHDO_HEAL_PANEL = {
 	tile = true,
 	tileSize = 8,
 	edgeSize = 8,
-	insets = {  left = 1, right = 1, top = 1, bottom = 1 },
+	insets = { left = 1, right = 1, top = 1, bottom = 1 },
 };
 
 
@@ -179,6 +179,7 @@ local sIsPlayerFirst;
 local sIsPetsLast;
 local tInfo1, tInfo2;
 local tRole1, tRole2;
+local tFirstIdx, tSecondIdx;
 
 
 
@@ -498,9 +499,9 @@ local VUHDO_RAID_SORTERS = {
 					return true;
 				elseif tRole2 == VUHDO_ID_MELEE_TANK and tRole1 ~= VUHDO_ID_MELEE_TANK then
 					return false;
-				elseif tRole2 == VUHDO_ID_RANGED_DPS and tRole1 ~= VUHDO_ID_RANGED_DPS then
+				elseif tRole2 == VUHDO_ID_RANGED_DAMAGE and tRole1 ~= VUHDO_ID_RANGED_DAMAGE then
 					return true;
-				elseif tRole1 == VUHDO_ID_RANGED_DPS and tRole2 ~= VUHDO_ID_RANGED_DPS then
+				elseif tRole1 == VUHDO_ID_RANGED_DAMAGE and tRole2 ~= VUHDO_ID_RANGED_DAMAGE then
 					return false;
 				elseif tRole1 == VUHDO_ID_RANGED_HEAL and 
 					(tRole2 == VUHDO_ID_RANGED_DAMAGE or tRole2 == VUHDO_ID_MELEE_DAMAGE) then

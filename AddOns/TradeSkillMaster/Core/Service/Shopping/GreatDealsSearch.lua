@@ -6,8 +6,9 @@
 
 local TSM = select(2, ...) ---@type TSM
 local GreatDealsSearch = TSM.Shopping:NewPackage("GreatDealsSearch")
-local String = TSM.Include("Util.String")
-local ItemInfo = TSM.Include("Service.ItemInfo")
+local String = TSM.LibTSMUtil:Include("Lua.String")
+local ItemInfo = TSM.LibTSMService:Include("Item.ItemInfo")
+local AppHelper = TSM.LibTSMApp:Include("Service.AppHelper")
 local private = {
 	filter = nil,
 }
@@ -19,7 +20,7 @@ local private = {
 -- ============================================================================
 
 function GreatDealsSearch.OnEnable()
-	local appData = TSM.AppHelper.GetShoppingData()
+	local appData = AppHelper.GetShoppingData()
 	if not appData then
 		return
 	end

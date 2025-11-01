@@ -755,10 +755,20 @@ VUHDO_I18N_TT.K592 = "Отметьте, что бы показывать ико�
 VUHDO_I18N_TT.K593 = "Выберите размер для иконок приватных аур.";
 VUHDO_I18N_TT.K594 = "Check to sort pet units last.";
 VUHDO_I18N_TT.K595 = "Show effective HP (health including shields) of player.";
-
--- TBCC game version specific strings (tooltip IDs begin at K900)
-
-VUHDO_I18N_TT.K900 = "Check to show incoming heal using LibHealComm-4.0.";
+VUHDO_I18N_TT.K596 = "Click to change color to indicate players afflicted by bleed debuffs.";
+VUHDO_I18N_TT.K597 = "Only play a sound if the debuff is removable by yourself.";
+VUHDO_I18N_TT.K598 = "Select a color for HoT Square 8";
+VUHDO_I18N_TT.K599 = "Select a color for HoT Square 9";
+VUHDO_I18N_TT.K600 = "Show debuff icons on friendly units.";
+VUHDO_I18N_TT.K601 = "Show debuff icons on hostile units.";
+VUHDO_I18N_TT.K602 = "Show debuffs cast by you on hostile units.";
+VUHDO_I18N_TT.K603 = "Show debuffs cast by others on hostile units.";
+VUHDO_I18N_TT.K604 = "Check this to use gradient class colors.";
+VUHDO_I18N_TT.K605 = "Check this to use gradient color.";
+VUHDO_I18N_TT.K606 = "Select the maximum gradient color.";
+VUHDO_I18N_TT.K607 = "Click to change color to indicate enemies affected by enrage buffs.";
+VUHDO_I18N_TT.K608 = "Check to ignore purgeable buffs on enemies.";
+VUHDO_I18N_TT.K609 = "Check to only apply HoT slot setup (Panels => HoTs => Order) when spell layout is being loaded.";
 
 VUHDO_I18N_DEFAULT_PROFILE = "Стандартный\nпрофиль";
 VUHDO_I18N_DEFAULT_LAYOUT = "Стандартная раскладка клавиш ";
@@ -1241,8 +1251,8 @@ VUHDO_I18N_CLEAR_BINDING = "Очистить Назначение";
 VUHDO_I18N_MACRO_EDITOR = "Редактор макросов VuhDo";
 VUHDO_I18N_ACCEPT = "Принять";
 VUHDO_I18N_DISCARD = "Отменить";
-VUHDO_I18N_LKA_HINT_1 = "Используйте следующие шаблоны в макросах: |c00000000vuhdo|r => игрок, |c00000000vdname|r => имя игрока" justifyH="LEFT" inherits="VuDoButtonFontDark";
-VUHDO_I18N_LKA_HINT_2 = "|c00000000vdtarget, vdtargettarget|r => цель игрока / цель цели, |c00000000vdpet|r => питомец игрока; Пример: /cast [@vuhdo] Быстрое исцеление" justifyH="LEFT" inherits="VuDoButtonFontDark";
+VUHDO_I18N_LKA_HINT_1 = "Используйте следующие шаблоны в макросах: |c00000000vuhdo|r => игрок, |c00000000vdname|r => имя игрока";
+VUHDO_I18N_LKA_HINT_2 = "|c00000000vdtarget, vdtargettarget|r => цель игрока / цель цели, |c00000000vdpet|r => питомец игрока; Пример: /cast [@vuhdo] Быстрое исцеление";
 VUHDO_I18N_LKA_CUSTOM_MACRO_DISCARDED = "Пользовательский макрос удален.";
 VUHDO_I18N_NAME_CHANGE_DISCARDED = "Смена имени отменена.";
 VUHDO_I18N_LKA_TYPE_CHANGED = "Тип изменен с пользовательского макроса VuhDo\nна заклинание или стандартный макрос.\nУдалить пользовательский макрос?";
@@ -1348,7 +1358,7 @@ VUHDO_I18N_HEAL_ABSORB_BAR = "Абсорб хила";
 VUHDO_I18N_PLAYER = "Игрок";
 VUHDO_I18N_TARGET = "Цель"
 VUHDO_I18N_TARGET_TARGET = "Цель цели"
-VUHDO_I18N_FOCUS = "Фокус";
+VUHDO_I18N_FOCUS_UNIT = "Фокус";
 VUHDO_I18N_MOUSEOVER = "Юнит под мышкой";
 VUHDO_I18N_MOUSEOVER_TARGET = "Цель юнита под мышкой";
 VUHDO_I18N_MOUSEOVER_TARGET_TARGET = "Цель цели юнита под мышкой";
@@ -1378,6 +1388,22 @@ VUHDO_I18N_PETS_LAST = "Питомцы последние";
 VUHDO_I18N_SHOW_EFFECTIVE = "Показать\nЭффективное";
 VUHDO_I18N_DEBUFF_IGNORE_IMPORTED = "Список игнорируемых дебаффов успешно импортирован.";
 
--- TBCC game version specific strings
+VUHDO_I18N_BLEED = "Bleed";
 
-VUHDO_I18N_LIBHEALCOMM = "Use Lib\nHealComm";
+VUHDO_I18N_SQUARE_8 = "Square 8";
+VUHDO_I18N_SQUARE_9 = "Square 9";
+VUHDO_I18N_SHOW_ON_FRIENDLY = "Show on\nfriendly";
+VUHDO_I18N_SHOW_ON_HOSTILE = "Show on\nhostile";
+VUHDO_I18N_HOSTILE_SPELL_SOURCE = "Hostile Unit Spell Source";
+
+VUHDO_I18N_SEARCH_OPTIONS = "Search Options";
+
+VUHDO_I18N_CLASS_GRADIENT_COLORS = "Class Gradient Colors";
+VUHDO_I18N_CLASS_GRADIENTS = "Class\nGradients";
+VUHDO_I18N_LIFE_GRADIENT = "Life\nGradient";
+VUHDO_I18N_MAX_COLOR = "Max Color";
+
+VUHDO_I18N_ENRAGE = "Enrage";
+VUHDO_I18N_PURGEABLE_BUFFS = "Purgeable\nBuffs";
+
+VUHDO_I18N_LOAD_HOTS_ONLY_SLOTS = "Only Slots";

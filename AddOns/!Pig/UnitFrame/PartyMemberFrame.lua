@@ -63,16 +63,8 @@ local function Update_HP(Party,id)
 	local mubiaoH = UnitHealth(id)
 	if mubiaoHmax>0 then
 		Party.title:SetText(mubiaoH..'/'..mubiaoHmax);
-		if mubiaoHmax>9999999 then
-			Party:SetWidth(124);
-		elseif mubiaoHmax>999999 then
-			Party:SetWidth(112);
-		elseif mubiaoHmax>99999 then
-			Party:SetWidth(102);
-		end
 	else
 		Party.title:SetText('?/?');
-		Party:SetWidth(40);
 	end
 end
 --显示BUFF
@@ -219,15 +211,19 @@ local function PartyMember_HPFF()
 	    ---队友血量扩展显示框架
 	    if not Party.HP then
 			Party.HP = CreateFrame("Frame", nil, Party,"BackdropTemplate");
-			Party.HP:SetSize(90,22);
 			Party.HP:SetBackdrop({ bgFile = "Interface/DialogFrame/UI-DialogBox-Background",
 			edgeFile = "Interface/Tooltips/UI-Tooltip-Border", edgeSize = 10, 
 			insets = { left = 2, right = 2, top = 2, bottom = 2 }});
 			Party.HP:SetBackdropColor(0, 0, 0, 0.6);
 			Party.HP:SetBackdropBorderColor(1, 1, 1, 0.6);
-			if PIG_MaxTocversion() then
-				Party.HP:SetPoint("TOPLEFT", Party, "TOPRIGHT", -11, -10);
+			Party.HP:SetHeight(22);
+			Party.HP:SetPoint("TOPLEFT", Party, "TOPRIGHT", -11, -10);
+			if PIG_MaxTocversion(20000) then
+				Party.HP:SetWidth(102);
+			elseif PIG_MaxTocversion(40000) then
+				Party.HP:SetWidth(112);
 			else
+				Party.HP:SetWidth(124);
 				Party.HP:SetPoint("TOPLEFT", Party, "TOPRIGHT", -3, -17.6);
 			end
 			Party.HP.title = PIGFontString(Party.HP,{"CENTER", Party.HP, "CENTER", 0, 0},"", "OUTLINE", 13.6)
@@ -235,7 +231,7 @@ local function PartyMember_HPFF()
 			Party.HP:RegisterUnitEvent("UNIT_HEALTH", "party"..id);--HP改变时
 			Party.HP:RegisterUnitEvent("UNIT_MAXHEALTH", "party"..id);--最大HP改变时
 			Party.HP:HookScript("OnEvent", function(self,event,arg1)
-				Update_HP(self,arg1,true)
+				Update_HP(self,arg1)
 			end)
 		end
 		--位面图标移位

@@ -12,13 +12,11 @@ local SetPortraitTextureFromDisplayID = SetPortraitTextureFromCreatureDisplayID
 
 local GetTradeSkillTexture = app.WOWAPI.GetTradeSkillTexture
 local GetSpellIcon = app.WOWAPI.GetSpellIcon
-local GetItemInfo = app.WOWAPI.GetItemInfo
 local GetFactionName = app.WOWAPI.GetFactionName
 local Callback = app.CallbackHandlers.Callback
 local AfterCombatOrDelayedCallback = app.CallbackHandlers.AfterCombatOrDelayedCallback
 local DelayedCallback = app.CallbackHandlers.DelayedCallback
 local IsRetrieving = app.Modules.RetrievingData.IsRetrieving
-local Colorize = app.Modules.Color.Colorize
 local GetProgressColorText = app.Modules.Color.GetProgressColorText
 local GetNumberWithZeros = app.Modules.Color.GetNumberWithZeros
 local GetProgressColor = app.Modules.Color.GetProgressColor
@@ -132,7 +130,7 @@ local function UpdateWindow(self, force, got)
 		self.HasPendingUpdate = true;
 		force = nil;
 	end
-	-- app.PrintDebug(Colorize("Update:", app.Colors.ATT),self.Suffix,
+	-- app.PrintDebug(app.Modules.Color.Colorize("Update:", app.DefaultColors.ATT),self.Suffix,
 	-- 	force and "FORCE" or "SOFT",
 	-- 	visible and "VISIBLE" or "HIDDEN",
 	-- 	got and "COLLECTED" or "PASSIVE",
@@ -144,6 +142,7 @@ local function UpdateWindow(self, force, got)
 		wipe(rowData)
 
 		data.expanded = true;
+		local didUpdate
 		if not self.doesOwnUpdate and force then
 			self:ToggleExtraFilters(true)
 			-- app.PrintDebug(Colorize("TLUG", app.Colors.Time),self.Suffix)
@@ -151,6 +150,7 @@ local function UpdateWindow(self, force, got)
 			self.HasPendingUpdate = nil;
 			-- app.PrintDebugPrior("Done")
 			self:ToggleExtraFilters()
+			didUpdate = true
 		end
 
 		-- Should the groups in this window be expanded prior to processing the rows for display
@@ -197,6 +197,7 @@ local function UpdateWindow(self, force, got)
 
 		self:Refresh();
 		-- app.PrintDebugPrior("Update:Done")
+		app.HandleEvent("OnWindowUpdated", self, didUpdate)
 		return true;
 	else
 		local expireTime = self.ExpireTime;
@@ -313,7 +314,7 @@ end
 end
 app.GetIndicatorIcon = GetIndicatorIcon
 local function SetIndicatorIcon(self, data)
-	local texture = app.GetIndicatorIcon(data);
+	local texture = GetIndicatorIcon(data);
 	if texture then
 		self:SetTexture(texture);
 		return true;
@@ -326,25 +327,32 @@ local function GetReagentIcon(data, iconOnly)
 end
 local function GetUpgradeIconForRow(data, iconOnly)
 	-- upgrade only for filled groups, or if itself is an upgrade
-	if data.filledUpgrade or data.isUpgrade or (data.progress == data.total and ((data.upgradeTotal or 0) > 0)) then
+	if data.isUpgrade or (data.progress == data.total and data.upgradeTotal > 0) then
 		return L[iconOnly and "UPGRADE_ICON" or "UPGRADE_TEXT"];
 	end
 end
 local function GetUpgradeIconForTooltip(data, iconOnly)
 	-- upgrade only if itself has an upgrade
-	if data.filledUpgrade or data.collectibleAsUpgrade then
+	if data.collectibleAsUpgrade then
 		return L[iconOnly and "UPGRADE_ICON" or "UPGRADE_TEXT"];
+	end
+end
+local function GetCatalystIcon(data, iconOnly)
+	if data.filledCatalyst then
+		return L[iconOnly and "CATALYST_ICON" or "CATALYST_TEXT"];
 	end
 end
 local function GetCostIconForRow(data, iconOnly)
 	-- cost only for filled groups, or if itself is a cost
-	if data.filledCost or data.isCost or (data.progress == data.total and ((data.costTotal or 0) > 0)) then
+	-- temp, added filledCost back due to some discrepancies discovered based on Fillers not accounted for in Cost calculations
+	if data.isCost or data.filledCost or (data.progress == data.total and data.costTotal > 0) then
 		return L[iconOnly and "COST_ICON" or "COST_TEXT"];
 	end
 end
 local function GetCostIconForTooltip(data, iconOnly)
 	-- cost only if itself is a cost
-	if data.filledCost or data.collectibleAsCost then
+	-- temp, added filledCost back due to some discrepancies discovered based on Fillers not accounted for in Cost calculations
+	if data.isCost or data.filledCost then
 		return L[iconOnly and "COST_ICON" or "COST_TEXT"];
 	end
 end
@@ -393,6 +401,11 @@ local function GetProgressTextForRow(data)
 	if icon then
 		__Text[#__Text + 1] = icon
 	end
+	-- Upgrade (show upgrade icon)
+	icon = GetCatalystIcon(data, true);
+	if icon then
+		__Text[#__Text + 1] = icon
+	end
 	-- Progress Achievement
 	local statistic = data.statistic
 	if statistic then
@@ -407,8 +420,7 @@ local function GetProgressTextForRow(data)
 	local total = data.total;
 	local isContainer = total and (total > 1 or (total > 0 and not data.collectible));
 	if isContainer then
-		local textContainer = GetProgressColorText(data.progress or 0, total)
-		__Text[#__Text + 1] = textContainer
+		__Text[#__Text + 1] = GetProgressColorText(data.progress or 0, total)
 	end
 	-- Non-collectible/total Container (only contains visible, non-collectibles...)
 	local g = data.g;
@@ -454,6 +466,11 @@ local function GetProgressTextForTooltip(data)
 	if icon then
 		__Text[#__Text + 1] = icon
 	end
+	-- Catalyst (show catalyst icon)
+	icon = GetCatalystIcon(data, iconOnly);
+	if icon then
+		__Text[#__Text + 1] = icon
+	end
 	-- Collectible
 	local stateIcon = GetCollectibleIcon(data, iconOnly)
 	if stateIcon then
@@ -470,10 +487,7 @@ local function GetProgressTextForTooltip(data)
 	local total = data.total;
 	local isContainer = total and (total > 1 or (total > 0 and not data.collectible));
 	if isContainer then
-		local textContainer = GetProgressColorText(data.progress or 0, total)
-		if textContainer then
-			__Text[#__Text + 1] = textContainer
-		end
+		__Text[#__Text + 1] = GetProgressColorText(data.progress or 0, total)
 	end
 
 	-- Trackable (Only if no other text available)
@@ -517,9 +531,21 @@ end
 local function SetRowData(self, row, data)
 	ClearRowData(row);
 	if data then
+		-- temp debug check to ensure we aren't assigning any non-objects into windows
+		-- if not data.key then
+		-- 	app.PrintDebug(app.Modules.Color.Colorize("Non-Object "..(data.text or "?").." assigned to Row "..self.Suffix,app.Colors.LockedWarning))
+		-- end
 		local text = data.text;
 		if IsRetrieving(text) then
 			text = RETRIEVING_DATA;
+
+			local AsyncRefreshFunc = data.AsyncRefreshFunc
+			if AsyncRefreshFunc then
+				AsyncRefreshFunc(data)
+			else
+				-- app.PrintDebug("No Async Refresh Func for Type!",data.__type)
+				Callback(self.Update, self)
+			end
 		end
 		local leftmost, relative, rowPad = row, "LEFT", 8;
 		local x = CalculateRowIndent(data) * rowPad + rowPad;
@@ -596,7 +622,7 @@ local function ClearRowData(self)
 end
 local function Refresh(self)
 	if not self:IsVisible() then return; end
-	-- app.PrintDebug(Colorize("Refresh:", app.Colors.TooltipDescription),self.Suffix)
+	-- app.PrintDebug(app.Modules.Color.Colorize("Refresh:", app.Colors.TooltipDescription),self.Suffix)
 	local height = self:GetHeight();
 	if height > 80 then
 		self.ScrollBar:Show();
@@ -1138,19 +1164,21 @@ local function ToggleMiniListForCurrentZone()
 end
 app.ToggleMiniListForCurrentZone = ToggleMiniListForCurrentZone;
 
-local function LocationTrigger(forceNewMap)
-	if not app.InWorld or not app.IsReady then return end
-	local window = app:GetWindow("CurrentInstance");
-	if not window:IsVisible() then return end
-	-- app.PrintDebug("LocationTrigger-Callback",forceNewMap)
-	if forceNewMap then
-		-- this allows minilist to rebuild itself
-		wipe(window.CurrentMaps)
+app.LocationTrigger = app.EmptyFunction
+app.AddEventHandler("OnReady", function()
+	local function LocationTrigger(forceNewMap)
+		local window = app:GetWindow("CurrentInstance")
+		if not window:IsVisible() then return end
+		-- app.PrintDebug("LocationTrigger-Callback",forceNewMap)
+		if forceNewMap then
+			-- this allows minilist to rebuild itself
+			wipe(window.CurrentMaps)
+		end
+		AfterCombatOrDelayedCallback(window.RefreshLocation, 0.1)
 	end
-	AfterCombatOrDelayedCallback(window.RefreshLocation, 0.25);
-end
-app.LocationTrigger = LocationTrigger;
-app.AddEventHandler("OnCurrentMapIDChanged", LocationTrigger);
+	app.LocationTrigger = LocationTrigger
+	app.AddEventHandler("OnCurrentMapIDChanged", LocationTrigger)
+end)
 
 app.ToggleMainList = function()
 	app:GetWindow("Prime"):Toggle();
@@ -1357,8 +1385,10 @@ function app:CreateMiniListForGroup(group, forceFresh)
 		end
 
 		popout:BuildData();
-		-- always expand all groups on initial creation
-		ExpandGroupsRecursively(popout.data, true, true);
+		-- always expand all groups on initial creation if enabled
+		if app.Settings:GetTooltipSetting("Expand:MiniList") then
+			ExpandGroupsRecursively(popout.data, true, true);
+		end
 		-- Adjust some update/refresh logic if this is a Quest Chain window
 		if popout.isQuestChain then
 			local oldUpdate = popout.Update;
@@ -1448,34 +1478,6 @@ local function AddQuestInfoToTooltip(info, quests, reference)
 		end
 	end
 end
-local function formatNumericWithCommas(amount)
-    local k
-    while true do
-        amount, k = tostring(amount):gsub("^(-?%d+)(%d%d%d)", '%1,%2')
-        if k == 0 then
-            break
-        end
-    end
-    return amount
-end
-local function GetMoneyString(amount)
-    if amount > 0 then
-        local formatted
-        local gold, silver, copper = math_floor(amount / 100 / 100), math_floor((amount / 100) % 100),
-            math_floor(amount % 100)
-        if gold > 0 then
-            formatted = formatNumericWithCommas(gold) .. "|T237618:0|t"
-        end
-        if silver > 0 then
-            formatted = (formatted or "") .. silver .. "|T237620:0|t"
-        end
-        if copper > 0 then
-            formatted = (formatted or "") .. copper .. "|T237617:0|t"
-        end
-        return formatted
-    end
-    return amount
-end
 
 -- Returns true if any subgroup of the provided group is currently expanded, otherwise nil
 local function HasExpandedSubgroup(group)
@@ -1520,12 +1522,14 @@ app.AddEventHandler("RowOnClick", function(self, button)
 				end
 			else
 				if self.index > 0 then
-					if reference.__dlo then
-						-- clone the underlying object of the DLO and create a popout of that instead of the DLO itself
-						app:CreateMiniListForGroup(reference.__o);
-						return;
+					if not reference.IgnorePopout then
+						if reference.__dlo then
+							-- clone the underlying object of the DLO and create a popout of that instead of the DLO itself
+							app:CreateMiniListForGroup(reference.__o);
+							return;
+						end
+						app:CreateMiniListForGroup(reference);
 					end
-					app:CreateMiniListForGroup(reference);
 				else
 					app.Settings:Open();
 				end
@@ -1746,6 +1750,7 @@ app.AddEventHandler("RowOnEnter", function(self)
 	then
 		local link = reference.link or reference.tooltipLink or reference.silentLink
 		if link and link:sub(1, 1) ~= "[" then
+			-- app.PrintDebug("SetHyperlink!", link);
 			local ok, result = pcall(tooltip.SetHyperlink, tooltip, link);
 			if ok and result then
 				linkSuccessful = true;
@@ -1756,7 +1761,7 @@ app.AddEventHandler("RowOnEnter", function(self)
 			end
 			-- app.PrintDebug("Link:", link:gsub("|","\\"));
 			-- app.PrintDebug("Link Result!", result, refkey, reference.__type,"TT lines",tooltip:NumLines());
-		-- elseif link then app.PrintDebug("Ignore tooltip link",link) else
+		-- elseif link then app.PrintDebug("Ignore tooltip link",link)
 		end
 
 		-- Only if the link was unsuccessful.
@@ -1814,52 +1819,6 @@ app.AddEventHandler("RowOnEnter", function(self)
 		end
 	end
 
-	-- TODO: Convert cost to an InformationType.
-	if reference.cost then
-		if type(reference.cost) == "table" then
-			local _, name, icon, amount;
-			for k,v in pairs(reference.cost) do
-				_ = v[1];
-				if _ == "i" then
-					_,name,_,_,_,_,_,_,_,icon = GetItemInfo(v[2]);
-					amount = v[3];
-					if amount > 1 then
-						amount = formatNumericWithCommas(amount) .. "x ";
-					else
-						amount = "";
-					end
-				elseif _ == "c" then
-					amount = v[3];
-					local currencyData = C_CurrencyInfo.GetCurrencyInfo(v[2]);
-					name = C_CurrencyInfo.GetCurrencyLink(v[2], amount) or (currencyData and currencyData.name) or "Unknown";
-					icon = currencyData and currencyData.iconFileID or nil;
-					if amount > 1 then
-						amount = formatNumericWithCommas(amount) .. "x ";
-					else
-						amount = "";
-					end
-				elseif _ == "g" then
-					name = "";
-					icon = nil;
-					amount = GetMoneyString(v[2]);
-				end
-				if not name then
-					reference.working = true;
-					name = RETRIEVING_DATA;
-				end
-				tooltipInfo[#tooltipInfo + 1] = {
-					left = (k == 1 and L.COST),
-					right = amount .. (icon and ("|T" .. icon .. ":0|t") or "") .. name,
-				}
-			end
-		else
-			tooltipInfo[#tooltipInfo + 1] = {
-				left = L.COST,
-				right = GetMoneyString(reference.cost),
-			}
-		end
-	end
-
 	-- Additional information (search will insert this information if found in search)
 	if tooltip.ATT_AttachComplete == nil then
 		-- an item used for a faction which is repeatable
@@ -1875,13 +1834,6 @@ app.AddEventHandler("RowOnEnter", function(self)
 		app.ProcessInformationTypes(tooltipInfo, reference);
 	end
 
-	-- Ignored for Source/Progress
-	if reference.sourceIgnored then
-		tooltipInfo[#tooltipInfo + 1] = {
-			left = L.DOES_NOT_CONTRIBUTE_TO_PROGRESS,
-			wrap = true,
-		}
-	end
 	-- Further conditional texts that can be displayed
 	if reference.timeRemaining then
 		tooltipInfo[#tooltipInfo + 1] = {
@@ -2128,7 +2080,7 @@ app.AddEventHandler("RowOnEnter", function(self)
 		end
 	end
 
-	-- Show information about it becoming locked due to some criteira
+	-- Show information about it becoming locked due to some criteria
 	local lockCriteria = reference.lc;
 	if lockCriteria then
 		-- list the reasons this may become locked due to lock criteria
@@ -2222,8 +2174,7 @@ app.AddEventHandler("RowOnEnter", function(self)
 	end
 	-- Add info in tooltip for the header of a Window for whether it is locked or not
 	if self.index == 0 then
-		local window = self:GetParent():GetParent();
-		if window and window.isLocked then
+		if window.isLocked then
 			tooltipInfo[#tooltipInfo + 1] = {
 				left = L.TOP_ROW_TO_UNLOCK,
 			}
@@ -2321,3 +2272,54 @@ app.AddEventHandler("RowOnEnter", function(self)
 	-- Tooltip for something which was not attached via search, so mark it as complete here
 	tooltip.ATT_AttachComplete = not reference.working;
 end)
+
+-- TODO: move to Minilist window UI file once split
+do
+	local MinilistSuffix = "CurrentInstance"
+	local containsValue = app.containsValue;
+	local function TryGeneralExpand(window)
+		-- check to expand groups after they have been built and updated
+		-- dont re-expand if the user has previously full-collapsed the minilist
+		-- need to force expand if so since the groups haven't been updated yet
+		if not window.fullCollapsed and app.Settings:GetTooltipSetting("Expand:MiniList") then
+			window.ExpandInfo = { Expand = true };
+			Callback(window.Update, window)
+		end
+	end
+	local function TryExpandMinilist(window)
+		if window.Suffix ~= MinilistSuffix then return end
+
+		local header = window.data
+		local g = header and header.g
+		if not g then return end
+
+		-- app.PrintDebug("Try expand minilist",app.Settings:GetTooltipSetting("Expand:Difficulty"),app.GetCurrentDifficultyID())
+		if app.Settings:GetTooltipSetting("Expand:Difficulty") then
+			local difficultyID = app.GetCurrentDifficultyID()
+			if difficultyID and difficultyID ~= 0 then
+				local expanded, row
+				for i=1,#g do
+					row = g[i]
+					if row.difficultyID or row.difficulties then
+						if (row.difficultyID or -1) == difficultyID or (row.difficulties and containsValue(row.difficulties, difficultyID)) then
+							ExpandGroupsRecursively(row, true, true)
+							expanded = true
+						elseif row.expanded then
+							ExpandGroupsRecursively(row, false, true)
+						end
+					-- Zone Drops/Common Boss Drops should also be expanded within instances
+					-- elseif row.headerID == app.HeaderConstants.ZONE_DROPS or row.headerID == app.HeaderConstants.COMMON_BOSS_DROPS then
+					-- 	if not row.expanded then ExpandGroupsRecursively(row, true); expanded = true; end
+					end
+				end
+
+				if expanded then
+					Callback(window.Update, window)
+					return
+				end
+			end
+		end
+		TryGeneralExpand(window)
+	end
+	app.AddEventHandler("OnWindowFillComplete", TryExpandMinilist)
+end

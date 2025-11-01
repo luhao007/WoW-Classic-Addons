@@ -30,6 +30,12 @@ if MODERN or CF_WRATH then
 		local function have3(iid)
 			return C_Item.GetItemCount(iid) > 2, false, false, 4
 		end
+		local function have10(iid)
+			return C_Item.GetItemCount(iid) > 9, false, false, 4
+		end
+		local function have100(iid)
+			return C_Item.GetItemCount(iid) > 99, false, false, 4
+		end
 		local function have1_lv80()
 			if (UnitLevel("player") or 0) >= 80 then
 				return true, false, false, 4
@@ -62,6 +68,7 @@ if MODERN or CF_WRATH then
 			[33634]=true, [35797]=true, [37888]=true, [37860]=true, [37859]=true, [37815]=true, [46847]=true, [47030]=true, [39213]=true, [42986]=true, [49278]=true,
 			[86425]={31332, 31333, 31334, 31335, 31336, 31337}, [90006]=true, [86536]=true, [86534]=true,
 			[49351]=crownChemical, [49352]=crownChemical, -- perfume/cologne neutralizers
+			[37586]=have1, -- handful of treats [hallow's end]
 			[180008]=-60609, [180009]=-60609, [180170]=-60649,
 			[174464]=true, [168035]=true,
 			[191251]=isOnKeysOfLoyalty, [202096]=isInPrimalistFutureScenario, [203478]=isInPrimalistFutureScenario,
@@ -76,30 +83,49 @@ if MODERN or CF_WRATH then
 			[222552]=83729, [222553]=83733, [222554]=83726, [222621]=83728, [222649]=83734,
 			[224292]=-81691, [224913]=-81691, -- radiant fuel shard/cache
 			[228741]=have1, -- lamplighter supply satchel
-			[229899]=c100_lv80, [236096]=c100_lv80, -- coffer key shard
 			[217011]=have1, [217012]=have1, [217013]=have1, -- (isle of dorn) actor's chest
 			[235151]=have1, -- distinguished actor's chest
 			[227792]=have1, -- everyday cache
 			[227713]=have1, -- art consortium payout
-			[226263]=have1, [239128]=have1, -- theater troupe's trove
-			[226264]=have1, [239126]=have1, -- radiant cache
-			[226273]=have1, [239121]=have1, -- awakened mechanical cache
-			[225571]=have1, [225572]=have1, [225573]=have1, -- weaver/general/vizier weekly caches
-			[239125]=have1, [239122]=have1, [239124]=have1, -- ditto, s2
-			[226103]=have1, [226045]=have1, [226100]=have1, -- weaver/general/vizier rep troves
-			[225247]=have1, [225246]=have1, [225239]=have1, [225245]=have1, [232463]=have1, -- overflowing troves [11.x]
-			[229354]=have1, -- algari adventurer's cache
+			[229899]=c100_lv80, [236096]=c100_lv80, [245653]=c100_lv80, -- coffer key shard [seasonal]
+			[224784]=have1_lv80, [239118]=have1_lv80, [244865]=have1_lv80, -- pinnacle cache [seasonal]
+			[226263]=have1, [239128]=have1, [250763]=have1, -- theater troupe's trove [seasonal]
+			[226264]=have1, [239126]=have1, [250766]=have1, -- radiant cache [seasonal]
+			[226273]=have1, [239121]=have1, [250765]=have1, -- awakened mechanical cache [seasonal]
+			[225571]=have1, [239125]=have1, [250769]=have1, -- weaver weekly [seasonal]
+			[225572]=have1, [239122]=have1, [250767]=have1, -- general weekly [seasonal]
+			[225573]=have1, [239124]=have1, [250768]=have1, -- vizier weekly [seasonal]
+			[238207]=have1, [238208]=have1, [250764]=have1, -- surge dividends [seasonal]
+			[229129]=have1, [229130]=have1, -- delver's spoils [seasonal]
 			[228361]=have1_lv80, [239120]=have1_lv80, [235610]=have1_lv80, [235639]=have1_lv80, -- seasoned adventurer's cache
-			[224784]=have1_lv80, [239118]=have1_lv80, -- pinnacle cache
+			[245280]=have1_lv80, [244883]=have1, -- ditto, s3
+			-- TWW rep overflow
+			[226103]=have1, [226045]=have1, [226100]=have1,
+			[225247]=have1, [225246]=have1, [225239]=have1, [225245]=have1, [232463]=have1,
+			[239489]=have1, [230032]=have1,
+			[229354]=have1, -- algari adventurer's cache
 			[169219]=c1, -- brewfest sampler
 			[225249]=c1, -- bag o' gold
 			[235548]=have1, [232372]=have1, [234816]=c1, -- siren isle cache, bygone riches, bag of iron
 			[236756]=c1, [236757]=c1, [236758]=c1, -- undermine tip chests
-			[238207]=have1, [238208]=have1, -- surge dividends
-			[229129]=have1, -- delver's spoils
 			[220152]=c1, -- cursed ghoulfish
 			[237743]=have1, [237759]=have1, [237760]=have1, -- nightfall participation coffers
 			[239004]=have1, [239546]=have1, -- nightfall quest/scenario completion
+			[244696]=have1, -- overcharged chest
+			[245589]=have1, -- hellcaller chest
+			[244842]=have1, -- fabled veteran's cache
+			[245611]=have1, -- wriggling pinnacale cache [11.2]
+			[255676]=have1, -- phase diver's cache [11.2]
+			[247820]=have1, -- cache of k'areshi treasures [11.2 sign of the warrior]
+			-- Legion Remix
+			[242617]=c1, -- curious simulacrum
+			[237812]=have1, [239303]=have1, [245553]=have1, [256763]=have1, -- cache of infinite treasure/heroic/armory
+			[248247]=have1, [251821]=have1, -- cache of infinite power
+			[253224]=have10, -- mote of a broken time
+			[254267]=have100, -- fragmented memento
+			[246812]=c1, [246815]=c1, [246814]=c1, [246813]=c1, -- minor/lesser//greater bronze cache
+			[245925]=c1, [249891]=c1, -- artifactium sand
+			[246936]=c1, [246937]=c1, -- epoch memento
 		}
 		filtered = {
 			[228988]=ebIsNotRockReviver, -- siren isle rock reviver
@@ -128,6 +154,7 @@ if MODERN or CF_WRATH then
 	setmetatable(exclude, {__index={
 		[204561]=1,
 		[232466]=1, -- leave the storm, siren isle
+		[246808]=1, -- heroic tier instructions, legion remix
 	}})
 	function IsQuestItem(iid, bag, slot)
 		if exclude[iid] or not iid then

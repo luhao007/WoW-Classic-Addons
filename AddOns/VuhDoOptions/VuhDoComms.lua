@@ -1,10 +1,8 @@
 VUHDO_COMMS_VERSION = 1;
 
 local sReceiveMode = 1;
-local sLastCmd = nil;
 
 local sMaxPacketSize = 254;
-local sPacketSendInterval = 0.1;
 local sTrivialTimeout = 3;
 local sUserDialogTimeout = 15;
 local sMaxReceiveSize = 100000;
@@ -24,11 +22,11 @@ local sCmdVersionReply   = sPrefixReply   .. "VERSION"; -- CommsVersion, VuhDo v
 local sCmdUserYesNoRequest = sPrefixRequest .. "YESNO";
 local sCmdUserYesNoReply   = sPrefixReply   .. "YESNO";
 
-sCmdProfileDataChunk = sPrefixCommand .. "P_DAT";
-sCmdProfileDataEnd   = sPrefixCommand .. "P_END";
+VUHDO_sCmdProfileDataChunk = sPrefixCommand .. "P_DAT";
+VUHDO_sCmdProfileDataEnd   = sPrefixCommand .. "P_END";
 
-sCmdKeyLayoutDataChunk = sPrefixCommand .. "K_DAT";
-sCmdKeyLayoutDataEnd   = sPrefixCommand .. "K_END";
+VUHDO_sCmdKeyLayoutDataChunk = sPrefixCommand .. "K_DAT";
+VUHDO_sCmdKeyLayoutDataEnd   = sPrefixCommand .. "K_END";
 
 local sRequestsInProgress = { --[[ [unitName][replyType] = { endTime, aResumable } ]] };
 local sRepliesReceived = { --[[ [unitName][replyType] = replyString ]] };
@@ -415,15 +413,15 @@ local function VUHDO_handleCommandReceived(aSenderName, aCommand)
 		VuhDoYesNoFrame:Hide();
 		VUHDO_Msg("Transaction aborted by " .. aSenderName);
 	else
-		if(sCmdProfileDataChunk == tCommandType) then
-			VUHDO_addReplyData(aSenderName, sCmdProfileDataChunk, tData);
+		if(VUHDO_sCmdProfileDataChunk == tCommandType) then
+			VUHDO_addReplyData(aSenderName, VUHDO_sCmdProfileDataChunk, tData);
 			if (sNumChunks % 20 == 0) then
 				VUHDO_Msg("Receiving profile data: " .. strrep(".", sNumChunks / 20 + 1));
 			end
 			sNumChunks = sNumChunks + 1;
 
-		elseif(sCmdProfileDataEnd == tCommandType) then
-			local tProfile = VUHDO_decompressFromSending(VUHDO_getReplyData(aSenderName, sCmdProfileDataChunk));
+		elseif(VUHDO_sCmdProfileDataEnd == tCommandType) then
+			local tProfile = VUHDO_decompressFromSending(VUHDO_getReplyData(aSenderName, VUHDO_sCmdProfileDataChunk));
 
 			local tName = tProfile["NAME"];
 			if (VUHDO_getProfileNamedCompressed(tName) ~= nil) then
@@ -439,10 +437,10 @@ local function VUHDO_handleCommandReceived(aSenderName, aCommand)
 			VUHDO_Msg("Transmission complete. Profile \"" .. tProfile["NAME"] .. "\" has been added.");
 			VUHDO_removeCommsData(aSenderName);
 
-		elseif(sCmdKeyLayoutDataChunk == tCommandType) then
-			VUHDO_addReplyData(aSenderName, sCmdKeyLayoutDataChunk, tData);
-		elseif(sCmdKeyLayoutDataEnd == tCommandType) then
-			local tKeyLayout = VUHDO_decompressFromSending(VUHDO_getReplyData(aSenderName, sCmdKeyLayoutDataChunk));
+		elseif(VUHDO_sCmdKeyLayoutDataChunk == tCommandType) then
+			VUHDO_addReplyData(aSenderName, VUHDO_sCmdKeyLayoutDataChunk, tData);
+		elseif(VUHDO_sCmdKeyLayoutDataEnd == tCommandType) then
+			local tKeyLayout = VUHDO_decompressFromSending(VUHDO_getReplyData(aSenderName, VUHDO_sCmdKeyLayoutDataChunk));
 			while (VUHDO_SPELL_LAYOUTS[tKeyLayout[1]] ~= nil) do
 				tKeyLayout[1] = aSenderName .. ": " .. tKeyLayout[1];
 			end
@@ -566,7 +564,7 @@ end
 --
 function VUHDO_updateRequestsInProgress()
 	for tReceiverName, tSomeUnitRequests in pairs(sRequestsInProgress) do
-		for tReplyType, tSomeReplyInfos in pairs(tSomeUnitRequests) do
+		for _, tSomeReplyInfos in pairs(tSomeUnitRequests) do
 			if (GetTime() > tSomeReplyInfos[1]) then
 				VUHDO_sendMessage(tReceiverName, sCmdAbortComms, nil);
 				VUHDO_removeCommsData(tReceiverName);

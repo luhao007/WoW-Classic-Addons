@@ -45,10 +45,10 @@ local FACTION_HORDE = "Horde_debug"
 --]]
 
 -- Topic debug tool / scheme
-local dbg = Titan_Debug:New(TITAN_GOLD_ID)
-dbg:EnableDebug(false)
-dbg:EnableTopic("Events", false)
-dbg:EnableTopic("Flow", false)
+Titan_Debug.gold = {}
+Titan_Debug.gold.events = false
+Titan_Debug.gold.flow = false
+Titan_Debug.gold.tooltip = false
 
 -- ******************************** Functions *******************************
 
@@ -673,7 +673,7 @@ local function GetTooltipText()
 			.. war_name
 			.. "\t" .. cash
 		local msg = "" .. war_name .. " ".. cash
-		dbg:Out("Tooltip", msg)
+	Titan_Debug.Out('gold', 'tooltip', msg)
 	end
 
 
@@ -798,7 +798,7 @@ end
 ---local See if this toon is in saved vars AFTER PEW event.
 --- Get current total and session start time. Toon gold is available via API AFTER PEW event.
 local function Initialize_Array()
-	dbg:Out("Flow", "Init inititated")
+	Titan_Debug.Out('gold', 'flow', "Init inititated")
 
 	local info = ""
 	if (GOLD_INITIALIZED) then
@@ -851,10 +851,10 @@ local function Initialize_Array()
 		.." "..tostring(Warband.GetSum())..""
 		end
 
-	local msg = ""
+	local msg = ">Init done : "
 	.." "..tostring(GOLD_INITIALIZED)..""
 	.." "..info..""
-	dbg:Out("Flow", ">Init done : "..msg)
+	Titan_Debug.Out('gold', 'flow', msg)
 end
 
 ---local Clear the gold array and rebuild
@@ -1279,7 +1279,7 @@ local function OnShow(self)
 
 	local msg = ""
 		.." "..Gold_debug("OnShow")
-	dbg:Out("Flow", msg)
+	Titan_Debug.Out('gold', 'flow', msg)
 	end
 
 ---local When shown, unregister needed events and stop timer for gold per hour
@@ -1319,13 +1319,13 @@ local function OnEvent(self, event, a1, ...)
 		end
 	end
 
-	dbg:Out("Events", event)
+	Titan_Debug.Out('gold', 'events', event)
 end
 
 ---Button clicks - only shift-left for now
 ---@param self Button
 ---@param button string
-function OnClick(self, button)
+local function OnClick(self, button)
 	if button == "LeftButton" and IsShiftKeyDown() then
 		local realms = GetConnectedRealms()
 		local this_realm = " * "

@@ -75,8 +75,8 @@ local KeyMaps = setmetatable({
 	mount = "spellID",
 	mm = "itemID",
 	mountmod = "itemID",
-	n = "creatureID",
-	npc = "creatureID",
+	n = "npcID",
+	npc = "npcID",
 	o = "objectID",
 	object = "objectID",
 	r = "spellID",
@@ -104,17 +104,17 @@ local function SearchByItemLink(link)
 	local modID = tonumber(linkData[13]) or 0
 	local bonusCount = tonumber(linkData[14]) or 0
 	local bonusID1 = bonusCount > 0 and linkData[15] or 0
-	local itemModifierIndex = 15 + bonusCount
-	local itemModifierCount = tonumber(linkData[itemModifierIndex]) or 0
+	-- local itemModifierIndex = 15 + bonusCount
+	-- local itemModifierCount = tonumber(linkData[itemModifierIndex]) or 0
 	local artifactID
-	if itemModifierCount > 0 then
-		for i=itemModifierIndex + 1,itemModifierIndex + (2 * itemModifierCount),2 do
-			if linkData[i] == "8" then
-				artifactID = tonumber(linkData[i + 1])
-				break
-			end
-		end
-	end
+	-- if itemModifierCount > 0 then
+	-- 	for i=itemModifierIndex + 1,itemModifierIndex + (2 * itemModifierCount),2 do
+	-- 		if linkData[i] == "8" then
+	-- 			artifactID = tonumber(linkData[i + 1])
+	-- 			break
+	-- 		end
+	-- 	end
+	-- end
 	local search
 	-- Don't use SourceID for artifact searches since they contain many SourceIDs
 	local sourceID = not artifactID and app.GetSourceID(link);
@@ -123,7 +123,8 @@ local function SearchByItemLink(link)
 		-- app.PrintDebug("SEARCHING FOR ITEM LINK WITH SOURCE", link, itemID, sourceID);
 		search = SearchForObject("sourceID", sourceID, nil, true)
 		-- app.PrintDebug("SFL.sourceID",sourceID,#search)
-		if #search > 0 then return search, "sourceID", sourceID end
+		-- if #search > 0 then return search, "sourceID", sourceID end
+		return search, "sourceID", sourceID
 	end
 	-- Search for the Item ID. (an item without an appearance)
 	-- app.PrintDebug("SFL-exact",itemID, modID, (tonumber(bonusCount) or 0) > 0 and bonusID1)
@@ -224,6 +225,10 @@ do
 		end,
 		currencyID = function(field, id)
 			local results = SearchForObject(field, id, "field", true)
+			return results
+		end,
+		achievementID = function(field, id)
+			local results = SearchForObject(field, id, "key", true)
 			return results
 		end,
 		LinkSources = function(link)
@@ -529,13 +534,14 @@ app.ChatCommands.Add({"search","?"}, function(args)
 	-- expand the hierarchy to each search result
 	local DGR = app.DirectGroupRefresh
 	local GetRelative = app.GetRelativeRawWithField
-	local window
-	local o
+	local windows = {}
+	local window, o
 	for i = 1,#results do
 		o = results[i]
-		if not window then
-			-- find the containing window
-			window = GetRelative(o, "window")
+		-- find the containing window
+		window = GetRelative(o, "window")
+		if window and not windows[window] then
+			windows[window] = true
 
 			-- open the containing Window
 			window:SetVisible(true)
@@ -556,10 +562,12 @@ app.ChatCommands.Add({"search","?"}, function(args)
 
 	-- report results
 	local firstResult = results[1]
-	app.print("Found",#results,"results for",app:SearchLink(firstResult),"within",window.Suffix)
+	app.print("Found",#results,"results for",app:SearchLink(firstResult))
 
-	-- mark the window to scroll to the first result
-	window:ScrollTo(firstResult.key, firstResult[firstResult.key])
+	-- mark the window(s) to scroll to the first result
+	for window,_ in pairs(windows) do
+		window:ScrollTo(firstResult.key, firstResult[firstResult.key])
+	end
 
 	return true
 end, {

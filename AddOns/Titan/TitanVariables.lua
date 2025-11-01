@@ -341,6 +341,7 @@ TitanBarVarsDefaults = {
 		auto_hide = false,
 		align = TITAN_PANEL_BUTTONS_ALIGN_LEFT, -- TITAN_PANEL_BUTTONS_ALIGN_CENTER
 		hide_in_combat = false,
+		hide_in_pvp = false,
 	},
 	[TITAN_PANEL_DISPLAY_PREFIX .. "Bar2"] = {
 		off_x = 0,
@@ -353,6 +354,7 @@ TitanBarVarsDefaults = {
 		auto_hide = false,
 		align = TITAN_PANEL_BUTTONS_ALIGN_LEFT, -- TITAN_PANEL_BUTTONS_ALIGN_CENTER
 		hide_in_combat = false,
+		hide_in_pvp = false,
 	},
 	[TITAN_PANEL_DISPLAY_PREFIX .. "AuxBar2"] = {
 		off_x = 0,
@@ -365,6 +367,7 @@ TitanBarVarsDefaults = {
 		auto_hide = false,
 		align = TITAN_PANEL_BUTTONS_ALIGN_LEFT, -- TITAN_PANEL_BUTTONS_ALIGN_CENTER
 		hide_in_combat = false,
+		hide_in_pvp = false,
 	},
 	[TITAN_PANEL_DISPLAY_PREFIX .. "AuxBar"] = {
 		off_x = 0,
@@ -377,6 +380,7 @@ TitanBarVarsDefaults = {
 		auto_hide = false,
 		align = TITAN_PANEL_BUTTONS_ALIGN_LEFT, -- TITAN_PANEL_BUTTONS_ALIGN_CENTER
 		hide_in_combat = false,
+		hide_in_pvp = false,
 	},
 	[TITAN_PANEL_DISPLAY_PREFIX .. "Short01"] = {
 		off_x = x_mid,
@@ -389,6 +393,7 @@ TitanBarVarsDefaults = {
 		auto_hide = false,
 		align = TITAN_PANEL_BUTTONS_ALIGN_LEFT, -- TITAN_PANEL_BUTTONS_ALIGN_CENTER
 		hide_in_combat = false,
+		hide_in_pvp = false,
 	},
 	[TITAN_PANEL_DISPLAY_PREFIX .. "Short02"] = {
 		off_x = x_mid,
@@ -401,6 +406,7 @@ TitanBarVarsDefaults = {
 		auto_hide = false,
 		align = TITAN_PANEL_BUTTONS_ALIGN_LEFT, -- TITAN_PANEL_BUTTONS_ALIGN_CENTER
 		hide_in_combat = false,
+		hide_in_pvp = false,
 	},
 	[TITAN_PANEL_DISPLAY_PREFIX .. "Short03"] = {
 		off_x = x_mid,
@@ -413,6 +419,7 @@ TitanBarVarsDefaults = {
 		auto_hide = false,
 		align = TITAN_PANEL_BUTTONS_ALIGN_LEFT, -- TITAN_PANEL_BUTTONS_ALIGN_CENTER
 		hide_in_combat = false,
+		hide_in_pvp = false,
 	},
 	[TITAN_PANEL_DISPLAY_PREFIX .. "Short04"] = {
 		off_x = x_mid,
@@ -425,6 +432,7 @@ TitanBarVarsDefaults = {
 		auto_hide = false,
 		align = TITAN_PANEL_BUTTONS_ALIGN_LEFT, -- TITAN_PANEL_BUTTONS_ALIGN_CENTER
 		hide_in_combat = false,
+		hide_in_pvp = false,
 	},
 	[TITAN_PANEL_DISPLAY_PREFIX .. "Short05"] = {
 		off_x = x_mid,
@@ -437,6 +445,7 @@ TitanBarVarsDefaults = {
 		auto_hide = false,
 		align = TITAN_PANEL_BUTTONS_ALIGN_LEFT, -- TITAN_PANEL_BUTTONS_ALIGN_CENTER
 		hide_in_combat = false,
+		hide_in_pvp = false,
 	},
 	[TITAN_PANEL_DISPLAY_PREFIX .. "Short06"] = {
 		off_x = x_mid,
@@ -449,6 +458,7 @@ TitanBarVarsDefaults = {
 		auto_hide = false,
 		align = TITAN_PANEL_BUTTONS_ALIGN_LEFT, -- TITAN_PANEL_BUTTONS_ALIGN_CENTER
 		hide_in_combat = false,
+		hide_in_pvp = false,
 	},
 	[TITAN_PANEL_DISPLAY_PREFIX .. "Short07"] = {
 		off_x = x_mid,
@@ -461,6 +471,7 @@ TitanBarVarsDefaults = {
 		auto_hide = false,
 		align = TITAN_PANEL_BUTTONS_ALIGN_LEFT, -- TITAN_PANEL_BUTTONS_ALIGN_CENTER
 		hide_in_combat = false,
+		hide_in_pvp = false,
 	},
 	[TITAN_PANEL_DISPLAY_PREFIX .. "Short08"] = {
 		off_x = x_mid,
@@ -473,6 +484,7 @@ TitanBarVarsDefaults = {
 		auto_hide = false,
 		align = TITAN_PANEL_BUTTONS_ALIGN_LEFT, -- TITAN_PANEL_BUTTONS_ALIGN_CENTER
 		hide_in_combat = false,
+		hide_in_pvp = false,
 	},
 	[TITAN_PANEL_DISPLAY_PREFIX .. "Short09"] = {
 		off_x = x_mid,
@@ -485,6 +497,7 @@ TitanBarVarsDefaults = {
 		auto_hide = false,
 		align = TITAN_PANEL_BUTTONS_ALIGN_LEFT, -- TITAN_PANEL_BUTTONS_ALIGN_CENTER
 		hide_in_combat = false,
+		hide_in_pvp = false,
 	},
 	[TITAN_PANEL_DISPLAY_PREFIX .. "Short10"] = {
 		off_x = x_mid,
@@ -497,6 +510,7 @@ TitanBarVarsDefaults = {
 		auto_hide = false,
 		align = TITAN_PANEL_BUTTONS_ALIGN_LEFT, -- TITAN_PANEL_BUTTONS_ALIGN_CENTER
 		hide_in_combat = false,
+		hide_in_pvp = false,
 	},
 }
 
@@ -569,8 +583,8 @@ TITAN_PANEL_SAVED_VARIABLES = {
 	VersionShown = 1,
 	ToolTipsShown = 1,
 	HideTipsInCombat = false,
-	HideBarsInCombat = false,
-	HideBarsInPVP = false,
+--	HideBarsInCombat = false, -- removed for 8.4.0 Sep 2025
+--	HideBarsInPVP = false,    -- removed for 8.4.0 Sep 2025
 	-- Classic
 	ScreenAdjust = false,
 	AuxScreenAdjust = false,
@@ -747,11 +761,12 @@ print("plugins init"
 		local id = default_plugin.id
 		local loc = default_plugin.loc
 		local plugin = TitanUtils_GetPlugin(id)
-		--TitanDebug("Plugin: "..tostring(id).." "..(plugin and "T" or "F"))
+--		TitanDebug("Plugin: "..tostring(id).." "..(plugin and "T" or "F"))
 		-- See if plugin is registered
 		if (plugin) then
-			--TitanDebug("__Plugin: "..tostring(id).." "..tostring(loc))
+--			TitanDebug("__Plugin: "..tostring(id).." "..tostring(loc))
 			-- Synchronize registered and saved variables
+			TitanPluginSettings[id] = {}
 			TitanVariables_SyncRegisterSavedVariables(
 				plugin.savedVariables, TitanPluginSettings[id])
 			TitanUtils_AddButtonOnBar(loc, id)
@@ -930,13 +945,13 @@ end
 --- Called when Titan is loaded (ADDON_LOADED event)
 function TitanVariables_InitTitanSettings()
 	local player = TitanUtils_GetPlayer()
-	Titan_Global.dbg:Out("Menu", "_Init begin " .. tostring(player))
+			Titan_Debug.Out('titan', 'profile', "_Init begin " .. tostring(player))
 
 	if (TitanSettings) then
 		-- all is good
 	else
 		TitanSettings = {}
-		Titan_Global.dbg:Out("Menu", "TitanSettings {}")
+			Titan_Debug.Out('titan', 'profile', "TitanSettings {}")
 	end
 
 	-- check for player list per issue #745
@@ -944,7 +959,7 @@ function TitanVariables_InitTitanSettings()
 		-- all is good
 	else
 		TitanSettings.Players = {} -- empty saved vars. New install or wipe
-		Titan_Global.dbg:Out("Menu", "TitanSettings.Players {}")
+			Titan_Debug.Out('titan', 'profile', "TitanSettings.Players {}")
 	end
 
 	if (TitanAll) then
@@ -953,11 +968,11 @@ function TitanVariables_InitTitanSettings()
 		TitanAll = {}
 	end
 
-	Titan_Global.dbg:Out("Menu", "Sync Titan Panel saved variables with TitanAll")
+			Titan_Debug.Out('titan', 'profile', "Sync Titan Panel saved variables with TitanAll")
 	TitanVariables_SyncRegisterSavedVariables(TITAN_ALL_SAVED_VARIABLES, TitanAll)
-	Titan_Global.dbg:Out("Menu", "> Sync Done")
+			Titan_Debug.Out('titan', 'profile', "> Sync Done")
 
-	Titan_Global.dbg:Out("Menu", "_Init end " .. tostring(player))
+			Titan_Debug.Out('titan', 'profile', "_Init end " .. tostring(player))
 
 	-- Current Titan list known - all toons player has profiles for
 	-- Sort in alphabetical order.
@@ -1051,11 +1066,21 @@ end
 ---@param to_profile string
 --- If no profile found, use Titan defaults
 local function Set_bar_vars(to_profile)
+	local str = "" -- for debug output
+
 	if TitanSettings.Players[to_profile].BarVars then
 		-- All good
-		Titan_Global.dbg:Out("Menu", "Set_bar_vars found")
+			-- build debug output
+			str = "Set_bar_vars found"
+				.." "..tostring(to_profile)..""
+			Titan_Debug.Out('titan', 'profile', str)
 	else
-		Titan_Global.dbg:Out("Menu", "Set_bar_vars init")
+		-- Likely a new toon or new to Titan so just get defaults.
+			-- build debug output
+			str = "Set_bar_vars init"
+				.." "..tostring(to_profile)..""
+			Titan_Debug.Out('titan', 'profile', str)
+
 		-- Set to defaults
 		TitanSettings.Players[to_profile].BarVars = TitanBarVarsDefaults
 		local BV = TitanSettings.Players[to_profile].BarVars
@@ -1063,11 +1088,9 @@ local function Set_bar_vars(to_profile)
 		-- Cannot assume profile is current / cannot use Get Var routines.
 		local panel = TitanSettings.Players[to_profile].Panel
 
-		local tex = panel["TexturePath"]:gsub("TitanClassic", "Titan")
-		Titan_Global.dbg:Out("Menu", "tex path '" .. tex .. "'")
+		local tex = panel["TexturePath"]:gsub("TitanClassic", "Titan") -- hold over, just in case...
+			Titan_Debug.Out('titan', 'profile', "tex path '" .. tex .. "'")
 
-		-- Bring original Titan bar optionss to the current user settings.
-		-- If this is a new toon or new saved vars then it will just get defaults.
 		for idx, v in pairs(TitanBarData) do
 			if v.user_move == false then
 				-- Set original Bar options from the 'old' saved vars location
@@ -1103,24 +1126,36 @@ local function Init_player_settings(from_profile, to_profile, action)
  From: saved variables of that profile
  To: Player or Global profile
 	--]]
+	local str = "" -- for debug output
 	local old_player = {}
 	local old_panel = {}
 	local old_plugins = {}
 	local reset = (action == TITAN_PROFILE_RESET)
 
-	local msg = "Init_player_settings"
-		.. " from: " .. tostring(from_profile) .. ""
-		.. " to: " .. tostring(to_profile) .. ""
-		.. " action: " .. tostring(action) .. ""
-	Titan_Global.dbg:Out("Menu", msg)
+		str = "Init_player_settings"
+			.. " from: " .. tostring(from_profile) .. ""
+			.. " to: " .. tostring(to_profile) .. ""
+			.. " action: " .. tostring(action) .. ""
+		Titan_Debug.Out('titan', 'profile', str)
 
 	CleanupProfile() -- hide currently shown plugins
 
-	if TitanSettings.Players[to_profile] then
-		-- all is good
+	if reset then
+		-- ensure the rpofile is rebuilt with defaults
+		TitanSettings.Players[to_profile] = nil
 	else
+		-- proceed
+	end
+	
+	-- === Ensure we have a place to store profile, could be new toon or new install
+	if TitanSettings.Players[to_profile] == nil 
+	or TitanSettings.Players[to_profile] == {} then
+			-- build debug output
+			str = "Init_player_settings"
+				.." "..tostring("TitanSettings.Players[] {}")..""
+			Titan_Debug.Out('titan', 'profile', str)
+
 		-- Create the bare player tables so profile(s) can be added
-		Titan_Global.dbg:Out("Menu", "TitanSettings.Players[] {}")
 		TitanSettings.Players[to_profile] = {}
 		TitanSettings.Players[to_profile].Plugins = {}
 		TitanSettings.Players[to_profile].Panel = TITAN_PANEL_SAVED_VARIABLES
@@ -1132,12 +1167,19 @@ local function Init_player_settings(from_profile, to_profile, action)
 		TitanPlayerSettings["Register"] = {}
 		TitanPlayerSettings["BarVars"] = TitanBarVarsDefaults -- New Mar 2023
 		TitanPlayerSettings["Adjust"] = {}              -- New May 2023
+	else
+		-- all is good
+			-- build debug output
+			str = "Init_player_settings"
+				.." "..tostring("TitanSettings.Players[] ")..""
+				.." "..tostring(to_profile)..""
+			Titan_Debug.Out('titan', 'profile', str)
 	end
 	-- Set global variables
 	TitanPlayerSettings = TitanSettings.Players[to_profile];
 	TitanPluginSettings = TitanPlayerSettings["Plugins"];
 	TitanPanelSettings = TitanPlayerSettings["Panel"];
-	TitanVariables_SyncRegisterSavedVariables(TITAN_PANEL_SAVED_VARIABLES, TitanPanelSettings)
+	TitanVariables_SyncRegisterSavedVariables(TitanBarVarsDefaults, TitanPlayerSettings["BarVars"])
 
 	-- ====== New May 2023 : Back to adjusting a couple frames per user settings
 	-- Could be new toon / ...
@@ -1157,6 +1199,8 @@ local function Init_player_settings(from_profile, to_profile, action)
 	-- ====== New Mar 2023 : TitanSettings.Players[player].BarData to hold Short bar data
 	Set_bar_vars(to_profile)
 	-- ======
+
+	-- ===
 	if action == TITAN_PROFILE_RESET then
 		-- default is global profile OFF
 		TitanAll = {}
@@ -1180,14 +1224,14 @@ local function Init_player_settings(from_profile, to_profile, action)
 			Set_bar_vars(from_profile)
 			TitanSettings.Players[to_profile]["BarVars"] = deepcopy(old_player["BarVars"])
 --[[
-			if Titan_Global.dbg:EnableTopic("Menu") then
+			if Titan_Global.titan.profile then
 				-- Apply the new bar positions
 				for idx, v in pairs(TitanBarData) do
 					local str = "BarVars "
 						.. " " .. tostring(v.name) .. ""
 						.. " " .. tostring(TitanSettings.Players[from_profile]["BarVars"][idx].show) .. ""
 						.. " " .. tostring(TitanSettings.Players[to_profile]["BarVars"][idx].show) .. ""
-					Titan_Global.dbg:Out("Menu", str)
+			Titan_Debug.Out('titan', 'profile', str)
 				end
 			end
 --]]
@@ -1206,8 +1250,16 @@ local function Init_player_settings(from_profile, to_profile, action)
 	end
 
 	TitanBarDataVars = TitanPlayerSettings["BarVars"] -- works here, after setting BarVars
+		-- build debug output
+		str = "Init_player_settings"
+			.." "..tostring("BarVars now set")..""
+		Titan_Debug.Out('titan', 'profile', str)
 
 	if (TitanPlayerSettings) then
+			-- build debug output
+			str = "Init_player_settings"
+				.." "..tostring("_SyncPluginSettings")..""
+			Titan_Debug.Out('titan', 'profile', str)
 		-- Synchronize plugin settings with plugins that were registered
 		TitanVariables_SyncPluginSettings()
 		-- Display the plugins the user selected AND are registered
@@ -1392,19 +1444,29 @@ end
 ---@param profile? string name
 ---@param action string Use | Reset
 function TitanVariables_UseSettings(profile, action)
+	local str = "" -- for debug output if requested
+	local _ = nil  -- for scope; do not care about this value
+
 	local from_profile = nil
-	if action == TITAN_PROFILE_USE then
+	if action == TITAN_PROFILE_USE then -- needed?
 		-- Grab the old profile currently in use
 		from_profile = profile or nil
 	end
 
-	local _ = nil
 	local glob, name, player, server = TitanUtils_GetGlobalProfile()
-	-- Get the profile according to the user settings
-	if glob then
-		profile = name                   -- Use global toon
+
+	-- Get the profile according to the user settings and choices
+	if action == TITAN_PROFILE_RESET then
+		-- Use current toon; reset will clear global for ALL toons
+		profile, _, _ = TitanUtils_GetPlayer()
 	else
-		profile, _, _ = TitanUtils_GetPlayer() -- Use current toon
+		if glob then
+			-- Use global toon per user setting
+			profile = name
+		else
+			-- Use current toon; each toon is unique
+			profile, _, _ = TitanUtils_GetPlayer()
+		end
 	end
 
 	-- Find the profile in a case insensitive manner
@@ -1423,13 +1485,27 @@ function TitanVariables_UseSettings(profile, action)
 	end
 
 	-- Now that we know what profile to use - act on the data
+	-- build debug output
+	str = "_UseSettings"
+		.." "..tostring(action)..""
+		.." from '"..tostring(from_profile).."'"
+		.." to '"..tostring(new_profile).."'"
+	Titan_Debug.Out('titan', 'profile', str)
 	Init_player_settings(from_profile, new_profile, action)
 
 	-- set strata in case it has changed
 	TitanVariables_SetPanelStrata(TitanPanelGetVar("FrameStrata"))
 
 	-- show the new profile
+		-- build debug output
+		str = "...init bars"
+			.." "..tostring(action)..""
+		Titan_Debug.Out('titan', 'profile', str)
 	TitanPanel_InitPanelBarButton("UseSettings");
+		-- build debug output
+		str = "...init plugins on bars"
+			.." "..tostring(action)..""
+		Titan_Debug.Out('titan', 'profile', str)
 	TitanPanel_InitPanelButtons();
 end
 

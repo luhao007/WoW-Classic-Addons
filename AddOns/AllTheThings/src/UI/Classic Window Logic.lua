@@ -51,9 +51,11 @@ local function UpdateGroup(group, parent)
 
 			-- If the 'can equip' filter says true
 			if app.GroupFilter(group) then
-				-- Increment the parent group's totals.
-				parent.total = (parent.total or 0) + group.total;
-				parent.progress = (parent.progress or 0) + group.progress;
+				if not group.sourceIgnored then
+					-- Increment the parent group's totals.
+					parent.total = (parent.total or 0) + group.total;
+					parent.progress = (parent.progress or 0) + group.progress;
+				end
 
 				-- If this group is trackable, then we should show it.
 				if group.total > 0 and app.GroupVisibilityFilter(group) then
@@ -429,24 +431,6 @@ local function RedrawVisibleRowData(self)
 		end
 	end
 end
-local function UpdateRowProgress(group)
-	if group.collectible then
-		group.progress = group.collected and 1 or 0;
-		group.total = 1;
-	else
-		group.progress = 0;
-		group.total = 0;
-	end
-	if group.g then
-		for i,subgroup in ipairs(group.g) do
-			UpdateRowProgress(subgroup);
-			if subgroup.total then
-				group.progress = group.progress + subgroup.progress;
-				group.total = group.total + subgroup.total;
-			end
-		end
-	end
-end
 local function UpdateVisibleRowData(self)
 	-- If there is no raw data, then return immediately.
 	if not self.rowData then return; end
@@ -808,45 +792,6 @@ local function RowOnEnter(self)
 		});
 	end
 
-	if reference.cost then
-		if type(reference.cost) == "table" then
-			local _, name, icon, amount;
-			for k,v in pairs(reference.cost) do
-				_ = v[1];
-				if _ == "g" then
-					tinsert(tooltipInfo, {
-						left = (k == 1 and "Cost"),
-						right = GetCoinTextureString(v[2]),
-					});
-				else
-					if _ == "i" then
-						local item = app.CreateItem(v[2]);
-						name = item.name;
-						icon = item.icon;
-					elseif _ == "c" then
-						local currency = app.CreateCurrencyClass(v[2]);
-						name = currency.text;
-						icon = currency.icon;
-					end
-					name = (icon and ("|T" .. icon .. ":0|t") or "") .. (name or RETRIEVING_DATA);
-					_ = (v[3] or 1);
-					if _ > 1 then
-						name = _ .. "x  " .. name;
-					end
-					tinsert(tooltipInfo, {
-						left = (k == 1 and "Cost"),
-						right = name,
-					});
-				end
-			end
-		else
-			tinsert(tooltipInfo, {
-				left = "Cost",
-				right = GetCoinTextureString(reference.cost),
-			});
-		end
-	end
-
 	-- Process all Information Types
 	if tooltip.ATT_AttachComplete == nil then
 		app.ProcessInformationTypes(tooltipInfo, reference);
@@ -1120,6 +1065,10 @@ local function ApplySettingsForWindow(self, windowSettings)
 		local r, g, b, a = unpack(windowSettings.borderColor);
 		self:SetBackdropBorderColor(r or 0, g or 0, b or 0, a or 1);
 	end
+	if windowSettings.Progress and self.data then
+		self.data.progress = windowSettings.Progress;
+		self.data.total = windowSettings.Total;
+	end
 	self.RecordSettings = oldRecordSettings;
 end
 local function BuildSettingsForWindow(self, windowSettings, isForDefaults)
@@ -1160,6 +1109,10 @@ local function BuildSettingsForWindow(self, windowSettings, isForDefaults)
 		windowSettings.backdropColor = { r or 0, g or 0, b or 0, a or 1 };
 		r, g, b, a = self:GetBackdropBorderColor();
 		windowSettings.borderColor = { r or 0, g or 0, b or 0, a or 1 };
+	end
+	if self.data then
+		windowSettings.Progress = self.data.progress;
+		windowSettings.Total = self.data.total;
 	end
 end
 local function ClearSettingsForWindow(self)
@@ -1526,7 +1479,7 @@ local BuildCategory = function(self, headers, searchResults, inst)
 	header = headers[headerType];
 	if not header then
 		if headerType == "holiday" then
-			header = app.CreateNPC(app.HeaderConstants.HOLIDAYS);
+			header = app.CreateCustomHeader(app.HeaderConstants.HOLIDAYS);
 		elseif headerType == "raid" then
 			header = {};
 			header.text = GROUP_FINDER;
@@ -1552,7 +1505,7 @@ local BuildCategory = function(self, headers, searchResults, inst)
 			header.text = LOOT_JOURNAL_LEGENDARIES_SOURCE_CRAFTED_ITEM;
 			header.icon = app.asset("Category_Crafting");
 		elseif type(headerType) == "number" then
-			header = app.CreateNPC(headerType);
+			header = app.CreateCustomHeader(headerType);
 		else
 			print("Unhandled Header Type", headerType);
 		end
@@ -1832,26 +1785,33 @@ function app:CreateWindow(suffix, settings)
 		if onRefresh then
 			if debugging then
 				function window:Refresh()
-					print("Refresh: " .. suffix);
-					local lastUpdate = GetTimePreciseSec();
-					if onRefresh(self) then defaultOnRefresh(self); end
-					print("Refresh: " .. suffix, (GetTimePreciseSec() - lastUpdate) * 10000);
+					if self:IsShown() then
+						print("Refresh: " .. suffix);
+						local lastUpdate = GetTimePreciseSec();
+						if onRefresh(self) then defaultOnRefresh(self); end
+						print("Refresh: " .. suffix, (GetTimePreciseSec() - lastUpdate) * 10000);
+					end
 				end
 			else
 				function window:Refresh()
-					if onRefresh(self) then defaultOnRefresh(self); end
+					if self:IsShown() and onRefresh(self) then defaultOnRefresh(self); end
 				end
 			end
 		else
 			if debugging then
 				function window:Refresh()
-					print("Refresh: " .. suffix);
-					local lastUpdate = GetTimePreciseSec();
-					defaultOnRefresh(self);
-					print("Refresh: " .. suffix, (GetTimePreciseSec() - lastUpdate) * 10000);
+					if self:IsShown() then
+						print("Refresh: " .. suffix);
+						local lastUpdate = GetTimePreciseSec();
+						defaultOnRefresh(self);
+						print("Refresh: " .. suffix, (GetTimePreciseSec() - lastUpdate) * 10000);
+					end
 				end
 			else
-				window.Refresh = defaultOnRefresh;
+				--window.Refresh = defaultOnRefresh;
+				function window:Refresh()
+					if self:IsShown() then defaultOnRefresh(self); end
+				end
 			end
 		end
 
@@ -2094,7 +2054,7 @@ function app:BuildFlatSearchResponse(groups, field, value, t)
 		for i,group in ipairs(groups) do
 			if not group.IgnoreBuildRequests then
 				local v = group[field];
-				if v and (v == value or (field == "requireSkill" and app.SpellIDToSkillID[app.SpecializationSpellIDs[v] or 0] == value)) then
+				if v and (v == value or (field == "requireSkill" and app.SkillDB.SpellToSkill[app.SkillDB.SpecializationSpells[v] or 0] == value)) then
 					tinsert(t, CloneReferenceForBuildRequests(group));
 				elseif group.g then
 					app:BuildFlatSearchResponse(group.g, field, value, t);
@@ -2142,7 +2102,7 @@ function app:BuildSearchResponse(groups, field, value)
 		for i,group in ipairs(groups) do
 			if not group.IgnoreBuildRequests then
 				local v = group[field];
-				if v and (v == value or (field == "requireSkill" and app.SpellIDToSkillID[app.SpecializationSpellIDs[v] or 0] == value)) then
+				if v and (v == value or (field == "requireSkill" and app.SkillDB.SpellToSkill[app.SkillDB.SpecializationSpells[v] or 0] == value)) then
 					if not t then t = {}; end
 					tinsert(t, CloneReferenceForBuildRequests(group));
 				else

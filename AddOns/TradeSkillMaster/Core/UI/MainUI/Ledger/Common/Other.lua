@@ -5,17 +5,14 @@
 -- ------------------------------------------------------------------------------ --
 
 local TSM = select(2, ...) ---@type TSM
-local Other = TSM.MainUI.Ledger.Common:NewPackage("Other")
-local L = TSM.Include("Locale").GetTable()
-local Table = TSM.Include("Util.Table")
-local Money = TSM.Include("Util.Money")
-local Settings = TSM.Include("Service.Settings")
-local UIElements = TSM.Include("UI.UIElements")
-local UIUtils = TSM.Include("UI.UIUtils")
+local Other = TSM.MainUI.Ledger.Common:NewPackage("Other") ---@type AddonPackage
+local L = TSM.Locale.GetTable()
+local Table = TSM.LibTSMUtil:Include("Lua.Table")
+local UIElements = TSM.LibTSMUI:Include("Util.UIElements")
+local UIUtils = TSM.LibTSMUI:Include("Util.UIUtils")
 local SECONDS_PER_DAY = 24 * 60 * 60
 local private = {
 	settings = nil,
-	query = nil,
 	characters = {},
 	characterFilter = {},
 	typeFilter = {},
@@ -25,12 +22,12 @@ local private = {
 local TIME_LIST = { L["All Time"], L["Last 3 Days"], L["Last 7 Days"], L["Last 14 Days"], L["Last 30 Days"], L["Last 60 Days"] }
 local TIME_KEYS = { 0, 3 * SECONDS_PER_DAY, 7 * SECONDS_PER_DAY, 14 * SECONDS_PER_DAY, 30 * SECONDS_PER_DAY, 60 * SECONDS_PER_DAY }
 local TYPE_LIST = {
-	expense = { L["Money Transfer"], L["Postage"], L["Repair Bill"] },
-	income = { L["Money Transfer"], L["Garrison"] },
+	expense = { L["Money Transfer"], L["Postage"], L["Repair Bill"], L["Crafting Order"] },
+	income = { L["Money Transfer"], L["Garrison"], L["Crafting Order"] },
 }
 local TYPE_KEYS = {
-	expense = { "Money Transfer", "Postage", "Repair Bill" },
-	income = { "Money Transfer", "Garrison" },
+	expense = { "Money Transfer", "Postage", "Repair Bill", "Crafting Order" },
+	income = { "Money Transfer", "Garrison", "Crafting Order" },
 }
 local TYPE_STR_LOOKUP = {}
 do
@@ -51,8 +48,8 @@ end
 -- Module Functions
 -- ============================================================================
 
-function Other.OnInitialize()
-	private.settings = Settings.NewView()
+function Other.OnInitialize(settingsDB)
+	private.settings = settingsDB:NewView()
 		:AddKey("global", "mainUIContext", "ledgerOtherScrollingTable")
 	TSM.MainUI.Ledger.Expenses.RegisterPage(OTHER, private.DrawOtherExpensesPage)
 	TSM.MainUI.Ledger.Revenue.RegisterPage(OTHER, private.DrawOtherRevenuePage)
@@ -85,12 +82,9 @@ function private.DrawOtherPage(recordType)
 		private.typeFilter[key] = true
 	end
 
-	if not private.query then
-		private.query = TSM.Accounting.Money.CreateQuery()
-			:OrderBy("time", false)
-	end
+	local query = TSM.Accounting.Money.CreateQuery()
+		:VirtualField("typeStr", "string", private.TypeStrVirtualField, "type")
 	private.recordType = recordType
-	private.UpdateQuery()
 
 	return UIElements.New("Frame", "content")
 		:SetLayout("VERTICAL")
@@ -119,77 +113,11 @@ function private.DrawOtherPage(recordType)
 				:SetScript("OnSelectionChanged", private.DropdownChangedCommon)
 			)
 		)
-		:AddChild(UIElements.New("QueryScrollingTable", "table")
-			:SetSettingsContext(private.settings, "ledgerOtherScrollingTable")
-			:GetScrollingTableInfo()
-				:NewColumn("type")
-					:SetTitle(L["Type"])
-					:SetFont("ITEM_BODY3")
-					:SetJustifyH("LEFT")
-					:SetTextInfo("type", private.TableGetTypeText)
-					:SetSortInfo("type")
-					:Commit()
-				:NewColumn("character")
-					:SetTitle(L["Character"])
-					:SetFont("ITEM_BODY3")
-					:SetJustifyH("LEFT")
-					:SetTextInfo("player")
-					:SetSortInfo("player")
-					:Commit()
-				:NewColumn("otherCharacter")
-					:SetTitle(L["Other Character"])
-					:SetFont("ITEM_BODY3")
-					:SetJustifyH("LEFT")
-					:SetTextInfo("otherPlayer")
-					:SetSortInfo("otherPlayer")
-					:Commit()
-				:NewColumn("amount")
-					:SetTitle(L["Amount"])
-					:SetFont("ITEM_BODY3")
-					:SetJustifyH("RIGHT")
-					:SetTextInfo("amount", private.TableGetAmountText)
-					:SetSortInfo("amount")
-					:Commit()
-				:NewColumn("time")
-					:SetTitle(L["Time Frame"])
-					:SetFont("ITEM_BODY3")
-					:SetJustifyH("LEFT")
-					:SetTextInfo("time", private.TableGetTimeText)
-					:SetSortInfo("time")
-					:Commit()
-				:Commit()
-			:SetQuery(private.query)
-			:SetSelectionDisabled(true)
+		:AddChild(UIElements.New("LedgerOtherScrollTable", "table")
+			:SetSettings(private.settings, "ledgerOtherScrollingTable")
+			:SetQuery(query)
+			:SetFilters(private.GetScrollTableFilters())
 		)
-end
-
-
-
--- ============================================================================
--- Scrolling Table Helper Functions
--- ============================================================================
-
-function private.TableGetTypeText(typeValue)
-	return TYPE_STR_LOOKUP[typeValue]
-end
-
-function private.TableGetAmountText(amount)
-	return Money.ToString(amount, nil, "OPT_RETAIL_ROUND")
-end
-
-function private.TableGetTimeText(timeValue)
-	return SecondsToTime(time() - timeValue)
-end
-
-
-
--- ============================================================================
--- Local Script Handlers
--- ============================================================================
-
-function private.DropdownChangedCommon(dropdown)
-	private.UpdateQuery()
-	dropdown:GetElement("__parent.__parent.table"):UpdateData(true)
 end
 
 
@@ -198,16 +126,18 @@ end
 -- Private Helper Functions
 -- ============================================================================
 
-function private.UpdateQuery()
-	private.query:ResetFilters()
-		:Equal("recordType", private.recordType)
-	if Table.Count(private.typeFilter) ~= #TYPE_KEYS[private.recordType] then
-		private.query:InTable("type", private.typeFilter)
-	end
-	if Table.Count(private.characterFilter) ~= #private.characters then
-		private.query:InTable("player", private.characterFilter)
-	end
-	if private.timeFrameFilter ~= 0 then
-		private.query:GreaterThan("time", time() - private.timeFrameFilter)
-	end
+function private.DropdownChangedCommon(dropdown)
+	dropdown:GetElement("__parent.__parent.table"):SetFilters(private.GetScrollTableFilters())
+end
+
+function private.TypeStrVirtualField(typeValue)
+	return TYPE_STR_LOOKUP[typeValue]
+end
+
+function private.GetScrollTableFilters()
+	local recordType = private.recordType
+	local typeFilter = Table.Count(private.typeFilter) ~= #TYPE_KEYS[private.recordType] and private.typeFilter or nil
+	local player = Table.Count(private.characterFilter) ~= #private.characters and private.characterFilter or nil
+	local timeFilter = private.timeFrameFilter ~= 0 and private.timeFrameFilter or nil
+	return recordType, typeFilter, player, timeFilter
 end

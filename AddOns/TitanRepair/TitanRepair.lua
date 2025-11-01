@@ -12,7 +12,7 @@ local TITAN_REPAIR_ID = "Repair";
 local TITAN_BUTTON = "TitanPanel"..TITAN_REPAIR_ID.."Button"
 
 local L = LibStub("AceLocale-3.0"):GetLocale(TITAN_ID, true)
-local TitanRepair = {}
+local TitanRepair = {};
 local _G = getfenv(0);
 local TR = TitanRepair
 TR.ITEM_STATUS = {};
@@ -22,8 +22,7 @@ local AceTimer = LibStub("AceTimer-3.0")
 local TR_Timer = {}
 local TR_Timer_active = false
 
-local parse_item = 
-	"|?c?f?f?(%x*)|?H?([^:]*):?(%d+):?(%d*):?(%d*):?(%d*):?(%d*):?(%d*):?(%-?%d*):?(%-?%d*):?(%d*):?(%d*)|?h?%[?([^%[%]]*)%]?|?h?|?r?"
+local parse_item = "";
 
 ---@diagnostic disable-next-line: deprecated
 local GetItem = C_Item.GetItemInfo or GetItemInfo -- For Classic versions
@@ -62,7 +61,7 @@ TR.equip_most = {
 TR.last_scan = GetTime() -- seconds with milliseconds - sec.milli
 TR.scan_time = 0
 TR.scan_running = false
-if TITAN_ID == "TitanClassic" then
+if Titan_Global.switch.game_ammo then
 	TR.scan_start = 18
 else
 	TR.scan_start = 17
@@ -90,14 +89,15 @@ local slots = {
 	[18] = {name = "RANGEDSLOT"},
 }
 
-TR.guild_bank = true
-TR.wowversion  = select(4, GetBuildInfo())
-if TR.wowversion <  20300 then
-	-- No guild bank
-	TR.guild_bank = false
+-- WoW changed the parse string for items...
+if Titan_Global.wowversion < 100000 then
+    -- Not retail
+    parse_item = 
+        "|?c?f?f?(%x*)|?H?([^:]*):?(%d+):?(%d*):?(%d*):?(%d*):?(%d*):?(%d*):?(%-?%d*):?(%-?%d*):?(%d*):?(%d*)|?h?%[?([^%[%]]*)%]?|?h?|?r?"
 else
-	-- Guild bank exists
-	TR.guild_bank = true
+    -- Retail
+    parse_item = 
+	    "|?cnIQ?(%x*):|?H?([^:]*):?(%d+):?(%d*):?(%d*):?(%d*):?(%d*):?(%d*):?(%-?%d*):?(%-?%d*):?(%d*):?(%d*)|?h?%[?([^%[%]]*)%]?|?h?|?r?"
 end
 
 
@@ -274,7 +274,7 @@ print
 			debug_msg(dmsg)
 		end
 
-		-- Walk thru slots 'backward' to give weapons 'priority' if most damagaged
+		-- Walk thru slots 'backward' to give weapons 'priority' if most damaged
 		for slotID = TR.scan_start, TR.scan_end, -1 do  -- thru slots
 			local slotName = slots[slotID].name
 			local scan_slots = tostring(slotName)..":"..tostring(GetInventorySlotInfo(slotName))
@@ -650,7 +650,7 @@ Realized the Disable also changes the button so the DeSat is redundent
 	end
 
 	-- Use Guild Bank funds
-	if TR.guild_bank and TitanGetVar(TITAN_REPAIR_ID,"UseGuildBank") then
+	if CanGuildBankRepair() and TitanGetVar(TITAN_REPAIR_ID,"UseGuildBank") then
 		local withdrawLimit = GetGuildBankWithdrawMoney();
 		local guildBankMoney = GetGuildBankMoney();
 
@@ -1112,7 +1112,7 @@ local function GetTooltipText()
 
 	-- Show the guild - if player is in one
 	--GUILDBANK_REPAIR
-	if TR.guild_bank and IsInGuild() then
+	if CanGuildBankRepair() and IsInGuild() then
 		out = out..TitanUtils_GetGoldText(GUILD).."\n"
 		local name, rank, index, realm = GetGuildInfo("player")
 		out = out..TitanUtils_GetHighlightText(name).." : ".."\t"..TitanUtils_GetHighlightText(rank).."\n"
@@ -1335,14 +1335,19 @@ local function CreateMenu()
 			info.checked = TitanGetVar(TITAN_REPAIR_ID,"AutoRepairReport");
 			TitanPanelRightClickMenu_AddButton(info, TitanPanelRightClickMenu_GetDropdownLevel());
 
-			if TR.guild_bank then
+			if Titan_Global.switch.classic_era then
+				-- skip, no guild bank available
+			else
+				local g_enable = false -- assume not in guild
+				if IsInGuild() and CanGuildBankRepair() then
+					g_enable = true
+				end
 				info = {}
 				info.text = L["TITAN_REPAIR_GBANK_USEFUNDS"]
+				info.disabled = not g_enable
 				info.func = function() TitanToggleVar(TITAN_REPAIR_ID, "UseGuildBank"); end
 				info.checked = TitanGetVar(TITAN_REPAIR_ID,"UseGuildBank");
 				TitanPanelRightClickMenu_AddButton(info, TitanPanelRightClickMenu_GetDropdownLevel());
-			else
-				-- skip
 			end
 		end
 
@@ -1529,16 +1534,20 @@ local function Create_Frames()
 			TitanRepair_RepairItems();
 		end,
 		OnShow = function(self)
-			MoneyFrame_Update(self.moneyFrame, TR.repair_total);
+			local mf = {}
+			if self.MoneyFrame then
+				mf = self.MoneyFrame -- retail as of 11.2.0 / TWW / Aug 2025
+			else
+				mf = self.moneyFrame -- older popup scheme
+			end
+			MoneyFrame_Update(mf, TR.repair_total);
 		end,
 		hasMoneyFrame = 1,
 		timeout = 0,
-		hideOnEscape = 1
+		hideOnEscape = 1,
 	};
 
 
 end
 
-if TITAN_ID then -- it exists
-	Create_Frames() -- do the work
-end
+Create_Frames()

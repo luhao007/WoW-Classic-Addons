@@ -13,38 +13,34 @@ end
 addonTable.ShareDB={}
 _G.PIG = {addonTable.Create,addonTable.Data,addonTable.Fun,L,addonTable.Default,addonTable.Default_Per,addonTable.AudioList,addonTable.ShareDB}
 --===============================
+EventUtil.ContinueOnAddOnLoaded(addonName, function()
+	addonTable.Load_Config()
+	PIG_OptionsUI:SetVer_EXT(addonName)
+end)
 local PIGUI = CreateFrame("Frame")        
-PIGUI:RegisterEvent("ADDON_LOADED")
 PIGUI:RegisterEvent("PLAYER_LOGIN");
 PIGUI:SetScript("OnEvent",function(self, event, arg1)
-	if event=="ADDON_LOADED" and arg1 == addonName then
-		self:UnregisterEvent("ADDON_LOADED")
-		addonTable.Load_Config()
-		PIG_OptionsUI:SetVer_EXT(addonName)
-	elseif event=="PLAYER_LOGIN" then
-		addonTable.ShareConfig()
-		addonTable.Get_PlayerRealmData()
-		PIG_OptionsUI.MiniMapBut:ButPoint()
-		PIG_OptionsUI.MiniMapBut.MinimapBut()
-		addonTable.CVars()
-		---
-		addonTable.Map()
-		addonTable.CombatPlus()
-		addonTable.Common()
-		addonTable.ActionBar()
-		addonTable.TooltipPlus()
-		addonTable.FramePlus()
-		addonTable.UnitFrame()
-		addonTable.Business()
-		addonTable.BagBank()
-		addonTable.Chat()
-		addonTable.PigLayout()
-		--
-		_G[Data.QuickButUIname]:Add()
-		PIG_OptionsUI.MiniMapBut.SN_MiniMapBut()
-		------------------------------
-		if not PIGA["Other"]["PigLoad"] then
-			PIG_print(L["ABOUT_LOAD"]..L["ABOUT_REMINDER"])
-		end
-    end  
+	addonTable.ShareConfig()
+	addonTable.Get_PlayerRealmData()
+	addonTable.UpdateMiniButPoint()
+	addonTable.CVars()
+	--
+	addonTable.Map()
+	addonTable.CombatPlus()
+	addonTable.Common()
+	addonTable.ActionBar()
+	addonTable.TooltipPlus()
+	addonTable.FramePlus()
+	addonTable.UnitFrame()
+	addonTable.Business()
+	addonTable.BagBank()
+	addonTable.Chat()
+	addonTable.PigLayout()
+	--
+	_G[Data.QuickButUIname]:Add()
+	addonTable.CollectMiniMapBut()
+	------------------------------
+	if not PIGA["Other"]["PigLoad"] then
+		PIG_print(L["ABOUT_LOAD"]..L["ABOUT_REMINDER"])
+	end  
 end)

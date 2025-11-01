@@ -5,28 +5,32 @@
 -- ------------------------------------------------------------------------------ --
 
 local TSM = select(2, ...) ---@type TSM
-local Crafting = TSM:NewPackage("Crafting")
-local Environment = TSM.Include("Environment")
-local L = TSM.Include("Locale").GetTable()
-local ProfessionInfo = TSM.Include("Data.ProfessionInfo")
-local DisenchantInfo = TSM.Include("Data.DisenchantInfo")
-local CraftString = TSM.Include("Util.CraftString")
-local MatString = TSM.Include("Util.MatString")
-local Database = TSM.Include("Util.Database")
-local TempTable = TSM.Include("Util.TempTable")
-local Table = TSM.Include("Util.Table")
-local Math = TSM.Include("Util.Math")
-local Money = TSM.Include("Util.Money")
-local Log = TSM.Include("Util.Log")
-local ItemString = TSM.Include("Util.ItemString")
-local Vararg = TSM.Include("Util.Vararg")
-local GroupPath = TSM.Include("Util.GroupPath")
-local ItemInfo = TSM.Include("Service.ItemInfo")
-local CustomPrice = TSM.Include("Service.CustomPrice")
-local Conversions = TSM.Include("Service.Conversions")
-local AuctionTracking = TSM.Include("Service.AuctionTracking")
-local BagTracking = TSM.Include("Service.BagTracking")
-local Settings = TSM.Include("Service.Settings")
+local Crafting = TSM:NewPackage("Crafting") ---@type AddonPackage
+local ClientInfo = TSM.LibTSMWoW:Include("Util.ClientInfo")
+local L = TSM.Locale.GetTable()
+local SalvageData = TSM.LibTSMData:Include("Salvage")
+local CraftString = TSM.LibTSMTypes:Include("Crafting.CraftString")
+local MatString = TSM.LibTSMTypes:Include("Crafting.MatString")
+local RecipeString = TSM.LibTSMTypes:Include("Crafting.RecipeString")
+local Database = TSM.LibTSMUtil:Include("Database")
+local TempTable = TSM.LibTSMUtil:Include("BaseType.TempTable")
+local Table = TSM.LibTSMUtil:Include("Lua.Table")
+local Math = TSM.LibTSMUtil:Include("Lua.Math")
+local SmartMap = TSM.LibTSMUtil:IncludeClassType("SmartMap")
+local Money = TSM.LibTSMUtil:Include("UI.Money")
+local Log = TSM.LibTSMUtil:Include("Util.Log")
+local ItemString = TSM.LibTSMTypes:Include("Item.ItemString")
+local Vararg = TSM.LibTSMUtil:Include("Lua.Vararg")
+local Group = TSM.LibTSMTypes:Include("Group")
+local Conversion = TSM.LibTSMTypes:Include("Item.Conversion")
+local CustomString = TSM.LibTSMTypes:Include("CustomString")
+local ChatMessage = TSM.LibTSMService:Include("UI.ChatMessage")
+local ItemInfo = TSM.LibTSMService:Include("Item.ItemInfo")
+local CustomPrice = TSM.LibTSMApp:Include("Service.CustomPrice")
+local Conversions = TSM.LibTSMApp:Include("Service.Conversions")
+local Auction = TSM.LibTSMService:Include("Auction")
+local BagTracking = TSM.LibTSMService:Include("Inventory.BagTracking")
+local CraftingOperation = TSM.LibTSMSystem:Include("CraftingOperation")
 local private = {
 	settings = nil,
 	spellDB = nil,
@@ -38,6 +42,7 @@ local private = {
 	ignoredCooldownDB = nil,
 	numMatDBRows = {},
 	playerTemp = {},
+	numCraftableItemStringSmartMap = nil,
 }
 local CHARACTER_KEY = UnitName("player").." - "..GetRealmName()
 local IGNORED_COOLDOWN_SEP = "\001"
@@ -55,8 +60,8 @@ local INDIRECT_RESULT_MATERIALS = {
 -- Module Functions
 -- ============================================================================
 
-function Crafting.OnInitialize()
-	private.settings = Settings.NewView()
+function Crafting.OnInitialize(settingsDB)
+	private.settings = settingsDB:NewView()
 		:AddKey("factionrealm", "internalData", "crafts")
 		:AddKey("factionrealm", "internalData", "mats")
 		:AddKey("global", "craftingOptions", "defaultCraftPriceMethod")
@@ -82,6 +87,8 @@ function Crafting.OnInitialize()
 		end
 	end
 	TempTable.Release(used)
+
+	private.numCraftableItemStringSmartMap = SmartMap.New("string", "number", TSM.Crafting.ProfessionUtil.GetNumCraftableFromDBRecipeString)
 
 	local professionItems = TempTable.Acquire()
 	local matCountByCraft = TempTable.Acquire()
@@ -180,8 +187,8 @@ function Crafting.OnInitialize()
 		:Equal("hasCD", false)
 	for _, craftString, itemString, numResult in query:Iterator() do
 		local spellId = CraftString.GetSpellId(craftString)
-		if not ProfessionInfo.IsMassMill(spellId) and matCountByCraft[craftString] == 1 and matFirstItemString[craftString] then
-			Conversions.AddCraft(itemString, matFirstItemString[craftString], numResult / matFirstQuantity[craftString])
+		if not SalvageData.MassMill[spellId] and matCountByCraft[craftString] == 1 and matFirstItemString[craftString] then
+			Conversion.AddCraft(itemString, matFirstItemString[craftString], numResult / matFirstQuantity[craftString])
 			addedConversion = true
 		end
 	end
@@ -190,12 +197,12 @@ function Crafting.OnInitialize()
 	TempTable.Release(matFirstItemString)
 	TempTable.Release(matFirstQuantity)
 	if addedConversion then
-		CustomPrice.OnSourceChange("Destroy")
+		CustomString.InvalidateCache("Destroy")
 	end
 
 	local isValid, err = CustomPrice.Validate(private.settings.defaultCraftPriceMethod, BAD_CRAFTING_PRICE_SOURCES)
 	if not isValid then
-		Log.PrintfUser(L["Your default craft value method was invalid so it has been returned to the default. Details: %s"], err)
+		ChatMessage.PrintfUser(L["Your default craft value method was invalid so it has been returned to the default. Details: %s"], err)
 		private.settings.defaultCraftPriceMethod = private.settings:GetDefaultReadOnly("defaultCraftPriceMethod")
 	end
 
@@ -215,6 +222,27 @@ function Crafting.OnInitialize()
 	private.ignoredCooldownDB:BulkInsertEnd()
 end
 
+function Crafting.IsOperationValid(itemString)
+	local isValid, operationName, errType, errArg, errArg2 = CraftingOperation.IsValid(itemString)
+	if isValid or not errType then
+		return isValid
+	elseif errType == CraftingOperation.ERROR.RESTOCK_QUANTITIES_CONFLICT then
+		return false, format(L["'%s' is an invalid operation. Min restock of %d is higher than max restock of %d for %s."], operationName, errArg, errArg2, ItemInfo.GetLink(itemString))
+	elseif errType == CraftingOperation.ERROR.MIN_RESTOCK_INVALID then
+		local _, errStr = CustomPrice.GetValue(errArg, itemString, true)
+		return nil, format(L["Your min restock (%s) is invalid for %s."], errArg, ItemInfo.GetLink(itemString)).." "..errStr
+	elseif errType == CraftingOperation.ERROR.MIN_RESTOCK_INVALID_RANGE then
+		return nil, format(L["Your min restock (%s) is invalid for %s."], errArg, ItemInfo.GetLink(itemString)).." "..format(L["Must be between %d and %d."], CraftingOperation.GetRestockRange())
+	elseif errType == CraftingOperation.ERROR.MAX_RESTOCK_INVALID then
+		local _, errStr = CustomPrice.GetValue(errArg, itemString, true)
+		return nil, format(L["Your max restock (%s) is invalid for %s."], errArg, ItemInfo.GetLink(itemString)).." "..errStr
+	elseif errType == CraftingOperation.ERROR.MAX_RESTOCK_INVALID_RANGE then
+		return nil, format(L["Your max restock (%s) is invalid for %s."], errArg, ItemInfo.GetLink(itemString)).." "..format(L["Must be between %d and %d."], CraftingOperation.GetRestockRange())
+	else
+		error("Invalid errType: "..tostring(errType))
+	end
+end
+
 function Crafting.HasCraftString(craftString)
 	return private.spellDB:HasUniqueRow("craftString", craftString)
 end
@@ -227,7 +255,7 @@ function Crafting.CreateCraftsQuery()
 	return private.spellDB:NewQuery()
 		:AggregateJoinSummed(TSM.Crafting.Queue.GetDBForJoin(), "craftString", "num")
 		:VirtualField("bagQuantity", "number", BagTracking.GetBagQuantity, "itemString")
-		:VirtualField("auctionQuantity", "number", AuctionTracking.GetQuantity, "itemString")
+		:VirtualField("auctionQuantity", "number", Auction.GetQuantity, "itemString")
 		:VirtualField("craftingCost", "number", TSM.Crafting.Cost.GetCraftingCostByCraftString, "craftString", Math.GetNan())
 		:VirtualField("itemValue", "number", TSM.Crafting.Cost.GetCraftedItemValue, "itemString", Math.GetNan())
 		:VirtualField("profit", "number", TSM.Crafting.Cost.GetProfitByCraftString, "craftString", Math.GetNan())
@@ -238,13 +266,9 @@ end
 function Crafting.CreateQueueQuery()
 	return TSM.Crafting.Queue.CreateQuery()
 		:InnerJoin(private.spellDB, "craftString")
-		:VirtualField("bagQuantity", "number", BagTracking.GetBagQuantity, "itemString")
-		:VirtualField("auctionQuantity", "number", AuctionTracking.GetQuantity, "itemString")
-		:VirtualField("craftingCost", "number", TSM.Crafting.Cost.GetCraftingCostByCraftString, "craftString", Math.GetNan())
-		:VirtualField("itemValue", "number", TSM.Crafting.Cost.GetCraftedItemValue, "itemString", Math.GetNan())
-		:VirtualField("profit", "number", TSM.Crafting.Cost.GetProfitByCraftString, "craftString", Math.GetNan())
-		:VirtualField("profitPct", "number", private.ProfitPctVirtualField, "craftString")
-		:VirtualField("saleRate", "number", private.SaleRateVirtualField, "itemString")
+		:VirtualField("profit", "number", TSM.Crafting.Cost.GetProfitByRecipeString, "recipeString", Math.GetNan())
+		:VirtualSmartMapField("numCraftable", private.numCraftableItemStringSmartMap, "recipeString")
+		:VirtualField("levelItemString", "string", TSM.Crafting.Cost.GetLevelItemString, "recipeString", "")
 end
 
 function Crafting.CreateQueuedCraftsQuery()
@@ -279,6 +303,10 @@ function Crafting.GetCraftStringByItem(itemString)
 		:Equal("itemString", itemString)
 		:Select("craftString", "hasCD", "profession")
 	return query:IteratorAndRelease()
+end
+
+function Crafting.InvalidateNumQueuedSmartMap()
+	private.numCraftableItemStringSmartMap:Invalidate()
 end
 
 function Crafting.GetMostProfitableCraftStringByItem(itemString, playerFilter, noCD)
@@ -330,6 +358,20 @@ function Crafting.MatIterator(craftString)
 		:Equal("craftString", craftString)
 		:StartsWith("itemString", "i:")
 		:IteratorAndRelease()
+end
+
+function Crafting.MatIteratorByRecipeString(recipeString)
+	local craftString = CraftString.FromRecipeString(recipeString)
+	local result = TempTable.Acquire()
+	for _, itemString, quantity in Crafting.MatIterator(craftString) do
+		Table.InsertMultiple(result, itemString, quantity)
+	end
+	for _, _, itemId in RecipeString.OptionalMatIterator(recipeString) do
+		local itemString = "i:"..itemId
+		local quantity = Crafting.GetOptionalMatQuantity(craftString, itemId)
+		Table.InsertMultiple(result, itemString, quantity)
+	end
+	return TempTable.Iterator(result, 2)
 end
 
 function Crafting.OptionalMatIterator(craftString)
@@ -430,7 +472,7 @@ function Crafting.SetSpellDBQueryUpdatesPaused(paused)
 	private.spellDB:SetQueryUpdatesPaused(paused)
 end
 
-function Crafting.CreateOrUpdate(craftString, itemString, profession, name, numResult, player, hasCD, baseRecipeDifficulty, baseRecipeQuality, maxRecipeQuality, inspirationAmount, inspirationChance)
+function Crafting.CreateOrUpdate(craftString, itemString, profession, rootCategoryId, name, numResult, player, hasCD, baseRecipeDifficulty, baseRecipeQuality, maxRecipeQuality)
 	local craftInfo = private.settings.crafts[craftString]
 	if craftInfo then
 		local row = private.spellDB:GetUniqueRow("craftString", craftString)
@@ -452,6 +494,7 @@ function Crafting.CreateOrUpdate(craftString, itemString, profession, name, numR
 			craftInfo.profession = profession
 			row:SetField("profession", profession)
 		end
+		craftInfo.rootCategoryId = rootCategoryId
 		if name ~= craftInfo.name then
 			craftInfo.name = name
 			row:SetField("name", name)
@@ -466,13 +509,11 @@ function Crafting.CreateOrUpdate(craftString, itemString, profession, name, numR
 		end
 		row:Update()
 		row:Release()
-		if Environment.HasFeature(Environment.FEATURES.CRAFTING_QUALITY) then
+		if ClientInfo.HasFeature(ClientInfo.FEATURES.CRAFTING_QUALITY) then
 			craftInfo.players[player] = type(craftInfo.players[player]) == "table" and craftInfo.players[player] or {}
 			craftInfo.players[player].baseRecipeDifficulty = baseRecipeDifficulty
 			craftInfo.players[player].baseRecipeQuality = baseRecipeQuality
 			craftInfo.players[player].maxRecipeQuality = maxRecipeQuality
-			craftInfo.players[player].inspirationAmount = inspirationAmount
-			craftInfo.players[player].inspirationChance = inspirationChance
 		else
 			craftInfo.players[player] = true
 		end
@@ -492,17 +533,16 @@ function Crafting.CreateOrUpdate(craftString, itemString, profession, name, numR
 		private.settings.crafts[craftString] = {
 			mats = {},
 			players = {
-				[player] = Environment.HasFeature(Environment.FEATURES.CRAFTING_QUALITY) and {
+				[player] = ClientInfo.HasFeature(ClientInfo.FEATURES.CRAFTING_QUALITY) and {
 					baseRecipeDifficulty = baseRecipeDifficulty,
 					baseRecipeQuality = baseRecipeQuality,
 					maxRecipeQuality = maxRecipeQuality,
-					inspirationAmount = inspirationAmount,
-					inspirationChance = inspirationChance,
 				} or true,
 			},
 			itemString = itemString,
 			name = name,
 			profession = profession,
+			rootCategoryId = rootCategoryId,
 			numResult = numResult,
 			hasCD = hasCD,
 		}
@@ -521,17 +561,15 @@ function Crafting.CreateOrUpdate(craftString, itemString, profession, name, numR
 	end
 end
 
-function Crafting.CreateOrUpdatePlayer(craftString, player, baseRecipeDifficulty, baseRecipeQuality, maxRecipeQuality, inspirationAmount, inspirationChance)
+function Crafting.CreateOrUpdatePlayer(craftString, player, baseRecipeDifficulty, baseRecipeQuality, maxRecipeQuality)
 	local craftPlayers = private.settings.crafts[craftString].players
 	if craftPlayers[player] then
-		if Environment.HasFeature(Environment.FEATURES.CRAFTING_QUALITY) then
+		if ClientInfo.HasFeature(ClientInfo.FEATURES.CRAFTING_QUALITY) then
 			-- Update the quality info
 			craftPlayers[player] = type(craftPlayers[player]) == "table" and craftPlayers[player] or {}
 			craftPlayers[player].baseRecipeDifficulty = baseRecipeDifficulty
 			craftPlayers[player].baseRecipeQuality = baseRecipeQuality
 			craftPlayers[player].maxRecipeQuality = maxRecipeQuality
-			craftPlayers[player].inspirationAmount = inspirationAmount
-			craftPlayers[player].inspirationChance = inspirationChance
 		end
 		return
 	end
@@ -544,12 +582,10 @@ function Crafting.CreateOrUpdatePlayer(craftString, player, baseRecipeDifficulty
 		:Update()
 		:Release()
 	wipe(private.playerTemp)
-	craftPlayers[player] = Environment.HasFeature(Environment.FEATURES.CRAFTING_QUALITY) and {
+	craftPlayers[player] = ClientInfo.HasFeature(ClientInfo.FEATURES.CRAFTING_QUALITY) and {
 		baseRecipeDifficulty = baseRecipeDifficulty,
 		baseRecipeQuality = baseRecipeQuality,
 		maxRecipeQuality = maxRecipeQuality,
-		inspirationAmount = inspirationAmount,
-		inspirationChance = inspirationChance,
 	} or true
 end
 
@@ -619,12 +655,12 @@ end
 function Crafting.RestockHelp(link)
 	local itemString = ItemString.Get(link)
 	if not itemString then
-		Log.PrintUser(L["No item specified. Usage: /tsm restock_help [ITEM_LINK]"])
+		ChatMessage.PrintUser(L["No item specified. Usage: /tsm restock_help [ITEM_LINK]"])
 		return
 	end
 
 	local msg = private.GetRestockHelpMessage(itemString)
-	Log.PrintfUser(L["Restock help for %s: %s"], link, msg)
+	ChatMessage.PrintfUser(L["Restock help for %s: %s"], link, msg)
 end
 
 function Crafting.IgnoreCooldown(craftString)
@@ -642,6 +678,7 @@ end
 
 function Crafting.CreateIgnoredCooldownQuery()
 	return private.ignoredCooldownDB:NewQuery()
+		:VirtualField("name", "string", Crafting.GetName, "craftString", "?")
 end
 
 function Crafting.RemoveIgnoredCooldown(characterKey, craftString)
@@ -662,7 +699,7 @@ function Crafting.GetMatNames(craftString)
 end
 
 function Crafting.IsQualityCraft(craftString)
-	if not Environment.HasFeature(Environment.FEATURES.CRAFTING_QUALITY) then
+	if not ClientInfo.HasFeature(ClientInfo.FEATURES.CRAFTING_QUALITY) then
 		return false
 	elseif CraftString.GetQuality(craftString) then
 		return true
@@ -675,20 +712,23 @@ end
 
 function Crafting.GetQualityInfo(craftString, playerFilter)
 	local craftInfo = private.settings.crafts[craftString]
-	if not craftInfo or not Environment.HasFeature(Environment.FEATURES.CRAFTING_QUALITY) then
-		return nil, nil, nil, nil, nil
+	if not craftInfo or not ClientInfo.HasFeature(ClientInfo.FEATURES.CRAFTING_QUALITY) then
+		return nil, nil, nil
 	end
-	local baseRecipeDifficulty, baseRecipeQuality, maxRecipeQuality, inspirationAmount, inspirationChance = nil, nil, nil, nil
+	local baseRecipeDifficulty, baseRecipeQuality, maxRecipeQuality = nil, nil, nil
 	for player, info in pairs(craftInfo.players) do
 		if (not playerFilter or player == playerFilter) and type(info) == "table" and info.baseRecipeQuality and (not baseRecipeQuality or info.baseRecipeQuality > baseRecipeQuality) then
 			baseRecipeDifficulty = info.baseRecipeDifficulty
 			baseRecipeQuality = info.baseRecipeQuality
 			maxRecipeQuality = info.maxRecipeQuality
-			inspirationAmount = info.inspirationAmount
-			inspirationChance = info.inspirationChance
 		end
 	end
-	return baseRecipeDifficulty, baseRecipeQuality, maxRecipeQuality, inspirationAmount, inspirationChance
+	return baseRecipeDifficulty, baseRecipeQuality, maxRecipeQuality
+end
+
+function Crafting.GetRootCategoryId(craftString)
+	local craftInfo = private.settings.crafts[craftString]
+	return craftInfo and craftInfo.rootCategoryId or nil
 end
 
 ---Gets the conversion value for an item.
@@ -703,17 +743,17 @@ function Crafting.GetConversionsValue(itemString, customPrice, method)
 	end
 
 	-- Calculate disenchant value first
-	if (not method or method == Conversions.METHOD.DISENCHANT) and ItemInfo.IsDisenchantable(itemString) then
+	if (not method or method == Conversion.METHOD.DISENCHANT) and ItemInfo.IsDisenchantable(itemString) then
 		local classId = ItemInfo.GetClassId(itemString)
 		local quality = ItemInfo.GetQuality(itemString)
-		local itemLevel = Environment.IsRetail() and ItemInfo.GetItemLevel(itemString) or ItemInfo.GetItemLevel(ItemString.GetBase(itemString))
-		local expansion = Environment.IsRetail() and ItemInfo.GetExpansion(itemString) or nil
+		local itemLevel = ClientInfo.IsRetail() and ItemInfo.GetItemLevel(itemString) or ItemInfo.GetItemLevel(ItemString.GetBase(itemString))
+		local expansion = ClientInfo.IsRetail() and ItemInfo.GetExpansion(itemString) or nil
 		local value = 0
 		if quality and itemLevel and classId then
-			for targetItemString in DisenchantInfo.TargetItemIterator() do
-				local amountOfMats = DisenchantInfo.GetTargetItemSourceInfo(targetItemString, classId, quality, itemLevel, expansion)
+			for targetItemString in Conversion.DisenchantTargetItemIterator() do
+				local amountOfMats = Conversions.GetDisenchantTargetItemSourceInfo(targetItemString, classId, quality, itemLevel, expansion)
 				if amountOfMats then
-					local matValue = CustomPrice.GetValue(customPrice, targetItemString)
+					local matValue = CustomString.GetValue(customPrice, targetItemString)
 					if not matValue or matValue == 0 then
 						return
 					end
@@ -724,17 +764,17 @@ function Crafting.GetConversionsValue(itemString, customPrice, method)
 
 		value = floor(value)
 		if value > 0 then
-			return value, Conversions.METHOD.DISENCHANT
+			return value, Conversion.METHOD.DISENCHANT
 		end
 	end
 
 	-- Calculate other conversion values
 	local value = 0
-	for targetItemString, rate, _, _, _, targetQuality, sourceQuality, _, targetItemMethod in Conversions.TargetItemsByMethodIterator(itemString, method) do
+	for targetItemString, rate, _, _, _, targetQuality, sourceQuality, _, targetItemMethod in Conversion.TargetItemsByMethodIterator(itemString, method) do
 		method = method or targetItemMethod
-		local quality = sourceQuality and TSM.Crafting.DFCrafting.GetExpectedSalvageResult(method, sourceQuality)
+		local quality = sourceQuality and TSM.Crafting.Quality.GetExpectedSalvageResult(method, sourceQuality)
 		if not targetQuality or targetQuality == quality then
-			local matValue = INDIRECT_RESULT_MATERIALS[targetItemString] and Crafting.GetConversionsValue(targetItemString, customPrice, method) or CustomPrice.GetValue(customPrice, targetItemString)
+			local matValue = INDIRECT_RESULT_MATERIALS[targetItemString] and Crafting.GetConversionsValue(targetItemString, customPrice, method) or CustomString.GetValue(customPrice, targetItemString)
 			value = value + (matValue or 0) * rate
 		end
 	end
@@ -814,29 +854,30 @@ end
 
 function private.GetRestockHelpMessage(itemString)
 	-- check if the item is in a group
-	local groupPath = TSM.Groups.GetPathByItem(itemString)
+	local groupPath = Group.GetPathByItem(itemString)
 	if not groupPath then
 		return L["This item is not in a TSM group."]
 	end
 
 	-- check that there's a crafting operation applied
-	if not TSM.Operations.Crafting.HasOperation(itemString) then
-		return format(L["There is no Crafting operation applied to this item's TSM group (%s)."], GroupPath.Format(groupPath))
+	if not CraftingOperation.HasOperation(itemString) then
+		return format(L["There is no Crafting operation applied to this item's TSM group (%s)."], Group.FormatPath(groupPath))
 	end
 
 	-- check if it's an invalid operation
-	local isValid, err = TSM.Operations.Crafting.IsValid(itemString)
+	local isValid, err = TSM.Crafting.IsOperationValid(itemString)
 	if not isValid then
 		return err
 	end
 
 	-- check that this item is craftable
-	if not TSM.Crafting.CanCraftItem(itemString) then
+	local levelItemString = ItemString.ToLevel(itemString)
+	if not TSM.Crafting.CanCraftItem(levelItemString) then
 		return L["You don't know how to craft this item."]
 	end
 
 	-- check the restock quantity
-	local neededQuantity = TSM.Operations.Crafting.GetRestockQuantity(itemString, private.GetTotalQuantity(itemString))
+	local neededQuantity = CraftingOperation.GetRestockQuantity(itemString, private.GetTotalQuantity(itemString))
 	if neededQuantity == 0 then
 		return L["You either already have at least your max restock quantity of this item or the number which would be queued is less than the min restock quantity."]
 	end
@@ -849,7 +890,7 @@ function private.GetRestockHelpMessage(itemString)
 	end
 
 	-- check the prices on the item and the min profit
-	local hasMinProfit, minProfit = TSM.Operations.Crafting.GetMinProfit(itemString)
+	local hasMinProfit, minProfit = CraftingOperation.GetMinProfit(itemString)
 	if hasMinProfit then
 		local craftedValue = TSM.Crafting.Cost.GetCraftedItemValue(itemString)
 		local profit = cost and craftedValue and (craftedValue - cost) or nil
@@ -872,7 +913,7 @@ function private.GetRestockHelpMessage(itemString)
 		end
 
 		if profit < minProfit then
-			return format(L["The profit of this item (%s) is below the min profit (%s)."], Money.ToString(profit), Money.ToString(minProfit))
+			return format(L["The profit of this item (%s) is below the min profit (%s)."], Money.ToStringExact(profit), Money.ToStringExact(minProfit))
 		end
 	end
 
@@ -880,11 +921,11 @@ function private.GetRestockHelpMessage(itemString)
 end
 
 function private.GetTotalQuantity(itemString)
-	return CustomPrice.GetSourcePrice(itemString, "NumInventory") or 0
+	return CustomString.GetSourceValue("NumInventory", itemString) or 0
 end
 
 function private.GetMatCost(itemString)
-	return CustomPrice.GetSourcePrice(itemString, "MatPrice") or Math.GetNan()
+	return CustomString.GetSourceValue("MatPrice", itemString) or Math.GetNan()
 end
 
 function private.MatItemDBUpdateOrInsert(itemString, profession)

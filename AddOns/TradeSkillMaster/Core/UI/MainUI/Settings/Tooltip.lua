@@ -5,38 +5,19 @@
 -- ------------------------------------------------------------------------------ --
 
 local TSM = select(2, ...) ---@type TSM
-local Tooltip = TSM.MainUI.Settings:NewPackage("Tooltip")
-local L = TSM.Include("Locale").GetTable()
-local Money = TSM.Include("Util.Money")
-local Table = TSM.Include("Util.Table")
-local TempTable = TSM.Include("Util.TempTable")
-local CustomPrice = TSM.Include("Service.CustomPrice")
-local UIElements = TSM.Include("UI.UIElements")
-local UIUtils = TSM.Include("UI.UIUtils")
+local Tooltip = TSM.MainUI.Settings:NewPackage("Tooltip") ---@type AddonPackage
+local L = TSM.Locale.GetTable()
+local Money = TSM.LibTSMUtil:Include("UI.Money")
+local Table = TSM.LibTSMUtil:Include("Lua.Table")
+local TempTable = TSM.LibTSMUtil:Include("BaseType.TempTable")
+local Operation = TSM.LibTSMTypes:Include("Operation")
+local UIElements = TSM.LibTSMUI:Include("Util.UIElements")
+local UIUtils = TSM.LibTSMUI:Include("Util.UIUtils")
+local ClientInfo = TSM.LibTSMWoW:Include("Util.ClientInfo")
 local private = {
+	settings = nil,
 	operationModules = {},
 	operationModuleNames = {},
-	destroySources = {},
-	destroySourceKeys = {},
-}
-local INVALID_DESTROY_PRICE_SOURCES = {
-	crafting = true,
-	vendorbuy = true,
-	vendorsell = true,
-	destroy = true,
-	itemquality = true,
-	itemlevel = true,
-	requiredlevel = true,
-	numinventory = true,
-	numexpires = true,
-	salerate = true,
-	dbregionsalerate = true,
-	dbregionsoldperday = true,
-	auctioningopmin = true,
-	auctioningopmax = true,
-	auctioningopnormal = true,
-	shoppingopmax = true,
-	sniperopmax = true,
 }
 local GROUPS_OPS_SETTINGS_INFO = {
 	{ label = L["Group name"], settingKey = "groupNameTooltip" },
@@ -65,9 +46,26 @@ local ACCOUNTING_SETTINGS_INFO = {
 	{ label = L["Sale information"], settingModule = "Accounting", settingKey = "sale" },
 	{ label = L["Sale rate"], settingModule = "Accounting", settingKey = "saleRate" },
 	{ label = L["Expired information"], settingModule = "Accounting", settingKey = "expiredAuctions" },
-	{ label = L["Canceled information"], settingModule = "Accounting", settingKey = "cancelledAuctions" },
+	{ label = L["Cancelled information"], settingModule = "Accounting", settingKey = "cancelledAuctions" },
 }
-local AUCTIONDB_SETTINGS_INFO = {
+local AUCTIONDB_SETTINGS_INFO = ClientInfo.IsRetail() and {
+	{ label = L["Min buyout"], settingModule = "AuctionDB", settingKey = "minBuyout" },
+	{ label = L["Recent value"], settingModule = "AuctionDB", settingKey = "marketValueRecent" },
+	{ label = L["Market value"], settingModule = "AuctionDB", settingKey = "marketValue", setValue = "noTrend", clearValue = "none" },
+	{ label = L["Market value and trend"], settingModule = "AuctionDB", settingKey = "marketValue", setValue = "withTrend", clearValue = "none" },
+	{ label = L["Historical price"], settingModule = "AuctionDB", settingKey = "historical" },
+	{ label = L["Alt realm min buyout"], settingModule = "AuctionDB", settingKey = "altMinBuyout" },
+	{ label = L["Alt realm recent value"], settingModule = "AuctionDB", settingKey = "altMarketValueRecent" },
+	{ label = L["Alt realm market value"], settingModule = "AuctionDB", settingKey = "altMarketValue", setValue = "noTrend", clearValue = "none" },
+	{ label = L["Alt realm market value and trend"], settingModule = "AuctionDB", settingKey = "altMarketValue", setValue = "withTrend", clearValue = "none" },
+	{ label = L["Alt realm historical price"], settingModule = "AuctionDB", settingKey = "altHistorical" },
+	{ label = L["Region market value"], settingModule = "AuctionDB", settingKey = "regionMarketValue", setValue = "noTrend", clearValue = "none" },
+	{ label = L["Region market value and trend"], settingModule = "AuctionDB", settingKey = "regionMarketValue", setValue = "withTrend", clearValue = "none" },
+	{ label = L["Region historical price"], settingModule = "AuctionDB", settingKey = "regionHistorical" },
+	{ label = L["Region sale avg"], settingModule = "AuctionDB", settingKey = "regionSale" },
+	{ label = L["Region sale rate"], settingModule = "AuctionDB", settingKey = "regionSalePercent" },
+	{ label = L["Region avg daily sold"], settingModule = "AuctionDB", settingKey = "regionSoldPerDay" },
+} or {
 	{ label = L["Min buyout"], settingModule = "AuctionDB", settingKey = "minBuyout" },
 	{ label = L["Recent value"], settingModule = "AuctionDB", settingKey = "marketValueRecent" },
 	{ label = L["Market value"], settingModule = "AuctionDB", settingKey = "marketValue", setValue = "noTrend", clearValue = "none" },
@@ -95,6 +93,12 @@ local SHOPPING_SETTINGS_INFO = {
 local SNIPER_SETTINGS_INFO = {
 	{ label = L["Max sniper price"], settingModule = "Sniper", settingKey = "belowPrice" },
 }
+local SETTING_TOOLTIPS = {
+	enabled = L["This setting allows for enabling or disabling the tooltip information provided by TSM as a whole."],
+	embeddedTooltip = L["This option allows for embedding the information provided by TSM in the existing item tooltip. If disabled, the information provided by TSM will be separated in to another anchored tooltip."],
+	tooltipPriceFormat = L["Selects whether TSM uses text or icons to label gold, silver, and copper values."],
+	tooltipShowModifier = L["Select whether to show the information provided by TSM in tooltips all the time i.e 'None (Always Show)', or only show the information provided by TSM when holding a modifier i.e CTRL or SHIFT."],
+}
 
 
 
@@ -102,7 +106,22 @@ local SNIPER_SETTINGS_INFO = {
 -- Module Functions
 -- ============================================================================
 
-function Tooltip.OnInitialize()
+function Tooltip.OnInitialize(settingsDB)
+	private.settings = settingsDB:NewView()
+		:AddKey("global", "tooltipOptions", "enabled")
+		:AddKey("global", "tooltipOptions", "embeddedTooltip")
+		:AddKey("global", "tooltipOptions", "tooltipPriceFormat")
+		:AddKey("global", "tooltipOptions", "tooltipShowModifier")
+		:AddKey("global", "tooltipOptions", "customPriceTooltips")
+		:AddKey("global", "tooltipOptions", "moduleTooltips")
+		:AddKey("global", "tooltipOptions", "inventoryTooltipFormat")
+		:AddKey("global", "tooltipOptions", "vendorBuyTooltip")
+		:AddKey("global", "tooltipOptions", "vendorSellTooltip")
+		:AddKey("global", "tooltipOptions", "convertTooltipFormat")
+		:AddKey("global", "tooltipOptions", "destroyTooltipFormat")
+		:AddKey("global", "tooltipOptions", "groupNameTooltip")
+		:AddKey("global", "tooltipOptions", "operationTooltips")
+		:AddKey("global", "userData", "customPriceSources")
 	TSM.MainUI.Settings.RegisterSettingPage(L["Tooltip Settings"], "top", private.GetTooltipSettingsFrame)
 end
 
@@ -116,26 +135,9 @@ function private.GetTooltipSettingsFrame()
 	UIUtils.AnalyticsRecordPathChange("main", "settings", "tooltips", "main")
 	wipe(private.operationModules)
 	wipe(private.operationModuleNames)
-	for _, moduleName in TSM.Operations.ModuleIterator() do
+	for _, moduleName in Operation.TypeIterator() do
 		tinsert(private.operationModules, moduleName)
-		tinsert(private.operationModuleNames, TSM.Operations.GetLocalizedName(moduleName))
-	end
-	wipe(private.destroySources)
-	wipe(private.destroySourceKeys)
-	local foundCurrentSetting = false
-	for _, key, _, label in CustomPrice.Iterator() do
-		key = strlower(key)
-		if not INVALID_DESTROY_PRICE_SOURCES[key] then
-			tinsert(private.destroySources, label)
-			tinsert(private.destroySourceKeys, key)
-			if TSM.db.global.coreOptions.destroyValueSource == key then
-				foundCurrentSetting = true
-			end
-		end
-	end
-	if not foundCurrentSetting then
-		-- the current setting isn't in the list, so reset it to the default
-		TSM.db.global.coreOptions.destroyValueSource = strlower(TSM.db:GetDefaultReadOnly("global", "coreOptions", "destroyValueSource"))
+		tinsert(private.operationModuleNames, Operation.GetLocalizedName(moduleName))
 	end
 	return UIElements.New("ScrollFrame", "tooltipSettings")
 		:SetPadding(8, 8, 8, 0)
@@ -149,7 +151,8 @@ function private.GetTooltipSettingsFrame()
 			:AddChild(UIElements.New("ToggleYesNo", "enableToggle")
 				:SetHeight(24)
 				:SetMargin(0, 0, 0, 12)
-				:SetSettingInfo(TSM.db.global.tooltipOptions, "enabled")
+				:SetSettingInfo(private.settings, "enabled")
+				:SetTooltip(SETTING_TOOLTIPS.enabled)
 			)
 			:AddChild(UIElements.New("Frame", "content")
 				:SetLayout("HORIZONTAL")
@@ -159,7 +162,8 @@ function private.GetTooltipSettingsFrame()
 					:SetWidth("AUTO")
 					:SetFont("BODY_BODY2_MEDIUM")
 					:SetText(L["Embed TSM tooltip"])
-					:SetSettingInfo(TSM.db.global.tooltipOptions, "embeddedTooltip")
+					:SetSettingInfo(private.settings, "embeddedTooltip")
+					:SetTooltip(SETTING_TOOLTIPS.embeddedTooltip, "__parent")
 				)
 				:AddChild(UIElements.New("Spacer", "spacer"))
 			)
@@ -173,13 +177,8 @@ function private.GetTooltipSettingsFrame()
 					:SetText(L["Tooltip price format"])
 				)
 				:AddChild(UIElements.New("Text", "modifierLabel")
-					:SetMargin(0, 8, 0, 0)
 					:SetFont("BODY_BODY2_MEDIUM")
 					:SetText(L["Show on modifier"])
-				)
-				:AddChild(UIElements.New("Text", "destroyLabel")
-					:SetFont("BODY_BODY2_MEDIUM")
-					:SetText(L["Destroy value source"])
 				)
 			)
 			:AddChild(UIElements.New("Frame", "dropdownRow1")
@@ -187,22 +186,18 @@ function private.GetTooltipSettingsFrame()
 				:SetHeight(24)
 				:AddChild(UIElements.New("SelectionDropdown", "priceFormatDropdown")
 					:SetMargin(0, 8, 0, 0)
-					:AddItem(format(L["Coins (%s)"], Money.ToString(3451267, nil, "OPT_ICON")), "icon")
-					:AddItem(format(L["Text (%s)"], Money.ToString(3451267)), "text")
-					:SetSettingInfo(TSM.db.global.tooltipOptions, "tooltipPriceFormat")
+					:AddItem(format(L["Coins (%s)"], Money.ToStringForTooltip(3451267, nil, true, false)), "icon")
+					:AddItem(format(L["Text (%s)"], Money.ToStringForTooltip(3451267, nil, false, false)), "text")
+					:SetSettingInfo(private.settings, "tooltipPriceFormat")
 					:SetScript("OnSelectionChanged", private.OnSettingChange)
+					:SetTooltip(SETTING_TOOLTIPS.tooltipPriceFormat, "__parent")
 				)
 				:AddChild(UIElements.New("SelectionDropdown", "modifierDropdown")
-					:SetMargin(0, 8, 0, 0)
 					:AddItem(L["None (Always Show)"], "none")
 					:AddItem(ALT_KEY, "alt")
 					:AddItem(CTRL_KEY, "ctrl")
-					:SetSettingInfo(TSM.db.global.tooltipOptions, "tooltipShowModifier")
-				)
-				:AddChild(UIElements.New("SelectionDropdown", "dropdown")
-					:SetItems(private.destroySources, private.destroySourceKeys)
-					:SetSettingInfo(TSM.db.global.coreOptions, "destroyValueSource")
-					:SetScript("OnSelectionChanged", private.OnSettingChange)
+					:SetSettingInfo(private.settings, "tooltipShowModifier")
+					:SetTooltip(SETTING_TOOLTIPS.tooltipShowModifier, "__parent")
 				)
 			)
 		)
@@ -239,7 +234,7 @@ function private.GetSettingsHeight()
 	-- calculate the height of the settings and use that for the content height since the settings will always be larger than the tooltip
 	local height = 0
 	height = height + 32 + #GROUPS_OPS_SETTINGS_INFO * 32
-	height = height + 32 + #VALUES_SETTINGS_INFO * 32 + Table.Count(TSM.db.global.userData.customPriceSources) * 32
+	height = height + 32 + #VALUES_SETTINGS_INFO * 32 + Table.Count(private.settings.customPriceSources) * 32
 	height = height + 32 + #INVENTORY_SETTINGS_INFO * 32
 	height = height + 32 + #ACCOUNTING_SETTINGS_INFO * 32
 	height = height + 32 + #AUCTIONDB_SETTINGS_INFO * 32
@@ -259,7 +254,7 @@ function private.AddTooltipSettings(frame)
 	private.AddSettingsFromInfoTable(frame, VALUES_SETTINGS_INFO)
 
 	local customPriceSources = TempTable.Acquire()
-	for name in pairs(TSM.db.global.userData.customPriceSources) do
+	for name in pairs(private.settings.customPriceSources) do
 		tinsert(customPriceSources, name)
 	end
 	sort(customPriceSources)
@@ -269,7 +264,7 @@ function private.AddTooltipSettings(frame)
 			:SetMargin(0, 0, 0, 12)
 			:SetFont("BODY_BODY2")
 			:SetText(format(L["Custom source (%s)"], name))
-			:SetSettingInfo(TSM.db.global.tooltipOptions.customPriceTooltips, name)
+			:SetSettingInfo(private.settings.customPriceTooltips, name)
 			:SetScript("OnValueChanged", private.CustomPriceSourceOnValueChanged)
 		)
 	end
@@ -307,14 +302,13 @@ function private.AddSettingHeading(frame, id, heading)
 end
 
 function private.GetSettingTableFromInfo(info)
-	local settingTbl = TSM.db.global.tooltipOptions
 	if info.settingModule then
-		settingTbl = settingTbl.moduleTooltips[info.settingModule]
+		return private.settings.moduleTooltips[info.settingModule]
+	elseif info.settingTbl then
+		return private.settings[info.settingTbl]
+	else
+		return private.settings
 	end
-	if info.settingTbl then
-		settingTbl = settingTbl[info.settingTbl]
-	end
-	return settingTbl
 end
 
 function private.AddSettingsFromInfoTable(frame, infoTbl)

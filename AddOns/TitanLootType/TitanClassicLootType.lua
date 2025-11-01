@@ -30,7 +30,14 @@ TitanLootMethod["roundrobin"]      = { text = L["TITAN_LOOTTYPE_ROUND_ROBIN"] };
 TitanLootMethod["master"]          = { text = L["TITAN_LOOTTYPE_MASTER_LOOTER"] };
 TitanLootMethod["group"]           = { text = L["TITAN_LOOTTYPE_GROUP_LOOT"] };
 TitanLootMethod["needbeforegreed"] = { text = L["TITAN_LOOTTYPE_NEED_BEFORE_GREED"] };
---TitanLootMethod["personalloot"] = {text = L["TITAN_LOOTTYPE_PERSONAL"]};
+TitanLootMethod["personalloot"] = {text = L["TITAN_LOOTTYPE_PERSONAL"]};
+-- For new method...
+TitanLootMethod[0] = {text = L["TITAN_LOOTTYPE_FREE_FOR_ALL"]};
+TitanLootMethod[1] = {text = L["TITAN_LOOTTYPE_ROUND_ROBIN"]};
+TitanLootMethod[2] = {text = L["TITAN_LOOTTYPE_MASTER_LOOTER"]};
+TitanLootMethod[3] = {text = L["TITAN_LOOTTYPE_GROUP_LOOT"]};
+TitanLootMethod[4] = {text = L["TITAN_LOOTTYPE_NEED_BEFORE_GREED"]};
+TitanLootMethod[5] = {text = L["TITAN_LOOTTYPE_PERSONAL"]};
 
 local TOCNAME                      = "TitanLootType"
 local Track                        = {}
@@ -56,13 +63,14 @@ Track.MSGPREFIX_CLOSE              = Track.MSGPREFIX .. "__: "
 LT.Debug = {
 	-- Used when creating dummy player list (see flags) or solo debug to get 'self'
 	-- And debug output
-	on    = false,
+	on    = false, -- true false
 
-	show  = {      -- for LootDebug messages
+	show  = { -- for LootDebug messages
 		events = false, -- show debug for events
 		players = false, -- show debug for players
 		-- nil will show regardless
 	},
+
 	flags = { -- solo debug
 		force_leader = false,
 		force_master = false,
@@ -94,7 +102,7 @@ TitanPanelLootType.AddRollDebug("raid6", "999", "1", "1000")
 --]]
 -- ******************************** Variables *******************************
 
--- ******************************** Functions *******************************
+-- ******************************** Deprecated Retail Functions *******************************
 --[[ local
 NAME: LootDebug
 DESC: Set the Tian bars and plugins to the selected scale then adjust other frames as needed.
@@ -102,6 +110,28 @@ VAR: msg   - message to be output
 VAR: mtype - the type of message
 OUT: None
 --]]
+-- Might be overkill but prepare for an API update as Blizz updates classic API with retail...
+-- Diag marked per line to make deprecation obvious
+
+-- As of 11.2.0 : Returns different values!
+local LootMethod = nil
+if C_PartyInfo and C_PartyInfo.GetLootMethod then
+	LootMethod = C_PartyInfo.GetLootMethod
+else
+---@diagnostic disable-next-line: undefined-global
+	LootMethod = GetLootMethod
+end
+
+-- As of 11.2.0
+local SendMsg = nil
+if C_ChatInfo and C_ChatInfo.SendChatMessage then
+	SendMsg = C_ChatInfo.SendChatMessage
+else
+---@diagnostic disable-next-line: deprecated
+	SendMsg = SendChatMessage
+end
+
+-- ******************************** Functions *******************************
 local function LootDebug(msg, mtype)
 	local show = false
 	if mtype == nil then
@@ -117,8 +147,8 @@ local function LootDebug(msg, mtype)
 	end
 end
 
+--====== Tools for the tracker and Routines to allow resizing of the Loot frame
 
--- Tools for the tracker
 local Tool = {}
 Tool.IconClassTexture = "Interface\\GLUES\\CHARACTERCREATE\\UI-CHARACTERCREATE-CLASSES"
 Tool.IconClassTextureWithoutBorder = "Interface\\WorldStateFrame\\ICONS-CLASSES"
@@ -165,13 +195,7 @@ Tool.ClassColor = RAID_CLASS_COLORS
 Tool.ButtonFontObj = {}
 Tool.Font = ""
 Tool.FontSize = ""
---[[ local
-NAME: Tool.CreatePattern
-DESC: Set the Tian bars and plugins to the selected scale then adjust other frames as needed.
-VAR: pattern  - string to be parsed
-VAR: maximize - do min or max substitution
-OUT: None
---]]
+
 function Tool.CreatePattern(pattern, maximize)
 	pattern = string.gsub(pattern, "[%(%)%-%+%[%]]", "%%%1")
 	if not maximize then
@@ -191,40 +215,6 @@ function Tool.CreatePattern(pattern, maximize)
 	return pattern
 end
 
---[[ local
-NAME: Sizing routines
-DESC: These allow the frame to be resized as needed.
-OUT: None
---]]
----@class ResizeCursorType
----@field Texture? table
----@diagnostic disable-next-line: missing-fields
-local ResizeCursor = {} ---@type Frame
-local SizingStop = function(self, button)
-	self:GetParent():StopMovingOrSizing()
-	if self.GPI_DoStop then self.GPI_DoStop(self:GetParent()) end
-end
-
-local SizingStart = function(self, button)
-	self:GetParent():StartSizing(self.GPI_SIZETYPE)
-	if self.GPI_DoStart then self.GPI_DoStart(self:GetParent()) end
-end
-
-local SizingEnter = function(self)
-	if not (GetCursorInfo()) then
-		ResizeCursor:Show()
-		ResizeCursor.Texture:SetTexture(self.GPI_Cursor)
--- Causes an error in 1.15.5 but not 4.4.*...
---		ResizeCursor.Texture:SetRotation(math.rad(self.GPI_Rotation), { 0.5, 0.5 })
-	end
-end
-
-local SizingLeave = function(self, button)
-	ResizeCursor:Hide()
-end
-
--- Titan Loot
-
 ---@class FrameSizeBorder
 ---@field GPI_SIZETYPE string
 ---@field GPI_Cursor string
@@ -233,102 +223,10 @@ end
 ---@field GPI_DoStop string
 local FrameSizeBorder ---@type Frame
 local sizecount = 0
-local CreateSizeBorder = function(frame, name, a1, x1, y1, a2, x2, y2, cursor, rot, OnStart, OnStop)
-	sizecount = sizecount + 1
-	FrameSizeBorder = CreateFrame("Frame", (frame:GetName() or TOCNAME .. sizecount) .. "_size_" .. name, frame)
-	FrameSizeBorder:SetPoint("TOPLEFT", frame, a1, x1, y1)
-	FrameSizeBorder:SetPoint("BOTTOMRIGHT", frame, a2, x2, y2)
-	FrameSizeBorder.GPI_SIZETYPE = name
-	FrameSizeBorder.GPI_Cursor = cursor
-	FrameSizeBorder.GPI_Rotation = rot
-	FrameSizeBorder.GPI_DoStart = OnStart
-	FrameSizeBorder.GPI_DoStop = OnStop
-	FrameSizeBorder:SetScript("OnMouseDown", SizingStart)
-	FrameSizeBorder:SetScript("OnMouseUp", SizingStop)
-	FrameSizeBorder:SetScript("OnEnter", SizingEnter)
-	FrameSizeBorder:SetScript("OnLeave", SizingLeave)
-	return FrameSizeBorder
-end
-
-local ResizeCursor_Update = function(self)
-	local X, Y = GetCursorPosition()
-	local Scale = self:GetEffectiveScale()
-	self:SetPoint("CENTER", UIParent, "BOTTOMLEFT", X / Scale, Y / Scale)
-end
-
-function Tool.EnableSize(frame, border, OnStart, OnStop)
-	if ResizeCursor == {} then
-		-- use existing frame
-	else
-		ResizeCursor = CreateFrame("Frame", nil, UIParent)
-		ResizeCursor:Hide()
-		ResizeCursor:SetWidth(24)
-		ResizeCursor:SetHeight(24)
-		ResizeCursor:SetFrameStrata("TOOLTIP")
-		ResizeCursor.Texture = ResizeCursor:CreateTexture()
-		ResizeCursor.Texture:SetAllPoints()
-		ResizeCursor:SetScript("OnUpdate", ResizeCursor_Update)
-	end
-	border = border or 8
-
-	frame:EnableMouse(true)
-	frame:SetResizable(true)
-
---	path = "Interface\\AddOns\\" .. TOCNAME .. "\\Resize\\"
-
-	CreateSizeBorder(frame, "BOTTOM", "BOTTOMLEFT", border, border, "BOTTOMRIGHT", -border, 0,
-		"Interface\\CURSOR\\UI-Cursor-SizeLeft", 45, OnStart, OnStop)
-	CreateSizeBorder(frame, "TOP", "TOPLEFT", border, 0, "TOPRIGHT", -border, -border,
-		"Interface\\CURSOR\\UI-Cursor-SizeLeft", 45, OnStart, OnStop)
-	CreateSizeBorder(frame, "LEFT", "TOPLEFT", 0, -border, "BOTTOMLEFT", border, border,
-		"Interface\\CURSOR\\UI-Cursor-SizeRight", 45, OnStart, OnStop)
-	CreateSizeBorder(frame, "RIGHT", "TOPRIGHT", -border, -border, "BOTTOMRIGHT", 0, border,
-		"Interface\\CURSOR\\UI-Cursor-SizeRight", 45, OnStart, OnStop)
-
-	CreateSizeBorder(frame, "TOPLEFT", "TOPLEFT", 0, 0, "TOPLEFT", border, -border,
-		"Interface\\CURSOR\\UI-Cursor-SizeRight", 0, OnStart, OnStop)
-	CreateSizeBorder(frame, "BOTTOMLEFT", "BOTTOMLEFT", 0, 0, "BOTTOMLEFT", border, border,
-		"Interface\\CURSOR\\UI-Cursor-SizeLeft", 0, OnStart, OnStop)
-	CreateSizeBorder(frame, "TOPRIGHT", "TOPRIGHT", 0, 0, "TOPRIGHT", -border, -border,
-		"Interface\\CURSOR\\UI-Cursor-SizeLeft", 0, OnStart, OnStop)
-	CreateSizeBorder(frame, "BOTTOMRIGHT", "BOTTOMRIGHT", 0, 0, "BOTTOMRIGHT", -border, border,
-		"Interface\\CURSOR\\UI-Cursor-SizeRight", 0, OnStart, OnStop)
-end
-
---[[ local
-NAME: Moving routines
-DESC: These allow the frame to be moved as needed.
-OUT: None
---]]
-local function MovingStart(self)
-	self:StartMoving()
-end
-
-local function MovingStop(self)
-	self:StopMovingOrSizing()
-	if self._GPIPRIVAT_MovingStopCallback then
-		self._GPIPRIVAT_MovingStopCallback(self)
-	end
-end
-
-function Tool.EnableMoving(frame, callback)
-	frame:SetMovable(true)
-	frame:EnableMouse(true)
-	frame:RegisterForDrag("LeftButton")
-	frame:SetScript("OnDragStart", MovingStart)
-	frame:SetScript("OnDragStop", MovingStop)
-	frame._GPIPRIVAT_MovingStopCallback = callback
-end
-
 function Tool.SetButtonFont(button)
 	-- Just Return. This changed WAY too much...
 end
 
---[[ local
-NAME: Tool routines
-DESC: Such as split, color, combine.
-OUT: None
---]]
 function Tool.Split(inputstr, sep)
 	if sep == nil then
 		sep = "%s"
@@ -371,19 +269,17 @@ function Tool.Combine(t, sep, first, last)
 	return string.sub(ret, string.len(sep) + 1)
 end
 
--- Routines for the 'track' rolls feature
---[[ local
-NAME: IsRoll
-DESC: Determine if the roll is valid.
-VAR: roll - string
-VAR: low  - low end
-VAR: high - high end
-OUT: valid_roll - true / false
-OUT: valid_bounds - true / false
-OUT: ro - numeric roll
-OUT: lo - numeric low
-OUT: hi - numeric high
---]]
+--====== Routines for the 'track' rolls feature
+
+---Determine if the roll is valid.
+---@param roll any
+---@param low any
+---@param high any
+---@return boolean valid_roll
+---@return boolean valid_bounds
+---@return number? ro - numeric roll
+---@return number? lo - numeric low
+---@return number? hi - numeric high
 local function IsRoll(roll, low, high)
 	local lo = tonumber(low)
 	local hi = tonumber(high)
@@ -417,17 +313,15 @@ local function IsRoll(roll, low, high)
 
 	return valid_roll, valid_bounds, ro, lo, hi
 end
---[[ local
-NAME: GetPlayer
-DESC: Get name, class, guild rank (if in same guild) a the given player.
-VAR: id - id of player
-OUT: name - name of the player
-OUT: rank - guild rank
-OUT: englishClass - English class name
---]]
+
+---Get name, class, guild rank (if in same guild) a the given player.
+---@param id string
+---@return string name - name of the player
+---@return string rank - localized guild rank
+---@return string class - WoW internal class name
 local function GetPlayer(id)
 	local name = GetUnitName(id)
-	local localizedClass, englishClass, classIndex = UnitClass(id)
+	local localizedClass, class, classIndex = UnitClass(id)
 
 	local rank = ""
 	if IsInGuild() and UnitIsInMyGuild(id) then
@@ -439,49 +333,18 @@ local function GetPlayer(id)
 		end
 	end
 
-	return name, rank, englishClass
+	return name, rank, class
 end
---[[ local
-NAME: IsLead
-DESC: Determine whether the player is the leader of the group.
-VAR: None
-OUT: true / false
---]]
+
+---Determine whether the player is the leader of the group.
+---@return boolean
 local function IsLead()
-	--[[
-lootmethod, masterlooterPartyID, masterlooterRaidID = GetLootMethod()
-lootmethod
-String (LootMethod) - One of 'freeforall', 'roundrobin', 'master', 'group', 'needbeforegreed'. Appears to be 'freeforall' if you are not grouped.: At least as of 7.3 the possible return values appear to be "freeforall", "master", "group" and "personalloot". "roundrobin" and "needbeforegreed" appear to be deprecated.
-masterlooterPartyID
-Number - Returns 0 if player is the mater looter, 1-4 if party member is master looter (corresponding to party1-4) and nil if the master looter isn't in the player's party or master looting is not used.
-masterlooterRaidID
-Number - Returns index of the master looter in the raid (corresponding to a raidX unit), or nil if the player is not in a raid or master looting is not used.
-
-raidIndex = UnitInRaid("unit")
-raidIndex of "unit" if he is in your raid group, otherwise nil.
-
-isTrue = UnitInParty("arg1")
-inGroup = IsInGroup([groupType])
-
-isTrue = UnitIsGroupLeader("unit"[, groupType])
-isLeader = IsRaidLeader()
-
-isLeader = UnitIsGroupLeader("unit" or "player name") -- may need in later patches?
---]]
-	--[[
-	if IsInRaid() and IsRaidLeader() then
-		return true
-	end
-	if IsInGroup() and UnitIsGroupLeader("player") then
-		return true
-	end
---]]
 	if UnitIsGroupLeader("player") then
 		return true
 	end
 	-- The way this flows is both leader AND master looter will have the extra buttons
-	local lootmethod, masterlooterPartyID, masterlooterRaidID = GetLootMethod()
-	if lootmethod == "master" then
+	local lootmethod, masterlooterPartyID, masterlooterRaidID = LootMethod()
+	if (lootmethod == "master") or (lootmethod == 3) then
 		if IsInRaid() and (masterlooterRaidID == UnitInRaid("player")) then
 			return true
 		end
@@ -498,15 +361,8 @@ isLeader = UnitIsGroupLeader("unit" or "player name") -- may need in later patch
 	return false
 end
 
---[[ local
-NAME: Track.GetPlayerList
-DESC: Collect name, class, and guild rank (if in same guild) of players in the group.
-This routine will generate group lists (5 or 40) for debug based on debug flags.
-:DESC
-VAR: unsort		- if true sort by class then name
-OUT: ret		- indexed table of players in  the group
-OUT: retName	- table of player names pointing into ret
---]]
+---Debug : output player info
+---@param player table
 local function OutPlayer(player)
 	if LT.Debug.on then --
 		if player then
@@ -518,7 +374,14 @@ local function OutPlayer(player)
 		end
 	end
 end
+
+---Collect name, class, and guild rank (if in same guild) of players in the group. This routine will generate group lists (5 or 40) for debug based on debug flags.
+---@param unsort boolean? if true sort by class then name
+---@return table group indexed table of players in  the group
+---@return table group_names table of player names pointing into ret
 function Track.GetPlayerList(unsort)
+	-- https://warcraft.wiki.gg/wiki/ClassId
+
 	local count, start
 	local prefix
 	local ret = {}
@@ -528,7 +391,7 @@ function Track.GetPlayerList(unsort)
 		prefix = "raid"
 		count = MAX_RAID_MEMBERS
 		start = 1
-	elseif IsInGroup() or LT.Debug.flags.is_group then
+	elseif IsInGroup() or LT.Debug.flags.is_party then
 		prefix = "party"
 		count = MAX_PARTY_MEMBERS
 		start = 0
@@ -554,12 +417,13 @@ function Track.GetPlayerList(unsort)
 			end
 		else
 			local class = 0
+			local class_max = 11
 			for index = start, count do
 				local guildName, guildRankName, guildRankIndex, realm
 				local id
 				if index > 0 then
 					id = prefix .. index
-					if class >= 9 then
+					if class >= class_max then
 						class = 1
 					else
 						class = class + 1
@@ -583,13 +447,17 @@ function Track.GetPlayerList(unsort)
 				elseif class == 5 then
 					englishClass = "PRIEST"
 				elseif class == 6 then
-					englishClass = "MAGE"
+					englishClass = "MAGE" -- DK after CE
 				elseif class == 7 then
-					englishClass = "WARLOCK"
+					englishClass = "SHAMAN"
 				elseif class == 8 then
-					englishClass = "DRUID"
+					englishClass = "MAGE"
 				elseif class == 9 then
-					englishClass = "WARRIOR"
+					englishClass = "WARLOCK"
+				elseif class == 10 then
+					englishClass = "WARLOCK" -- monk after CE
+				elseif class == 11 then
+					englishClass = "DRUID"
 				end
 
 				-- Guild section assume this works... :)
@@ -641,13 +509,8 @@ function Track.GetPlayerList(unsort)
 	return ret, retName
 end
 
---[[ local
-NAME: Track.GetAutoChannel
-DESC: Select the channel type depending on the  type of group the player is in.
-:DESC
-VAR: None
-OUT: channel - String for SendChatMessage
---]]
+---Select the channel type depending on the  type of group the player is in.
+---@return string
 function Track.GetAutoChannel()
 	-- Return an appropriate channel in order of preference: /raid, /p, /s
 	local channel
@@ -661,17 +524,12 @@ function Track.GetAutoChannel()
 	return channel
 end
 
---[[ local
-NAME: Track.AddChat
-DESC: Send the message to the channel type depending on the type of group the player is in.
-:DESC
-VAR: msg - string message to send
-OUT: None
---]]
+---Send the message to the channel type depending on the type of group the player is in.
+---@param msg string
 function Track.AddChat(msg)
 	if msg ~= nil and msg ~= "" then
 		if IsInGroup() or IsInRaid() then
-			SendChatMessage(msg, Track.GetAutoChannel())
+			SendMsg(msg, Track.GetAutoChannel())
 		else
 			DEFAULT_CHAT_FRAME:AddMessage(msg, Track.DB.ColorChat.r, Track.DB.ColorChat.g, Track.DB.ColorChat.b,
 				Track.DB.ColorChat.a)
@@ -679,13 +537,7 @@ function Track.AddChat(msg)
 	end
 end
 
---[[ local
-NAME: Track.SaveAnchors
-DESC: Save where the window is and its size.
-:DESC
-VAR: None
-OUT: None
---]]
+---Save where the window is and its size.
 function Track.SaveAnchors()
 	Track.DB.X = TitanPanelLootTypeMainWindow:GetLeft()
 	Track.DB.Y = TitanPanelLootTypeMainWindow:GetTop()
@@ -693,16 +545,7 @@ function Track.SaveAnchors()
 	Track.DB.Height = TitanPanelLootTypeMainWindow:GetHeight()
 end
 
---[[ local
-NAME: Track.ShowWindow
-DESC:
-- Enable buttons
-- Show window
-- Update the player list with any rolls
-:DESC
-VAR: None
-OUT: None
---]]
+---Enable buttons; Show window; Update the player list with any rolls so far
 function Track.ShowWindow()
 	if IsLead() then
 		TitanPanelLootTypeFrameClearButton:Enable()
@@ -717,14 +560,7 @@ function Track.ShowWindow()
 	Track.UpdateRollList()
 end
 
---[[ local
-NAME: Track.ResetWindow
-DESC:
-- Reset window to default position and size
-:DESC
-VAR: None
-OUT: None
---]]
+---Reset window to default position and size
 function Track.ResetWindow()
 	TitanPanelLootTypeMainWindow:ClearAllPoints()
 	TitanPanelLootTypeMainWindow:SetPoint("Center", UIParent, "Center", 0, 0)
@@ -734,33 +570,17 @@ function Track.ResetWindow()
 	Track.ShowWindow()
 end
 
---[[ local
-NAME: Track.HideWindow
-DESC:
-- Hide the main tracker window
-:DESC
-VAR: None
-OUT: None
---]]
+---Hide the main tracker window
 function Track.HideWindow()
 	TitanPanelLootTypeMainWindow:Hide()
 end
 
---[[ local
-NAME: Track.Init
-DESC:
-- Initialize variables
-- Get last position and size of main frame
-- Register for needed events
-:DESC
-VAR: None
-OUT: None
---]]
+---Initialize variables; Get last position and size of main frame; Register for needed events
 function Track.Init()
 	-- Add color
 	Track.DB.ColorChat     = { a = 1, r = 1, g = 1, b = 1 }
 	Track.DB.ColorNormal   = { a = 1, r = 1, g = 1, b = 1 }
-	Track.DB.ColorCheat    = { a = 1, r = 1, g = .8, b = .8 }
+	Track.DB.ColorCheat    = { a = 1, r = 1, g = 0, b = 0 }
 	Track.DB.ColorGuild    = { a = 1, r = .2, g = 1, b = .2 }
 	Track.DB.ColorInfo     = { a = 1, r = .6, g = .6, b = .6 }
 	Track.DB.ColorScroll   = { a = 1, r = .8, g = .8, b = .8 }
@@ -779,7 +599,7 @@ function Track.Init()
 	Track.allRolled        = false
 
 	--	TitanPanelLootTypeMainWindow:SetMinResize(194,170)
-	TitanPanelLootTypeMainWindow:SetResizeBounds(225, 250, 225, 250)
+	TitanPanelLootTypeMainWindow:SetResizeBounds(200, 250) -- (225, 250, 225, 250)
 	local x, y, w, h = Track.DB.X, Track.DB.Y, Track.DB.Width, Track.DB.Height
 	if not x or not y or not w or not h then
 		Track.SaveAnchors()
@@ -815,8 +635,19 @@ function Track.Init()
 	TitanPanelLootType.ResizeButtons()
 	TitanPanelLootTypeFrameClearButton:SetText(L["TITAN_LOOTTYPE_TRACKER_BTNCLEAR"])
 
-	Tool.EnableSize(TitanPanelLootTypeMainWindow, 8, nil, Track.SaveAnchors)
-	Tool.EnableMoving(TitanPanelLootTypeMainWindow, Track.SaveAnchors)
+	TitanPanelLootTypeMainWindow:RegisterForDrag("LeftButton")
+	TitanPanelLootTypeMainWindow:EnableMouse(true)
+	TitanPanelLootTypeMainWindow:SetResizable(true)
+	TitanPanelLootTypeMainWindow:RegisterForDrag("LeftButton")
+	TitanPanelLootTypeMainWindow:SetScript("OnDragStart", function(self)
+		self:StartMoving()
+		Track.SaveAnchors()
+	end)
+	TitanPanelLootTypeMainWindow:SetScript("OnDragStop", function(self)
+		self:StopMovingOrSizing()
+		Track.SaveAnchors()
+	end)
+
 	TitanPanelLootTypeFrame:Show()
 
 	local str = ".Init"
@@ -831,16 +662,7 @@ function Track.Init()
 	TitanPanelLootTypeButton:RegisterEvent("CHAT_MSG_RAID_LEADER", TitanPanelLootTypeButton_OnEvent)
 end
 
---[[ local
-NAME: Track.Close
-DESC:
-- Stop the
-- Get last position and size of main frame
-- Register for needed events
-:DESC
-VAR: None
-OUT: None
---]]
+---Close frame and cleanup
 function Track.Close()
 	Track.DB.RollInProcess = false
 	Track.HideWindow()
@@ -849,14 +671,8 @@ function Track.Close()
 	end
 end
 
---[[ local
-NAME: Track.Event_CHAT_MSG_SYSTEM
-DESC:
-- Monitor system chat for player rolls; add the roll when one is found
-:DESC
-VAR: arg1 - the message sent
-OUT: None
---]]
+---Monitor system chat for player rolls; add the roll when one is found
+---@param arg1 string
 function Track.Event_CHAT_MSG_SYSTEM(arg1)
 	local str = "Event_CHAT_MSG_SYSTEM"
 		.. " m'" .. tostring(arg1) .. "'"
@@ -870,19 +686,16 @@ function Track.Event_CHAT_MSG_SYSTEM(arg1)
 	end
 end
 
---[[ local
-NAME: Track.Event_Generic_CHAT_MSG
-DESC:
+---Monitor general chat for Loot commands
+---@param msg string
+---@param name string
+function Track.Event_Generic_CHAT_MSG(msg, name)
+--[[
 - Monitor general chat for:
 - a pass ('pass' or localized version)
 - Roll start
 - Roll end
-:DESC
-VAR: msg - the message sent
-VAR: name - player that sent the message
-OUT: None
 --]]
-function Track.Event_Generic_CHAT_MSG(msg, name)
 	local str = "Event_Generic_CHAT_MSG"
 		.. " '" .. tostring(name) .. "'"
 		.. " m'" .. tostring(msg) .. "'"
@@ -919,23 +732,19 @@ function Track.Event_Generic_CHAT_MSG(msg, name)
 	end
 end
 
---[[ local
-NAME: Track.AddRoll
-DESC:
-Process the roll the player made
+---Process the roll the player made
+---@param name string
+---@param roll string
+---@param low string
+---@param high string
+function Track.AddRoll(name, roll, low, high)
+--[[ 
 - A pass has a roll of "0"
 - Only the first roll is marked as valid / invalid
 - The number of rolls is saved (Count)
 - A running number (tie_breaker) is added to ensure the first arrived of a tie wins; stored in Place
 - Always show the main frame to ensure it pops, no harm if already shown
-:DESC
-VAR: name - player that sent the roll
-VAR: roll - player roll - string
-VAR: low - low value player used - string
-VAR: high - high player used - string
-OUT: None
 --]]
-function Track.AddRoll(name, roll, low, high)
 	local act = "nyl"
 	local valid = false
 
@@ -953,6 +762,7 @@ function Track.AddRoll(name, roll, low, high)
 			Place = Track.DB.tie_breaker,
 			Valid_roll = valid_ro,
 			Valid_bounds = valid_bounds,
+			IsPass = (valid_ro and valid_bounds and ro == 0),
 		})
 		local str = "AddRoll >>"
 			.. " '" .. tostring(act) .. "'"
@@ -985,56 +795,45 @@ function Track.AddRoll(name, roll, low, high)
 	Track.ShowWindow()
 end
 
---[[ local
-NAME: Track.SortRolls
-DESC:
-Sort ascending by name then place
-:DESC
-VAR: a - player a roll info
-VAR: b - player b roll info
-OUT: true / false
---]]
+---Sort ascending by name then place
+---@param a table
+---@param b table
+---@return boolean
 function Track.SortRolls(a, b)
 	--	return a.Roll < b.Roll
 	if a.Roll ~= b.Roll then
 		return a.Roll < b.Roll
 	elseif a.Roll == b.Roll then
 		return a.Place > b.Place
+	else
+		return false -- for IDE and sanity
 	end
 end
 
---[[ local
-NAME: Track.SortRollsRev
-DESC:
-Sort descending by name then place
-:DESC
-VAR: a - player a roll info
-VAR: b - player b roll info
-OUT: true / false
---]]
+---Sort descending by name then place
+---@param a table
+---@param b table
+---@return boolean
 function Track.SortRollsRev(a, b)
 	--	return a.Roll > b.Roll
 	if a.Roll ~= b.Roll then
 		return a.Roll > b.Roll
 	elseif a.Roll == b.Roll then
 		return a.Place < b.Place
+	else
+		return false -- for IDE and sanity
 	end
 end
 
---[[ local
-NAME: Track.FormatRollText
-DESC:
-Format the given roll for display
-:DESC
-VAR: roll - numeric
-VAR: party - player list
-VAR: partyName - given player list entry
-OUT: String to use
---]]
+
+---Format the given roll for display
+---@param roll table
+---@param party any
+---@param partyName table
+---@return string
 function Track.FormatRollText(roll, party, partyName)
 	local colorTied = Tool.RGBtoEscape(Track.DB.ColorNormal)
-	local colorCheat = ((roll.Low ~= 1 or roll.High ~= 100)
-		or (roll.Count > 1)) and Tool.RGBtoEscape(Track.DB.ColorCheat) or colorTied
+	local colorCheat = Tool.RGBtoEscape(Track.DB.ColorCheat)
 	local txtRange = (not roll.Valid_bounds) and format(" (%d-%d)", roll.Low, roll.High) or ""
 
 	local colorName
@@ -1055,25 +854,28 @@ function Track.FormatRollText(roll, party, partyName)
 	end
 
 	local txtCount = roll.Count > 1 and format(" [%d]", roll.Count) or ""
+	
+	local txt_roll = ""
+	if roll.IsPass then
+		txt_roll = L["TITAN_LOOTTYPE_TRACKER_BTNPASS"]
+	else
+		txt_roll = string.format("%3d", roll.Roll)
+	end	
 
-	return "|Hplayer:" .. roll.Name .. "|h" ..
-		string.format("%3d", roll.Roll) .. ": " ..
-		iconClass .. colorName .. roll.Name .. colorRank .. rank .. "|r " ..
-		colorCheat .. txtRange .. "|r " ..
-		colorCheat .. txtCount .. "|h" ..
+	return "|Hplayer:" .. roll.Name .. "|h"
+		..txt_roll .. " : "
+		..iconClass.." "
+		..colorName .. roll.Name .. "|r "
+		..colorRank .. rank .. "|r "
+		..colorCheat.. txtRange .. "|r"
+		..colorTied..txtCount .. "|r"
+		.. "|h"
 		--			colorCheat..roll.Place.."|h"..
-		"\n"
+		.."\n"
 end
 
---[[ local
-NAME: Track.UpdateRollList
-DESC:
-Create the player list for display including rolls, 'cheats', guild rank (if in same guild)
-Rolls are above the line; no rolls yet are below the line
-:DESC
-VAR: None
-OUT: None
---]]
+---Create the player list for display including rolls, 'cheats', guild rank (if in same guild).
+--- Rolls are above the line; no rolls yet are below the line
 function Track.UpdateRollList()
 	local rollText = ""
 
@@ -1144,14 +946,7 @@ function Track.UpdateRollList()
 	TitanPanelLootTypeFrameClearButton:SetText(L["TITAN_LOOTTYPE_TRACKER_BTNCLEAR"])
 end
 
---[[ local
-NAME: Track.ClearRolls
-DESC:
-Clear the player list of any rolls rolls
-:DESC
-VAR: None
-OUT: None
---]]
+---Clear the player list of any rolls
 function Track.ClearRolls()
 	if #Track.rollArray > 0 then
 		Track.rollArray = {}
@@ -1162,16 +957,7 @@ function Track.ClearRolls()
 	Track.UpdateRollList()
 end
 
---[[ local
-NAME: Track.NotRolled
-DESC:
-- Send a nag message via whisper to players who have not rolled
-- Send a message to group that reminders were sent
-- Only an IsLead can do this!
-:DESC
-VAR: None
-OUT: None
---]]
+---If isLead : Send a nag message via whisper to players who have not rolled; Send a message to group that reminders were sent
 function Track.NotRolled()
 	if IsLead() then
 		local party, partyName = Track.GetPlayerList()
@@ -1188,7 +974,7 @@ function Track.NotRolled()
 
 		for i, p in ipairs(party) do
 			if Track.rollNames[p.name] == nil or Track.rollNames[p.name] == 0 then
-				SendChatMessage(Track.MSGPREFIX .. L["TITAN_LOOTTYPE_TRACKER_NOTROLLEDNAG"] .. group, WHISPER, nil,
+				SendMsg(Track.MSGPREFIX .. L["TITAN_LOOTTYPE_TRACKER_NOTROLLEDNAG"] .. group, WHISPER, nil,
 					p.name)
 				names = "send"
 			end
@@ -1200,18 +986,10 @@ function Track.NotRolled()
 	end
 end
 
---[[ local
-NAME: Track.StartRoll
-DESC:
-- Pop the main frame
-- Clear all rolls for a new set
-- Start a new roll process
-- Send a message to the group of a new roll
-- Only an IsLead can do this!
-:DESC
-VAR: None
-OUT: None
---]]
+---If isLead : Pop the main frame;
+--- Clear all rolls for a new set;
+--- Start a new roll process;
+--- Send a message to the group of a new roll
 function Track.StartRoll()
 	Track.ShowWindow()
 	Track.ClearRolls()
@@ -1221,16 +999,7 @@ function Track.StartRoll()
 	Track.AddChat(L["TITAN_LOOTTYPE_TRACKER_MSGBAR"])
 end
 
---[[ local
-NAME: Track.RollAnnounce
-DESC:
-- Send a message to the group of the winner
-- Stop the roll process so new rolls are not processed
-- Only an IsLead can do this!
-:DESC
-VAR: None
-OUT: None
---]]
+---If isLead : Send a message to the group of the winner; Stop the roll process so new rolls are not processed
 function Track.RollAnnounce()
 	local winName = ""
 	local winRoll = 0
@@ -1264,12 +1033,7 @@ function Track.RollAnnounce()
 	Track.DB.RollInProcess = false
 end
 
---[[ TitanPanelLootType
-NAME: TitanPanelLootType.ResizeButtons
-DESC: Determine the size of the buttons so they fill the line on the main frame.
-VAR: None
-OUT: None
---]]
+---Determine the size of the buttons so they fill the line on the main frame.
 function TitanPanelLootType.ResizeButtons()
 	local w = TitanPanelLootTypeFrameHelperButton:GetWidth()
 	TitanPanelLootTypeFrameRollButton:SetWidth(w / 2)
@@ -1286,13 +1050,7 @@ function TitanPanelLootType.ResizeButtons()
 	end
 end
 
---[[ TitanPanelLootType
-NAME: TitanPanelLootType.BtnClose
-DESC: On click of the main frame 'X':
-Close the main frame; clear rolls; end current roll process
-VAR: None
-OUT: None
---]]
+---On Close of main frame cleanup current roll process
 function TitanPanelLootType.BtnClose()
 	Track.Close()
 
@@ -1301,22 +1059,12 @@ function TitanPanelLootType.BtnClose()
 	end
 end
 
---[[ TitanPanelLootType
-NAME: TitanPanelLootType.BtnRoll
-DESC: On click of the main frame Roll: Send the roll to be processed
-VAR: None
-OUT: None
---]]
+---On click of "roll": Send the roll to be processed
 function TitanPanelLootType.BtnRoll()
 	RandomRoll(1, 100)
 end
 
---[[ TitanPanelLootType
-NAME: TitanPanelLootType.BtnPass
-DESC: On click of the main frame Pass: Send the pass to be processed
-VAR: None
-OUT: None
---]]
+---On click "pass": Send the pass to be processed
 function TitanPanelLootType.BtnPass()
 	Track.AddChat(L["TITAN_LOOTTYPE_TRACKER_TEXTPASS"])
 	--[[
@@ -1325,17 +1073,7 @@ function TitanPanelLootType.BtnPass()
 	--]]
 end
 
---[[ TitanPanelLootType
-NAME: TitanPanelLootType.BtnClearRolls
-DESC: On click of the main frame Clear:
-- Clear all rolls
-- Start a new roll process
-- Only an IsLead can do this!
-  This handled by enable / disable of buttons when the main frame is created.
-:DESC
-VAR: None
-OUT: None
---]]
+---On click of "clear": Only if IsLead, Clear all rolls and Start a new roll process
 function TitanPanelLootType.BtnClearRolls()
 	if #Track.rollArray > 0 then
 		Track.ClearRolls()
@@ -1346,16 +1084,8 @@ function TitanPanelLootType.BtnClearRolls()
 	Track.StartRoll()
 end
 
---[[ TitanPanelLootType
-NAME: TitanPanelLootType.BtnAnnounce
-DESC: On click of the main frame "start":
-- Start a new roll process
-- Only an IsLead can do this!
-  This handled by enable / disable of buttons when the main frame is created.
-:DESC
-VAR: None
-OUT: None
---]]
+---On click of "start": Only if IsLead, Start a new roll process
+---@param button any
 function TitanPanelLootType.BtnAnnounce(button)
 	Track.RollAnnounce()
 	if Track.DB.ClearOnAnnounce then
@@ -1366,28 +1096,29 @@ function TitanPanelLootType.BtnAnnounce(button)
 	end
 end
 
---[[ TitanPanelLootType
-NAME: TitanPanelLootType.BtnNotRolled
-DESC: On click of the main frame "remind":
-- Call the routine to nag those who have not rolled
-- Only an IsLead can do this!
-  This handled by enable / disable of buttons when the main frame is created.
-:DESC
-VAR: None
-OUT: None
---]]
+---On click of "remind": Only if IsLead, nag those who have not rolled
 function TitanPanelLootType.BtnNotRolled()
 	Track.NotRolled()
 end
 
 -- Debug!!!
+
 function TitanPanelLootType.AddAllRollsDebug() -- rolls for all players
 	local party, partyName = Track.GetPlayerList()
 
 	-- walk the player list, adding rolls
 	for i, p in ipairs(party) do
 		-- 0 (zero) allows a 'pass'
-		Track.AddRoll(p.name, tostring(random(0, 100)), "1", "100")
+		if i == 5 then -- cheater :)
+			Track.AddRoll(p.name, tostring(random(0, 100)), "90", "100")
+		elseif i == 13 then -- doubler :)
+			Track.AddRoll(p.name, tostring(random(0, 100)), "1", "100")
+			Track.AddRoll(p.name, tostring(random(0, 100)), "1", "100")
+		elseif i == 21 then -- passer :)
+			Track.AddRoll(p.name, tostring(0), "1", "100")
+		else
+			Track.AddRoll(p.name, tostring(random(0, 100)), "1", "100")
+		end
 	end
 	-- Now show the results
 	Track.UpdateRollList()
@@ -1397,15 +1128,8 @@ function TitanPanelLootType.AddRollDebug(...) -- single roll
 	Track.AddRoll(...)
 end
 
---[[ TitanPanelLootType
-NAME: TitanPanelLootTypeButton_OnLoad
-DESC: On load of this addon:
-- Get Titan registry values
-- Get addon saved variable values
-:DESC
-VAR: None
-OUT: None
---]]
+---On load : Set Titan registry values and register for events
+---@param self any
 function TitanPanelLootTypeButton_OnLoad(self)
 	self.registry = {
 		id = TITAN_LOOTTYPE_ID,
@@ -1442,12 +1166,10 @@ function TitanPanelLootTypeButton_OnLoad(self)
 	self:RegisterEvent("CHAT_MSG_SYSTEM");
 end
 
---[[ TitanPanelLootType
-NAME: TitanPanelLootTypeButton_OnEvent
-DESC: Parse events registered to plugin and act on them
-VAR: None
-OUT: None
---]]
+---Parse events registered to LootType and act on them
+---@param self any
+---@param event string
+---@param ... unknown
 function TitanPanelLootTypeButton_OnEvent(self, event, ...)
 	LootDebug(event, "events") -- could generate a lot of messages...
 
@@ -1478,19 +1200,17 @@ function TitanPanelLootTypeButton_OnEvent(self, event, ...)
 	TitanPanelPluginHandle_OnUpdate(updateTable)
 end
 
---[[ TitanPanelLootType
-NAME: TitanPanelLootTypeButton_GetButtonText
-DESC: Determine loot type and then display on button
-VAR: None
-OUT: None
---]]
+---Determine loot type and then display on button
+---@param id any
+---@return string
+---@return string
 function TitanPanelLootTypeButton_GetButtonText(id)
 	local lootTypeText, lootThreshold, color
 
 	--	if (GetNumSubgroupMembers() > 0) or (GetNumGroupMembers() > 0) then
 
 	if IsInRaid() or IsInGroup() then
-		lootTypeText = TitanLootMethod[GetLootMethod()].text;
+		lootTypeText = TitanLootMethod[LootMethod()].text;
 		lootThreshold = GetLootThreshold();
 		color = _G["ITEM_QUALITY_COLORS"][lootThreshold];
 	else
@@ -1500,18 +1220,12 @@ function TitanPanelLootTypeButton_GetButtonText(id)
 	return L["TITAN_LOOTTYPE_BUTTON_LABEL"], TitanUtils_GetColoredText(lootTypeText, color);
 end
 
---[[ TitanPanelLootType
-NAME: TitanPanelLootTypeButton_GetTooltipText
-DESC:
-Prepare the tool tip text. The tool tip is determined by whether the player is in a group or not.
-:DESC
-VAR: None
-OUT: None
---]]
+---Prepare the tool tip text. The tool tip is determined by whether the player is in a group or not
+---@return string
 function TitanPanelLootTypeButton_GetTooltipText()
 	--	if (GetNumSubgroupMembers() > 0) or (GetNumGroupMembers() > 0) then
 	if IsInRaid() or IsInGroup() then
-		local lootTypeText = TitanLootMethod[GetLootMethod()].text;
+		local lootTypeText = TitanLootMethod[LootMethod()].text;
 		local lootThreshold = GetLootThreshold();
 		local itemQualityDesc = _G["ITEM_QUALITY" .. lootThreshold .. "_DESC"];
 		local color = _G["ITEM_QUALITY_COLORS"][lootThreshold];
@@ -1527,14 +1241,7 @@ function TitanPanelLootTypeButton_GetTooltipText()
 	end
 end
 
---[[ TitanPanelLootType
-NAME: TitanPanelRightClickMenu_PrepareLootTypeMenu
-DESC:
-Display rightclick menu options.
-:DESC
-VAR: None
-OUT: None
---]]
+---Display rightclick menu options.
 function TitanPanelRightClickMenu_PrepareLootTypeMenu()
 	local info = {};
 
@@ -1549,17 +1256,9 @@ function TitanPanelRightClickMenu_PrepareLootTypeMenu()
 	TitanPanelRightClickMenu_AddCommand(L["TITAN_PANEL_MENU_HIDE"], TITAN_LOOTTYPE_ID, TITAN_PANEL_MENU_FUNC_HIDE);
 end
 
---[[ TitanPanelLootType
-NAME: TitanPanelLootTypeButton_OnClick
-DESC:
-On left click:
-If isLead then start a new roll
-If not isLead then do a roll
-
-:DESC
-VAR: None
-OUT: None
---]]
+--- On left click: If isLead then start a new group roll; If not isLead then do a roll
+---@param self any
+---@param button string
 function TitanPanelLootTypeButton_OnClick(self, button)
 	if button == "LeftButton" then
 		if IsLead() then

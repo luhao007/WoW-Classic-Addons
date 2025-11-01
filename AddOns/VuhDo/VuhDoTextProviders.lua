@@ -2,6 +2,7 @@ local floor = floor;
 local UnitGetTotalHealAbsorbs = VUHDO_unitGetTotalHealAbsorbs;
 local UnitPower = UnitPower;
 local UnitPowerMax = UnitPowerMax;
+local _;
 
 local VUHDO_getIncHealOnUnit;
 local VUHDO_getUnitOverallShieldRemain;
@@ -240,7 +241,7 @@ function VUHDO_initTextProviderConfig()
 
 	-- Falls man mal was löscht oder umbenennt
 	for tPanelNum = 1, 10 do -- VUHDO_MAX_PANELS
-		for tIndicatorName, tIndicatorConfig in pairs(VUHDO_INDICATOR_CONFIG[tPanelNum]["TEXT_INDICATORS"]) do
+		for _, tIndicatorConfig in pairs(VUHDO_INDICATOR_CONFIG[tPanelNum]["TEXT_INDICATORS"]) do
 			local tProviderName = tIndicatorConfig["TEXT_PROVIDER"];
 
 			if not VUHDO_TEXT_PROVIDERS[tProviderName] then

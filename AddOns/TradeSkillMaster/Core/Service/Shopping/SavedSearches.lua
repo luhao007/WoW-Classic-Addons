@@ -5,11 +5,10 @@
 -- ------------------------------------------------------------------------------ --
 
 local TSM = select(2, ...) ---@type TSM
-local SavedSearches = TSM.Shopping:NewPackage("SavedSearches")
-local Log = TSM.Include("Util.Log")
-local Database = TSM.Include("Util.Database")
-local TempTable = TSM.Include("Util.TempTable")
-local Settings = TSM.Include("Service.Settings")
+local SavedSearches = TSM.Shopping:NewPackage("SavedSearches") ---@type AddonPackage
+local Log = TSM.LibTSMUtil:Include("Util.Log")
+local Database = TSM.LibTSMUtil:Include("Database")
+local TempTable = TSM.LibTSMUtil:Include("BaseType.TempTable")
 local private = {
 	settings = nil,
 	db = nil,
@@ -22,8 +21,8 @@ local MAX_RECENT_SEARCHES = 2000
 -- Module Functions
 -- ============================================================================
 
-function SavedSearches.OnInitialize()
-	private.settings = Settings.NewView()
+function SavedSearches.OnInitialize(settingsDB)
+	private.settings = settingsDB:NewView()
 		:AddKey("global", "userData", "savedShoppingSearches")
 
 	-- remove duplicates
@@ -82,22 +81,19 @@ function SavedSearches.CreateFavoriteSearchesQuery()
 		:OrderBy("name", true)
 end
 
-function SavedSearches.SetSearchIsFavorite(dbRow, isFavorite)
-	local filter = dbRow:GetField("filter")
+function SavedSearches.SetSearchIsFavorite(index, isFavorite)
+	private.db:SetUniqueRowField("index", index, "isFavorite", isFavorite)
+	local filter = private.db:GetUniqueRowField("index", index, "filter")
 	private.settings.savedShoppingSearches.isFavorite[filter] = isFavorite or nil
-	dbRow:SetField("isFavorite", isFavorite)
-		:Update()
 end
 
-function SavedSearches.RenameSearch(dbRow, newName)
-	local filter = dbRow:GetField("filter")
+function SavedSearches.RenameSearch(index, newName)
+	private.db:SetUniqueRowField("index", index, "name", newName)
+	local filter = private.db:GetUniqueRowField("index", index, "filter")
 	private.settings.savedShoppingSearches.name[filter] = newName ~= filter and newName or nil
-	dbRow:SetField("name", newName)
-		:Update()
 end
 
-function SavedSearches.DeleteSearch(dbRow)
-	local index, filter = dbRow:GetFields("index", "filter")
+function SavedSearches.DeleteSearch(index, filter)
 	tremove(private.settings.savedShoppingSearches.filters, index)
 	private.settings.savedShoppingSearches.name[filter] = nil
 	private.settings.savedShoppingSearches.isFavorite[filter] = nil

@@ -1,11 +1,14 @@
-## Interface: 30405
+## Interface: 50502
 ## Author: MysticalOS
-## Version: r812
+## Version: r814
 
 ## Title: |cffffe00a<|r|cffff7d0aDBM Mod|r|cffffe00a>|r |cffff6010Raids (Vanilla)|r
-## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r |cFFFFFFFF副本助手|r |cFF69CCF0团队|r |cFF22B14C经典旧世|r
+## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r|cFFFFFFFF副本助手|r |cFF69CCF0团队|r |cFF22B14C经典旧世|r
 
 ## IconTexture: Interface\AddOns\DBM-Core\textures\dbm_airhorn
+
+## Category: DBM
+## Category-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r
 
 ## RequiredDeps: DBM-Core
 ## LoadOnDemand: 1
@@ -20,10 +23,10 @@
 ## X-DBM-StatTypes: normal
 ## X-DBM-Mod-SubCategoriesID: 533, 531, 509, 309, 469, 409, 249, 109, 90, 48, 2856
 ## X-DBM-Mod-Name: Raids (Vanilla)
-## X-DVM-Mod-Name-esES: Bandas (Clásico)
-## X-DVM-Mod-Name-esMX: Bandas (Clásico)
-## X-DVM-Mod-Name-ptBR: Raides (Clássico)
-## X-DVM-Mod-Name-frFR: Raids (Classique)
+## X-DBM-Mod-Name-esES: Bandas (Clásico)
+## X-DBM-Mod-Name-esMX: Bandas (Clásico)
+## X-DBM-Mod-Name-ptBR: Raides (Clássico)
+## X-DBM-Mod-Name-frFR: Raids (Classique)
 ## X-DBM-Mod-Name-koKR: 공격대 (클래식)
 ## X-DBM-Mod-Name-ruRU: Рейды (классический)
 ## X-DBM-Mod-Sort: 1101
@@ -109,7 +112,7 @@ BWL\Broodlord.lua
 BWL\Firemaw.lua
 BWL\Ebonroc.lua
 BWL\Flamegor.lua
-BWL\Ebonroc_and_Flamegor.lua
+# BWL\Ebonroc_and_Flamegor.lua
 BWL\Chromaggus.lua
 BWL\Nefarian.lua
 

@@ -55,6 +55,8 @@ local DUMP_KEY_PATH_DELIM = "\001"
 -- Public Library Functions
 -- ============================================================================
 
+---@class Class
+
 ---@alias ClassProperties
 ---|'"ABSTRACT"' # An abstract class cannot be directly instantiated
 
@@ -91,14 +93,20 @@ function Lib.DefineClass(name, superclass, ...)
 		referenceType = nil,
 		subclassed = false,
 		methodProperties = nil, -- set as needed
+		inClassFunc = 0,
 	}
 	while superclass do
-		for key, value in pairs(private.classInfo[superclass].static) do
+		local superclassInfo = private.classInfo[superclass]
+		for key, value in pairs(superclassInfo.static) do
 			if not private.classInfo[class].superStatic[key] then
-				private.classInfo[class].superStatic[key] = { class = superclass, value = value }
+				private.classInfo[class].superStatic[key] = {
+					class = superclass,
+					value = value,
+					properties = superclassInfo.methodProperties and superclassInfo.methodProperties[key] or nil,
+				}
 			end
 		end
-		private.classInfo[superclass].subclassed = true
+		superclassInfo.subclassed = true
 		superclass = superclass.__super
 	end
 	return class
@@ -165,14 +173,14 @@ private.INST_MT = {
 		-- table lookup is kept to an absolute minimum, at the expense of readability and code reuse.
 		local instInfo = private.instInfo[self]
 
-		-- check if this key is an instance field first, since this is the most common case
+		-- Check if this key is an instance field first, since this is the most common case
 		local res = instInfo.fields[key]
 		if res ~= nil then
 			instInfo.currentClass = nil
 			return res
 		end
 
-		-- check if it's a special field / method
+		-- Check if it's a special field / method
 		if key == "__super" then
 			if not instInfo.hasSuperclass then
 				error("The class of this instance has no superclass", 2)
@@ -191,25 +199,25 @@ private.INST_MT = {
 			return private.InstClosure
 		end
 
-		-- reset the current class since we're not continuing the __super chain
+		-- Reset the current class since we're not continuing the __super chain
 		local class = instInfo.currentClass or instInfo.class
 		instInfo.currentClass = nil
 
-		-- check if this is a static key
+		-- Check if this is a static key
 		local classInfo = private.classInfo[class]
 		res = classInfo.static[key]
 		if res ~= nil then
 			return res
 		end
 
-		-- check if it's a static field in the superclass
+		-- Check if it's a static field in the superclass
 		local superStaticRes = classInfo.superStatic[key]
 		if superStaticRes then
 			res = superStaticRes.value
 			return res
 		end
 
-		-- check if this field has a default value
+		-- Check if this field has a default value
 		res = DEFAULT_INST_FIELDS[key]
 		if res ~= nil then
 			return res
@@ -244,19 +252,21 @@ private.CLASS_MT = {
 		if RESERVED_KEYS[key] then
 			error("Reserved word: "..key, 2)
 		end
-		local isMethod = type(value) == "function"
+		local isFunction = type(value) == "function"
 		local methodProperty = classInfo.referenceType
+		local isStatic = methodProperty == "STATIC"
 		classInfo.referenceType = nil
-		if methodProperty == "STATIC" then
-			-- we are defining a static class function, not a class method
-			if not isMethod then
-				error("Unnecessary __static for non-function class property", 2)
-			end
+		if isFunction and isStatic then
+			-- We are defining a static class function
 			classInfo.methodProperties = classInfo.methodProperties or {}
-			classInfo.methodProperties[key] = methodProperty
-			isMethod = false
-		end
-		if isMethod then
+			classInfo.methodProperties[key] = "STATIC"
+			-- We wrap static methods so that we can allow private or protected access within them
+			classInfo.static[key] = function(...)
+				classInfo.inClassFunc = classInfo.inClassFunc + 1
+				return private.StaticFuncReturnHelper(classInfo, value(...))
+			end
+		elseif isFunction and not isStatic then
+			-- We are defining a class method
 			local superclass = classInfo.superclass
 			while superclass do
 				local superclassInfo = private.classInfo[superclass]
@@ -322,16 +332,21 @@ private.CLASS_MT = {
 					error(format("Attempt to call class method on non-object (%s)", tostring(inst)), 2)
 				end
 				local prevMethodClass = instInfo.methodClass
-				if isPrivate and prevMethodClass ~= self then
+				if isPrivate and prevMethodClass ~= self and (prevMethodClass ~= nil or classInfo.inClassFunc == 0) then
 					error(format("Attempting to call private method (%s) from outside of class", key), 2)
 				end
-				if isProtected and prevMethodClass == nil then
+				if isProtected and prevMethodClass == nil and classInfo.inClassFunc == 0 then
 					error(format("Attempting to call protected method (%s) from outside of class", key), 2)
 				end
 				instInfo.methodClass = self
-				return private.InstMethodReturnHelper(prevMethodClass, instInfo, value(inst, ...))
+				classInfo.inClassFunc = classInfo.inClassFunc + 1
+				return private.InstMethodReturnHelper(prevMethodClass, instInfo, classInfo, value(inst, ...))
 			end
-		else
+		elseif not isFunction then
+			-- We are defining a static property (shouldn't be explicitly marked as static)
+			if isStatic then
+				error("Unnecessary __static for non-function class property", 2)
+			end
 			classInfo.static[key] = value
 		end
 	end,
@@ -394,27 +409,47 @@ private.CLASS_MT = {
 			closures = {},
 		}
 		if not hasSuperclass then
-			-- set the static members directly on this object for better performance
+			-- Set the static members directly on this object for better performance
 			for key, value in pairs(classInfo.static) do
 				if not SPECIAL_PROPERTIES[key] then
 					rawset(inst, key, value)
 				end
 			end
 		end
+		-- Check that all the abstract methods have been defined
+		assert(not next(private.tempTable))
 		local c = self
 		while c do
 			private.instInfo[inst].isClassLookup[c] = true
 			c = private.classInfo[c].superclass
 			if c and private.classInfo[c] and private.classInfo[c].methodProperties then
 				for methodName, property in pairs(private.classInfo[c].methodProperties) do
-					if property == "ABSTRACT" and type(classInfo.static[methodName]) ~= "function" then
-						error("Missing abstract method: "..tostring(methodName), 2)
+					if property == "ABSTRACT" then
+						private.tempTable[methodName] = true
 					end
 				end
 			end
 		end
+		for methodName in pairs(private.tempTable) do
+			if type(classInfo.static[methodName]) ~= "function" then
+				-- Check the superclasses
+				local found = false
+				local c2 = self
+				while c2 and not found do
+					c2 = private.classInfo[c2].superclass
+					if c2 and private.classInfo[c2] and private.classInfo[c2].static[methodName] then
+						found = true
+					end
+				end
+				if not found then
+					wipe(private.tempTable)
+					error("Missing abstract method: "..tostring(methodName), 2)
+				end
+			end
+		end
+		wipe(private.tempTable)
 		if private.constructTbl then
-			-- re-set all the object attributes through the proper metamethod
+			-- Re-set all the object attributes through the proper metamethod
 			assert(not next(private.tempTable))
 			for k, v in pairs(inst) do
 				private.tempTable[k] = v
@@ -447,9 +482,16 @@ function private.ClassIsA(class, targetClass)
 	end
 end
 
-function private.InstMethodReturnHelper(class, instInfo, ...)
-	-- reset methodClass now that the function returned
+function private.InstMethodReturnHelper(class, instInfo, classInfo, ...)
+	-- Reset methodClass and decrement inClassFunc now that the function returned
 	instInfo.methodClass = class
+	classInfo.inClassFunc = classInfo.inClassFunc - 1
+	return ...
+end
+
+function private.StaticFuncReturnHelper(classInfo, ...)
+	-- Decrement inClassFunc now that the function returned
+	classInfo.inClassFunc = classInfo.inClassFunc - 1
 	return ...
 end
 
@@ -480,26 +522,46 @@ end
 
 function private.InstClosure(inst, methodName)
 	local instInfo = private.instInfo[inst]
-	-- The class of the current class method we are in, or nil if we're not in a class method.
-	if not instInfo.methodClass then
+	local methodClass = instInfo.methodClass
+	if not methodClass then
 		error("Closures can only be created within a class method", 2)
+	elseif instInfo.currentClass then
+		error("Cannot create closure as superclass", 2)
 	end
-	local class = instInfo.methodClass
-	local methodFunc = private.classInfo[class].static[methodName]
+	-- Check for this method on the class
+	local classInfo = private.classInfo[instInfo.class]
+	local methodFunc = classInfo.static[methodName]
+	if methodFunc then
+		-- If this method is private, make sure we're within the class
+		if classInfo.methodProperties and classInfo.methodProperties[methodName] == "PRIVATE" and instInfo.class ~= methodClass then
+			error("Attempt to create closure for private virtual method", 2)
+		end
+	else
+		-- Check for this method on the superclass
+		local superInfo = classInfo.superStatic[methodName]
+		if superInfo then
+			if superInfo.properties == "PRIVATE" and not private.classInfo[methodClass].static[methodName] then
+				error("Attempt to create closure for private superclass method", 2)
+			end
+			methodFunc = superInfo.value
+		end
+	end
 	if type(methodFunc) ~= "function" then
 		error("Attempt to create closure for non-method field", 2)
 	end
-	local cacheKey = tostring(class).."."..methodName
+	local methodClassInfo = private.classInfo[methodClass]
+	local cacheKey = tostring(methodClass).."."..methodName
 	if not instInfo.closures[cacheKey] then
 		instInfo.closures[cacheKey] = function(...)
-			if instInfo.methodClass == class then
+			if instInfo.methodClass == methodClass then
 				-- We're already within a method of the class, so just call the method normally
 				return methodFunc(inst, ...)
 			else
 				-- Pretend we are within the class which created the closure
 				local prevClass = instInfo.methodClass
-				instInfo.methodClass = class
-				return private.InstMethodReturnHelper(prevClass, instInfo, methodFunc(inst, ...))
+				instInfo.methodClass = methodClass
+				methodClassInfo.inClassFunc = methodClassInfo.inClassFunc + 1
+				return private.InstMethodReturnHelper(prevClass, instInfo, methodClassInfo, methodFunc(inst, ...))
 			end
 		end
 	end
@@ -532,7 +594,7 @@ function private.InstDump(inst, resultTbl, maxDepth, tableLookupFunc)
 					value = instInfo.hasSuperclass and instInfo.fields or value
 				end
 				for k, v in pairs(value) do
-					if type(v) == "table" and not strfind(k, DUMP_KEY_PATH_DELIM, nil, true) then
+					if type(v) == "table" and (type(k) == "string" or type(k) == "number") and not strfind(k, DUMP_KEY_PATH_DELIM, nil, true) then
 						tinsert(bfsQueueKeyPath, keyPath..DUMP_KEY_PATH_DELIM..k)
 						tinsert(bfsQueueDepth, depth + 1)
 						tinsert(bfsQueueValue, v)
@@ -555,7 +617,9 @@ function private.InstDumpVariable(key, value, context, strKeyPath)
 		private.InstDumpKeyValue(key, "\""..tostring(value).."\"", context)
 	elseif type(value) == "table" then
 		local refKeyPath = context.tableRefs[value]
-		assert(refKeyPath)
+		if not refKeyPath then
+			return
+		end
 		if refKeyPath ~= strKeyPath then
 			local refValue = "\"REF{"..gsub(refKeyPath, DUMP_KEY_PATH_DELIM, ".").."}\""
 			private.InstDumpKeyValue(key, refValue, context)
@@ -660,11 +724,13 @@ end
 -- ============================================================================
 
 do
-	-- register with LibStub
+	-- Register with LibStub
 	local libStubTbl = LibStub:NewLibrary("LibTSMClass", MINOR_REVISION)
 	if libStubTbl then
 		for k, v in pairs(Lib) do
 			libStubTbl[k] = v
 		end
 	end
+	-- Return the library and our private table for unit testing
+	return {Lib, private}
 end

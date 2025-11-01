@@ -4,9 +4,9 @@ local L = BtWQuests.L;
 local EXPANSION_ID = BtWQuests.Constant.Expansions.TheBurningCrusade;
 local CATEGORY_ID = BtWQuests.Constant.Category.TheBurningCrusade.Netherstorm;
 local Chain = BtWQuests.Constant.Chain.TheBurningCrusade.Netherstorm;
-local MAP_ID = 1953
+local MAP_ID = 109
 local ACHIEVEMENT_ID = 1194
-local CONTINENT_ID = 1945
+local CONTINENT_ID = 1467
 local LEVEL_RANGE = {25, 30}
 local LEVEL_PREREQUISITES = {
     {

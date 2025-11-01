@@ -5,44 +5,90 @@
 -- ------------------------------------------------------------------------------ --
 
 local TSM = select(2, ...) ---@type TSM
-local Auctioning = TSM.UI.AuctionUI:NewPackage("Auctioning")
-local Environment = TSM.Include("Environment")
-local L = TSM.Include("Locale").GetTable()
-local FSM = TSM.Include("Util.FSM")
-local Container = TSM.Include("Util.Container")
-local Table = TSM.Include("Util.Table")
-local Sound = TSM.Include("Util.Sound")
-local Money = TSM.Include("Util.Money")
-local Log = TSM.Include("Util.Log")
-local Theme = TSM.Include("Util.Theme")
-local TextureAtlas = TSM.Include("Util.TextureAtlas")
-local ItemString = TSM.Include("Util.ItemString")
-local Threading = TSM.Include("Service.Threading")
-local ItemInfo = TSM.Include("Service.ItemInfo")
-local CustomPrice = TSM.Include("Service.CustomPrice")
-local BagTracking = TSM.Include("Service.BagTracking")
-local AuctionTracking = TSM.Include("Service.AuctionTracking")
-local AuctionScan = TSM.Include("Service.AuctionScan")
-local Settings = TSM.Include("Service.Settings")
-local DefaultUI = TSM.Include("Service.DefaultUI")
-local UIElements = TSM.Include("UI.UIElements")
-local UIUtils = TSM.Include("UI.UIUtils")
+local Auctioning = TSM.UI.AuctionUI:NewPackage("Auctioning") ---@type AddonPackage
+local ClientInfo = TSM.LibTSMWoW:Include("Util.ClientInfo")
+local L = TSM.Locale.GetTable()
+local Money = TSM.LibTSMUtil:Include("UI.Money")
+local ChatMessage = TSM.LibTSMService:Include("UI.ChatMessage")
+local TextureAtlas = TSM.LibTSMService:Include("UI.TextureAtlas")
+local ItemString = TSM.LibTSMTypes:Include("Item.ItemString")
+local Threading = TSM.LibTSMTypes:Include("Threading")
+local ItemInfo = TSM.LibTSMService:Include("Item.ItemInfo")
+local CustomString = TSM.LibTSMTypes:Include("CustomString")
+local AuctionHouseWrapper = TSM.LibTSMWoW:Include("API.AuctionHouseWrapper")
+local AuctionHouse = TSM.LibTSMWoW:Include("API.AuctionHouse")
+local DefaultUI = TSM.LibTSMWoW:Include("UI.DefaultUI")
+local SoundAlert = TSM.LibTSMWoW:Include("UI.SoundAlert")
+local Group = TSM.LibTSMTypes:Include("Group")
+local UIElements = TSM.LibTSMUI:Include("Util.UIElements")
+local UIUtils = TSM.LibTSMUI:Include("Util.UIUtils")
+local PlayerInfo = TSM.LibTSMApp:Include("Service.PlayerInfo")
+local Reactive = TSM.LibTSMUtil:Include("Reactive")
+local UIManager = TSM.LibTSMUtil:IncludeClassType("UIManager")
+local TempTable = TSM.LibTSMUtil:Include("BaseType.TempTable")
+local Table = TSM.LibTSMUtil:Include("Lua.Table")
+local Event = TSM.LibTSMWoW:Include("Service.Event")
+local AuctionHouseUIUtils = TSM.LibTSMUI:Include("AuctionHouse.AuctionHouseUIUtils")
+local AuctionScan = TSM.LibTSMService:Include("AuctionScan")
 local private = {
+	manager = nil, ---@type UIManager
 	settings = nil,
-	contentPath = "selection",
-	hasLastScan = false,
-	fsm = nil,
 	scanContext = {},
-	auctionScan = nil,
-	groupSearch = "",
-	selectionFrame = nil,
-	logQuery = nil,
-	perItem = true,
-	canStartNewScan = false,
 }
 local SECONDS_PER_MIN = 60
 local SECONDS_PER_HOUR = 60 * SECONDS_PER_MIN
 local SECONDS_PER_DAY = 24 * SECONDS_PER_HOUR
+local STATE_SCHEMA = Reactive.CreateStateSchema("AUCTIONING_UI_STATE")
+	:AddStringField("contentPath", "selection")
+	:AddOptionalTableField("selectionFrame")
+	:AddOptionalTableField("scanFrame")
+	:AddOptionalStringField("scanType")
+	:AddStringField("scanTab", "log")
+	:AddBooleanField("hasLastScan", false)
+	:AddOptionalStringField("scanThreadId")
+	:AddBooleanField("isScanning", false)
+	:AddBooleanField("doneScanning", false)
+	:AddOptionalTableField("auctionScan")
+	:AddOptionalNumberField("scanNumItems")
+	:AddNumberField("scanProgress", 0)
+	:AddOptionalBooleanField("scanIsPaused")
+	:AddOptionalTableField("pendingFuture")
+	:AddBooleanField("canStartNewScan", false)
+	:AddOptionalBooleanField("pausePending")
+	:AddBooleanField("canProcess", false)
+	:AddOptionalTableField("currentRowCancellable")
+	:AddOptionalNumberField("currentRowDepositCost")
+	:AddOptionalStringField("currentRowItemString")
+	:AddBooleanField("currentRowIsCommodity", false)
+	:AddOptionalNumberField("currentRowDuration")
+	:AddOptionalNumberField("currentRowBid")
+	:AddOptionalNumberField("currentRowItemBid")
+	:AddOptionalNumberField("currentRowBuyout")
+	:AddOptionalNumberField("currentRowItemBuyout")
+	:AddOptionalNumberField("currentRowNumProcessed")
+	:AddOptionalNumberField("currentRowNumStacks")
+	:AddOptionalNumberField("currentRowStackSize")
+	:AddOptionalNumberField("currentRowAuctionId")
+	:AddOptionalStringField("currentRowOperationName")
+	:AddOptionalTableField("statusCancellable")
+	:AddOptionalNumberField("statusNumProcessed")
+	:AddOptionalNumberField("statusNumConfirmed")
+	:AddOptionalNumberField("statusNumFailed")
+	:AddOptionalNumberField("statusTotalNum")
+	:AddNumberField("playerMoney", 0)
+	:Commit()
+local COMMON_CURRENT_ROW_STATE_FIELDS = {
+	itemString = "currentRowItemString",
+	bid = "currentRowBid",
+	itemBid = "currentRowItemBid",
+	buyout = "currentRowBuyout",
+	itemBuyout = "currentRowItemBuyout",
+	numProcessed = "currentRowNumProcessed",
+	numStacks = "currentRowNumStacks",
+	stackSize = "currentRowStackSize",
+	auctionId = "currentRowAuctionId",
+	operationName = "currentRowOperationName",
+}
 
 
 
@@ -50,8 +96,8 @@ local SECONDS_PER_DAY = 24 * SECONDS_PER_HOUR
 -- Module Functions
 -- ============================================================================
 
-function Auctioning.OnInitialize()
-	private.settings = Settings.NewView()
+function Auctioning.OnInitialize(settingsDB)
+	private.settings = settingsDB:NewView()
 		:AddKey("global", "auctionUIContext", "auctioningSelectionDividedContainer")
 		:AddKey("global", "auctionUIContext", "auctioningSelectionVerticalDividedContainer")
 		:AddKey("global", "auctionUIContext", "auctioningBagScrollingTable")
@@ -61,8 +107,37 @@ function Auctioning.OnInitialize()
 		:AddKey("char", "auctionUIContext", "auctioningGroupTree")
 		:AddKey("global", "auctioningOptions", "scanCompleteSound")
 		:AddKey("global", "auctioningOptions", "confirmCompleteSound")
-	TSM.UI.AuctionUI.RegisterTopLevelPage(L["Auctioning"], private.GetAuctioningFrame, private.OnItemLinked)
-	private.FSMCreate()
+
+	-- Create the state / manager
+	local state = STATE_SCHEMA:CreateState()
+	private.manager = UIManager.Create("AUCTIONING", state, private.ActionHandler)
+		:SuppressActionLog("ACTION_SCAN_PROGRESS_UPDATED")
+
+	-- Register this page with the Auction UI
+	local function GetFrame()
+		return private.GetAuctioningFrame(state)
+	end
+	local function OnItemLinked(_, itemLink)
+		return private.StartLinkedItemScan(state, itemLink)
+	end
+	TSM.UI.AuctionUI.RegisterTopLevelPage(L["Auctioning"], GetFrame, OnItemLinked)
+
+	-- Set up some state publishers
+	private.manager:AddCancellable(state:PublisherForKeys("scanFrame", "scanTab", "currentRowItemString")
+		:IgnoreIfKeyNotEquals("scanTab", "log")
+		:IgnoreIfKeyEquals("scanFrame", nil)
+		:CallFunction(private.UpdateLogSelectedIndex)
+	)
+	private.manager:SetStateFromPublisher("currentRowIsCommodity", state:PublisherForKeyChange("currentRowItemString")
+		:MapNonNilWithFunction(ItemInfo.IsCommodity)
+		:MapNilToValue(false)
+	)
+	private.manager:SetStateFromPublisher("doneScanning", state:PublisherForExpression([[scanProgress == 1 and not isScanning]]))
+	private.manager:SetStateFromPublisher("canProcess", state:PublisherForExpression([[pausePending == nil and (doneScanning or scanIsPaused) or false]]))
+
+	-- Set up some event handlers
+	Event.Register("PLAYER_MONEY", function() state.playerMoney = GetMoney() end)
+	DefaultUI.RegisterAuctionHouseVisibleCallback(function() private.manager:ProcessAction("ACTION_AUCTION_HOUSE_CLOSED") end, false)
 end
 
 
@@ -71,24 +146,26 @@ end
 -- Auctioning UI
 -- ============================================================================
 
-function private.GetAuctioningFrame()
+function private.GetAuctioningFrame(state)
 	UIUtils.AnalyticsRecordPathChange("auction", "auctioning")
-	if not private.hasLastScan then
-		private.contentPath = "selection"
+	if not state.hasLastScan then
+		state.contentPath = "selection"
 	end
 	return UIElements.New("ViewContainer", "auctioning")
+		:SetContext(state)
 		:SetNavCallback(private.GetAuctioningContentFrame)
 		:AddPath("selection")
 		:AddPath("scan")
-		:SetPath(private.contentPath)
+		:SetPath(state.contentPath)
 end
 
-function private.GetAuctioningContentFrame(_, path)
-	private.contentPath = path
+function private.GetAuctioningContentFrame(frame, path)
+	local state = frame:GetContext() ---@type AuctioningUIState
+	state.contentPath = path
 	if path == "selection" then
 		return private.GetAuctioningSelectionFrame()
 	elseif path == "scan" then
-		return private.GetAuctioningScanFrame()
+		return private.GetAuctioningScanFrame(state)
 	else
 		error("Unexpected path: "..tostring(path))
 	end
@@ -100,60 +177,30 @@ function private.GetAuctioningSelectionFrame()
 		:SetSettingsContext(private.settings, "auctioningSelectionDividedContainer")
 		:SetMinWidth(220, 250)
 		:SetBackgroundColor("PRIMARY_BG")
+		:SetManager(private.manager)
 		:SetLeftChild(UIElements.New("Frame", "groupSelection")
 			:SetLayout("VERTICAL")
-			:SetPadding(0, 0, 8, 0)
-			:AddChild(UIElements.New("Frame", "title")
-				:SetLayout("HORIZONTAL")
-				:SetMargin(0, 0, 0, 8)
-				:SetHeight(24)
-				:AddChild(UIElements.New("Input", "search")
-					:SetMargin(8, 8, 0, 0)
-					:SetIconTexture("iconPack.18x18/Search")
-					:SetClearButtonEnabled(true)
-					:AllowItemInsert(true)
-					:SetHintText(L["Search Groups"])
-					:SetValue(private.groupSearch)
-					:SetScript("OnValueChanged", private.GroupSearchOnValueChanged)
-				)
-				:AddChild(UIElements.New("Button", "expandAllBtn")
-					:SetSize(24, 24)
-					:SetMargin(0, 4, 0, 0)
-					:SetBackground("iconPack.18x18/Expand All")
-					:SetScript("OnClick", private.ExpandAllGroupsOnClick)
-					:SetTooltip(L["Expand / Collapse All Groups"])
-				)
-				:AddChild(UIElements.New("Button", "selectAllBtn")
-					:SetSize(24, 24)
-					:SetMargin(0, 8, 0, 0)
-					:SetBackground("iconPack.18x18/Select All")
-					:SetScript("OnClick", private.SelectAllGroupsOnClick)
-					:SetTooltip(L["Select / Deselect All Groups"])
-				)
+			:AddChild(UIElements.New("ApplicationGroupTreeWithControls", "groupTree")
+				:SetOperationType("Auctioning")
+				:SetSettingsContext(private.settings, "auctioningGroupTree")
+				:SetAction("OnGroupSelectionChanged", "ACTION_GROUP_SELECTION_CHANGED")
 			)
 			:AddChild(UIElements.New("HorizontalLine", "line"))
-			:AddChild(UIElements.New("ApplicationGroupTree", "groupTree")
-				:SetSettingsContext(private.settings, "auctioningGroupTree")
-				:SetQuery(TSM.Groups.CreateQuery(), "Auctioning")
-				:SetSearchString(private.groupSearch)
-				:SetScript("OnGroupSelectionChanged", private.GroupTreeOnGroupSelectionChanged)
-			)
 			:AddChild(UIElements.New("Frame", "bottom")
 				:SetLayout("VERTICAL")
-				:SetHeight(74)
+				:SetHeight(72)
 				:SetBackgroundColor("PRIMARY_BG_ALT")
-				:AddChild(UIElements.New("HorizontalLine", "line"))
 				:AddChild(UIElements.New("ActionButton", "postScanBtn")
 					:SetHeight(24)
 					:SetMargin(8)
 					:SetText(L["Run Post Scan"])
-					:SetScript("OnClick", private.RunPostButtonOnclick)
+					:SetAction("OnClick", "ACTION_START_GROUP_POST_SCAN")
 				)
 				:AddChild(UIElements.New("ActionButton", "cancelScanBtn")
 					:SetHeight(24)
 					:SetMargin(8, 8, 0, 8)
 					:SetText(L["Run Cancel Scan"])
-					:SetScript("OnClick", private.RunCancelButtonOnclick)
+					:SetAction("OnClick", "ACTION_START_GROUP_CANCEL_SCAN")
 				)
 			)
 		)
@@ -163,7 +210,7 @@ function private.GetAuctioningSelectionFrame()
 			:SetSettingsContext(private.settings, "auctioningSelectionVerticalDividedContainer")
 			:SetMinWidth(50, 100)
 			:SetBackgroundColor("PRIMARY_BG")
-			:SetTopChild(UIElements.New("Frame", "content")
+			:SetTopChild(UIElements.New("Frame", "top")
 				:SetLayout("VERTICAL")
 				:AddChild(UIElements.New("TabGroup", "buttons")
 					:SetNavCallback(private.GetScansElement)
@@ -172,7 +219,7 @@ function private.GetAuctioningSelectionFrame()
 					:AddPath(L["Favorite Scans"])
 				)
 			)
-			:SetBottomChild(UIElements.New("Frame", "content")
+			:SetBottomChild(UIElements.New("Frame", "bottom")
 				:SetLayout("VERTICAL")
 				:AddChild(UIElements.New("Frame", "bottom")
 					:SetLayout("VERTICAL")
@@ -185,32 +232,9 @@ function private.GetAuctioningSelectionFrame()
 						:SetText(L["Post Items from Bags"])
 					)
 				)
-				:AddChild(UIElements.New("SelectionScrollingTable", "bagScrollingTable")
-					:SetSettingsContext(private.settings, "auctioningBagScrollingTable")
-					:GetScrollingTableInfo()
-						:NewColumn("item")
-							:SetTitle(L["Item"])
-							:SetHeaderIndent(18)
-							:SetFont("ITEM_BODY3")
-							:SetJustifyH("LEFT")
-							:SetIconSize(12)
-							:SetTextInfo("autoBaseItemString", UIUtils.GetDisplayItemName)
-							:SetIconInfo("itemTexture")
-							:SetTooltipInfo("autoBaseItemString")
-							:SetSortInfo("name")
-							:DisableHiding()
-							:Commit()
-						:NewColumn("operation")
-							:SetTitle(L["Auctioning Operation"])
-							:SetFont("BODY_BODY3_MEDIUM")
-							:SetJustifyH("LEFT")
-							:SetTextInfo("firstOperation", private.BagGetOperationText)
-							:SetSortInfo("firstOperation")
-							:Commit()
-						:Commit()
+				:AddChild(UIElements.New("AuctioningBagScrollTable", "bagScrollingTable")
+					:SetSettings(private.settings, "auctioningBagScrollingTable")
 					:SetQuery(TSM.Auctioning.PostScan.CreateBagsQuery())
-					:SetAutoReleaseQuery(true)
-					:SetSelectionValidator(private.BagScrollingTableIsSelectionEnabled)
 					:SetScript("OnSelectionChanged", private.BagOnSelectionChanged)
 				)
 				:AddChild(UIElements.New("HorizontalLine", "line"))
@@ -224,14 +248,14 @@ function private.GetAuctioningSelectionFrame()
 						:SetMargin(0, 8, 0, 0)
 						:SetDisabled(true)
 						:SetText(L["Post Selected"])
-						:SetScript("OnClick", private.RunPostBagsButtonOnClick)
+						:SetAction("OnClick", "ACTION_START_BAGS_POST_SCAN")
 					)
 					:AddChild(UIElements.New("Button", "selectAll")
 						:SetSize("AUTO", 20)
 						:SetMargin(0, 8, 0, 0)
 						:SetFont("BODY_BODY3_MEDIUM")
 						:SetText(L["Select All"])
-						:SetScript("OnClick", private.SelectAllOnClick)
+						:SetAction("OnClick", "ACTION_BAG_SELECT_ALL")
 					)
 					:AddChild(UIElements.New("VerticalLine", "line")
 						:SetHeight(20)
@@ -242,44 +266,47 @@ function private.GetAuctioningSelectionFrame()
 						:SetFont("BODY_BODY3_MEDIUM")
 						:SetText(L["Clear All"])
 						:SetDisabled(true)
-						:SetScript("OnClick", private.ClearAllOnClick)
+						:SetAction("OnClick", "ACTION_BAG_CLEAR_ALL")
 					)
 				)
 			)
 		)
+		:SetScript("OnUpdate", private.SelectionOnUpdate)
 		:SetScript("OnHide", private.SelectionOnHide)
-	local noGroupSelected = frame:GetElement("groupSelection.groupTree"):IsSelectionCleared(true)
-	frame:GetElement("groupSelection.bottom.postScanBtn"):SetDisabled(noGroupSelected)
-	frame:GetElement("groupSelection.bottom.cancelScanBtn"):SetDisabled(noGroupSelected)
-	private.selectionFrame = frame
+	local selectionCleared = frame:GetElement("groupSelection.groupTree"):IsSelectionCleared()
+	frame:GetElement("groupSelection.bottom.postScanBtn"):SetDisabled(selectionCleared)
+	frame:GetElement("groupSelection.bottom.cancelScanBtn"):SetDisabled(selectionCleared)
 	return frame
 end
 
 function private.GetScansElement(_, button)
 	if button == L["Recent Scans"] then
 		return UIElements.New("SearchList", "list")
+			:SetEditEnabled(false)
 			:SetQuery(TSM.Auctioning.SavedSearches.CreateRecentSearchesQuery())
-			:SetEditButtonHidden(true)
-			:SetScript("OnFavoriteChanged", private.SearchListOnFavoriteChanged)
-			:SetScript("OnDelete", private.SearchListOnDelete)
-			:SetScript("OnRowClick", private.SearchListOnRowClick)
+			:SetAction("OnFavoriteChanged", "ACTION_SET_SEARCH_FAVORITE")
+			:SetAction("OnDelete", "ACTION_RECENT_SEARCH_DELETE")
+			:SetAction("OnRowClick", "ACTION_RECENT_SEARCH_LIST_ROW_CLICK")
 	elseif button == L["Favorite Scans"] then
 		return UIElements.New("SearchList", "list")
+			:SetEditEnabled(true)
 			:SetQuery(TSM.Auctioning.SavedSearches.CreateFavoriteSearchesQuery())
-			:SetScript("OnFavoriteChanged", private.SearchListOnFavoriteChanged)
-			:SetScript("OnEditClick", private.SearchListOnEditClick)
-			:SetScript("OnDelete", private.SearchListOnDelete)
-			:SetScript("OnRowClick", private.SearchListOnRowClick)
+			:SetAction("OnFavoriteChanged", "ACTION_SET_SEARCH_FAVORITE")
+			:SetAction("OnEdit", "ACTION_FAVORITE_SEARCH_EDIT")
+			:SetAction("OnDelete", "ACTION_FAVORITE_SEARCH_DELETE")
+			:SetAction("OnRowClick", "ACTION_FAVORITE_SEARCH_LIST_ROW_CLICK")
 	else
 		error("Unexpected button: "..tostring(button))
 	end
 end
 
-function private.GetAuctioningScanFrame()
+---@param state AuctioningUIState
+function private.GetAuctioningScanFrame(state)
 	UIUtils.AnalyticsRecordPathChange("auction", "auctioning", "scan")
 	return UIElements.New("Frame", "scan")
 		:SetLayout("VERTICAL")
 		:SetBackgroundColor("PRIMARY_BG")
+		:SetManager(private.manager)
 		:AddChild(UIElements.New("Frame", "header")
 			:SetLayout("HORIZONTAL")
 			:SetPadding(8)
@@ -297,7 +324,7 @@ function private.GetAuctioningScanFrame()
 					:SetBackground("iconPack.24x24/Close/Default")
 					:SetScript("OnEnter", private.ExitScanButtonOnEnter)
 					:SetScript("OnLeave", private.ExitScanButtonOnLeave)
-					:SetScript("OnClick", private.ExitScanButtonOnClick)
+					:SetAction("OnClick", "ACTION_STOP_SCANNING")
 				)
 				:AddChild(UIElements.New("Text", "text")
 					:SetHeight(18)
@@ -313,7 +340,7 @@ function private.GetAuctioningScanFrame()
 				)
 				:SetScript("OnEnter", private.ExitScanFrameOnEnter)
 				:SetScript("OnLeave", private.ExitScanFrameOnLeave)
-				:SetScript("OnMouseUp", private.ExitScanButtonOnClick)
+				:SetScript("OnMouseUp", private.manager:CallbackToProcessAction("ACTION_STOP_SCANNING"))
 			)
 			:AddChild(UIElements.New("Frame", "content")
 				:SetLayout("HORIZONTAL")
@@ -327,11 +354,20 @@ function private.GetAuctioningScanFrame()
 						:SetMargin(0, 0, 0, 4)
 						:AddChild(UIElements.New("Button", "icon")
 							:SetSize(18, 18)
+							:SetBackgroundPublisher(state:PublisherForKeyChange("currentRowItemString")
+								:MapNonNilWithFunction(ItemInfo.GetTexture)
+							)
+							:SetTooltipPublisher(state:PublisherForKeyChange("currentRowItemString"))
 						)
 						:AddChild(UIElements.New("Button", "text")
 							:SetMargin(4, 0, 0, 0)
 							:SetFont("ITEM_BODY1")
 							:SetJustifyH("LEFT")
+							:SetTextPublisher(state:PublisherForKeyChange("currentRowItemString")
+								:MapNonNilWithFunction(UIUtils.GetDisplayItemName)
+								:MapNilToValue("-")
+							)
+							:SetTooltipPublisher(state:PublisherForKeyChange("currentRowItemString"))
 						)
 					)
 					:AddChild(UIElements.New("Frame", "cost")
@@ -345,6 +381,10 @@ function private.GetAuctioningScanFrame()
 						:AddChild(UIElements.New("Text", "text")
 							:SetMargin(4, 0, 0, 0)
 							:SetFont("TABLE_TABLE1")
+							:SetTextPublisher(state:PublisherForKeyChange("currentRowDepositCost")
+								:MapNonNilWithFunction(Money.ToStringForUI)
+								:MapNilToValue("-")
+							)
 						)
 					)
 					:AddChild(UIElements.New("Frame", "operation")
@@ -358,6 +398,9 @@ function private.GetAuctioningScanFrame()
 						:AddChild(UIElements.New("Text", "text")
 							:SetMargin(4, 0, 0, 0)
 							:SetFont("BODY_BODY3_MEDIUM")
+							:SetTextPublisher(state:PublisherForKeyChange("currentRowOperationName")
+								:MapNilToValue("-")
+							)
 						)
 					)
 				)
@@ -378,7 +421,8 @@ function private.GetAuctioningScanFrame()
 							:SetHeight(16)
 							:SetFont("BODY_BODY3_MEDIUM")
 							:SetText(L["Edit Post"])
-							:SetScript("OnClick", private.EditButtonOnClick)
+							:SetDisabledPublisher(state:PublisherForExpression([[scanType ~= "POST" or not currentRowItemString]]))
+							:SetAction("OnClick", "ACTION_EDIT_BUTTON_CLICKED")
 						)
 					)
 					:AddChild(UIElements.New("Frame", "details")
@@ -399,6 +443,10 @@ function private.GetAuctioningScanFrame()
 								:AddChild(UIElements.New("Text", "text")
 									:SetMargin(4, 0, 0, 0)
 									:SetFont("TABLE_TABLE1")
+									:SetTextPublisher(state:PublisherForExpression([[currentRowIsCommodity and currentRowItemBuyout or currentRowBid]])
+										:MapNonNilWithFunction(Money.ToStringForAH)
+										:MapNilToValue("-")
+									)
 								)
 							)
 							:AddChild(UIElements.New("Frame", "buyout")
@@ -412,6 +460,11 @@ function private.GetAuctioningScanFrame()
 								:AddChild(UIElements.New("Text", "text")
 									:SetMargin(4, 0, 0, 0)
 									:SetFont("TABLE_TABLE1")
+									:SetTextPublisher(state:PublisherForExpression([[currentRowIsCommodity and currentRowItemBuyout or currentRowBuyout]])
+										:MapNonNilWithFunction(Money.ToStringForAH)
+										:MapNilToValue("-")
+									)
+
 								)
 							)
 						)
@@ -423,12 +476,17 @@ function private.GetAuctioningScanFrame()
 								:AddChild(UIElements.New("Text", "desc")
 									:SetWidth("AUTO")
 									:SetFont("BODY_BODY3_MEDIUM")
-									:SetText((Environment.HasFeature(Environment.FEATURES.AH_STACKS) and L["Stack / Quantity"] or L["Quantity"])..":")
+									:SetText((ClientInfo.HasFeature(ClientInfo.FEATURES.AH_STACKS) and L["Stack / Quantity"] or L["Quantity"])..":")
 								)
 								:AddChild(UIElements.New("Text", "text")
 									:SetMargin(4, 0, 0, 0)
 									:SetFont("TABLE_TABLE1")
+									:SetTextPublisher(state:PublisherForKeys("currentRowNumStacks", "currentRowNumProcessed", "currentRowStackSize")
+										:MapWithFunction(private.StateToQuantityText)
+										:MapNilToValue("-")
+									)
 								)
+
 							)
 							:AddChild(UIElements.New("Frame", "duration")
 								:SetLayout("HORIZONTAL")
@@ -441,6 +499,10 @@ function private.GetAuctioningScanFrame()
 								:AddChild(UIElements.New("Text", "text")
 									:SetMargin(4, 0, 0, 0)
 									:SetFont("TABLE_TABLE1")
+									:SetTextPublisher(state:PublisherForKeys("scanType", "currentRowDuration")
+										:MapWithFunction(private.StateToAuctionDuration)
+										:MapNilToValue("-")
+									)
 								)
 							)
 						)
@@ -450,6 +512,7 @@ function private.GetAuctioningScanFrame()
 		)
 		:AddChild(UIElements.New("TabGroup", "tabs")
 			:SetTheme("SIMPLE")
+			:SetContext(state)
 			:SetNavCallback(private.ScanNavCallback)
 			:AddPath(L["Auctioning Log"], true)
 			:AddPath(L["All Auctions"])
@@ -464,104 +527,74 @@ function private.GetAuctioningScanFrame()
 				:SetSize(24, 24)
 				:SetMargin(0, 8, 0, 0)
 				:SetText(TextureAtlas.GetTextureLink("iconPack.18x18/PlayPause"))
-				:SetScript("OnClick", private.PauseResumeBtnOnClick)
+				:SetDisabledPublisher(state:PublisherForExpression([[pausePending ~= nil or doneScanning or (scanIsPaused and statusNumProcessed ~= statusNumConfirmed) or statusNumProcessed == statusTotalNum]]))
+				:SetHighlightLockedPublisher(state:PublisherForExpression([[pausePending ~= nil]]))
+				:SetAction("OnClick", "ACTION_TOGGLE_SCAN_PAUSED")
 			)
 			:AddChild(UIElements.New("ProgressBar", "progressBar")
 				:SetHeight(24)
 				:SetMargin(0, 8, 0, 0)
-				:SetProgress(0)
-				:SetProgressIconHidden(false)
-				:SetText(L["Starting Scan..."])
+				:SetTextPublisher(state:PublisherForKeys("canProcess", "scanType", "pausePending", "scanIsPaused", "scanNumItems", "statusNumConfirmed", "statusTotalNum", "statusNumProcessed")
+					:MapWithFunction(private.StateToProgressText)
+				)
+				:SetProgressPublisher(state:PublisherForExpression([[(not canProcess and scanProgress) or (statusTotalNum > 0 and (statusNumProcessed / statusTotalNum)) or 1]]))
+				:SetProgressIconHiddenPublisher(state:PublisherForExpression([[canProcess and (statusNumConfirmed == statusTotalNum or (statusNumProcessed ~= statusTotalNum and statusNumProcessed == statusNumConfirmed))]]))
 			)
 			:AddChild(UIElements.NewNamed("ActionButton", "processBtn", "TSMAuctioningBtn")
 				:SetSize(160, 24)
 				:SetMargin(0, 8, 0, 0)
-				:SetText(L["Post"])
-				:SetDisabled(true)
 				:DisableClickCooldown(true)
-				:SetScript("OnClick", private.ProcessButtonOnClick)
+				:SetTextPublisher(state:PublisherForKeyChange("scanType")
+					:MapBooleanEquals("POST")
+					:MapBooleanWithValues(L["Post"], CANCEL)
+				)
+				:SetDisabledPublisher(state:PublisherForExpression([[(not canProcess or statusNumProcessed == statusTotalNum or (currentRowDepositCost and currentRowDepositCost > playerMoney) or pendingFuture) and true or false]]))
+				:SetAction("OnClick", "ACTION_PROCESS_AUCTION")
 			)
 			:AddChild(UIElements.New("ActionButton", "skipBtn")
 				:SetSize(160, 24)
 				:SetText(L["Skip"])
-				:SetDisabled(true)
 				:DisableClickCooldown(true)
-				:SetScript("OnClick", private.SkipButtonOnClick)
+				:SetDisabledPublisher(state:PublisherForExpression([[not canProcess or statusNumProcessed == statusTotalNum]]))
+				:SetAction("OnClick", "ACTION_SKIP_AUCTION")
+			)
+			:AddChild(UIElements.New("ActionButton", "rescanBtn")
+				:SetWidth(160, 24)
+				:SetText(L["Rescan"])
+				:SetShown(false)
+				:SetAction("OnClick", "ACTION_RESCAN")
 			)
 		)
 		:SetScript("OnUpdate", private.ScanFrameOnUpdate)
 		:SetScript("OnHide", private.ScanFrameOnHide)
 end
 
-function private.ScanNavCallback(_, path)
+function private.ScanNavCallback(frame, path)
+	local state = frame:GetContext() ---@type AuctioningUIState
 	if path == L["Auctioning Log"] then
 		UIUtils.AnalyticsRecordPathChange("auction", "auctioning", "scan", "log")
-		private.logQuery = private.logQuery or TSM.Auctioning.Log.CreateQuery()
 		return UIElements.New("Frame", "logFrame")
 			:SetLayout("VERTICAL")
-			:AddChild(UIElements.New("QueryScrollingTable", "log")
-				:SetSettingsContext(private.settings, "auctioningLogScrollingTable")
-				:GetScrollingTableInfo()
-					:NewColumn("index")
-						:SetTitleIcon("iconPack.14x14/Attention")
-						:SetIconSize(12)
-						:SetFont("ITEM_BODY3")
-						:SetJustifyH("CENTER")
-						:SetIconInfo(nil, private.LogGetIndexIcon)
-						:SetSortInfo("index")
-						:Commit()
-					:NewColumn("item")
-						:SetTitle(L["Item"])
-						:SetFont("ITEM_BODY3")
-						:SetJustifyH("LEFT")
-						:SetIconSize(12)
-						:SetTextInfo("itemString", UIUtils.GetDisplayItemName)
-						:SetIconInfo("itemString", ItemInfo.GetTexture)
-						:SetTooltipInfo("itemString")
-						:SetSortInfo("name")
-						:Commit()
-					:NewColumn("buyout")
-						:SetTitle(L["Your Buyout"])
-						:SetFont("TABLE_TABLE1")
-						:SetJustifyH("RIGHT")
-						:SetTextInfo("buyout", private.LogGetBuyoutText)
-						:SetSortInfo("buyout")
-						:Commit()
-					:NewColumn("operation")
-						:SetTitle(L["Operation"])
-						:SetFont("TABLE_TABLE1")
-						:SetJustifyH("LEFT")
-						:SetTextInfo("operation")
-						:SetSortInfo("operation")
-						:Commit()
-					:NewColumn("seller")
-						:SetTitle(L["Seller"])
-						:SetFont("TABLE_TABLE1")
-						:SetJustifyH("LEFT")
-						:SetTextInfo("seller")
-						:SetSortInfo("seller")
-						:Commit()
-					:NewColumn("info")
-						:SetTitle(INFO)
-						:SetFont("TABLE_TABLE1")
-						:SetJustifyH("LEFT")
-						:SetTextInfo(nil, TSM.Auctioning.Log.GetInfoStr)
-						:SetSortInfo("reasonStr")
-						:Commit()
-					:Commit()
-				:SetQuery(private.logQuery)
-				:SetSelectionDisabled(true)
+			:AddChild(UIElements.New("AuctioningLogScrollTable", "log")
+				:SetSettings(private.settings, "auctioningLogScrollingTable")
+				:SetQuery(TSM.Auctioning.Log.CreateQuery()
+					:VirtualField("indexIcon", "string", private.LogIndexIconVirtualField)
+				)
 			)
+			:SetScript("OnUpdate", private.LogTabOnUpdate)
 	elseif path == L["All Auctions"] then
 		UIUtils.AnalyticsRecordPathChange("auction", "auctioning", "scan", "auctions")
 		return UIElements.New("Frame", "auctionsFrame")
 			:SetLayout("VERTICAL")
-			:AddChild(UIElements.New("AuctionScrollingTable", "auctions")
-				:SetSettingsContext(private.settings, "auctioningAuctionScrollingTable")
+			:AddChild(UIElements.New("AuctionScrollTable", "auctions")
+				:SetSettings(private.settings, "auctioningAuctionScrollingTable")
+				:SetCreatedGroupName(L["Auctioning"].." - "..L["All Auctions"])
 				:SetBrowseResultsVisible(true)
 				:SetMarketValueFunction(private.MarketValueFunction)
-				:SetAuctionScan(private.auctionScan)
+				:SetIsPlayerFunction(PlayerInfo.AuctionOwnerIsPlayer)
+				:SetAuctionScan(state.auctionScan)
 			)
+			:SetScript("OnUpdate", private.AuctionsTabOnUpdate)
 	else
 		error("Unexpected path: "..tostring(path))
 	end
@@ -573,209 +606,40 @@ end
 -- Local Script Handlers
 -- ============================================================================
 
-function private.OnItemLinked(_, itemLink)
-	if private.selectionFrame then
-		if not TSM.UI.AuctionUI.StartingScan(L["Auctioning"]) then
-			return false
-		end
-		wipe(private.scanContext)
-		private.scanContext.isItems = true
-		tinsert(private.scanContext, TSM.Groups.TranslateItemString(ItemString.Get(itemLink)))
-		private.selectionFrame:GetParentElement():SetPath("scan", true)
-		private.fsm:ProcessEvent("EV_START_SCAN", "POST", private.scanContext)
-		return true
-	else
-		if not private.canStartNewScan then
-			return false
-		end
-		wipe(private.scanContext)
-		private.scanContext.isItems = true
-		tinsert(private.scanContext, TSM.Groups.TranslateItemString(ItemString.Get(itemLink)))
-		private.fsm:ProcessEvent("EV_START_SCAN", "POST", private.scanContext)
-		return true
-	end
+function private.SelectionOnUpdate(frame)
+	frame:SetScript("OnUpdate", nil)
+	private.manager:ProcessAction("ACTION_SELECTION_FRAME_SHOWN", frame)
 end
 
-function private.SelectionOnHide(frame)
-	assert(frame == private.selectionFrame)
-	private.selectionFrame = nil
-end
-
-function private.GroupSearchOnValueChanged(input)
-	private.groupSearch = strlower(input:GetValue())
-	input:GetElement("__parent.__parent.groupTree")
-		:SetSearchString(private.groupSearch)
-		:Draw()
-end
-
-function private.ExpandAllGroupsOnClick(button)
-	button:GetElement("__parent.__parent.groupTree")
-		:ToggleExpandAll()
-end
-
-function private.SelectAllGroupsOnClick(button)
-	button:GetElement("__parent.__parent.groupTree")
-		:ToggleSelectAll()
-end
-
-function private.GroupTreeOnGroupSelectionChanged(groupTree)
-	local postScanBtn = groupTree:GetElement("__parent.bottom.postScanBtn")
-	postScanBtn:SetDisabled(groupTree:IsSelectionCleared())
-	postScanBtn:Draw()
-	local cancelScanBtn = groupTree:GetElement("__parent.bottom.cancelScanBtn")
-	cancelScanBtn:SetDisabled(groupTree:IsSelectionCleared())
-	cancelScanBtn:Draw()
-end
-
-function private.RunPostButtonOnclick(button)
-	if not TSM.UI.AuctionUI.StartingScan(L["Auctioning"]) then
-		return
-	end
-	wipe(private.scanContext)
-	for _, groupPath in button:GetElement("__parent.__parent.groupTree"):SelectedGroupsIterator() do
-		tinsert(private.scanContext, groupPath)
-	end
-	button:GetElement("__parent.__parent.__parent.__parent"):SetPath("scan", true)
-	private.fsm:ProcessEvent("EV_START_SCAN", "POST", private.scanContext)
-end
-
-function private.RunCancelButtonOnclick(button)
-	if not TSM.UI.AuctionUI.StartingScan(L["Auctioning"]) then
-		return
-	end
-	wipe(private.scanContext)
-	for _, groupPath in button:GetElement("__parent.__parent.groupTree"):SelectedGroupsIterator() do
-		tinsert(private.scanContext, groupPath)
-	end
-	button:GetElement("__parent.__parent.__parent.__parent"):SetPath("scan", true)
-	private.fsm:ProcessEvent("EV_START_SCAN", "CANCEL", private.scanContext)
-end
-
-function private.SearchListOnFavoriteChanged(_, dbRow, isFavorite)
-	TSM.Auctioning.SavedSearches.SetSearchIsFavorite(dbRow, isFavorite)
-end
-
-function private.SearchListOnEditClick(searchList, dbRow)
-	local dialog = UIElements.New("Frame", "frame")
-		:SetLayout("VERTICAL")
-		:SetSize(600, 187)
-		:AddAnchor("CENTER")
-		:SetBackgroundColor("FRAME_BG")
-		:SetBorderColor("ACTIVE_BG")
-		:AddChild(UIElements.New("Text", "title")
-			:SetHeight(44)
-			:SetMargin(16, 16, 24, 16)
-			:SetFont("BODY_BODY1_BOLD")
-			:SetJustifyH("CENTER")
-			:SetText(L["Rename Search"])
-		)
-		:AddChild(UIElements.New("Input", "nameInput")
-			:SetHeight(26)
-			:SetMargin(16, 16, 0, 25)
-			:SetBackgroundColor("PRIMARY_BG_ALT")
-			:AllowItemInsert(true)
-			:SetContext(dbRow)
-			:SetValue(dbRow:GetField("name"))
-			:SetScript("OnEnterPressed", private.RenameInputOnEnterPressed)
-		)
-		:AddChild(UIElements.New("Frame", "buttons")
-			:SetLayout("HORIZONTAL")
-			:SetMargin(16, 16, 0, 16)
-			:AddChild(UIElements.New("Spacer", "spacer"))
-			:AddChild(UIElements.New("ActionButton", "closeBtn")
-				:SetSize(126, 26)
-				:SetText(CLOSE)
-				:SetScript("OnClick", private.DialogCloseBtnOnClick)
-			)
-		)
-	searchList:GetBaseElement():ShowDialogFrame(dialog)
-	dialog:GetElement("nameInput"):SetFocused(true)
-end
-
-function private.RenameInputOnEnterPressed(input)
-	local name = input:GetValue()
-	if name == "" then
-		return
-	end
-	local dbRow = input:GetContext()
-	local baseElement = input:GetBaseElement()
-	baseElement:HideDialog()
-	TSM.Auctioning.SavedSearches.RenameSearch(dbRow, name)
-end
-
-function private.DialogCloseBtnOnClick(button)
-	button:GetBaseElement():HideDialog()
-end
-
-function private.SearchListOnDelete(_, dbRow)
-	TSM.Auctioning.SavedSearches.DeleteSearch(dbRow)
-end
-
-function private.SearchListOnRowClick(searchList, dbRow)
-	if not TSM.UI.AuctionUI.StartingScan(L["Auctioning"]) then
-		return
-	end
-	local scanType = dbRow:GetField("searchType")
-	wipe(private.scanContext)
-	private.scanContext.isItems = scanType == "postItems" or nil
-	TSM.Auctioning.SavedSearches.FiltersToTable(dbRow, private.scanContext)
-	searchList:GetParentElement():GetParentElement():GetParentElement():GetParentElement():GetParentElement():SetPath("scan", true)
-	private.fsm:ProcessEvent("EV_START_SCAN", scanType == "cancelGroups" and "CANCEL" or "POST", private.scanContext)
-end
-
-function private.PauseResumeBtnOnClick(button)
-	private.fsm:ProcessEvent("EV_PAUSE_RESUME_CLICKED")
-end
-
-function private.ProcessButtonOnClick(button)
-	private.fsm:ProcessEvent("EV_PROCESS_CLICKED")
-end
-
-function private.SkipButtonOnClick(button)
-	private.fsm:ProcessEvent("EV_SKIP_CLICKED")
+function private.SelectionOnHide()
+	private.manager:ProcessAction("ACTION_SELECTION_FRAME_HIDDEN")
 end
 
 function private.ScanFrameOnUpdate(frame)
 	frame:SetScript("OnUpdate", nil)
-	private.fsm:ProcessEvent("EV_SCAN_FRAME_SHOWN", frame)
+	private.manager:ProcessAction("ACTION_SCAN_FRAME_SHOWN", frame)
 end
 
-function private.ScanFrameOnHide(frame)
-	private.fsm:ProcessEvent("EV_SCAN_FRAME_HIDDEN")
+function private.ScanFrameOnHide()
+	private.manager:ProcessAction("ACTION_SCAN_FRAME_HIDDEN")
 end
 
-function private.BagOnSelectionChanged(scrollingTable)
-	local selectionCleared = scrollingTable:IsSelectionCleared()
-	scrollingTable:GetElement("__parent.button.postSelected"):SetDisabled(selectionCleared)
-		:Draw()
-	scrollingTable:GetElement("__parent.button.selectAll"):SetDisabled(scrollingTable:IsAllSelected())
-		:Draw()
-	scrollingTable:GetElement("__parent.button.clearAll"):SetDisabled(selectionCleared)
-		:Draw()
+function private.LogTabOnUpdate(frame)
+	frame:SetScript("OnUpdate", nil)
+	private.manager:ProcessAction("ACTION_SCAN_TAB_CHANGED", "log")
 end
 
-function private.SelectAllOnClick(button)
-	button:GetElement("__parent.__parent.bagScrollingTable"):SelectAll()
+function private.AuctionsTabOnUpdate(frame)
+	frame:SetScript("OnUpdate", nil)
+	private.manager:ProcessAction("ACTION_SCAN_TAB_CHANGED", "auctions")
 end
 
-function private.ClearAllOnClick(button)
-	button:GetElement("__parent.__parent.bagScrollingTable"):ClearSelection()
-end
-
-function private.RunPostBagsButtonOnClick(button)
-	if not TSM.UI.AuctionUI.StartingScan(L["Auctioning"]) then
-		return
-	end
-	wipe(private.scanContext)
-	private.scanContext.isItems = true
-	for _, row in button:GetElement("__parent.__parent.bagScrollingTable"):SelectionIterator() do
-		local autoBaseItemString, operation = row:GetFields("autoBaseItemString", "firstOperation")
-		if operation then
-			tinsert(private.scanContext, autoBaseItemString)
-		end
-	end
-	button:GetParentElement():GetParentElement():GetParentElement():GetParentElement():GetParentElement():SetPath("scan", true)
-	private.fsm:ProcessEvent("EV_START_SCAN", "POST", private.scanContext)
+function private.BagOnSelectionChanged(scrollTable)
+	local allSelected, noneSelected = scrollTable:GetSelectionState()
+	local buttonFrame = scrollTable:GetElement("__parent.button")
+	buttonFrame:GetElement("postSelected"):SetDisabled(noneSelected)
+	buttonFrame:GetElement("selectAll"):SetDisabled(allSelected)
+	buttonFrame:GetElement("clearAll"):SetDisabled(noneSelected)
 end
 
 function private.ExitScanButtonOnEnter(button)
@@ -796,765 +660,403 @@ function private.ExitScanFrameOnLeave(frame)
 		:Draw()
 end
 
-function private.ExitScanButtonOnClick()
-	if not Environment.HasFeature(Environment.FEATURES.C_AUCTION_HOUSE) then
-		ClearCursor()
-		ClickAuctionSellItemButton(AuctionsItemButton, "LeftButton")
-		ClearCursor()
-	end
-	private.fsm:ProcessEvent("EV_BACK_BUTTON_CLICKED")
-end
-
-function private.EditButtonOnClick(button)
-	private.fsm:ProcessEvent("EV_EDIT_BUTTON_CLICKED")
-end
-
 
 
 -- ============================================================================
--- FSM
+-- Action Handler
 -- ============================================================================
 
-function private.FSMCreate()
-	local fsmContext = {
-		itemString = nil,
-		scanFrame = nil,
-		scanThreadId = nil,
-		scanType = nil,
-		auctionScan = nil,
-		pausePending = nil,
-		isScanning = false,
-		pendingFuture = nil,
-	}
-	DefaultUI.RegisterAuctionHouseVisibleCallback(function() private.fsm:ProcessEvent("EV_AUCTION_HOUSE_CLOSED") end, false)
-	local fsmPrivate = {}
-	function fsmPrivate.UpdateDepositCost(context)
-		if context.scanType ~= "POST" then
-			return
-		end
-
-		local header = context.scanFrame:GetElement("header")
-		local detailsHeader1 = header:GetElement("content.details.details.details1")
-
-		local currentRow = TSM.Auctioning.PostScan.GetCurrentRow()
-		if not currentRow then
-			return
-		end
-
-		local itemString = currentRow:GetField("itemString")
-		local postBag, postSlot = BagTracking.CreateQueryBagsAuctionable()
-			:OrderBy("slotId", true)
-			:Select("bag", "slot")
-			:Equal("baseItemString", ItemString.GetBaseFast(itemString))
-			:VirtualField("autoBaseItemString", "string", TSM.Groups.TranslateItemString, "itemString")
-			:Equal("autoBaseItemString", itemString)
-			:GetFirstResultAndRelease()
-		local postTime = currentRow:GetField("postTime")
-		local stackSize = currentRow:GetField("stackSize")
-		local depositCost = 0
-		if postBag and postSlot then
-			if Environment.HasFeature(Environment.FEATURES.C_AUCTION_HOUSE) then
-				local isCommodity = ItemInfo.IsCommodity(itemString)
-				depositCost = max(floor(0.15 * (ItemInfo.GetVendorSell(itemString) or 0) * (isCommodity and stackSize or 1) * (postTime == 3 and 4 or postTime)), 100) * (isCommodity and 1 or stackSize)
-			else
-				ClearCursor()
-				Container.PickupItem(postBag, postSlot)
-				ClickAuctionSellItemButton(AuctionsItemButton, "LeftButton")
-				ClearCursor()
-				local bid = Money.FromString(detailsHeader1:GetElement("bid.text"):GetText())
-				local buyout = Money.FromString(detailsHeader1:GetElement("buyout.text"):GetText())
-				depositCost = GetAuctionDeposit(postTime, bid, buyout, stackSize, 1)
-				ClearCursor()
-				ClickAuctionSellItemButton(AuctionsItemButton, "LeftButton")
-				ClearCursor()
-			end
-		end
-
-		header:GetElement("content.item.cost.text"):SetText(Money.ToString(depositCost))
+---@param manager UIManager
+---@param state AuctioningUIState
+function private.ActionHandler(manager, state, action, ...)
+	if action == "ACTION_SELECTION_FRAME_SHOWN" then
+		local frame = ...
+		state.selectionFrame = frame
+	elseif action == "ACTION_SELECTION_FRAME_HIDDEN" then
+		state.selectionFrame = nil
+	elseif action == "ACTION_SCAN_FRAME_SHOWN" then
+		local frame = ...
+		state.scanFrame = frame
+		private.UpdateScanFrame(state)
+	elseif action == "ACTION_SCAN_FRAME_HIDDEN" then
+		state.scanFrame = nil
+	elseif action == "ACTION_SCAN_TAB_CHANGED" then
+		local tab = ...
+		state.scanTab = tab
+	elseif action == "ACTION_GROUP_SELECTION_CHANGED" then
+		local selectionCleared = state.selectionFrame:GetElement("groupSelection.groupTree"):IsSelectionCleared()
+		state.selectionFrame:GetElement("groupSelection.bottom.postScanBtn")
+			:SetDisabled(selectionCleared)
 			:Draw()
-	end
-	function fsmPrivate.UpdateScanFrame(context)
-		if not context.scanFrame then
+		state.selectionFrame:GetElement("groupSelection.bottom.cancelScanBtn")
+			:SetDisabled(selectionCleared)
+			:Draw()
+	elseif action == "ACTION_BAG_SELECT_ALL" then
+		state.selectionFrame:GetElement("content.bottom.bagScrollingTable"):SetSelectionState(true)
+	elseif action == "ACTION_BAG_CLEAR_ALL" then
+		state.selectionFrame:GetElement("content.bottom.bagScrollingTable"):SetSelectionState(false)
+	elseif action == "ACTION_RENAMED_SAVED_SEARCH" then
+		local name, index = ...
+		TSM.Auctioning.SavedSearches.RenameSearch(index, name)
+	elseif action == "ACTION_START_GROUP_POST_SCAN" then
+		private.StartGroupScan(state, "POST")
+	elseif action == "ACTION_START_GROUP_CANCEL_SCAN" then
+		private.StartGroupScan(state, "CANCEL")
+	elseif action == "ACTION_START_BAGS_POST_SCAN" then
+		private.StartPostBagsScan(state)
+	elseif action == "ACTION_SET_SEARCH_FAVORITE" then
+		local index, isFavorite = ...
+		TSM.Auctioning.SavedSearches.SetSearchIsFavorite(index, isFavorite)
+	elseif action == "ACTION_RECENT_SEARCH_DELETE" then
+		local index = ...
+		TSM.Auctioning.SavedSearches.DeleteSearch(index, private.GetSearchListFields("RECENT", index, "filter"))
+	elseif action == "ACTION_FAVORITE_SEARCH_DELETE" then
+		local index = ...
+		TSM.Auctioning.SavedSearches.DeleteSearch(index, private.GetSearchListFields("FAVORITE", index, "filter"))
+	elseif action == "ACTION_FAVORITE_SEARCH_EDIT" then
+		local index = ...
+		local dialog = UIElements.New("SavedSearchEditDialog", "frame")
+			:SetSize(600, 187)
+			:AddAnchor("CENTER")
+			:SetName(private.GetSearchListFields("FAVORITE", index, "name"), index)
+			:SetManager(private.manager)
+			:SetAction("OnNameChanged", "ACTION_RENAMED_SAVED_SEARCH")
+		state.selectionFrame:GetBaseElement():ShowDialogFrame(dialog)
+		dialog:GetElement("nameInput"):SetFocused(true)
+	elseif action == "ACTION_RECENT_SEARCH_LIST_ROW_CLICK" then
+		local index = ...
+		private.StartSearchListScan(state, "RECENT", index)
+	elseif action == "ACTION_FAVORITE_SEARCH_LIST_ROW_CLICK" then
+		local index = ...
+		private.StartSearchListScan(state, "FAVORITE", index)
+	elseif action == "ACTION_START_SCAN" then
+		local scanType, scanContext = ...
+		local viewContainer = nil
+		if state.scanFrame then
+			viewContainer = state.scanFrame:GetParentElement()
+			viewContainer:SetPath("selection", true)
+		elseif state.selectionFrame then
+			viewContainer = state.selectionFrame:GetParentElement()
+		else
+			error("Invalid state")
+		end
+		viewContainer:SetPath("scan", true)
+		state.scanFrame = viewContainer:GetElement("scan")
+		manager:ProcessAction("ACTION_RESET_STATE")
+		state.playerMoney = GetMoney()
+		state.scanType = scanType
+		state.hasLastScan = true
+		local currentRowPublisher, statusPublisher = nil, nil
+		if state.scanType == "POST" then
+			state.scanThreadId = TSM.Auctioning.PostScan.Prepare()
+			currentRowPublisher = TSM.Auctioning.PostScan.CurrentRowPublisher() ---@type ReactivePublisher
+				:Share(Table.Count(COMMON_CURRENT_ROW_STATE_FIELDS) + 2)
+				:MapWithFunction(private.CurrentRowToDepositCost)
+				:AssignToTableKey(state, "currentRowDepositCost")
+				:MapNonNilWithMethod("GetField", "postTime")
+				:AssignToTableKey(state, "currentRowDuration")
+			statusPublisher = TSM.Auctioning.PostScan.StatusQueryPublisher() ---@type ReactivePublisher
+		elseif state.scanType == "CANCEL" then
+			state.scanThreadId = TSM.Auctioning.CancelScan.Prepare()
+			currentRowPublisher = TSM.Auctioning.CancelScan.CurrentRowPublisher() ---@type ReactivePublisher
+				:Share(Table.Count(COMMON_CURRENT_ROW_STATE_FIELDS) + 1)
+				:MapNonNilWithMethod("GetField", "duration")
+				:AssignToTableKey(state, "currentRowDuration")
+			statusPublisher = TSM.Auctioning.CancelScan.StatusQueryPublisher() ---@type ReactivePublisher
+			state.currentRowDepositCost = nil
+		else
+			error("Invalid scan type: "..tostring(state.scanType))
+		end
+		for rowField, stateField in pairs(COMMON_CURRENT_ROW_STATE_FIELDS) do
+			currentRowPublisher:MapNonNilWithMethod("GetField", rowField)
+				:AssignToTableKey(state, stateField)
+		end
+		state.currentRowCancellable = currentRowPublisher:Stored()
+		state.statusCancellable = statusPublisher:CallFunction(manager:CallbackToProcessAction("ACTION_STATUS_UPDATED"))
+			:Stored()
+		state.auctionScan = AuctionScan.GetManager()
+			:SetResolveSellers(ClientInfo.HasFeature(ClientInfo.FEATURES.AH_SELLERS))
+			:SetUIManager(manager)
+			:SetAction("OnProgressUpdate", "ACTION_SCAN_PROGRESS_UPDATED")
+			:SetAction("OnNumItemsChanged", "ACTION_SCAN_NUM_ITEMS_CHANGED")
+		Threading.SetCallback(state.scanThreadId, manager:CallbackToProcessAction("ACTION_SCAN_COMPLETED"))
+		Threading.Start(state.scanThreadId, state.auctionScan, scanContext)
+		state.isScanning = true
+		private.UpdateScanFrame(state)
+	elseif action == "ACTION_SCAN_PROGRESS_UPDATED" then
+		local scanProgress, scanIsPaused = state.auctionScan:GetProgress()
+		if state.pausePending == scanIsPaused then
+			state.pausePending = nil
+		end
+		if scanIsPaused and state.pausePending == nil then
+			state.isScanning = false
+		end
+		state.scanProgress = scanProgress
+		state.scanIsPaused = scanIsPaused
+		private.UpdateScanFrame(state)
+	elseif action == "ACTION_SCAN_NUM_ITEMS_CHANGED" then
+		state.scanNumItems = state.auctionScan:GetNumItems()
+	elseif action == "ACTION_SCAN_COMPLETED" then
+		AuctionScan.ReleaseLock(L["Auctioning"])
+		state.scanThreadId = nil
+		SoundAlert.Play(private.settings.scanCompleteSound)
+		state.scanProgress = 1
+		state.isScanning = false
+		if state.statusTotalNum == 0 then
+			state.canStartNewScan = true
+		end
+		private.UpdateScanFrame(state)
+	elseif action == "ACTION_STATUS_UPDATED" then
+		local numProcessed, numConfirmed, numFailed, totalNum = TempTable.UnpackAndRelease(...)
+		state.statusNumProcessed = numProcessed
+		state.statusNumConfirmed = numConfirmed
+		state.statusNumFailed = numFailed
+		state.statusTotalNum = totalNum
+	elseif action == "ACTION_TOGGLE_SCAN_PAUSED" then
+		assert(state.pausePending == nil)
+		state.pausePending = state.isScanning
+		state.auctionScan:SetPaused(state.pausePending)
+		state.isScanning = true
+		private.UpdateScanFrame(state)
+	elseif action == "ACTION_EDIT_BUTTON_CLICKED" then
+		if state.scanType ~= "POST" or not state.currentRowItemString then
 			return
 		end
-
-		local header = context.scanFrame:GetElement("header")
-		local currentRow, numProcessed, numConfirmed, _, totalNum = nil, nil, nil, nil, nil
-		if context.scanType == "POST" then
-			currentRow = TSM.Auctioning.PostScan.GetCurrentRow()
-			numProcessed, numConfirmed, _, totalNum = TSM.Auctioning.PostScan.GetStatus()
-			header:GetElement("content.item.cost")
-				:Show()
-				:Draw()
-		elseif context.scanType == "CANCEL" then
-			currentRow = TSM.Auctioning.CancelScan.GetCurrentRow()
-			numProcessed, numConfirmed, _, totalNum = TSM.Auctioning.CancelScan.GetStatus()
-			header:GetElement("content.item.cost")
-				:Hide()
-				:Draw()
-		else
-			error("Invalid scan type: "..tostring(context.scanType))
-		end
-		local itemContent = header:GetElement("content.item.content")
-		local detailsHeader1 = header:GetElement("content.details.details.details1")
-		local detailsHeader2 = header:GetElement("content.details.details.details2")
-		if currentRow then
-			local selectedRow = nil
-			for _, row in private.logQuery:Iterator() do
-				if currentRow:GetField("auctionId") == row:GetField("index") then
-					selectedRow = row
-				end
-			end
-			if selectedRow and context.scanFrame:GetElement("tabs"):GetPath() == L["Auctioning Log"] then
-				context.scanFrame:GetElement("tabs.logFrame.log")
-					:SetSelection(selectedRow:GetUUID())
-					:Draw()
-			end
-
-			local itemString = currentRow:GetField("itemString")
-			local rowStacksRemaining = currentRow:GetField("numStacks") - currentRow:GetField("numProcessed")
-			itemContent:GetElement("icon")
-				:SetBackground(ItemInfo.GetTexture(itemString))
-				:SetTooltip(itemString)
-				:Draw()
-			itemContent:GetElement("text")
-				:SetText(UIUtils.GetDisplayItemName(itemString))
-				:SetTooltip(itemString)
-				:Draw()
-			header:GetElement("content.item.operation.text")
-				:SetText(currentRow:GetField("operationName"))
-				:Draw()
-			detailsHeader1:GetElement("bid.text")
-				:SetText(Money.ToString(currentRow:GetField(ItemInfo.IsCommodity(itemString) and "itemBuyout" or "bid"), nil, "OPT_83_NO_COPPER"))
-				:Draw()
-			detailsHeader1:GetElement("buyout.text")
-				:SetText(Money.ToString(currentRow:GetField(ItemInfo.IsCommodity(itemString) and "itemBuyout" or "buyout"), nil, "OPT_83_NO_COPPER"))
-				:Draw()
-			detailsHeader2:GetElement("quantity.text")
-				:SetText(Environment.HasFeature(Environment.FEATURES.AH_STACKS) and format(L["%d of %d"], rowStacksRemaining, currentRow:GetField("stackSize")) or currentRow:GetField("stackSize"))
-				:Draw()
-			local duration = nil
-			if context.scanType == "POST" then
-				duration = TSM.CONST.AUCTION_DURATIONS[currentRow:GetField("postTime")]
-			elseif context.scanType == "CANCEL" then
-				if Environment.HasFeature(Environment.FEATURES.C_AUCTION_HOUSE) then
-					duration = currentRow:GetField("duration") - time()
-					if duration < SECONDS_PER_MIN then
-						duration = duration.."s"
-					elseif duration < SECONDS_PER_HOUR then
-						duration = floor(duration / SECONDS_PER_MIN).."m"
-					elseif duration < SECONDS_PER_DAY then
-						duration = floor(duration / SECONDS_PER_HOUR).."h"
-					else
-						duration = floor(duration / SECONDS_PER_DAY).."d"
-					end
-				else
-					duration = _G["AUCTION_TIME_LEFT"..currentRow:GetField("duration")]
-				end
-			else
-				error("Invalid scanType: "..tostring(context.scanType))
-			end
-			detailsHeader2:GetElement("duration.text")
-				:SetText(duration)
-				:Draw()
-			if context.scanType == "POST" and context.itemString ~= itemString then
-				fsmPrivate.UpdateDepositCost(context)
-				context.itemString = itemString
-			end
-			header:GetElement("content.details.header.editBtn")
-				:SetDisabled(context.scanType ~= "POST")
-				:Draw()
-		else
-			itemContent:GetElement("icon")
-				:SetBackground(nil)
-				:SetTooltip(nil)
-				:Draw()
-			itemContent:GetElement("text")
-				:SetText("-")
-				:SetTooltip(nil)
-				:Draw()
-			header:GetElement("content.item.cost.text")
-				:SetText("-")
-				:Draw()
-			header:GetElement("content.item.operation.text")
-				:SetText("-")
-				:Draw()
-			detailsHeader1:GetElement("bid.text")
-				:SetText("-")
-				:Draw()
-			detailsHeader1:GetElement("buyout.text")
-				:SetText("-")
-				:Draw()
-			detailsHeader2:GetElement("quantity.text")
-				:SetText("-")
-				:Draw()
-			detailsHeader2:GetElement("duration.text")
-				:SetText("-")
-				:Draw()
-			if context.scanFrame:GetElement("tabs"):GetPath() == L["Auctioning Log"] then
-				context.scanFrame:GetElement("tabs.logFrame.log")
-					:SetSelection(nil)
-					:Draw()
-			end
-			header:GetElement("content.details.header.editBtn")
-				:SetDisabled(true)
-				:Draw()
-		end
-
-		local processText = nil
-		if context.scanType == "POST" then
-			processText = L["Post"]
-		elseif context.scanType == "CANCEL" then
-			processText = CANCEL
-		else
-			error("Invalid scan type: "..tostring(context.scanType))
-		end
-		local bottom = context.scanFrame:GetElement("bottom")
-		bottom:GetElement("processBtn")
-			:SetText(processText)
-		local progress, isPaused = context.auctionScan:GetProgress()
-		local scanDone = progress == 1 and not context.isScanning
-		local isPausePending = context.pausePending ~= nil
-		if not isPausePending and (scanDone or isPaused) then
-			-- we're done (or paused) scanning so start Posting/Canceling
-			local doneStr, progressFmtStr = nil, nil
-			if context.scanType == "POST" then
-				doneStr = L["Done Posting"]
-				progressFmtStr = (isPaused and (L["Scan Paused"].." | ") or "")..L["Posting %d / %d"]
-			elseif context.scanType == "CANCEL" then
-				doneStr = L["Done Canceling"]
-				progressFmtStr = (isPaused and (L["Scan Paused"].." | ") or "")..L["Canceling %d / %d"]
-			else
-				error("Invalid scan type: "..tostring(context.scanType))
-			end
-			local progressText, iconHidden = nil, false
-			if numConfirmed == totalNum then
-				progressText = doneStr
-				iconHidden = true
-			elseif numProcessed == totalNum then
-				progressText = format(L["Confirming %d / %d"], numConfirmed + 1, totalNum)
-			elseif numProcessed == numConfirmed then
-				progressText = format(progressFmtStr, numProcessed + 1, totalNum)
-				iconHidden = true
-			else
-				progressText = format(progressFmtStr.." ("..L["Confirming %d / %d"]..")", numProcessed + 1, totalNum, numConfirmed + 1, totalNum)
-			end
-			bottom:GetElement("progressBar")
-				:SetProgress(totalNum > 0 and (numProcessed / totalNum) or 1)
-				:SetProgressIconHidden(iconHidden)
-				:SetText(progressText)
-			local deposit = context.scanType == "POST" and Money.FromString(header:GetElement("content.item.cost.text"):GetText())
-			bottom:GetElement("processBtn"):SetDisabled(numProcessed == totalNum or (deposit and deposit > GetMoney()) or context.pendingFuture)
-			bottom:GetElement("skipBtn"):SetDisabled(numProcessed == totalNum)
-			bottom:GetElement("pauseResumeBtn")
-				:SetDisabled(numProcessed ~= numConfirmed or scanDone)
-				:SetHighlightLocked(false)
-		else
-			-- we're scanning or pausing
-			local text = nil
-			if isPausePending then
-				text = isPaused and L["Resuming Scan..."] or L["Pausing Scan..."]
-			else
-				local numItems = context.auctionScan:GetNumItems()
-				text = numItems and format(L["Scanning (%d Items)"], numItems) or L["Scanning"]
-			end
-			bottom:GetElement("progressBar")
-				:SetProgress(progress)
-				:SetProgressIconHidden(false)
-				:SetText(text)
-			bottom:GetElement("processBtn"):SetDisabled(true)
-			bottom:GetElement("skipBtn"):SetDisabled(true)
-			bottom:GetElement("pauseResumeBtn")
-				:SetDisabled(isPausePending or numProcessed == totalNum)
-				:SetHighlightLocked(isPausePending)
-		end
-		bottom:Draw()
-	end
-	function fsmPrivate.ShowEditDialog(context)
-		if context.scanType ~= "POST" then
-			return
-		end
-		local currentRow = TSM.Auctioning.PostScan.GetCurrentRow()
-		local itemString = currentRow:GetField("itemString")
-		local isCommodity = ItemInfo.IsCommodity(itemString)
-		local bid = currentRow:GetField("itemBid")
-		local buyout = currentRow:GetField("itemBuyout")
-
-		private.perItem = true
-
-		context.scanFrame:GetBaseElement():ShowDialogFrame(UIElements.New("Frame", "frame")
-			:SetLayout("VERTICAL")
-			:SetSize(328, 328)
+		state.scanFrame:GetBaseElement():ShowDialogFrame(UIElements.New("AuctioningEditDialog", "frame")
+			:SetSize(328, 364)
 			:SetPadding(12)
 			:AddAnchor("CENTER")
-			:SetRoundedBackgroundColor("FRAME_BG")
-			:SetMouseEnabled(true)
-			:AddChild(UIElements.New("Frame", "header")
-				:SetLayout("HORIZONTAL")
-				:SetHeight(24)
-				:SetMargin(0, 0, -4, 10)
-				:AddChild(UIElements.New("Spacer", "spacer")
-					:SetWidth(24)
-				)
-				:AddChild(UIElements.New("Text", "title")
-					:SetFont("BODY_BODY2_MEDIUM")
-					:SetJustifyH("CENTER")
-					:SetText(L["Edit Post"])
-				)
-				:AddChild(UIElements.New("Button", "closeBtn")
-					:SetMargin(0, -4, 0, 0)
-					:SetBackgroundAndSize("iconPack.24x24/Close/Default")
-					:SetScript("OnClick", private.EditDialogCloseBtnOnClick)
-				)
-			)
-			:AddChild(UIElements.New("Frame", "item")
-				:SetLayout("HORIZONTAL")
-				:SetPadding(6)
-				:SetMargin(0, 0, 0, 16)
-				:SetRoundedBackgroundColor("PRIMARY_BG_ALT")
-				:AddChild(UIElements.New("Button", "icon")
-					:SetSize(36, 36)
-					:SetMargin(0, 8, 0, 0)
-					:SetBackground(ItemInfo.GetTexture(itemString))
-					:SetTooltip(itemString)
-				)
-				:AddChild(UIElements.New("Text", "name")
-					:SetHeight(36)
-					:SetFont("ITEM_BODY1")
-					:SetText(UIUtils.GetDisplayItemName(itemString))
-				)
-			)
-			-- TODO: implement editing stack sizes
-			:AddChild(UIElements.New("Frame", "stacksFrame")
-				:SetLayout("HORIZONTAL")
-				:SetHeight(20)
-				:SetMargin(0, 0, 0, 16)
-				:AddChild(UIElements.New("Text", "stacksText")
-					:SetWidth("AUTO")
-					:SetMargin(0, 8, 0, 0)
-					:SetFont("BODY_BODY2")
-					:SetText(L["Stack(s)"]..":")
-				)
-				:AddChild(UIElements.New("Input", "stacksInput")
-					:SetSize(62, 24)
-					:SetMargin(0, 16, 0, 0)
-					:SetBackgroundColor("PRIMARY_BG_ALT")
-					:SetValidateFunc("NUMBER", "1:5000")
-					:SetDisabled(true)
-					:SetValue(currentRow:GetField("numStacks"))
-				)
-				:AddChild(UIElements.New("Text", "quantityText")
-					:SetWidth("AUTO")
-					:SetMargin(0, 8, 0, 0)
-					:SetFont("BODY_BODY2")
-					:SetText(L["Quantity"]..":")
-				)
-				:AddChild(UIElements.New("Input", "quantityInput")
-					:SetSize(62, 24)
-					:SetBackgroundColor("PRIMARY_BG_ALT")
-					:SetValidateFunc("NUMBER", "1:5000")
-					:SetDisabled(true)
-					:SetValue(currentRow:GetField("stackSize"))
-				)
-			)
-			:AddChild(UIElements.New("Frame", "duration")
-				:SetLayout("HORIZONTAL")
-				:SetHeight(24)
-				:SetMargin(0, 0, 0, 24)
-				:AddChild(UIElements.New("Text", "desc")
-					:SetWidth("AUTO")
-					:SetFont("BODY_BODY2")
-					:SetText(L["Duration"]..":")
-				)
-				:AddChild(UIElements.New("Toggle", "toggle")
-					:SetMargin(0, 48, 0, 0)
-					:AddOption(TSM.CONST.AUCTION_DURATIONS[1])
-					:AddOption(TSM.CONST.AUCTION_DURATIONS[2])
-					:AddOption(TSM.CONST.AUCTION_DURATIONS[3])
-					:SetOption(TSM.CONST.AUCTION_DURATIONS[currentRow:GetField("postTime")])
-				)
-			)
-			:AddChild(UIElements.New("Frame", "per")
-				:SetLayout("HORIZONTAL")
-				:SetHeight(20)
-				:SetMargin(0, 0, 0, 8)
-				:AddChild(UIElements.New("Spacer", "spacer"))
-				:AddChild(UIElements.New("Button", "item")
-					:SetWidth("AUTO")
-					:SetMargin(0, 8, 0, 0)
-					:SetTextColor("INDICATOR")
-					:SetFont("BODY_BODY2_MEDIUM")
-					:SetJustifyH("RIGHT")
-					:SetText(L["Per Item"])
-					:SetScript("OnClick", Environment.HasFeature(Environment.FEATURES.AH_STACKS) and private.PerItemOnClick)
-				)
-				:AddChildIf(Environment.HasFeature(Environment.FEATURES.AH_STACKS), UIElements.New("Button", "stack")
-					:SetWidth("AUTO")
-					:SetTextColor("TEXT")
-					:SetFont("BODY_BODY2_MEDIUM")
-					:SetJustifyH("RIGHT")
-					:SetText(L["Per Stack"])
-					:SetScript("OnClick", Environment.HasFeature(Environment.FEATURES.AH_STACKS) and private.PerStackOnClick)
-				)
-			)
-			:AddChild(UIElements.New("Frame", "bid")
-				:SetLayout("HORIZONTAL")
-				:SetHeight(24)
-				:SetMargin(0, 0, 0, 10)
-				:AddChild(UIElements.New("Text", "desc")
-					:SetWidth("AUTO")
-					:SetFont("BODY_BODY2")
-					:SetText(L["Bid Price"]..":")
-				)
-				:AddChild(UIElements.New("Spacer", "spacer"))
-				:AddChild(UIElements.New("Input", "input")
-					:SetWidth(132)
-					:SetBackgroundColor("PRIMARY_BG_ALT")
-					:SetFont("TABLE_TABLE1")
-					:SetValidateFunc(private.BidBuyoutValidateFunc)
-					:SetJustifyH("RIGHT")
-					:SetDisabled(isCommodity)
-					:SetTabPaths("__parent.__parent.buyout.input", "__parent.__parent.buyout.input")
-					:SetContext("bid")
-					:SetValue(Money.ToString(bid, nil, "OPT_83_NO_COPPER"))
-					:SetScript("OnValidationChanged", private.BidBuyoutOnValidationChanged)
-					:SetScript("OnValueChanged", private.BidBuyoutInputOnValueChanged)
-					:SetScript("OnEnterPressed", private.BidBuyoutInputOnEnterPressed)
-				)
-			)
-			:AddChild(UIElements.New("Frame", "buyout")
-				:SetLayout("HORIZONTAL")
-				:SetHeight(24)
-				:SetMargin(0, 0, 0, 16)
-				:AddChild(UIElements.New("Text", "desc")
-					:SetWidth("AUTO")
-					:SetFont("BODY_BODY2")
-					:SetText(L["Buyout Price"]..":")
-				)
-				:AddChild(UIElements.New("Spacer", "spacer"))
-				:AddChild(UIElements.New("Input", "input")
-					:SetWidth(132)
-					:SetBackgroundColor("PRIMARY_BG_ALT")
-					:SetFont("TABLE_TABLE1")
-					:SetValidateFunc(private.BidBuyoutValidateFunc)
-					:SetJustifyH("RIGHT")
-					:SetContext(isCommodity and "itemBuyout" or "buyout")
-					:SetTabPaths("__parent.__parent.bid.input", "__parent.__parent.bid.input")
-					:SetValue(Money.ToString(buyout, nil, "OPT_83_NO_COPPER"))
-					:SetScript("OnValidationChanged", private.BidBuyoutOnValidationChanged)
-					:SetScript("OnValueChanged", private.BidBuyoutInputOnValueChanged)
-					:SetScript("OnEnterPressed", private.BidBuyoutInputOnEnterPressed)
-				)
-			)
-			:AddChild(UIElements.New("ActionButton", "saveBtn")
-				:SetHeight(24)
-				:SetText(SAVE)
-				:SetContext(context)
-				:SetScript("OnClick", fsmPrivate.EditPostingDetailsSaveOnClick)
-			)
+			:SetAuction(state.currentRowItemString, state.currentRowDuration, state.currentRowItemBid, state.currentRowItemBuyout, state.currentRowNumStacks, state.currentRowStackSize)
+			:SetManager(manager)
+			:SetAction("OnSaveClicked", "ACTION_EDIT_DIALOG_SAVED")
 		)
-	end
-	function fsmPrivate.EditPostingDetailsSaveOnClick(button)
-		local context = button:GetContext()
-		assert(context.scanType == "POST")
-		local currentRow = TSM.Auctioning.PostScan.GetCurrentRow()
-
-		local isCommodity = ItemInfo.IsCommodity(context.itemString)
-		local bid = TSM.UI.AuctionUI.ParseBid(button:GetElement("__parent.bid.input"):GetValue())
-		local buyout = TSM.UI.AuctionUI.ParseBuyout(button:GetElement("__parent.buyout.input"):GetValue(), isCommodity)
+	elseif action == "ACTION_EDIT_DIALOG_SAVED" then
+		local bid, buyout, perItem, duration = ...
+		assert(state.scanType == "POST" and state.currentRowItemString)
 		if buyout > 0 then
 			bid = min(bid, buyout)
 		end
-		if Environment.IsRetail() and isCommodity and bid ~= buyout then
-			Log.PrintUser(L["Did not change prices due to an invalid bid or buyout value."])
-		else
-			local duration = Table.KeyByValue(TSM.CONST.AUCTION_DURATIONS, button:GetElement("__parent.duration.toggle"):GetValue())
-			if duration ~= currentRow:GetField("postTime") then
-				TSM.Auctioning.PostScan.ChangePostDetail("postTime", duration)
-			end
-
-			-- update buyout first since doing so may change the bid
-			if buyout ~= currentRow:GetField(private.perItem and "itemBuyout" or "buyout") then
-				TSM.Auctioning.PostScan.ChangePostDetail(private.perItem and "itemBuyout" or "buyout", buyout)
-			end
-
-			if not ItemInfo.IsCommodity(context.itemString) and bid ~= currentRow:GetField(private.perItem and "itemBid" or "bid") then
-				TSM.Auctioning.PostScan.ChangePostDetail(private.perItem and "itemBid" or "bid", bid)
-			end
+		if duration ~= state.currentRowDuration then
+			TSM.Auctioning.PostScan.ChangePostDetail("postTime", duration)
 		end
 
-		fsmPrivate.UpdateDepositCost(context)
-		fsmPrivate.UpdateScanFrame(context)
-		button:GetBaseElement():HideDialog()
+		-- Update buyout first since doing so may change the bid
+		if buyout ~= (perItem and state.currentRowItemBuyout or state.currentRowBuyout) then
+			TSM.Auctioning.PostScan.ChangePostDetail(perItem and "itemBuyout" or "buyout", buyout)
+		end
+
+		if not state.currentRowIsCommodity and bid ~= (perItem and state.currentRowItemBid or state.currentRowBid) then
+			TSM.Auctioning.PostScan.ChangePostDetail(perItem and "itemBid" or "bid", bid)
+		end
+
+		private.UpdateScanFrame(state)
+	elseif action == "ACTION_PROCESS_AUCTION" then
+		state.scanFrame:GetBaseElement():HideDialog()
+		local result, noRetry = nil, nil
+		if state.scanType == "POST" then
+			result, noRetry = TSM.Auctioning.PostScan.DoProcess()
+		elseif state.scanType == "CANCEL" then
+			result, noRetry = TSM.Auctioning.CancelScan.DoProcess()
+		else
+			error("Invalid scan type: "..tostring(state.scanType))
+		end
+		if not result then
+			-- We failed to post / cancel
+			return manager:ProcessAction("ACTION_HANDLE_PROCESS_RESULT", false, not noRetry)
+		end
+		manager:ManageFuture("pendingFuture", result, "ACTION_FUTURE_DONE")
+		private.UpdateScanFrame(state)
+	elseif action == "ACTION_FUTURE_DONE" then
+		local value = ...
+		return manager:ProcessAction("ACTION_HANDLE_PROCESS_RESULT", value == true, value == false)
+	elseif action == "ACTION_HANDLE_PROCESS_RESULT" then
+		local success, canRetry = ...
+		local isDone = false
+		if state.scanType == "POST" then
+			TSM.Auctioning.PostScan.HandleConfirm(success, canRetry)
+			if state.statusNumConfirmed == state.statusTotalNum then
+				if state.statusNumFailed > 0 then
+					ChatMessage.PrintfUser(L["Retrying %d auction(s) which failed."], state.statusNumFailed)
+					TSM.Auctioning.PostScan.PrepareFailedPosts()
+				else
+					isDone = true
+				end
+			end
+		elseif state.scanType == "CANCEL" then
+			TSM.Auctioning.CancelScan.HandleConfirm(success, canRetry)
+			if state.statusNumConfirmed == state.statusTotalNum then
+				if state.statusNumFailed > 0 then
+					ChatMessage.PrintfUser(L["Retrying %d auction(s) which failed."], state.statusNumFailed)
+					TSM.Auctioning.CancelScan.PrepareFailedCancels()
+				else
+					isDone = true
+				end
+			end
+		else
+			error("Invalid scan type: "..tostring(state.scanType))
+		end
+		if isDone and state.scanIsPaused then
+			-- Unpause the scan now that we're done
+			assert(state.pausePending == nil)
+			state.pausePending = false
+			state.auctionScan:SetPaused(false)
+			state.isScanning = true
+		elseif isDone then
+			state.canStartNewScan = true
+			AuctionHouseWrapper.AutoQueryOwnedAuctions()
+			SoundAlert.Play(private.settings.confirmCompleteSound)
+		end
+		private.UpdateScanFrame(state)
+	elseif action == "ACTION_SKIP_AUCTION" then
+		if state.scanType == "POST" then
+			TSM.Auctioning.PostScan.DoSkip()
+		elseif state.scanType == "CANCEL" then
+			TSM.Auctioning.CancelScan.DoSkip()
+		else
+			error("Invalid scan type: "..tostring(state.scanType))
+		end
+		local isDone = state.statusNumConfirmed == state.statusTotalNum and state.statusNumFailed == 0
+		if isDone and state.scanIsPaused then
+			-- Unpause the scan now that we're done
+			assert(state.pausePending == nil)
+			state.pausePending = false
+			state.auctionScan:SetPaused(false)
+			state.isScanning = true
+		elseif isDone then
+			state.canStartNewScan = true
+			AuctionHouseWrapper.AutoQueryOwnedAuctions()
+			SoundAlert.Play(private.settings.confirmCompleteSound)
+		end
+		private.UpdateScanFrame(state)
+	elseif action == "ACTION_RESCAN" then
+		if not state.scanFrame or not AuctionScan.AcquireLock(L["Auctioning"]) then
+			return
+		end
+		return manager:ProcessAction("ACTION_START_SCAN", state.scanType, private.scanContext)
+	elseif action == "ACTION_STOP_SCANNING" then
+		if not ClientInfo.HasFeature(ClientInfo.FEATURES.C_AUCTION_HOUSE) then
+			ClearCursor()
+			ClickAuctionSellItemButton(AuctionsItemButton, "LeftButton")
+			ClearCursor()
+		end
+		manager:ProcessAction("ACTION_RESET_STATE")
+		if state.scanFrame then
+			state.scanFrame:GetParentElement():SetPath("selection", true)
+		end
+		AuctionScan.ReleaseLock(L["Auctioning"])
+	elseif action == "ACTION_RESET_STATE" then
+		if state.currentRowCancellable then
+			state.currentRowCancellable:Cancel()
+			state.currentRowCancellable = nil
+		end
+		if state.statusCancellable then
+			state.statusCancellable:Cancel()
+			state.statusCancellable = nil
+		end
+		TSM.Auctioning.Log.Truncate()
+		TSM.Auctioning.PostScan.Reset()
+		TSM.Auctioning.CancelScan.Reset()
+		if state.pendingFuture then
+			manager:CancelFuture("pendingFuture")
+		end
+		if state.scanThreadId then
+			Threading.Kill(state.scanThreadId)
+			state.scanThreadId = nil
+		end
+		if state.auctionScan then
+			state.auctionScan:Release()
+			state.auctionScan = nil
+		end
+		state.hasLastScan = false
+		state.scanNumItems = nil
+		state.scanProgress = 0
+		state.scanIsPaused = nil
+		state.pausePending = nil
+		state.isScanning = false
+		state.scanType = nil
+		state.canStartNewScan = false
+	elseif action == "ACTION_AUCTION_HOUSE_CLOSED" then
+		manager:ProcessAction("ACTION_SELECTION_FRAME_HIDDEN")
+		manager:ProcessAction("ACTION_SCAN_FRAME_HIDDEN")
+		manager:ProcessAction("ACTION_STOP_SCANNING")
+	else
+		error("Unknown action: "..tostring(action))
 	end
-	private.fsm = FSM.New("AUCTIONING")
-		:AddState(FSM.NewState("ST_INIT")
-			:SetOnEnter(function(context, scanType, scanContext)
-				private.hasLastScan = false
-				TSM.Auctioning.Log.Truncate()
-				TSM.Auctioning.PostScan.Reset()
-				TSM.Auctioning.CancelScan.Reset()
-
-				if context.scanThreadId then
-					Threading.Kill(context.scanThreadId)
-					context.scanThreadId = nil
-				end
-				context.pausePending = nil
-				context.itemString = nil
-				context.isScanning = false
-				if context.auctionScan then
-					context.auctionScan:Release()
-					context.auctionScan = nil
-					private.auctionScan = context.auctionScan
-				end
-				if context.pendingFuture then
-					context.pendingFuture:Cancel()
-					context.pendingFuture = nil
-				end
-
-				if scanType then
-					return "ST_STARTING_SCAN", scanType, scanContext
-				elseif context.scanFrame then
-					context.scanFrame:GetParentElement():SetPath("selection", true)
-					context.scanFrame = nil
-				end
-				TSM.UI.AuctionUI.EndedScan(L["Auctioning"])
-			end)
-			:AddTransition("ST_INIT")
-			:AddTransition("ST_STARTING_SCAN")
-		)
-		:AddState(FSM.NewState("ST_STARTING_SCAN")
-			:SetOnEnter(function(context, scanType, scanContext)
-				private.hasLastScan = true
-				context.scanType = scanType
-				if context.scanType == "POST" then
-					context.scanThreadId = TSM.Auctioning.PostScan.Prepare()
-					private.logQuery:ResetOrderBy()
-					private.logQuery:OrderBy("index", true)
-				elseif context.scanType == "CANCEL" then
-					context.scanThreadId = TSM.Auctioning.CancelScan.Prepare()
-					private.logQuery:ResetOrderBy()
-					private.logQuery:OrderBy("index", false)
-				else
-					error("Invalid scan type: "..tostring(context.scanType))
-				end
-				context.auctionScan = AuctionScan.GetManager()
-					:SetResolveSellers(not Environment.IsRetail())
-					:SetScript("OnProgressUpdate", private.FSMAuctionScanOnProgressUpdate)
-				private.auctionScan = context.auctionScan
-				fsmPrivate.UpdateScanFrame(context)
-				Threading.SetCallback(context.scanThreadId, private.FSMScanCallback)
-				Threading.Start(context.scanThreadId, context.auctionScan, scanContext)
-				return "ST_SCANNING"
-			end)
-			:AddTransition("ST_SCANNING")
-		)
-		:AddState(FSM.NewState("ST_SCANNING")
-			:SetOnEnter(function(context)
-				context.isScanning = true
-				fsmPrivate.UpdateScanFrame(context)
-			end)
-			:SetOnExit(function(context)
-				context.isScanning = false
-			end)
-			:AddTransition("ST_RESULTS")
-			:AddTransition("ST_INIT")
-			:AddEvent("EV_SCAN_PROGRESS_UPDATE", function(context)
-				local _, isPaused = context.auctionScan:GetProgress()
-				if context.pausePending == isPaused then
-					context.pausePending = nil
-				end
-				if isPaused and context.pausePending == nil then
-					return "ST_RESULTS"
-				else
-					fsmPrivate.UpdateScanFrame(context)
-				end
-			end)
-			:AddEvent("EV_SCAN_COMPLETE", function(context)
-				Sound.PlaySound(private.settings.scanCompleteSound)
-				return "ST_RESULTS"
-			end)
-			:AddEvent("EV_PAUSE_RESUME_CLICKED", function(context)
-				assert(context.pausePending == nil)
-				context.pausePending = true
-				context.auctionScan:SetPaused(true)
-				fsmPrivate.UpdateScanFrame(context)
-			end)
-			:AddEvent("EV_EDIT_BUTTON_CLICKED", function(context)
-				fsmPrivate.ShowEditDialog(context)
-			end)
-		)
-		:AddState(FSM.NewState("ST_HANDLING_CONFIRM")
-			:SetOnEnter(function(context, success, canRetry)
-				local isDone = false
-				if context.scanType == "POST" then
-					TSM.Auctioning.PostScan.HandleConfirm(success, canRetry)
-					local _, numConfirmed, numFailed, totalNum = TSM.Auctioning.PostScan.GetStatus()
-					if numConfirmed == totalNum then
-						if numFailed > 0 then
-							-- TODO: need to wait for the player's bags to settle
-							Log.PrintfUser(L["Retrying %d auction(s) which failed."], numFailed)
-							TSM.Auctioning.PostScan.PrepareFailedPosts()
-						else
-							isDone = true
-						end
-					end
-				elseif context.scanType == "CANCEL" then
-					TSM.Auctioning.CancelScan.HandleConfirm(success, canRetry)
-					local _, numConfirmed, numFailed, totalNum = TSM.Auctioning.CancelScan.GetStatus()
-					if numConfirmed == totalNum then
-						if numFailed > 0 then
-							-- TODO: need to wait for the player's auctions to settle
-							Log.PrintfUser(L["Retrying %d auction(s) which failed."], numFailed)
-							TSM.Auctioning.CancelScan.PrepareFailedCancels()
-						else
-							isDone = true
-						end
-					end
-				else
-					error("Invalid scan type: "..tostring(context.scanType))
-				end
-				local _, isPaused = context.auctionScan:GetProgress()
-				if not isDone then
-					return "ST_RESULTS"
-				elseif isPaused then
-					-- unpause the scan now that we're done
-					assert(context.pausePending == nil)
-					context.pausePending = false
-					context.auctionScan:SetPaused(false)
-					return "ST_SCANNING"
-				else
-					return "ST_DONE"
-				end
-			end)
-			:AddTransition("ST_SCANNING")
-			:AddTransition("ST_RESULTS")
-			:AddTransition("ST_DONE")
-		)
-		:AddState(FSM.NewState("ST_RESULTS")
-			:SetOnEnter(function(context)
-				local _, isPaused = context.auctionScan:GetProgress()
-				if not isPaused then
-					TSM.UI.AuctionUI.EndedScan(L["Auctioning"])
-					Threading.Kill(context.scanThreadId)
-				end
-				fsmPrivate.UpdateScanFrame(context)
-			end)
-			:AddTransition("ST_INIT")
-			:AddTransition("ST_HANDLING_CONFIRM")
-			:AddTransition("ST_SCANNING")
-			:AddTransition("ST_DONE")
-			:AddEvent("EV_PROCESS_CLICKED", function(context)
-				context.scanFrame:GetBaseElement():HideDialog()
-				local result, noRetry = nil, nil
-				if context.scanType == "POST" then
-					result, noRetry = TSM.Auctioning.PostScan.DoProcess()
-				elseif context.scanType == "CANCEL" then
-					result, noRetry = TSM.Auctioning.CancelScan.DoProcess()
-				else
-					error("Invalid scan type: "..tostring(context.scanType))
-				end
-				if not result then
-					-- we failed to post / cancel
-					return "ST_HANDLING_CONFIRM", false, not noRetry
-				end
-				context.pendingFuture = result
-				context.pendingFuture:SetScript("OnDone", private.FSMPendingFutureOneDone)
-				fsmPrivate.UpdateScanFrame(context)
-			end)
-			:AddEvent("EV_SKIP_CLICKED", function(context)
-				local isDone = nil
-				if context.scanType == "POST" then
-					TSM.Auctioning.PostScan.DoSkip()
-					local _, numConfirmed, numFailed, totalNum = TSM.Auctioning.PostScan.GetStatus()
-					isDone = numConfirmed == totalNum and numFailed == 0
-				elseif context.scanType == "CANCEL" then
-					TSM.Auctioning.CancelScan.DoSkip()
-					local _, numConfirmed, numFailed, totalNum = TSM.Auctioning.CancelScan.GetStatus()
-					isDone = numConfirmed == totalNum and numFailed == 0
-				else
-					error("Invalid scan type: "..tostring(context.scanType))
-				end
-				fsmPrivate.UpdateScanFrame(context)
-				local _, isPaused = context.auctionScan:GetProgress()
-				if isDone and isPaused then
-					-- unpause the scan now that we're done
-					assert(context.pausePending == nil)
-					context.pausePending = false
-					context.auctionScan:SetPaused(false)
-					return "ST_SCANNING"
-				elseif isDone then
-					return "ST_DONE"
-				end
-			end)
-			:AddEvent("EV_PENDING_FUTURE_DONE", function(context)
-				assert(context.pendingFuture:IsDone())
-				local value = context.pendingFuture:GetValue()
-				context.pendingFuture = nil
-				if value == true then
-					return "ST_HANDLING_CONFIRM", true, false
-				elseif value == false then
-					return "ST_HANDLING_CONFIRM", false, true
-				elseif value == nil then
-					return "ST_HANDLING_CONFIRM", false, false
-				else
-					error("Invalid value: "..tostring(value))
-				end
-			end)
-			:AddEvent("EV_PAUSE_RESUME_CLICKED", function(context)
-				assert(context.pausePending == nil)
-				context.pausePending = false
-				context.auctionScan:SetPaused(false)
-				return "ST_SCANNING"
-			end)
-			:AddEvent("EV_EDIT_BUTTON_CLICKED", function(context)
-				fsmPrivate.ShowEditDialog(context)
-			end)
-		)
-		:AddState(FSM.NewState("ST_DONE")
-			:SetOnEnter(function(context)
-				private.canStartNewScan = true
-				AuctionTracking.QueryOwnedAuctions()
-				Sound.PlaySound(private.settings.confirmCompleteSound)
-				fsmPrivate.UpdateScanFrame(context)
-			end)
-			:SetOnExit(function(context)
-				private.canStartNewScan = false
-			end)
-			:AddTransition("ST_INIT")
-		)
-		:AddDefaultEvent("EV_START_SCAN", function(context, scanType, scanContext)
-			return "ST_INIT", scanType, scanContext
-		end)
-		:AddDefaultEvent("EV_SCAN_FRAME_SHOWN", function(context, scanFrame)
-			context.scanFrame = scanFrame
-			fsmPrivate.UpdateScanFrame(context)
-		end)
-		:AddDefaultEvent("EV_SCAN_FRAME_HIDDEN", function(context)
-			context.scanFrame = nil
-			context.itemString = nil
-		end)
-		:AddDefaultEventTransition("EV_BACK_BUTTON_CLICKED", "ST_INIT")
-		:AddDefaultEventTransition("EV_AUCTION_HOUSE_CLOSED", "ST_INIT")
-		:AddDefaultEvent("EV_PENDING_FUTURE_DONE", function(context)
-			error("Unexpected pending future done event")
-		end)
-		:Init("ST_INIT", fsmContext)
 end
 
-function private.FSMAuctionScanOnProgressUpdate(auctionScan)
-	-- this even is very spammy while we scan, so silence the FSM logging
-	private.fsm:SetLoggingEnabled(false)
-	private.fsm:ProcessEvent("EV_SCAN_PROGRESS_UPDATE")
-	private.fsm:SetLoggingEnabled(true)
+function private.StartLinkedItemScan(state, itemLink)
+	if not state.selectionFrame and not state.canStartNewScan then
+		return false
+	elseif not AuctionScan.AcquireLock(L["Auctioning"]) then
+		return false
+	end
+	wipe(private.scanContext)
+	private.scanContext.isItems = true
+	tinsert(private.scanContext, Group.TranslateItemString(ItemString.Get(itemLink)))
+	private.StartScanHelper(state, "POST")
+	return true
 end
 
-function private.FSMScanCallback()
-	private.fsm:ProcessEvent("EV_SCAN_COMPLETE")
+---@param state AuctioningUIState
+function private.StartGroupScan(state, scanType)
+	if not AuctionScan.AcquireLock(L["Auctioning"]) then
+		return
+	end
+	wipe(private.scanContext)
+	for _, groupPath in state.selectionFrame:GetElement("groupSelection.groupTree"):SelectedGroupsIterator() do
+		tinsert(private.scanContext, groupPath)
+	end
+	private.StartScanHelper(state, scanType)
 end
 
-function private.FSMPendingFutureOneDone(value)
-	private.fsm:ProcessEvent("EV_PENDING_FUTURE_DONE")
+---@param state AuctioningUIState
+function private.StartPostBagsScan(state)
+	if not AuctionScan.AcquireLock(L["Auctioning"]) then
+		return
+	end
+	wipe(private.scanContext)
+	private.scanContext.isItems = true
+	for autoBaseItemString in state.selectionFrame:GetElement("content.bottom.bagScrollingTable"):SelectedItemsIterator() do
+		tinsert(private.scanContext, autoBaseItemString)
+	end
+	private.StartScanHelper(state, "POST")
+end
+
+---@param state AuctioningUIState
+function private.StartSearchListScan(state, listType, index)
+	if not AuctionScan.AcquireLock(L["Auctioning"]) then
+		return
+	end
+	local searchType, filter = private.GetSearchListFields(listType, index, "searchType", "filter")
+	wipe(private.scanContext)
+	private.scanContext.isItems = searchType == "postItems" or nil
+	TSM.Auctioning.SavedSearches.FiltersToTable(filter, private.scanContext)
+	private.StartScanHelper(state, searchType == "cancelGroups" and "CANCEL" or "POST")
+end
+
+---@param state AuctioningUIState
+function private.StartScanHelper(state, scanType)
+	private.manager:ProcessAction("ACTION_START_SCAN", scanType, private.scanContext)
+end
+
+---@param state AuctioningUIState
+function private.UpdateScanFrame(state)
+	if not state.scanFrame then
+		return
+	end
+
+	local bottom = state.scanFrame:GetElement("bottom")
+	state.scanFrame:GetElement("header.content.item.cost"):SetShown(state.scanType == "POST")
+	if state.canProcess then
+		bottom:GetElement("processBtn"):SetShown(not state.canStartNewScan)
+		bottom:GetElement("skipBtn"):SetShown(not state.canStartNewScan)
+		bottom:GetElement("rescanBtn"):SetShown(state.canStartNewScan)
+	else
+		bottom:GetElement("processBtn"):SetShown(true)
+		bottom:GetElement("skipBtn"):SetShown(true)
+		bottom:GetElement("rescanBtn"):SetShown(false)
+	end
+	bottom:Draw()
 end
 
 
@@ -1563,19 +1065,98 @@ end
 -- Private Helper Functions
 -- ============================================================================
 
-function private.BagScrollingTableIsSelectionEnabled(_, record)
-	return record:GetField("firstOperation") and true or false
+---@param state AuctioningUIState
+function private.UpdateLogSelectedIndex(state)
+	state.scanFrame:GetElement("tabs.logFrame.log"):SetSelectedIndex(state.currentRowAuctionId)
 end
 
-function private.BagGetOperationText(firstOperation)
-	return firstOperation or Theme.GetColor("FEEDBACK_RED"):ColorText(L["Skipped: No assigned operation"])
+---@param state AuctioningUIState
+function private.StateToAuctionDuration(state)
+	if not state.scanType or not state.currentRowDuration then
+		return nil
+	end
+	if state.scanType == "POST" then
+		return AuctionHouse.DURATIONS[state.currentRowDuration]
+	elseif state.scanType == "CANCEL" then
+		if not ClientInfo.HasFeature(ClientInfo.FEATURES.C_AUCTION_HOUSE) then
+			return _G["AUCTION_TIME_LEFT"..state.currentRowDuration]
+		end
+		local duration = state.currentRowDuration - time()
+		if duration < SECONDS_PER_MIN then
+			return duration.."s"
+		elseif duration < SECONDS_PER_HOUR then
+			return floor(duration / SECONDS_PER_MIN).."m"
+		elseif duration < SECONDS_PER_DAY then
+			return floor(duration / SECONDS_PER_HOUR).."h"
+		else
+			return floor(duration / SECONDS_PER_DAY).."d"
+		end
+	else
+		error("Invalid scanType: "..tostring(state.scanType))
+	end
 end
 
-function private.LogGetBuyoutText(buyout)
-	return buyout == 0 and "-" or Money.ToString(buyout, nil, "OPT_83_NO_COPPER")
+---@param state AuctioningUIState
+function private.StateToQuantityText(state)
+	if not state.currentRowNumStacks or not state.currentRowNumProcessed or not state.currentRowStackSize then
+		return "-"
+	end
+	if ClientInfo.HasFeature(ClientInfo.FEATURES.AH_STACKS) then
+		return format(L["%d of %d"], state.currentRowNumStacks - state.currentRowNumProcessed, state.currentRowStackSize)
+	else
+		return tostring(state.currentRowStackSize)
+	end
 end
 
-function private.LogGetIndexIcon(row)
+---@param currentRow DatabaseRow
+function private.CurrentRowToDepositCost(currentRow)
+	if not currentRow then
+		return nil
+	end
+	local itemString, postTime, stackSize, bid, buyout = currentRow:GetFields("itemString", "postTime", "stackSize", "bid", "buyout")
+	return AuctionHouseUIUtils.CalculateDeposit(itemString, true, postTime, stackSize, bid, buyout)
+end
+
+---@param state AuctioningUIState
+function private.StateToProgressText(state)
+	if not state.canProcess then
+		-- We're scanning or pausing
+		if state.pausePending ~= nil then
+			return state.scanIsPaused and L["Resuming Scan..."] or L["Pausing Scan..."]
+		else
+			return state.scanNumItems and format(L["Scanning (%d Items)"], state.scanNumItems) or L["Starting Scan..."]
+		end
+	elseif state.statusNumConfirmed == state.statusTotalNum then
+		-- We're completely done
+		if state.scanType == "POST" then
+			return L["Done Posting"]
+		elseif state.scanType == "CANCEL" then
+			return L["Done Canceling"]
+		else
+			error("Invalid scan type: "..tostring(state.scanType))
+		end
+	elseif state.statusNumProcessed == state.statusTotalNum then
+		-- We're done processing and just confirming
+		return format(L["Confirming %d / %d"], state.statusNumConfirmed + 1, state.statusTotalNum)
+	else
+		-- We're done (or paused) scanning so start Posting/Canceling
+		local progressFmtStr = nil
+		if state.scanType == "POST" then
+			progressFmtStr = (state.scanIsPaused and (L["Scan Paused"].." | ") or "")..L["Posting %d / %d"]
+		elseif state.scanType == "CANCEL" then
+			progressFmtStr = (state.scanIsPaused and (L["Scan Paused"].." | ") or "")..L["Canceling %d / %d"]
+		else
+			error("Invalid scan type: "..tostring(state.scanType))
+		end
+		if state.statusNumProcessed == state.statusNumConfirmed then
+			return format(progressFmtStr, state.statusNumProcessed + 1, state.statusTotalNum)
+		else
+			return format(progressFmtStr.." ("..L["Confirming %d / %d"]..")", state.statusNumProcessed + 1, state.statusTotalNum, state.statusNumConfirmed + 1, state.statusTotalNum)
+		end
+	end
+end
+
+function private.LogIndexIconVirtualField(row)
 	if row:GetField("state") == "PENDING" then
 		-- color the circle icon to match the color of the text
 		return TextureAtlas.GetColoredKey("iconPack.12x12/Circle", TSM.Auctioning.Log.GetColorFromReasonKey(row:GetField("reasonKey")))
@@ -1585,131 +1166,21 @@ function private.LogGetIndexIcon(row)
 end
 
 function private.MarketValueFunction(row)
-	return CustomPrice.GetValue("dbmarket", row:GetItemString() or row:GetBaseItemString())
+	local value = CustomString.GetValue("dbmarket", row:GetItemString() or row:GetBaseItemString())
+	return value
 end
 
-function private.EditDialogCloseBtnOnClick(button)
-	button:GetBaseElement():HideDialog()
-end
-
-function private.PerItemOnClick(button)
-	if private.perItem then
-		return
-	end
-
-	private.perItem = true
-	button:GetElement("__parent.stack")
-		:SetTextColor("TEXT")
-		:Draw()
-	button:SetTextColor("INDICATOR")
-		:Draw()
-
-	local row = TSM.Auctioning.PostScan.GetCurrentRow()
-	local bidInput = button:GetElement("__parent.__parent.bid.input")
-	local buyoutInput = button:GetElement("__parent.__parent.buyout.input")
-	local bid = TSM.UI.AuctionUI.ParseBid(bidInput:GetValue())
-	local buyout = TSM.UI.AuctionUI.ParseBuyout(buyoutInput:GetValue(), ItemInfo.IsCommodity(row:GetField("itemString")))
-	local stackSize = row:GetField("stackSize")
-	buyoutInput:SetFocused(false)
-		:SetValue(Money.ToString(buyout / stackSize))
-		:Draw()
-	bidInput:SetFocused(false)
-		:SetValue(Money.ToString(bid / stackSize))
-		:Draw()
-end
-
-function private.PerStackOnClick(button)
-	if not private.perItem then
-		return
-	end
-
-	private.perItem = false
-	button:GetElement("__parent.item")
-		:SetTextColor("TEXT")
-		:Draw()
-	button:SetTextColor("INDICATOR")
-		:Draw()
-
-	local row = TSM.Auctioning.PostScan.GetCurrentRow()
-	local bidInput = button:GetElement("__parent.__parent.bid.input")
-	local buyoutInput = button:GetElement("__parent.__parent.buyout.input")
-	local bid = TSM.UI.AuctionUI.ParseBid(bidInput:GetValue())
-	local buyout = TSM.UI.AuctionUI.ParseBuyout(buyoutInput:GetValue(), ItemInfo.IsCommodity(row:GetField("itemString")))
-	local stackSize = row:GetField("stackSize")
-	buyoutInput:SetFocused(false)
-		:SetValue(Money.ToString(buyout * stackSize))
-		:Draw()
-	bidInput:SetFocused(false)
-		:SetValue(Money.ToString(bid * stackSize))
-		:Draw()
-end
-
-function private.UpdateSaveButtonState(frame)
-	local context = frame:GetElement("saveBtn"):GetContext()
-	local isCommodity = ItemInfo.IsCommodity(context.itemString)
-	local bidInput = frame:GetElement("bid.input")
-	local buyoutInput = frame:GetElement("buyout.input")
-	local bid = TSM.UI.AuctionUI.ParseBid(bidInput:GetValue())
-	local buyout = TSM.UI.AuctionUI.ParseBuyout(buyoutInput:GetValue(), isCommodity)
-	frame:GetElement("saveBtn")
-		:SetDisabled((buyout > 0 and bid > buyout) or not bidInput:IsValid() or not buyoutInput:IsValid())
-		:Draw()
-end
-
-function private.BidBuyoutOnValidationChanged(input)
-	private.UpdateSaveButtonState(input:GetElement("__parent.__parent"))
-end
-
-function private.BidBuyoutInputOnValueChanged(input)
-	local frame = input:GetElement("__parent.__parent")
-	local context = frame:GetElement("saveBtn"):GetContext()
-	local isCommodity = ItemInfo.IsCommodity(context.itemString)
-	local bidInput = frame:GetElement("bid.input")
-	local buyoutInput = frame:GetElement("buyout.input")
-	local bid = TSM.UI.AuctionUI.ParseBid(bidInput:GetValue())
-	local buyout = TSM.UI.AuctionUI.ParseBuyout(buyoutInput:GetValue(), isCommodity)
-	if input == buyoutInput and Environment.IsRetail() and isCommodity then
-		-- update the bid to match
-		bidInput:SetValue(Money.ToString(buyout, nil, "OPT_83_NO_COPPER", "OPT_DISABLE"))
-			:Draw()
-	elseif input == bidInput and buyout > 0 and bid > buyout then
-		-- update the buyout to match
-		buyoutInput:SetValue(Money.ToString(bid, nil, "OPT_83_NO_COPPER"))
-			:Draw()
-	end
-	private.UpdateSaveButtonState(frame)
-end
-
-function private.BidBuyoutInputOnEnterPressed(input)
-	local frame = input:GetElement("__parent.__parent")
-	local context = frame:GetElement("saveBtn"):GetContext()
-	local isCommodity = ItemInfo.IsCommodity(context.itemString)
-	local bidInput = frame:GetElement("bid.input")
-	local buyoutInput = frame:GetElement("buyout.input")
-	local bid = TSM.UI.AuctionUI.ParseBid(bidInput:GetValue())
-	local buyout = TSM.UI.AuctionUI.ParseBuyout(buyoutInput:GetValue(), isCommodity)
-	local value = input:GetContext() == "bid" and bid or buyout
-	input:SetValue(Money.ToString(value, nil, "OPT_83_NO_COPPER"))
-	input:Draw()
-	if input == buyoutInput and buyout > 0 and buyout < bid then
-		-- update the bid to match
-		bidInput:SetValue(Money.ToString(value, nil, "OPT_83_NO_COPPER"))
-			:Draw()
-	end
-	private.UpdateSaveButtonState(frame)
-end
-
-function private.BidBuyoutValidateFunc(input, value)
-	local errMsg = nil
-	local context = input:GetContext()
-	if context == "bid" then
-		value, errMsg = TSM.UI.AuctionUI.ParseBid(value)
+function private.GetSearchListFields(listType, index, ...)
+	local query = nil
+	if listType == "RECENT" then
+		query = TSM.Auctioning.SavedSearches.CreateRecentSearchesQuery()
+	elseif listType == "FAVORITE" then
+		query = TSM.Auctioning.SavedSearches.CreateFavoriteSearchesQuery()
 	else
-		local isCommodity = context == "itemBuyout"
-		value, errMsg = TSM.UI.AuctionUI.ParseBuyout(value, isCommodity)
+		error("Invalid search list type: "..tostring(listType))
 	end
-	if not value then
-		return false, L["Invalid price."].." "..errMsg
-	end
-	return true
+	return query
+		:Select(...)
+		:Equal("index", index)
+		:GetFirstResultAndRelease()
 end

@@ -16,7 +16,7 @@ local GetItemInfoInstant=GetItemInfoInstant or C_Item and C_Item.GetItemInfoInst
 local GDKPInfo = {}
 addonTable.GDKPInfo=GDKPInfo
 ------------
-local QuickBut_xuhaoID=15
+local QuickBut_xuhaoID=30
 local GnName,GnUI,GnIcon,FrameLevel = L["PIGaddonList"][addonName],"PIG_GDKPUI",133784,50
 GDKPInfo.uidata={GnName,GnUI,GnIcon,FrameLevel}
 local fuFrame,fuFrameBut,Tooltip = unpack(Data.Ext[L.extLsit[2]])
@@ -67,6 +67,7 @@ local function ADD_Options()
 			end);
 		end
 	end
+	QuickButUI.ButList[QuickBut_xuhaoID]()
 	---重置配置
 	fuFrame.CZ = PIGButton(fuFrame,{"TOPRIGHT",fuFrame,"TOPRIGHT",-20,-20},{60,22},"重置");  
 	fuFrame.CZ:SetScript("OnClick", function ()
@@ -134,8 +135,8 @@ local function ADD_Options()
 		if event=="LOOT_CLOSED" then
 			wipe(self.listdata)
 		elseif IsInGroup() then
-			local lootmethod, masterlooterPartyID, masterlooterRaidID= GetLootMethod();
-			if lootmethod=="master" and masterlooterPartyID==0 then
+			local lootmethodID,masterLootPartyID, masterLooterRaidID= Fun.PIG_GetLootMethod()
+			if lootmethodID==2 and masterlooterPartyID==0 then
 				local lootNum = GetNumLootItems()
 				if #self.listdata==0 then
 					for x=1,lootNum do
@@ -477,7 +478,7 @@ local function ADD_Options()
 end
 ---======
 fuFrame:HookScript("OnShow", function (self)
-	if PIGA["Ver"][addonName] and PIG_OptionsUI:GetVer_NUM(addonName)<PIGA["Ver"][addonName] then
+	if self.yiGenxing then
 		self.UpdateVer:Show()
 	end
 	self.Open:SetChecked(PIGA["GDKP"]["Open"])
@@ -496,17 +497,12 @@ fuFrame:SetScript("OnEvent",function(self, event, arg1, arg2, arg3, arg4, arg5)
 	if event=="CHAT_MSG_ADDON" then
 		PIG_OptionsUI.GetExtVerInfo(self,addonName,PIG_OptionsUI:GetVer_NUM(addonName), arg1, arg2, arg3, arg4, arg5)
 	elseif event=="PLAYER_LOGIN" then
-		PIGA["Ver"][addonName]=PIGA["Ver"][addonName] or 0
-		if PIGA["Ver"][addonName]>PIG_OptionsUI:GetVer_NUM(addonName) then
-			self.yiGenxing=true;
-		else
-			PIG_OptionsUI.SendExtVerInfo(addonName.."#U#"..PIG_OptionsUI:GetVer_NUM(addonName))
-		end
+		PIG_OptionsUI.SendExtVerInfo(addonName.."#U#"..PIG_OptionsUI:GetVer_NUM(addonName),addonName,self)
+		ADD_Options()
 	elseif event=="ADDON_LOADED" and arg1 == addonName then
 		self:UnregisterEvent("ADDON_LOADED")
 		addonTable.Load_Config()
 		PIG_OptionsUI:SetVer_EXT(arg1)
-		ADD_Options()
 	end
 end)
 -------

@@ -7,8 +7,6 @@ local VUHDO_SPELL_TRACE_SORTABLE = { };
 
 
 --
-local tStoredName;
-local tIndex;
 local tSpellNameById;
 function VUHDO_initSpellTraceComboModel()
 
@@ -72,7 +70,6 @@ local tIndex;
 local tModel;
 local tPanelName;
 local tCheckButton;
-local tComboBox;
 local tDurationFrame;
 local tSlider;
 function VUHDO_spellTraceUpdateEditBox(anEditBox)
@@ -114,6 +111,7 @@ function VUHDO_spellTraceUpdateEditBox(anEditBox)
 	tSlider = _G[tDurationFrame:GetName() .. "Slider"];
 	VUHDO_lnfSliderOnLoad(tSlider, VUHDO_I18N_DURATION, 0, 30, " " .. VUHDO_I18N_SEC);
 	VUHDO_lnfSetModel(tSlider, tModel .. ".duration");
+	VUHDO_lnfAddConstraint(tSlider, VUHDO_LF_CONSTRAINT_DISABLE, tModel .. ".isIncoming", true);
 	VUHDO_lnfSliderInitFromModel(tSlider);
 
 	tDurationFrame:Hide();

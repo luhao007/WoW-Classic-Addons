@@ -43,7 +43,7 @@ function BusinessInfo.AutoBuy()
 			BuyMerchantItem(datax[2],datax[8])
 			datax[8]=0
 		end
-		C_Timer.After(0.2,function()
+		C_Timer.After(0.5,function()
 			if datax[8]>0 then
 				ExecuteBuyFun(datax)
 			else

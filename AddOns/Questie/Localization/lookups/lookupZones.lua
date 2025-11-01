@@ -21,6 +21,7 @@ l10n.continentLookup = {
     [11] = "Professions",
     [12] = "Events",
     [13] = "Pet Battle",
+    [14] = "Scenarios",
 }
 
 -- Table was generated with the ExternalScripts(DONOTINCLUDEINRELEASE)/getAreaRelations.py script
@@ -1309,7 +1310,7 @@ l10n.zoneLookup = {
     },
     [109]={
         [1417]="Sunken Temple",
-        [1477]="The Temple of Atal'Hakkar",
+        [1477]="Sunken Temple",
     },
     [129]={
         [722]="Razorfen Downs",
@@ -2091,7 +2092,7 @@ l10n.zoneLookup = {
         [4269]="Shrine of Scales",
         [4270]="Drak'atal Passage",
         [4271]="Utgarde Pinnacle",
-        [4273]="Ulduar",
+        --[4273]="Ulduar",
         [4275]="The Argent Stand",
         [4276]="Altar of Sseratus",
         [4278]="Drak'Sotra Fields",
@@ -2744,7 +2745,7 @@ l10n.zoneCategoryLookup = {
         [1196] = "Utgarde Pinnacle",
         [1337] = "Uldaman",
         [1417] = "Sunken Temple",
-        [1477] = "The Temple of Atal'Hakkar",
+        [1477] = "Sunken Temple",
         [1581] = "The Deadmines",
         [1583] = "Blackrock Spire",
         [1584] = "Blackrock Depths",
@@ -2758,6 +2759,9 @@ l10n.zoneCategoryLookup = {
         [2367] = "Old Hillsbrad Foothills",
         [2437] = "Ragefire Chasm",
         [2557] = "Dire Maul",
+        [2677] = "Blackwing Lair",
+        [2717] = "Molten Core",
+        [3428] = "Ahn'Qiraj",
         [3429] = "Ruins of Ahn'Qiraj",
         [3456] = "Naxxramas",
         [3457] = "Karazhan",
@@ -2790,6 +2794,7 @@ l10n.zoneCategoryLookup = {
         [4228] = "The Oculus",
         [4264] = "Halls of Stone",
         [4272] = "Halls of Lightning",
+        [4273] = "Ulduar",
         [4375] = "Gundrak",
         [4415] = "The Violet Hold",
         [4416] = "Gundrak",
@@ -2820,9 +2825,11 @@ l10n.zoneCategoryLookup = {
         [5963] = "Stormstout Brewery",
         [5976] = "Gate of the Setting Sun",
         [6052] = "Scarlet Halls",
+        [6066] = "Scholomance",
         [6067] = "Terrace of Endless Spring",
+        [6109] = "Scarlet Monastery",
         [6125] = "Mogu'shan Vaults",
-        [6143] = "Mogu'shan Palace",
+        [6182] = "Mogu'shan Palace",
         [6214] = "Siege of Niuzao Temple",
         [6297] = "Heart of Fear",
         [6298] = "Brawl'gar Arena",
@@ -2885,6 +2892,12 @@ l10n.zoneCategoryLookup = {
         [-374] = "Noblegarden",
         [-375] = "Pilgrim's Bounty",
         [-376] = "Love is in the Air", -- Category added in WotLK
+        [-391] = "Pandaren Brewmasters", -- Category added in MoP
+        [-392] = "Scenario", -- Category added in MoP
+        [-396] = "Landfall", -- Category added in MoP
+        [-397] = "Pandaren Campaign", -- Category added in MoP
+        [-398] = "Riding", -- Category added in Cata
+        [-399] = "Brawler's Guild", -- Category added in MoP
         [-641] = "Nightmare Incursions", -- Category added in SoD P3
         [-644] = "Blackrock Eruption", -- Category added in SoD P4
         -- Below are dummy IDs to not interfere with other IDs
@@ -2899,5 +2912,24 @@ l10n.zoneCategoryLookup = {
     },
     [13] = {
         [-394] = "Battle Pets",
+    },
+    [14] = {
+        [6101] = "A Brewing Storm",
+        [6616] = "A Little Patience",
+        [6219] = "Arena of Annihilation",
+        [6328] = "Assault on Zan'vess",
+        -- [6567] = "Battle on the High Seas",
+        -- [6814] = "Blood in the Snow",
+        [6426] = "Brewmoon Festival",
+        [6208] = "Crypt of Forgotten Kings",
+        [6565] = "Dagger in the Dark",
+        -- [6733] = "Dark Heart of Pandaria",
+        [6615] = "Domination Point",
+        [6209] = "Greenstone Village",
+        [6575] = "Lion's Landing",
+        -- [6731] = "The Secrets of Ragefire",
+        [6040] = "Theramore's Fall", -- H
+        [6500] = "Theramore's Fall", -- A
+        [6309] = "Unga Ingoo",
     },
 }

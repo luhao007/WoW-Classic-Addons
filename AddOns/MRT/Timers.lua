@@ -3,6 +3,7 @@ local GlobalAddonName, ExRT = ...
 local math_ceil, IsEncounterInProgress, abs, UnitHealth, UnitHealthMax, GetTime, format, tableCopy = math.ceil, IsEncounterInProgress, abs, UnitHealth, UnitHealthMax, GetTime, format, ExRT.F.table_copy2
 local SendAddonMessage = C_ChatInfo.SendAddonMessage
 local VMRT = nil
+local SendChatMessage = C_ChatInfo and C_ChatInfo.SendChatMessage or SendChatMessage
 
 local module = ExRT:New("Timers",ExRT.L.timers)
 local ELib,L = ExRT.lib,ExRT.L
@@ -74,9 +75,7 @@ local function ToRaid(msg)
 	end
 end
 
-local dbmPrefix = (ExRT.isClassic and ExRT.isLK) and "D5WC" or
-	ExRT.isClassic and "D5C" or
-	"D5"
+local dbmPrefix = "D5"
 
 local function CreateTimers(ctime,cname)
 	local chat_type,playerName = ExRT.F.chatType()
@@ -89,8 +88,12 @@ local function CreateTimers(ctime,cname)
 		dbmPlayerPrefix = ""
 	end
 	if cname == L.timerattack then
-		if SlashCmdList.BIGWIGSPULL then
+		if SlashCmdList.pull then
+			SlashCmdList.pull(ctime)
+		elseif SlashCmdList.BIGWIGSPULL then
 			SlashCmdList.BIGWIGSPULL(ctime)
+		elseif SlashCmdList.DEADLYBOSSMODSPULL then
+			SlashCmdList.DEADLYBOSSMODSPULL(ctime)
 		end
 		SendAddonMessage("BigWigs", "P^Pull^"..ctime, chat_type,playerName)
 		local _,_,_,_,_,_,_,mapID = GetInstanceInfo()
@@ -99,14 +102,23 @@ local function CreateTimers(ctime,cname)
 			C_PartyInfo.DoCountdown(ctime)
 		end
 	elseif cname == L.timerafk then
-		if SlashCmdList.BIGWIGSBREAK then
+		if SlashCmdList["break"] then
+			SlashCmdList["break"](tostring(tonumber(ctime)/60))
+		elseif SlashCmdList.BIGWIGSBREAK then
 			SlashCmdList.BIGWIGSBREAK(tostring(tonumber(ctime)/60))
+		elseif SlashCmdList.DEADLYBOSSMODSBREAK then
+			SlashCmdList.DEADLYBOSSMODSBREAK(tostring(tonumber(ctime)/60))
 		end
+
 		SendAddonMessage("BigWigs", "P^Break^"..ctime, chat_type,playerName)
 		SendAddonMessage(dbmPrefix, ("%s1\tBT\t%d"):format(dbmPlayerPrefix, ctime), chat_type,playerName)
 	else
-		if SlashCmdList.BIGWIGSLOCALBAR then
+		if SlashCmdList.raidbar then
+			SlashCmdList.raidbar(ctime.." "..cname)
+		elseif SlashCmdList.BIGWIGSLOCALBAR then
 			SlashCmdList.BIGWIGSLOCALBAR(ctime.." "..cname)
+		elseif SlashCmdList.DEADLYBOSSMODS then
+			SlashCmdList.DEADLYBOSSMODS("timer "..ctime.." "..cname)
 		end
 		SendAddonMessage("BigWigs", "P^CBar^"..ctime.." "..cname, chat_type,playerName)
 		SendAddonMessage(dbmPrefix, ("%s1\tU\t%d\t%s"):format(dbmPlayerPrefix, ctime, cname), chat_type,playerName)
@@ -301,8 +313,8 @@ function module.options:Load()
 	self:CreateTilte()
 
 	local GetSpecializationInfoByID = GetSpecializationInfoByID
-	if ExRT.isClassic then
-		GetSpecializationInfoByID = ExRT.Classic.GetSpecializationInfoByID
+	if ExRT.isClassic and not ExRT.isMoP then
+		GetSpecializationInfoByID = GetSpecializationInfoForSpecID or ExRT.Classic.GetSpecializationInfoByID
 	end
 
 	self.shtml1 = ELib:Text(self,L.timerstxt1,12):Size(650,200):Point(15,-20):Top()
@@ -455,7 +467,7 @@ function module.options:Load()
 		else
 			VMRT.Timers.useDPT = nil
 		end
-	end):Shown(not ExRT.isClassic)
+	end):Shown(not ExRT.isClassic or ExRT.isCata)
 	
 	local function SpecsEditBoxTextChanged(self,isUser)
 		if not isUser then
@@ -474,13 +486,29 @@ function module.options:Load()
 		VMRT.Timers.specTimes[spec] = val
 	end
 	
-	self.scrollFrame = ELib:ScrollFrame(self):Size(678,220):Point("TOP",0,-413):Height(700):Shown(not ExRT.isClassic)
+	self.scrollFrame = ELib:ScrollFrame(self):Size(678,220):Point("TOP",0,-413):Height(700):Shown(not ExRT.isClassic or ExRT.isCata)
 	ELib:Border(self.scrollFrame,0)
-	self.scrollFrameText = ELib:Text(self,L.TimerSpecTimerHeader,12):Size(620,30):Point("BOTTOMLEFT",self.scrollFrame,"TOPLEFT",5,1):Bottom():Shown(not ExRT.isClassic)
+	self.scrollFrameText = ELib:Text(self,L.TimerSpecTimerHeader,12):Size(620,30):Point("BOTTOMLEFT",self.scrollFrame,"TOPLEFT",5,1):Bottom():Shown(not ExRT.isClassic or ExRT.isCata)
 	self.scrollFrame.C.classTitles = {}
 	self.scrollFrame.C.classFrames = {}
+	if ExRT.isCata then
+		module.db.classNames = {
+			"WARRIOR",
+			"PALADIN",
+			"HUNTER",
+			"ROGUE",
+			"PRIEST",
+			"DEATHKNIGHT",
+			"SHAMAN",
+			"MAGE",
+			"WARLOCK",
+			"DRUID",
+		}
+		if ExRT.isMoP then
+			tinsert(module.db.classNames, "MONK")
+		end
+	end
 	for key, class in ipairs(module.db.classNames) do
-		
 		local column = (key-1) % 3
 		local row = math.floor((key-1) / 3)
 		local frame = CreateFrame("Frame",nil,self.scrollFrame.C)

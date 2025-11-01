@@ -1,23 +1,26 @@
-## Interface: 30405
+## Interface: 50502
 ## Author: Zensunim of Dragonblight
-## Version: 5.17.4
+## Version: 5.19.4
 
 ## Title: GTFO
 ## Notes: GTFO, you're dying!
-## Title-zhCN: |cFFFFE00A<|r|cFFC79C6E战斗|r|cFFFFE00A>|r |cFFFFFFFF伤害警报|r |cFFFFE00AGTFO|r
+## Title-zhCN: |cFFFFE00A<|r|cFFC79C6E战斗|r|cFFFFE00A>|r|cFFFFFFFF伤害警报|r |cFFFFE00AGTFO|r
 ## Notes-zhCN: 当你站在错误的位置时发出警报
 
 ## IconTexture: Interface\Icons\spell_fire_fire
+
+## Category: Combat
+## Category-zhCN: |cFFFFE00A<|r|cFFC79C6E战斗|r|cFFFFE00A>|r
 
 ## DefaultState: Enabled
 
 ## SavedVariables: GTFOData
 
-## X-Min-Interface: 110107
+## X-Min-Interface: 110205
 ## X-Min-Interface-BCC: 20504
 ## X-Min-Interface-Wrath: 30403
 ## X-Min-Interface-Cata: 40402
-## X-Min-Interface-Mists: 50500
+## X-Min-Interface-Mists: 50501
 ## X-WoWI-ID: 17996
 ## X-Curse-Project-ID: 20697
 ## X-Wago-ID: PANz0MK4

@@ -651,10 +651,20 @@ VUHDO_I18N_TT.K592 = "Check this to show private aura icons on the health bar.";
 VUHDO_I18N_TT.K593 = "Select a size for your private aura icons.";
 VUHDO_I18N_TT.K594 = "Check to sort pet units last.";
 VUHDO_I18N_TT.K595 = "Show effective HP (health including shields) of player.";
-
--- TBCC game version specific strings (tooltip IDs begin at K900)
-
-VUHDO_I18N_TT.K900 = "Check to show incoming heal using LibHealComm-4.0.";
+VUHDO_I18N_TT.K596 = "Click to change color to indicate players afflicted by bleed debuffs.";
+VUHDO_I18N_TT.K597 = "Only play a sound if the debuff is removable by yourself.";
+VUHDO_I18N_TT.K598 = "Select a color for HoT Square 8";
+VUHDO_I18N_TT.K599 = "Select a color for HoT Square 9";
+VUHDO_I18N_TT.K600 = "Show debuff icons on friendly units.";
+VUHDO_I18N_TT.K601 = "Show debuff icons on hostile units.";
+VUHDO_I18N_TT.K602 = "Show debuffs cast by you on hostile units.";
+VUHDO_I18N_TT.K603 = "Show debuffs cast by others on hostile units.";
+VUHDO_I18N_TT.K604 = "Check this to use gradient class colors.";
+VUHDO_I18N_TT.K605 = "Check this to use gradient color.";
+VUHDO_I18N_TT.K606 = "Select the maximum gradient color.";
+VUHDO_I18N_TT.K607 = "Click to change color to indicate enemies affected by enrage buffs.";
+VUHDO_I18N_TT.K608 = "Check to ignore purgeable buffs on enemies.";
+VUHDO_I18N_TT.K609 = "Check to only apply HoT slot setup (Panels => HoTs => Order) when spell layout is being loaded.";
 
 VUHDO_I18N_DEFAULT_PROFILE = "Default Profile";
 VUHDO_I18N_DEFAULT_LAYOUT = "Default Layout";
@@ -1067,8 +1077,8 @@ VUHDO_I18N_CLEAR_BINDING = "Belegung löschen";
 VUHDO_I18N_MACRO_EDITOR = "VuhDo Makro-Editor";
 VUHDO_I18N_ACCEPT = "Annehmen";
 VUHDO_I18N_DISCARD = "Verwerfen";
-VUHDO_I18N_LKA_HINT_1 = "Benutzen sie folgende Platzhalter im Makro: |c00000000vuhdo|r => Spieler, |c00000000vdname|r => Name des Spielers" justifyH="LEFT" inherits="VuDoButtonFontDark";
-VUHDO_I18N_LKA_HINT_2 = "|c00000000vdtarget, vdtargettarget|r => Ziel des Spielers/ToT, |c00000000vdpet|r => Pet des Spielers, Bsp: /use [@vuhdo] Blitzheilung" justifyH="LEFT" inherits="VuDoButtonFontDark";
+VUHDO_I18N_LKA_HINT_1 = "Benutzen sie folgende Platzhalter im Makro: |c00000000vuhdo|r => Spieler, |c00000000vdname|r => Name des Spielers";
+VUHDO_I18N_LKA_HINT_2 = "|c00000000vdtarget, vdtargettarget|r => Ziel des Spielers/ToT, |c00000000vdpet|r => Pet des Spielers, Bsp: /use [@vuhdo] Blitzheilung";
 VUHDO_I18N_LKA_CUSTOM_MACRO_DISCARDED = "Eigener Makro-Text wurde verworfen.";
 VUHDO_I18N_NAME_CHANGE_DISCARDED = "Die Namensänderung wurde verworfen.";
 VUHDO_I18N_LKA_TYPE_CHANGED = "Zuweisung von EIGENEM TEXT zu\nSpruch oder WoW-Makro geändert.\nMakro-Text verwerfen?";
@@ -1171,7 +1181,7 @@ VUHDO_I18N_HEAL_ABSORB_BAR = "Heal Absorb Bar";
 VUHDO_I18N_PLAYER = "Player unit";
 VUHDO_I18N_TARGET = "Target unit"
 VUHDO_I18N_TARGET_TARGET = "Target's target unit"
-VUHDO_I18N_FOCUS = "Focus unit";
+VUHDO_I18N_FOCUS_UNIT = "Focus unit";
 VUHDO_I18N_MOUSEOVER = "Mouseover unit";
 VUHDO_I18N_MOUSEOVER_TARGET = "Mouseover's target unit";
 VUHDO_I18N_MOUSEOVER_TARGET_TARGET = "Mouseover's target's target unit";
@@ -1201,6 +1211,22 @@ VUHDO_I18N_PETS_LAST = "Pets last";
 VUHDO_I18N_SHOW_EFFECTIVE = "Show\nEffective";
 VUHDO_I18N_DEBUFF_IGNORE_IMPORTED = "Debuff ignore list successfully imported.";
 
--- TBCC game version specific strings
+VUHDO_I18N_BLEED = "Bleed";
 
-VUHDO_I18N_LIBHEALCOMM = "Use Lib\nHealComm";
+VUHDO_I18N_SQUARE_8 = "Square 8";
+VUHDO_I18N_SQUARE_9 = "Square 9";
+VUHDO_I18N_SHOW_ON_FRIENDLY = "Show on\nfriendly";
+VUHDO_I18N_SHOW_ON_HOSTILE = "Show on\nhostile";
+VUHDO_I18N_HOSTILE_SPELL_SOURCE = "Hostile Unit Spell Source";
+
+VUHDO_I18N_SEARCH_OPTIONS = "Search Options";
+
+VUHDO_I18N_CLASS_GRADIENT_COLORS = "Class Gradient Colors";
+VUHDO_I18N_CLASS_GRADIENTS = "Class\nGradients";
+VUHDO_I18N_LIFE_GRADIENT = "Life\nGradient";
+VUHDO_I18N_MAX_COLOR = "Max Color";
+
+VUHDO_I18N_ENRAGE = "Enrage";
+VUHDO_I18N_PURGEABLE_BUFFS = "Purgeable\nBuffs";
+
+VUHDO_I18N_LOAD_HOTS_ONLY_SLOTS = "Only Slots";

@@ -6,14 +6,17 @@
 
 local TSM = select(2, ...) ---@type TSM
 local VendorSearch = TSM.Shopping:NewPackage("VendorSearch")
-local L = TSM.Include("Locale").GetTable()
-local Log = TSM.Include("Util.Log")
-local Threading = TSM.Include("Service.Threading")
-local ItemInfo = TSM.Include("Service.ItemInfo")
+local L = TSM.Locale.GetTable()
+local ChatMessage = TSM.LibTSMService:Include("UI.ChatMessage")
+local Threading = TSM.LibTSMTypes:Include("Threading")
+local ItemInfo = TSM.LibTSMService:Include("Item.ItemInfo")
+local AuctionSearchContext = TSM.LibTSMService:IncludeClassType("AuctionSearchContext")
+local LibTSMClass = LibStub("LibTSMClass")
+local VendorSearchContext = LibTSMClass.DefineClass("VendorSearchContext", AuctionSearchContext) ---@class VendorSearchContext: AuctionSearchContext
 local private = {
 	itemList = {},
 	scanThreadId = nil,
-	searchContext = nil,
+	searchContext = nil ---@type VendorSearchContext,
 }
 
 
@@ -25,7 +28,7 @@ local private = {
 function VendorSearch.OnInitialize()
 	-- initialize thread
 	private.scanThreadId = Threading.New("VENDOR_SEARCH", private.ScanThread)
-	private.searchContext = TSM.Shopping.ShoppingSearchContext(private.scanThreadId, private.MarketValueFunction)
+	private.searchContext = VendorSearchContext(private.scanThreadId, private.MarketValueFunction)
 end
 
 function VendorSearch.GetSearchContext()
@@ -40,7 +43,7 @@ end
 
 function private.ScanThread(auctionScan)
 	if TSM.AuctionDB.GetAppDataUpdateTimes() < time() - 60 * 60 * 12 then
-		Log.PrintUser(L["No recent AuctionDB scan data found."])
+		ChatMessage.PrintUser(L["No recent AuctionDB scan data found."])
 		return false
 	end
 
@@ -60,7 +63,7 @@ function private.ScanThread(auctionScan)
 		query:AddCustomFilter(private.QueryFilter)
 	end
 	if not auctionScan:ScanQueriesThreaded() then
-		Log.PrintUser(L["TSM failed to scan some auctions. Please rerun the scan."])
+		ChatMessage.PrintUser(L["TSM failed to scan some auctions. Please rerun the scan."])
 	end
 	return true
 end
@@ -80,4 +83,15 @@ end
 
 function private.MarketValueFunction(row)
 	return ItemInfo.GetVendorSell(row:GetItemString() or row:GetBaseItemString())
+end
+
+
+
+-- ============================================================================
+-- VendorSearchContext Class
+-- ============================================================================
+
+function VendorSearchContext:GetMaxCanBuy()
+	-- Buy everything that's below the vendor cost
+	return math.huge
 end

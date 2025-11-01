@@ -3,7 +3,7 @@
 		<Frames>
 			<Frame name="$parentLockPanel" inherits="VuhDoPanelTemplate">
 				<Size>
-					<AbsDimension x="130" y="150" />
+					<AbsDimension x="130" y="112" />
 				</Size>
 				<Anchors>
 					<Anchor point="TOPLEFT">
@@ -30,6 +30,7 @@
 						</Scripts>
 					</CheckButton>
 
+<!--
 					<CheckButton name="$parentinCombatCheckButton" text="VUHDO_I18N_SHOW_IN_FIGHT" inherits="VuhDoCheckButtonTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT">
@@ -46,13 +47,13 @@
 							</OnLoad>
 						</Scripts>
 					</CheckButton>
-
+-->
 
 					<CheckButton name="$parentClickThroughCheckButton" text="VUHDO_I18N_CLICK_THROUGH" inherits="VuhDoCheckButtonTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
-									<AbsDimension x="13" y="-107" />
+									<AbsDimension x="13" y="-69" />
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -129,7 +130,7 @@
 						</Scripts>
 					</CheckButton>
 
-					<CheckButton name="$parenHideEmptyPanelsCheckButton" text="VUHDO_I18N_EMPTY_HOTS" inherits="VuhDoCheckButtonTemplate">
+					<CheckButton name="$parentHideEmptyPanelsCheckButton" text="VUHDO_I18N_EMPTY_HOTS" inherits="VuhDoCheckButtonTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
@@ -145,7 +146,7 @@
 						</Scripts>
 					</CheckButton>
 
-					<CheckButton name="$parenHideEmptyButtonsCheckButton" text="VUHDO_I18N_EMPTY_BUTTONS" inherits="VuhDoCheckButtonTemplate">
+					<CheckButton name="$parentHideEmptyButtonsCheckButton" text="VUHDO_I18N_EMPTY_BUTTONS" inherits="VuhDoCheckButtonTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
@@ -161,7 +162,7 @@
 						</Scripts>
 					</CheckButton>
 
-					<CheckButton name="$parenPetBattleCheckButton" text="Pet Battle" inherits="VuhDoCheckButtonTemplate">
+					<CheckButton name="$parentPetBattleCheckButton" text="Pet Battle" inherits="VuhDoCheckButtonTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
@@ -256,7 +257,7 @@
 						</Scripts>
 					</CheckButton>
 
-					<CheckButton name="$parentFilterFocusCheckButton" text="VUHDO_I18N_FOCUS" inherits="VuhDoCheckButtonTemplate">
+					<CheckButton name="$parentFilterFocusCheckButton" text="VUHDO_I18N_FOCUS_UNIT" inherits="VuhDoCheckButtonTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>

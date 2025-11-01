@@ -39,12 +39,12 @@
 
 			<Frame name="$parentPanelNumLabel" inherits="VuhDoLabelFrameTemplate">
 				<Size>
-					<AbsDimension x="140" y="17" />
+					<AbsDimension x="40" y="18" />
 				</Size>
 				<Anchors>
 					<Anchor point="TOPLEFT">
 						<Offset>
-							<AbsDimension x="120" y="17" />
+							<AbsDimension x="590" y="17" />
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -55,6 +55,45 @@
 					</Layer>
 				</Layers>
 			</Frame>
+
+			<EditBox name="$parentSearchEditBox" inherits="VuhDoEditBoxTemplate">
+				<Size>
+					<AbsDimension x="160" y="32" />
+				</Size>
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset>
+							<AbsDimension x="0" y="28" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						VUHDO_lnfSetModel(self, "VUHDO_COMPONENT_SEARCH");
+					</OnLoad>
+					<OnTextChanged>
+						VUHDO_lnfEditBoxUpdateModel(self);
+						VUHDO_lnfUpdateTabSearchVisibility();
+
+						if not VUHDO_strempty(VUHDO_COMPONENT_SEARCH) then
+							self:SetAlpha(0.95);
+						end
+					</OnTextChanged>
+					<OnShow>
+						VUHDO_lnfPatchFont(self, "Hint");
+						VUHDO_lnfPatchFont(self, "");
+						VUHDO_lnfEditBoxInitFromModel(self);
+						VUHDO_lnfSetEditBoxHint(self, VUHDO_I18N_SEARCH_OPTIONS);
+						self:SetAlpha(0.7);
+					</OnShow>
+					<OnEnter>
+						self:SetAlpha(0.95);
+					</OnEnter>
+					<OnLeave>
+						self:SetAlpha(0.7);
+					</OnLeave>
+				</Scripts>
+			</EditBox>
 
 			<Frame name="$parentTabsPanel">
 				<Size>
@@ -77,6 +116,9 @@
 							</Anchor>
 						</Anchors>
 						<Scripts>
+							<OnLoad inherit="prepend">
+								self.tabPanel = "VuhDoNewOptionsGeneral";
+							</OnLoad>
 							<OnClick>VUHDO_newOptionsTabbedClickedClicked(self); VUHDO_lnfRadioButtonClicked(self)</OnClick>
 						</Scripts>
 					</CheckButton>
@@ -90,6 +132,9 @@
 							</Anchor>
 						</Anchors>
 						<Scripts>
+							<OnLoad inherit="prepend">
+								self.tabPanel = "VuhDoNewOptionsColors";
+							</OnLoad>
 							<OnClick>VUHDO_newOptionsTabbedClickedClicked(self); VUHDO_lnfRadioButtonClicked(self)</OnClick>
 						</Scripts>
 					</CheckButton>
@@ -103,6 +148,9 @@
 							</Anchor>
 						</Anchors>
 						<Scripts>
+							<OnLoad inherit="prepend">
+								self.tabPanel = "VuhDoNewOptionsTools";
+							</OnLoad>
 							<OnClick>VUHDO_newOptionsTabbedClickedClicked(self); VUHDO_lnfRadioButtonClicked(self)</OnClick>
 						</Scripts>
 					</CheckButton>
@@ -116,6 +164,9 @@
 							</Anchor>
 						</Anchors>
 						<Scripts>
+							<OnLoad inherit="prepend">
+								self.tabPanel = "VuhDoNewOptionsMove";
+							</OnLoad>
 							<OnClick>VUHDO_newOptionsTabbedClickedClicked(self); VUHDO_lnfRadioButtonClicked(self)</OnClick>
 						</Scripts>
 					</CheckButton>
@@ -129,6 +180,9 @@
 							</Anchor>
 						</Anchors>
 						<Scripts>
+							<OnLoad inherit="prepend">
+								self.tabPanel = "VuhDoNewOptionsSpell";
+							</OnLoad>
 							<OnClick>VUHDO_newOptionsTabbedClickedClicked(self); VUHDO_lnfRadioButtonClicked(self)</OnClick>
 						</Scripts>
 					</CheckButton>
@@ -142,6 +196,9 @@
 							</Anchor>
 						</Anchors>
 						<Scripts>
+							<OnLoad inherit="prepend">
+								self.tabPanel = "VuhDoNewOptionsPanel";
+							</OnLoad>
 							<OnClick>VUHDO_newOptionsTabbedClickedClicked(self); VUHDO_lnfRadioButtonClicked(self)</OnClick>
 						</Scripts>
 					</CheckButton>
@@ -155,6 +212,9 @@
 							</Anchor>
 						</Anchors>
 						<Scripts>
+							<OnLoad inherit="prepend">
+								self.tabPanel = "VuhDoNewOptionsBuffs";
+							</OnLoad>
 							<OnClick>VUHDO_newOptionsTabbedClickedClicked(self); VUHDO_lnfRadioButtonClicked(self)</OnClick>
 						</Scripts>
 					</CheckButton>
@@ -168,6 +228,9 @@
 							</Anchor>
 						</Anchors>
 						<Scripts>
+							<OnLoad inherit="prepend">
+								self.tabPanel = "VuhDoNewOptionsDebuffs";
+							</OnLoad>
 							<OnClick>VUHDO_newOptionsTabbedClickedClicked(self); VUHDO_lnfRadioButtonClicked(self)</OnClick>
 						</Scripts>
 					</CheckButton>
@@ -251,7 +314,6 @@
 			<OnMouseDown>VUHDO_tabbedFrameOnMouseDown(self)</OnMouseDown>
 			<OnMouseUp>VUHDO_tabbedFrameOnMouseUp(self)</OnMouseUp>
 			<OnShow>
-					
 				self:SetScale(VUHDO_OPTIONS_SETTINGS.scale);
 				VuhDoNewOptionsScaleSlider:Show();
 				VuhDoNewOptionsPanelBarsTexturePanelTextureSliderSlider:SetMinMaxValues(1, #VUHDO_STATUS_BARS);
@@ -266,7 +328,8 @@
 					VuhDoNewOptionsTabbedFrameTabsPanelSpellsRadioButton:Hide();
 				end
 				VUHDO_commsSetReceiveModeEnabled(true);
-				collectgarbage('collect');
+
+				collectgarbage("collect");
 			</OnShow>
 			<OnHide>
 				VuhDoNewOptionsScaleSlider:Hide();
@@ -274,7 +337,8 @@
 				VUHDO_IS_PANEL_CONFIG = false;
 				VUHDO_CONFIG_SHOW_RAID = false;
 				VUHDO_reloadUI(false);
-				collectgarbage('collect');
+
+				collectgarbage("collect");
 			</OnHide>
 			<OnUpdate>
 				VUHDO_optionsOnUpdate();

@@ -1,6 +1,7 @@
 <Ui>
 	<Script file="Options.lua" />
 	<Script file="QuickBut.lua" />
+	<Script file="QuickBut_AddonList.lua" />
 	<Script file="QuickBut_Equip.lua" />
 	<Script file="QuickBut_Trinket.lua" />
 </Ui>

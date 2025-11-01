@@ -1,11 +1,13 @@
-## Interface: 30405
+## Interface: 50502
 ## Author: arith, Dynaletik, dubcat
 ## Version: v1.52.03
 
 ## Title: Atlas |r|cFF0099FF[Battlegrounds]|r
 ## Notes: Battleground Maps
-## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r |cFFFFFFFF副本地图|r |cFF69CCF0战场|r
+## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r|cFFFFFFFF副本地图|r |cFF69CCF0战场|r
 ## Notes-zhCN: 战场地图
+
+## Category-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r
 
 ## RequiredDeps: Atlas
 

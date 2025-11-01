@@ -4,25 +4,28 @@
 --    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
---- "What's New" Dialog
--- @module WhatsNew
-
 local TSM = select(2, ...) ---@type TSM
-local WhatsNew = TSM.UI:NewPackage("WhatsNew")
-local L = TSM.Include("Locale").GetTable()
-local Theme = TSM.Include("Util.Theme")
-local Analytics = TSM.Include("Util.Analytics")
-local Settings = TSM.Include("Service.Settings")
-local UIElements = TSM.Include("UI.UIElements")
+local WhatsNew = TSM.UI:NewPackage("WhatsNew") ---@type AddonPackage
+local L = TSM.Locale.GetTable()
+local ClientInfo = TSM.LibTSMWoW:Include("Util.ClientInfo")
+local Theme = TSM.LibTSMService:Include("UI.Theme")
+local Analytics = TSM.LibTSMUtil:Include("Util.Analytics")
+local UIElements = TSM.LibTSMUI:Include("Util.UIElements")
 local private = {
 	settings = nil,
 	showTime = nil,
 }
-local WHATS_NEW_VERSION = 4
-local CONTENT_LINES = {
-	Theme.GetColor("INDICATOR"):ColorText(L["Retail Region-Wide Tracking"]).." "..L["In retail, there's a new option in the settings to get TSM to make inventory and accounting data available from every realm in your region."],
-	Theme.GetColor("INDICATOR"):ColorText(L["Grouping Pets by Level"]).." "..L["You can now group pets by level, just like items."],
-	Theme.GetColor("INDICATOR"):ColorText(L["Crafting UI Improvements"]).." "..L["Many UI improvements have been made to the Dragonflight crafting experience, including support for mass milling / prospecting and easier quality and optional material selection."],
+local WHATS_NEW_VERSION = 5
+local CONTENT_LINES = ClientInfo.IsRetail() and {
+	Theme.GetColor("INDICATOR"):ColorText(L["New Sniper Mechanism"]).." "..L["In retail, Sniper works in a new way which makes it much faster and now supports the base group."],
+	Theme.GetColor("INDICATOR"):ColorText(L["Alternate AuctionDB Realm Data"]).." "..L["You can configure an alternate realm to load AuctionDB data for to allow easy comparison between two realms in item tooltips."],
+	Theme.GetColor("INDICATOR"):ColorText(L["Scroll Table Improvements"]).." "..L["TSM uses scroll tables through the addon to show large amounts of data. 4.14 includes significant performance improvements, dragging to reorder columns, adding price sources and custom sources as additional columns, and more."],
+	Theme.GetColor("INDICATOR"):ColorText(L["Custom Strings in More Operations"]).." "..L["Mailing, Vendoring, and Warehousing operation settings now fully support using custom strings."],
+	Theme.GetColor("INDICATOR"):ColorText(L["Import Item IDs from Wowhead"]).." "..L["When searching for items on Wowhead, you can copy the results as a list of item IDs. TSM now allows paste that list direclty into the group import dialog to make it easy to create TSM groups."],
+} or {
+	Theme.GetColor("INDICATOR"):ColorText(L["Scroll Table Improvements"]).." "..L["TSM uses scroll tables through the addon to show large amounts of data. 4.14 includes significant performance improvements, dragging to reorder columns, adding price sources and custom sources as additional columns, and more."],
+	Theme.GetColor("INDICATOR"):ColorText(L["Custom Strings in More Operations"]).." "..L["Mailing, Vendoring, and Warehousing operation settings now fully support using custom strings."],
+	Theme.GetColor("INDICATOR"):ColorText(L["Import Item IDs from Wowhead"]).." "..L["When searching for items on Wowhead, you can copy the results as a list of item IDs. TSM now allows paste that list direclty into the group import dialog to make it easy to create TSM groups."],
 }
 
 
@@ -31,8 +34,8 @@ local CONTENT_LINES = {
 -- Module Functions
 -- ============================================================================
 
-function WhatsNew.OnInitialize()
-	private.settings = Settings.NewView()
+function WhatsNew.OnInitialize(settingsDB)
+	private.settings = settingsDB:NewView()
 		:AddKey("global", "internalData", "whatsNewVersion")
 end
 
@@ -41,9 +44,9 @@ function WhatsNew.GetDialog()
 		return
 	end
 	private.showTime = GetTime()
-	return UIElements.New("Frame", "whatsnew")
+	return UIElements.New("Frame", "whatsNew")
 		:SetLayout("VERTICAL")
-		:SetSize(650, 300)
+		:SetSize(650, 500)
 		:SetPadding(12, 12, 0, 12)
 		:AddAnchor("CENTER")
 		:SetRoundedBackgroundColor("FRAME_BG")
@@ -57,7 +60,7 @@ function WhatsNew.GetDialog()
 			:AddChild(UIElements.New("Text", "title")
 				:SetJustifyH("CENTER")
 				:SetFont("BODY_BODY1_BOLD")
-				:SetFormattedText(L["TSM %s: What's new"], "4.13")
+				:SetFormattedText(L["TSM %s: What's new"], "4.14")
 			)
 			:AddChild(UIElements.New("Button", "closeBtn")
 				:SetMargin(0, -4, 0, 0)
@@ -67,7 +70,7 @@ function WhatsNew.GetDialog()
 		)
 		:AddChild(UIElements.New("ScrollFrame", "body")
 			:AddChild(UIElements.New("Text", "content1")
-				:SetHeight(200)
+				:SetHeight(400)
 				:SetFont("BODY_BODY2")
 				:SetText(table.concat(CONTENT_LINES, "\n\n"))
 			)

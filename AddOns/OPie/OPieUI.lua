@@ -47,6 +47,11 @@ local CreateQuadTexture do
 	end
 	T.CreateQuadTexture = CreateQuadTexture
 end
+local function FramePool_IteratedReleaseAll(pool)
+	while pool:GetNextActive() do
+		pool:ReleaseAll()
+	end
+end
 
 local gfxBase = ([[Interface\AddOns\%s\gfx\]]):format((...))
 local mainAnchor, proxyAnchor = CreateFrame("Frame"), CreateFrame("Frame")
@@ -707,6 +712,9 @@ function iapi:Show(_, _, fastOpen)
 	end
 	setupTransitionAnimation(fastOpen and "fast-in" or "in", OnUpdate_ZoomIn)
 	setIndicationShown(true)
+	if configCache.DeclutterOnOpen and COMPAT > 11e4 then
+		FramePool_IteratedReleaseAll(LootAlertSystem.alertFramePool)
+	end
 end
 function iapi:Hide()
 	setupTransitionAnimation("out", OnUpdate_ZoomOut)
@@ -751,7 +759,7 @@ function api:RegisterIndicatorConstructor(key, info)
 	assert(type(onPAC) == "function" or onPAC == nil, 'RegisterIndicatorConstructor: info.onParentAlphaChanged, if set, must be a function', 2)
 
 	local mainPool, err = ValidateIndicator(apiLevel, reqAPILevel, info)
-	local fbKey = key == "elvui" and COMPAT ~= 40400 and (COMPAT > 11e4 and "fixedFrameBuffering" or COMPAT > 2e4 and "fixedFrameBufferingClassic" or "fixedFrameBufferingEra")
+	local fbKey = key == "elvui" and (COMPAT > 11e4 and "fixedFrameBuffering" or COMPAT > 2e4 and "fixedFrameBufferingClassic" or "fixedFrameBufferingEra")
 	if fbKey and not info[fbKey] then
 		-- BUG[2408/11.0.2,1.15.4,4.4.1]: Showing buffered frames while a model frame is visible can crash to desktop with an assertion failure (test builds)/restart the renderer in a loop/crash the client
 		mainPool, err = nil, 'Disabled to avoid triggering a client crash (missing flag: ' .. fbKey .. ').'
@@ -775,6 +783,7 @@ for k,v in pairs({IndicatorFactory="_",
 	MIScale=true, MISpinOnHide=true, GhostMIRings=true,
 	XTPointerSnap=false, XTAnimation=true, XTRotationPeriod=4,
 	MIReserveSize=54, MIMinRadius=110, GhostShowDelay=0.25,
+	DeclutterOnOpen=true,
 }) do
 	PC:RegisterOption(k,v)
 end

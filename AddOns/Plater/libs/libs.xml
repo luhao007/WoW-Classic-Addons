@@ -2,5 +2,6 @@
 
 	<Script file="indent.lua"/>
 
+	<Script file="LibClassicCasterino\LibClassicCasterino.lua"/>
 
 </Ui>

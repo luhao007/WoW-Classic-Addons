@@ -6,11 +6,14 @@
 
 local TSM = select(2, ...) ---@type TSM
 local Auctioning = TSM.MainUI.Operations:NewPackage("Auctioning")
-local Environment = TSM.Include("Environment")
-local L = TSM.Include("Locale").GetTable()
-local String = TSM.Include("Util.String")
-local UIElements = TSM.Include("UI.UIElements")
-local UIUtils = TSM.Include("UI.UIUtils")
+local ClientInfo = TSM.LibTSMWoW:Include("Util.ClientInfo")
+local L = TSM.Locale.GetTable()
+local String = TSM.LibTSMUtil:Include("Lua.String")
+local AuctioningOperation = TSM.LibTSMSystem:Include("AuctioningOperation")
+local Operation = TSM.LibTSMTypes:Include("Operation")
+local UIElements = TSM.LibTSMUI:Include("Util.UIElements")
+local UIUtils = TSM.LibTSMUI:Include("Util.UIUtils")
+local AuctionHouse = TSM.LibTSMWoW:Include("API.AuctionHouse")
 local private = {
 	currentOperationName = nil,
 	currentTab = nil,
@@ -47,6 +50,26 @@ local PRICE_VALIDATE_CONTEXT = {
 		auctioningopnormal = true,
 	}
 }
+local SETTING_TOOLTIPS = {
+	ignoreLowDuration = L["When posting and canceling, auctions at or below the selected duration will be completely ignored."],
+	matchStackSize = L["Enables this causes TSM to ignores auctions which aren't of the same stack size as you have set in the Posting settings and only undercut other auctions which match your stack size."],
+	stackSizeIsCap = L["Whether or not to post a partial stack if you don't have a full stack in your inventory."],
+	stackSize = L["The stack size to post on the AH."],
+	duration = L["How long auctions are listed for on the AH."],
+	postCap = ClientInfo.HasFeature(ClientInfo.FEATURES.AH_STACKS) and L["The maximum number of stacks to post on the AH."] or L["The maximum number of items to post on the AH."],
+	keepQuantity = L["The number of items to keep in your bags and not post on the AH. Set this to 0 to disable it."],
+	maxExpires = L["After an item has expired this many times, it will no longer be posted on the AH. Set this to 0 to disable it."],
+	bidPercent = L["When posting auctions, the bid price will be calculated as a percentage of the buyout price based on this setting."],
+	undercut = L["The amount to undercut the lowest auction by when running a post scan. It's highly recommended to leave this at the default value."],
+	minPrice = L["The lowest price you want TSM to consider posting your auctions for"].." "..L["TSM will always attempt to undercut the cheapest auction as long as it's between your minimum and maximum prices."],
+	priceReset = L["This defines what TSM does when the lowest auction on the AH is below the minimum price you have set."],
+	maxPrice = L["The highest price you want TSM to consider posting your auctions for."].." "..L["TSM will always attempt to undercut the cheapest auction as long as it's between your minimum and maximum prices."],
+	aboveMax = L["This defines what TSM does when the lowest auction on the AH is above the maximum price you have set."],
+	normalPrice = L["The price you want to post your auctions for when there's no competition on the AH."],
+	cancelUndercut = L["Cancel auctions which have been undercut when running a Cancel Scan."],
+	cancelRepost = L["Cancel auctions which can be reposted higher when running a Cancel Scan."],
+	cancelRepostThreshold = L["Only cancel auctions which can be posted at least this much higher."],
+}
 
 
 
@@ -56,12 +79,12 @@ local PRICE_VALIDATE_CONTEXT = {
 
 function Auctioning.OnInitialize()
 	-- Set min and max values
-	POST_CAP_VALIDATE_CONTEXT.minValue, POST_CAP_VALIDATE_CONTEXT.maxValue = TSM.Operations.Auctioning.GetMinMaxValues("postCap")
-	if Environment.HasFeature(Environment.FEATURES.AH_STACKS) then
-		STACK_SIZE_VALIDATE_CONTEXT.minValue, STACK_SIZE_VALIDATE_CONTEXT.maxValue = TSM.Operations.Auctioning.GetMinMaxValues("stackSize")
+	POST_CAP_VALIDATE_CONTEXT.minValue, POST_CAP_VALIDATE_CONTEXT.maxValue = AuctioningOperation.GetMinMaxValues("postCap")
+	if ClientInfo.HasFeature(ClientInfo.FEATURES.AH_STACKS) then
+		STACK_SIZE_VALIDATE_CONTEXT.minValue, STACK_SIZE_VALIDATE_CONTEXT.maxValue = AuctioningOperation.GetMinMaxValues("stackSize")
 	end
-	KEEP_QUANTITY_VALIDATE_CONTEXT.minValue, KEEP_QUANTITY_VALIDATE_CONTEXT.maxValue = TSM.Operations.Auctioning.GetMinMaxValues("keepQuantity")
-	MAX_EXPIRES_VALIDATE_CONTEXT.minValue, MAX_EXPIRES_VALIDATE_CONTEXT.maxValue = TSM.Operations.Auctioning.GetMinMaxValues("maxExpires")
+	KEEP_QUANTITY_VALIDATE_CONTEXT.minValue, KEEP_QUANTITY_VALIDATE_CONTEXT.maxValue = AuctioningOperation.GetMinMaxValues("keepQuantity")
+	MAX_EXPIRES_VALIDATE_CONTEXT.minValue, MAX_EXPIRES_VALIDATE_CONTEXT.maxValue = AuctioningOperation.GetMinMaxValues("maxExpires")
 	TSM.MainUI.Operations.RegisterModule("Auctioning", private.GetAuctioningOperationSettings)
 end
 
@@ -86,7 +109,7 @@ end
 
 function private.GetDetailsSettings()
 	UIUtils.AnalyticsRecordPathChange("main", "operations", "auctioning", "details")
-	local operation = TSM.Operations.GetSettings("Auctioning", private.currentOperationName)
+	local operation = Operation.GetSettings("Auctioning", private.currentOperationName)
 	return UIElements.New("ScrollFrame", "settings")
 		:SetPadding(8, 8, 8, 0)
 		:SetBackgroundColor("PRIMARY_BG")
@@ -95,15 +118,14 @@ function private.GetDetailsSettings()
 				:SetLayout("VERTICAL")
 				:AddChildrenWithFunction(private.AddMaxStackSizeSetting)
 				:AddChild(TSM.MainUI.Operations.CreateLinkedSettingLine("ignoreLowDuration", L["Ignore auctions by duration"])
-					:SetLayout("VERTICAL")
-					:SetHeight(48)
 					:SetMargin(0, 0, 0, 16)
-					:AddChild(UIElements.New("SelectionDropdown", "dropdown")
+					:AddChild(UIElements.New("ListDropdown", "dropdown")
 						:SetHeight(24)
-						:SetDisabled(TSM.Operations.HasRelationship("Auctioning", private.currentOperationName, "ignoreLowDuration"))
+						:SetDisabled(Operation.HasRelationship("Auctioning", private.currentOperationName, "ignoreLowDuration"))
 						:SetItems(IGNORE_DURATION_OPTIONS)
-						:SetSelectedItemByKey(operation.ignoreLowDuration + 1, true)
+						:SetSelectedItemByIndex(operation.ignoreLowDuration + 1, true)
 						:SetScript("OnSelectionChanged", private.IgnoreLowDurationOnSelectionChanged)
+						:SetTooltip(SETTING_TOOLTIPS.ignoreLowDuration)
 					)
 				)
 				:AddChildrenWithFunction(private.AddBlacklistPlayers)
@@ -113,45 +135,41 @@ function private.GetDetailsSettings()
 end
 
 function private.AddMaxStackSizeSetting(frame)
-	if Environment.HasFeature(Environment.FEATURES.AH_STACKS) then
+	if ClientInfo.HasFeature(ClientInfo.FEATURES.AH_STACKS) then
 		frame:AddChild(private.CreateToggleLine("matchStackSize", L["Match stack size"]))
 	end
 end
 
 function private.GetPostingSettings()
 	UIUtils.AnalyticsRecordPathChange("main", "operations", "auctioning", "posting")
-	local operation = TSM.Operations.GetSettings("Auctioning", private.currentOperationName)
+	local operation = Operation.GetSettings("Auctioning", private.currentOperationName)
 	return UIElements.New("ScrollFrame", "settings")
 		:SetPadding(8, 8, 8, 0)
 		:SetBackgroundColor("PRIMARY_BG")
 		:AddChild(TSM.MainUI.Operations.CreateExpandableSection("Auctioning", "postingSettings", L["Posting Options"], L["Adjust the settings below to set how groups attached to this operation will be auctioned."])
 			:AddChild(TSM.MainUI.Operations.CreateLinkedSettingLine("duration", L["Auction duration"])
-				:SetLayout("VERTICAL")
-				:SetHeight(48)
 				:SetMargin(0, 0, 0, 12)
-				:AddChild(UIElements.New("SelectionDropdown", "dropdown")
+				:AddChild(UIElements.New("ListDropdown", "dropdown")
 					:SetHeight(24)
-					:SetDisabled(TSM.Operations.HasRelationship("Auctioning", private.currentOperationName, "duration"))
-					:SetItems(TSM.CONST.AUCTION_DURATIONS)
-					:SetSelectedItemByKey(operation.duration)
-					:SetScript("OnSelectionChanged", private.SetAuctioningDuration)
+					:SetDisabled(Operation.HasRelationship("Auctioning", private.currentOperationName, "duration"))
+					:SetItems(AuctionHouse.DURATIONS)
+					:SetSettingInfo(operation, "duration")
+					:SetTooltip(SETTING_TOOLTIPS.duration)
 				)
 			)
-			:AddChild(TSM.MainUI.Operations.CreateLinkedPriceInput("postCap", L["Post cap"], POST_CAP_VALIDATE_CONTEXT)
+			:AddChild(TSM.MainUI.Operations.CreateLinkedPriceInput("postCap", L["Post cap"], POST_CAP_VALIDATE_CONTEXT, nil, nil, SETTING_TOOLTIPS.postCap)
 				:SetMargin(0, 0, 0, 12)
 			)
 			:AddChildrenWithFunction(private.AddStackSizeSettings)
-			:AddChild(TSM.MainUI.Operations.CreateLinkedPriceInput("keepQuantity", L["Amount kept in bags"], KEEP_QUANTITY_VALIDATE_CONTEXT)
+			:AddChild(TSM.MainUI.Operations.CreateLinkedPriceInput("keepQuantity", L["Amount kept in bags"], KEEP_QUANTITY_VALIDATE_CONTEXT, nil, nil, SETTING_TOOLTIPS.keepQuantity)
 				:SetMargin(0, 0, 0, 12)
 			)
-			:AddChild(TSM.MainUI.Operations.CreateLinkedPriceInput("maxExpires", L["Don't post after this many expires"], MAX_EXPIRES_VALIDATE_CONTEXT)
+			:AddChild(TSM.MainUI.Operations.CreateLinkedPriceInput("maxExpires", L["Don't post after this many expires"], MAX_EXPIRES_VALIDATE_CONTEXT, nil, nil, SETTING_TOOLTIPS.maxExpires)
 				:SetMargin(0, 0, 0, 4)
 			)
 		)
 		:AddChild(TSM.MainUI.Operations.CreateExpandableSection("Auctioning", "priceSettings", L["Posting Price"], L["Adjust the settings below to set how groups attached to this operation will be priced."])
 			:AddChild(TSM.MainUI.Operations.CreateLinkedSettingLine("bidPercent", L["Set bid as percentage of buyout"])
-				:SetLayout("VERTICAL")
-				:SetHeight(48)
 				:SetMargin(0, 0, 0, 12)
 				:AddChild(UIElements.New("Frame", "content")
 					:SetLayout("HORIZONTAL")
@@ -160,50 +178,57 @@ function private.GetPostingSettings()
 						:SetMargin(0, 8, 0, 0)
 						:SetBackgroundColor("ACTIVE_BG")
 						:SetValidateFunc(private.BidPercentValidateFunc)
-						:SetDisabled(TSM.Operations.HasRelationship("Auctioning", private.currentOperationName, "bidPercent"))
+						:SetDisabled(Operation.HasRelationship("Auctioning", private.currentOperationName, "bidPercent"))
 						:SetValue((operation.bidPercent * 100).."%")
 						:SetScript("OnValueChanged", private.BidPercentOnValueChanged)
+						:SetTooltip(SETTING_TOOLTIPS.bidPercent, "__parent")
 					)
 					:AddChild(UIElements.New("Text", "label")
 						:SetWidth("AUTO")
 						:SetFont("BODY_BODY3")
 						:SetFormattedText(L["Enter a value from %d - %d%%"], 0, 100)
-						:SetTextColor(TSM.Operations.HasRelationship("Auctioning", private.currentOperationName, "bidPercent") and "TEXT_DISABLED" or "TEXT")
+						:SetTextColor(Operation.HasRelationship("Auctioning", private.currentOperationName, "bidPercent") and "TEXT_DISABLED" or "TEXT")
 					)
 				)
 			)
-			:AddChild(TSM.MainUI.Operations.CreateLinkedPriceInput("undercut", L["Undercut amount"], UNDERCUT_VALIDATE_CONTEXT)
+			:AddChild(TSM.MainUI.Operations.CreateLinkedPriceInput("undercut", L["Undercut amount"], UNDERCUT_VALIDATE_CONTEXT, nil, nil, SETTING_TOOLTIPS.undercut)
 				:SetMargin(0, 0, 0, 12)
 			)
-			:AddChild(TSM.MainUI.Operations.CreateLinkedPriceInput("minPrice", L["Minimum price"], PRICE_VALIDATE_CONTEXT))
+			:AddChild(TSM.MainUI.Operations.CreateLinkedPriceInput("minPrice", L["Minimum price"], PRICE_VALIDATE_CONTEXT, nil, nil, SETTING_TOOLTIPS.minPrice))
 			:AddChild(TSM.MainUI.Operations.CreateLinkedSettingLine("priceReset", L["When below minimum:"])
+				:SetLayout("HORIZONTAL")
+				:SetHeight(24)
 				:SetMargin(0, 0, 12, 12)
 				:AddChild(UIElements.New("SelectionDropdown", "dropdown")
 					:SetWidth(240)
-					:SetDisabled(TSM.Operations.HasRelationship("Auctioning", private.currentOperationName, "priceReset"))
+					:SetDisabled(Operation.HasRelationship("Auctioning", private.currentOperationName, "priceReset"))
 					:SetItems(BELOW_MIN_ITEMS, BELOW_MIN_KEYS)
 					:SetSettingInfo(operation, "priceReset")
+					:SetTooltip(SETTING_TOOLTIPS.priceReset)
 				)
 			)
-			:AddChild(TSM.MainUI.Operations.CreateLinkedPriceInput("maxPrice", L["Maximum price"], PRICE_VALIDATE_CONTEXT))
+			:AddChild(TSM.MainUI.Operations.CreateLinkedPriceInput("maxPrice", L["Maximum price"], PRICE_VALIDATE_CONTEXT, nil, nil, SETTING_TOOLTIPS.maxPrice))
 			:AddChild(TSM.MainUI.Operations.CreateLinkedSettingLine("aboveMax", L["When above maximum:"])
+				:SetLayout("HORIZONTAL")
+				:SetHeight(24)
 				:SetMargin(0, 0, 12, 12)
 				:AddChild(UIElements.New("SelectionDropdown", "dropdown")
 					:SetWidth(240)
-					:SetDisabled(TSM.Operations.HasRelationship("Auctioning", private.currentOperationName, "aboveMax"))
+					:SetDisabled(Operation.HasRelationship("Auctioning", private.currentOperationName, "aboveMax"))
 					:SetItems(ABOVE_MAX_ITEMS, ABOVE_MAX_KEYS)
 					:SetSettingInfo(operation, "aboveMax")
+					:SetTooltip(SETTING_TOOLTIPS.aboveMax)
 				)
 			)
-			:AddChild(TSM.MainUI.Operations.CreateLinkedPriceInput("normalPrice", L["Normal price"], PRICE_VALIDATE_CONTEXT))
+			:AddChild(TSM.MainUI.Operations.CreateLinkedPriceInput("normalPrice", L["Normal price"], PRICE_VALIDATE_CONTEXT, nil, nil, SETTING_TOOLTIPS.normalPrice))
 		)
 end
 
 function private.AddStackSizeSettings(frame)
-	if not Environment.HasFeature(Environment.FEATURES.AH_STACKS) then
+	if not ClientInfo.HasFeature(ClientInfo.FEATURES.AH_STACKS) then
 		return
 	end
-	frame:AddChild(TSM.MainUI.Operations.CreateLinkedPriceInput("stackSize", L["Stack size"], STACK_SIZE_VALIDATE_CONTEXT)
+	frame:AddChild(TSM.MainUI.Operations.CreateLinkedPriceInput("stackSize", L["Stack size"], STACK_SIZE_VALIDATE_CONTEXT, nil, nil, SETTING_TOOLTIPS.stackSize)
 		:SetMargin(0, 0, 0, 12)
 	)
 	frame:AddChild(private.CreateToggleLine("stackSizeIsCap", L["Allow partial stack"]))
@@ -216,7 +241,7 @@ function private.GetCancelingSettings()
 		:AddChild(TSM.MainUI.Operations.CreateExpandableSection("Auctioning", "priceSettings", L["Canceling Options"], L["Adjust the settings below to set how groups attached to this operation will be cancelled."])
 			:AddChild(private.CreateToggleLine("cancelUndercut", L["Cancel undercut auctions"]))
 			:AddChild(private.CreateToggleLine("cancelRepost", L["Cancel to repost higher"]))
-			:AddChild(TSM.MainUI.Operations.CreateLinkedPriceInput("cancelRepostThreshold", L["Repost threshold"]))
+			:AddChild(TSM.MainUI.Operations.CreateLinkedPriceInput("cancelRepostThreshold", L["Repost threshold"], nil, nil, nil, SETTING_TOOLTIPS.cancelRepostThreshold))
 		)
 end
 
@@ -234,21 +259,19 @@ function private.GetAuctioningSettings(self, button)
 end
 
 function private.AddBlacklistPlayers(frame)
-	if Environment.IsRetail() then
+	if not ClientInfo.IsVanillaClassic() then
 		return
 	end
 	frame:AddChild(TSM.MainUI.Operations.CreateLinkedSettingLine("blacklist", L["Blacklisted players"])
-		:SetLayout("VERTICAL")
-		:SetHeight(48)
 		:AddChild(UIElements.New("Input", "input")
 			:SetHeight(24)
 			:SetBackgroundColor("ACTIVE_BG")
 			:SetHintText(L["Enter player name"])
-			:SetDisabled(TSM.Operations.HasRelationship("Auctioning", private.currentOperationName, "blacklist"))
+			:SetDisabled(Operation.HasRelationship("Auctioning", private.currentOperationName, "blacklist"))
 			:SetScript("OnEnterPressed", private.BlacklistInputOnEnterPressed)
 		)
 	)
-	local operation = TSM.Operations.GetSettings("Auctioning", private.currentOperationName)
+	local operation = Operation.GetSettings("Auctioning", private.currentOperationName)
 	if operation.blacklist == "" then return end
 	local containerFrame = UIElements.New("Frame", "blacklistFrame")
 		:SetLayout("FLOW")
@@ -277,15 +300,16 @@ function private.AddBlacklistPlayers(frame)
 end
 
 function private.CreateToggleLine(key, label)
-	local operation = TSM.Operations.GetSettings("Auctioning", private.currentOperationName)
+	local tooltip = SETTING_TOOLTIPS[key]
+	assert(tooltip)
+	local operation = Operation.GetSettings("Auctioning", private.currentOperationName)
 	return TSM.MainUI.Operations.CreateLinkedSettingLine(key, label)
-		:SetLayout("VERTICAL")
-		:SetHeight(48)
 		:SetMargin(0, 0, 0, 12)
 		:AddChild(UIElements.New("ToggleYesNo", "toggle")
 			:SetHeight(18)
-			:SetDisabled(TSM.Operations.HasRelationship("Auctioning", private.currentOperationName, key))
+			:SetDisabled(Operation.HasRelationship("Auctioning", private.currentOperationName, key))
 			:SetSettingInfo(operation, key)
+			:SetTooltip(tooltip)
 		)
 end
 
@@ -295,9 +319,9 @@ end
 -- Local Script Handlers
 -- ============================================================================
 
-function private.IgnoreLowDurationOnSelectionChanged(self)
-	local operation = TSM.Operations.GetSettings("Auctioning", private.currentOperationName)
-	operation.ignoreLowDuration = self:GetSelectedItemKey() - 1
+function private.IgnoreLowDurationOnSelectionChanged(dropdown)
+	local operation = Operation.GetSettings("Auctioning", private.currentOperationName)
+	operation.ignoreLowDuration = dropdown:GetSelectedItemIndex() - 1
 end
 
 function private.BlacklistInputOnEnterPressed(input)
@@ -306,7 +330,7 @@ function private.BlacklistInputOnEnterPressed(input)
 		-- this is an invalid player name
 		return
 	end
-	local operation = TSM.Operations.GetSettings("Auctioning", private.currentOperationName)
+	local operation = Operation.GetSettings("Auctioning", private.currentOperationName)
 	if String.SeparatedContains(operation.blacklist, ",", newPlayer) then
 		-- this player is already added
 		input:SetValue("")
@@ -317,23 +341,8 @@ function private.BlacklistInputOnEnterPressed(input)
 end
 
 function private.RemoveBlacklistOnClick(button)
-	local player = button:GetContext()
-	-- FIXME: This sort of logic should go within some Auctioning-specific operation setting wrapper code
-	local operation = TSM.Operations.GetSettings("Auctioning", private.currentOperationName)
-	if operation.blacklist == player then
-		operation.blacklist = ""
-	else
-		-- handle cases where this entry is at the start, in the middle, and at the end
-		operation.blacklist = gsub(operation.blacklist, "^"..player..",", "")
-		operation.blacklist = gsub(operation.blacklist, ","..player..",", ",")
-		operation.blacklist = gsub(operation.blacklist, ","..player.."$", "")
-	end
+	AuctioningOperation.RemoveBlacklistPlayer(private.currentOperationName, button:GetContext())
 	button:GetElement("__parent.__parent.__parent.__parent.__parent.__parent.__parent"):ReloadContent()
-end
-
-function private.SetAuctioningDuration(dropdown)
-	local operation = TSM.Operations.GetSettings("Auctioning", private.currentOperationName)
-	operation.duration = dropdown:GetSelectedItemKey()
 end
 
 function private.BidPercentValidateFunc(_, value)
@@ -346,7 +355,7 @@ function private.BidPercentValidateFunc(_, value)
 end
 
 function private.BidPercentOnValueChanged(input)
-	local operation = TSM.Operations.GetSettings("Auctioning", private.currentOperationName)
+	local operation = Operation.GetSettings("Auctioning", private.currentOperationName)
 	local value = strmatch(input:GetValue(), "^([0-9]+) *%%?$")
 	value = tonumber(value) / 100
 	operation.bidPercent = value

@@ -1,4 +1,6 @@
 local _;
+local LoadAddOn = C_AddOns.LoadAddOn or LoadAddOn;
+local IsAddOnLoaded = C_AddOns.IsAddOnLoaded or IsAddOnLoaded;
 
 -- For initializing the minimap
 VUHDO_MM_SETTINGS = VUHDO_MM_SETTINGS or { };
@@ -15,8 +17,7 @@ VUHDO_LibCompressEncode = VUHDO_LibCompress:GetAddonEncodeTable();
 VUHDO_LibBase64 = LibStub:GetLibrary("LibBase64-1.0");
 VUHDO_LibCustomGlow = LibStub("LibCustomGlow-1.0");
 VUHDO_LibNickTag = LibStub("NickTag-1.0");
-
-VUHDO_LibHealComm = nil;
+VUHDO_LibSpec = LibStub("LibSpecialization", true);
 
 VUHDO_LibSharedMedia:Register("font", "Arial Black", "Interface\\AddOns\\VuhDo\\Fonts\\ariblk.ttf");
 VUHDO_LibSharedMedia:Register("font", "Emblem",	"Interface\\AddOns\\VuhDo\\Fonts\\Emblem.ttf");
@@ -230,6 +231,20 @@ end
 
 
 --
+local tLibSpec = { };
+function VUHDO_initLibSpecialization()
+
+	if not VUHDO_LibSpec or not tLibSpec then
+		return;
+	end
+
+	VUHDO_LibSpec.RegisterGroup(tLibSpec, VUHDO_updateRoleBySpecialization);
+
+end
+
+
+
+--
 function VUHDO_initMinimap()
 
 	VUHDO_initShowMinimap();
@@ -263,53 +278,6 @@ function VUHDO_initShowAddOnCompartment()
 		else
 			VUHDO_LibDBIcon:RemoveButtonFromCompartment("VuhDo");
 		end
-	end
-
-end
-
-
-
---
-function VUHDO_initLibHealComm()
-
-	VUHDO_LibHealComm = VUHDO_CONFIG["SHOW_LIBHEALCOMM_INCOMING"] and LibStub("LibHealComm-4.0", true) or nil;
-
-	if VUHDO_LibHealComm then
-		local tInstance = _G["VuhDo"];
-
-		local function HealComm_HealUpdated(aEvent, aCasterGUID, aSpellID, aHealType, aEndTime, ...)
-			local tTargets = { n = select("#", ...), ... };
-
-			for i = 1, tTargets.n do
-				local tTarget = VUHDO_RAID_GUIDS[tTargets[i]];
-
-				if (VUHDO_RAID or tEmptyRaid)[tTarget] then -- auch target, focus
-					VUHDO_updateHealth(tTarget, 9); -- VUHDO_UPDATE_INC
-					VUHDO_updateBouquetsForEvent(tTarget, 9); -- VUHDO_UPDATE_ALT_POWER
-				end
-			end
-		end
-		tInstance.HealComm_HealUpdated = HealComm_HealUpdated;
-
-		VUHDO_LibHealComm.RegisterCallback(tInstance, "HealComm_HealStarted", HealComm_HealUpdated);
-		VUHDO_LibHealComm.RegisterCallback(tInstance, "HealComm_HealStopped", HealComm_HealUpdated);
-		VUHDO_LibHealComm.RegisterCallback(tInstance, "HealComm_HealDelayed", HealComm_HealUpdated);
-		VUHDO_LibHealComm.RegisterCallback(tInstance, "HealComm_HealUpdated", HealComm_HealUpdated);
-
-		local function HealComm_HealModified(aEvent, aTargetGUID)
-			local tTarget = VUHDO_RAID_GUIDS[aTargetGUID];
-
-			if (VUHDO_RAID or tEmptyRaid)[tTarget] then -- auch target, focus
-				VUHDO_updateHealth(tTarget, 9); -- VUHDO_UPDATE_INC
-				VUHDO_updateBouquetsForEvent(tTarget, 9); -- VUHDO_UPDATE_ALT_POWER
-			end
-		end
-		tInstance.HealComm_HealModified = HealComm_HealModified;
-
-		VUHDO_LibHealComm.RegisterCallback(tInstance, "HealComm_ModifierChanged", HealComm_HealModified);
-		VUHDO_LibHealComm.RegisterCallback(tInstance, "HealComm_GUIDDisappeared", HealComm_HealModified);
-	elseif VUHDO_CONFIG["SHOW_LIBHEALCOMM_INCOMING"] then
-		VUHDO_Msg("WARNING: Use LibHealComm is enabled but LibHealComm-4.0 doesn't seem to be loaded!", 1, 0.4, 0.4);
 	end
 
 end

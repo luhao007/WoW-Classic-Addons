@@ -96,7 +96,6 @@ do
 	local KEY = "npcID"
 	local cache = app.CreateCache(KEY, "NPC")
 	cache.DefaultFunctions.name = function(t)
-		app.DirectGroupRefresh(t, true)
 		local _t, id = cache.GetCached(t)
 		local name = NPCNameFromID[id]
 		_t.name = name
@@ -221,23 +220,13 @@ do
 			return t.isDaily or t.isWeekly or t.isMonthly or t.isYearly
 		end,
 	}, (function(t) return t.questID end),
-	"WithEvent", app.CloneDictionary(app.Modules.Events.Fields, {
-		trackable = function(t)
-			-- raw repeatable quests can't really be tracked since they immediately unflag
-			return not rawget(t, "repeatable")
-		end,
-		saved = function(t)
-			return IsQuestFlaggedCompleted(t.questID)
-		end,
-		repeatable = function(t)
-			return t.isDaily or t.isWeekly or t.isMonthly or t.isYearly
-		end,
-	}), (function(t) return HeaderEventIDs[t[KEY]] end))
+	"WithEvent", app.CloneDictionary(app.Modules.Events.Fields, {}), (function(t) return HeaderEventIDs[t[KEY]] end))
 	app.CreateCustomHeader = CreateCustomHeader
 end
 
 app.CreateNPC = function(id, t)
 	if id < 1 then
+		print("HEY! USE app.CreateCustomHeader(", id, ") instead!");
 		return CreateCustomHeader(id, t)
 	else
 		return CreateNPC(id, t)
@@ -250,12 +239,14 @@ local BlockedDisplayID = {
 	[16925] = 0,	-- nothing
 	[21072] = 0,	-- empty blue thing
 	[23767] = 0,	-- empty blue thing
+	[24719] = 0,	-- nothing
 	[27823] = 0,	-- empty blue thing
 	[28016] = 0,	-- empty blue thing
 	[52318] = 0,	-- generic bunny
 	[56187] = 0,	-- generic bunny
 	[64062] = 0,	-- generic bunny
 	[110046] = 0,	-- nothing
+	[111386] = 0,	-- nothing
 	[112684] = 0,	-- nothing
 }
 local AllowedDisplayID = setmetatable({}, {
@@ -272,7 +263,7 @@ local function GetDisplayID(data)
 	-- don't create a displayID for groups with a sourceID/itemID/difficultyID/mapID
 	if data.sourceID or data.difficultyID or data.mapID or data.itemID then return false end
 
-	local npcID = data.npcID or data.creatureID
+	local npcID = data.npcID
 	if npcID then return NPCDisplayIDFromID[npcID] end
 
 	local qgs = data.qgs

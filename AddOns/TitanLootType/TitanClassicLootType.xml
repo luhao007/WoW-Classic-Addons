@@ -82,6 +82,29 @@
 					</OnClick>
 				</Scripts>
 			</Button>
+			<Button name="$parentResizeCorner">
+				<Size x="16" y="16"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT">
+						<Offset x="-3" y="3"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnMouseDown>
+						self:GetParent():StartSizing()
+					</OnMouseDown>
+					<OnLoad>
+						self:GetNormalTexture():SetVertexColor(0.6, 0.6, 0.6)
+					</OnLoad>
+					<OnMouseUp>
+						self:GetParent():StopMovingOrSizing()
+					</OnMouseUp>
+					<OnHide>
+						self:GetParent():StopMovingOrSizing()
+					</OnHide>
+				</Scripts>
+				<NormalTexture file="Interface\AddOns\TitanLootType\Artwork\resize"/>
+			</Button>
 				
 			<Frame name="TitanPanelLootTypeFrame" hidden="true" >
 				<Anchors>

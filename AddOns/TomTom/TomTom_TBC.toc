@@ -1,13 +1,16 @@
-## Interface: 30405
+## Interface: 50502
 ## Author: Cladhaire, Ludovicus
-## Version: v4.0.12-release
+## Version: v4.1.3-release
+## License: All Rights Reserved
 
 ## Title: TomTom
 ## Notes: Acts as your portable navigation assistant
-## Title-zhCN: |cFFFFE00A<|r|cFF40C7EB探索|r|cFFFFE00A>|r |cFFFFFFFF导航助手|r |cFFFFE00ATomTom|r
+## Title-zhCN: |cFFFFE00A<|r|cFF40C7EB探索|r|cFFFFE00A>|r|cFFFFFFFF导航助手|r |cFFFFE00ATomTom|r
 ## Notes-zhCN: 一个简单的导航助手。
 
-## IconTexture: Interface\AddOns\TomTom\Images\StaticArrow.tga
+## IconTexture: Interface\AddOns\TomTom\Images\Modern\TomTom-Logo.tga
+
+## Category-zhCN: |cFFFFE00A<|r|cFF40C7EB探索|r|cFFFFE00A>|r
 
 ## OptionalDeps: HereBeDragons-2.0
 
@@ -18,8 +21,6 @@
 ## X-Curse-Project-ID: 18808
 ## X-WoWI-ID: 7032
 ## X-Wago-ID: Rn6VaONd
-
-libs\LibDropDown\embed.xml
 
 AddonCore.lua
 
@@ -33,6 +34,13 @@ Localization.koKR.lua
 Localization.ptBR.lua
 
 TomTom.lua
+Utils.lua
+
+Themes\CrazyArrowThemeRegistry.lua
+Themes\CrazyArrowThemeClassic.lua
+Themes\CrazyArrowThemeModern.lua
+Themes\CrazyArrowThemeModernTopDown.lua
+Themes\waypointThemeRegistry.lua
 
 TomTom_Waypoints.lua
 TomTom_CrazyArrow.lua

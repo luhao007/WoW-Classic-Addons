@@ -204,7 +204,7 @@ end
 
 local function dynamic_title(t)
 	if t.__filled then return end
-	return app.L.CLICK_TO_CREATE_FORMAT:format((t.name or UNKNOWN).." "..app.L.SETTINGS_MENU.DYNAMIC_CATEGORY_LABEL)
+	return app.L.CLICK_TO_CREATE_FORMAT:format((t.name or UNKNOWN).." "..app.L.DYNAMIC_CATEGORY_LABEL)
 end
 local function dynamic_back()
 	return 0.3
@@ -304,9 +304,12 @@ local VisualHeaderFields = {
 	__type = function() return "VisualHeader" end,
 	hash = BaseClass__class.hash,
 	text = BaseClass__class.text,
+	total = BaseClass__class.total,
+	progress = BaseClass__class.progress,
+	costTotal = BaseClass__class.costTotal,
+	upgradeTotal = BaseClass__class.upgradeTotal,
 }
-local CreateVisualHeader, CreateVisualHeader__class
-CreateVisualHeader, CreateVisualHeader__class = app.CreateClass("VisualHeader", "noKey-VisualHeader", VisualHeaderFields);
+local CreateVisualHeader, CreateVisualHeader__class = app.CreateClass("VisualHeader", "noKey-VisualHeader", VisualHeaderFields);
 app.CreateVisualHeader = CreateVisualHeader
 local Wrap = app.WrapObject;
 app.CreateVisualHeaderWithGroups = function(base, groups)
@@ -345,14 +348,9 @@ for _,field in ipairs({
 	"expanded",
 	"indent",
 	"g",
-	"progress",
-	"total",
 	"visible",
-	"modItemID",
 	"rawlink",
 	"sourceIgnored",
-	"costTotal",
-	"upgradeTotal",
 	"iconPath",
 	"tooltipInfo",
 	"working",

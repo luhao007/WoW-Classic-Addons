@@ -5,33 +5,47 @@
 -- ------------------------------------------------------------------------------ --
 
 local TSM = select(2, ...) ---@type TSM
-local FilterSearch = TSM.Shopping:NewPackage("FilterSearch")
-local Environment = TSM.Include("Environment")
-local L = TSM.Include("Locale").GetTable()
-local DisenchantInfo = TSM.Include("Data.DisenchantInfo")
-local TempTable = TSM.Include("Util.TempTable")
-local String = TSM.Include("Util.String")
-local Log = TSM.Include("Util.Log")
-local Math = TSM.Include("Util.Math")
-local ItemString = TSM.Include("Util.ItemString")
-local Threading = TSM.Include("Service.Threading")
-local ItemFilter = TSM.Include("Service.ItemFilter")
-local CustomPrice = TSM.Include("Service.CustomPrice")
-local Conversions = TSM.Include("Service.Conversions")
-local ItemInfo = TSM.Include("Service.ItemInfo")
-local Settings = TSM.Include("Service.Settings")
-local FilterSearchContext = TSM.Include("LibTSMClass").DefineClass("FilterSearchContext", TSM.Shopping.ShoppingSearchContext)
+local FilterSearch = TSM.Shopping:NewPackage("FilterSearch") ---@type AddonPackage
+local ClientInfo = TSM.LibTSMWoW:Include("Util.ClientInfo")
+local L = TSM.Locale.GetTable()
+local TempTable = TSM.LibTSMUtil:Include("BaseType.TempTable")
+local String = TSM.LibTSMUtil:Include("Lua.String")
+local Math = TSM.LibTSMUtil:Include("Lua.Math")
+local ItemString = TSM.LibTSMTypes:Include("Item.ItemString")
+local Conversion = TSM.LibTSMTypes:Include("Item.Conversion")
+local DisenchantData = TSM.LibTSMData:Include("Disenchant")
+local CustomString = TSM.LibTSMTypes:Include("CustomString")
+local ChatMessage = TSM.LibTSMService:Include("UI.ChatMessage")
+local Threading = TSM.LibTSMTypes:Include("Threading")
+local ItemFilter = TSM.LibTSMService:IncludeClassType("ItemFilter")
+local Conversions = TSM.LibTSMApp:Include("Service.Conversions")
+local ItemInfo = TSM.LibTSMService:Include("Item.ItemInfo")
+local AuctionSearchContext = TSM.LibTSMService:IncludeClassType("AuctionSearchContext")
+local LibTSMClass = LibStub("LibTSMClass")
+local FilterSearchContext = LibTSMClass.DefineClass("FilterSearchContext", AuctionSearchContext) ---@class FilterSearchContext: AuctionSearchContext
 local private = {
 	settings = nil,
 	scanThreadId = nil,
 	itemFilter = nil,
 	isSpecial = false,
 	marketValueSource = nil,
-	searchContext = nil,
-	gatheringSearchContext = nil,
+	searchContext = nil, ---@type FilterSearchContext
+	gatheringSearchContext = nil, ---@type FilterSearchContext
 	targetItem = {},
 	itemList = {},
 	generalMaxQuantity = {},
+}
+local DISENCHANT_CLASS_ID_LOOKUP = {
+	[DisenchantData.ITEM_CLASSES.ARMOR] = Enum.ItemClass.Armor,
+	[DisenchantData.ITEM_CLASSES.WEAPON] = Enum.ItemClass.Weapon,
+	[DisenchantData.ITEM_CLASSES.PROFESSION] = Enum.ItemClass.Profession,
+}
+local ITEM_FILTER_ERRROR_LOOKUP = {
+	[ItemFilter.ERROR.ITEM_NOT_FOUND] = L["The specified item was not found."],
+	[ItemFilter.ERROR.DUPLICATE_FILTER] = L["The same filter was specified multiple times."],
+	[ItemFilter.ERROR.MAX_QUANTITY_ZERO] = L["The max quantity cannot be zero."],
+	[ItemFilter.ERROR.UNKNOWN_WORD] = L["Unknown word (%s)."],
+	[ItemFilter.ERROR.CRAFTING_DISENCHANT_ADDITIONAL] = L["Cannot use additional filters with /crafting or /disenchant."],
 }
 
 
@@ -40,10 +54,10 @@ local private = {
 -- Module Functions
 -- ============================================================================
 
-function FilterSearch.OnInitialize()
-	private.settings = Settings.NewView()
+function FilterSearch.OnInitialize(settingsDB)
+	private.settings = settingsDB:NewView()
 		:AddKey("global", "shoppingOptions", "pctSource")
-	-- initialize thread
+	-- Initialize thread
 	private.scanThreadId = Threading.New("FILTER_SEARCH", private.ScanThread)
 	private.itemFilter = ItemFilter.New()
 	private.searchContext = FilterSearchContext(private.scanThreadId, private.MarketValueFunction)
@@ -53,7 +67,7 @@ end
 function FilterSearch.GetGreatDealsSearchContext(filterStr)
 	filterStr = private.ValidateFilterStr(filterStr, "NORMAL")
 	if not filterStr then
-		return
+		return nil
 	end
 	private.marketValueSource = private.settings.pctSource
 	private.isSpecial = true
@@ -62,9 +76,13 @@ end
 
 function FilterSearch.GetSearchContext(filterStr, itemInfo)
 	local errMsg = nil
+	local origFilterStr = filterStr
 	filterStr, errMsg = private.ValidateFilterStr(filterStr, "NORMAL")
 	if not filterStr then
-		return nil, errMsg
+		if type(origFilterStr) == "string" then
+			ChatMessage.PrintUser(format(L["Invalid search filter (%s)."], origFilterStr).." "..errMsg)
+		end
+		return nil
 	end
 	private.marketValueSource = private.settings.pctSource
 	private.isSpecial = false
@@ -74,7 +92,7 @@ end
 function FilterSearch.GetGatheringSearchContext(filterStr, mode)
 	filterStr = private.ValidateFilterStr(filterStr, mode)
 	if not filterStr then
-		return
+		return nil
 	end
 	private.marketValueSource = "matprice"
 	private.isSpecial = true
@@ -89,7 +107,7 @@ end
 
 function private.ScanThread(auctionScan, filterStr)
 	wipe(private.generalMaxQuantity)
-	if Environment.IsRetail() and filterStr == "" then
+	if not ClientInfo.IsVanillaClassic() and filterStr == "" then
 		auctionScan:NewQuery()
 			:SetStr("")
 		wipe(private.targetItem)
@@ -99,16 +117,16 @@ function private.ScanThread(auctionScan, filterStr)
 		for filter in String.SplitIterator(filterStr, ";") do
 			filter = strtrim(filter)
 			if filter ~= "" then
-				local filterIsValid, filterErrMsg = private.itemFilter:ParseStr(filter)
+				local filterIsValid, filterErrType, filterErrArg = private.itemFilter:ParseStr(filter)
 				if filterIsValid then
 					hasFilter = true
 				else
-					errMsg = errMsg or filterErrMsg
+					errMsg = errMsg or format(ITEM_FILTER_ERRROR_LOOKUP[filterErrType], filterErrArg)
 				end
 			end
 		end
 		if not hasFilter then
-			Log.PrintUser(format(L["Invalid search filter (%s)."], filterStr).." "..errMsg)
+			ChatMessage.PrintUser(format(L["Invalid search filter (%s)."], filterStr).." "..errMsg)
 			return false
 		end
 		wipe(private.targetItem)
@@ -119,12 +137,12 @@ function private.ScanThread(auctionScan, filterStr)
 			if filterPart ~= "" and itemFilter:ParseStr(filterPart) then
 				if itemFilter:GetCrafting() then
 					wipe(private.itemList)
-					local targetItem = Conversions.GetTargetItemByName(private.itemFilter:GetStr())
+					local targetItem = private.GetConversionTargetItem(itemFilter:GetStr())
 					assert(targetItem)
 					-- populate the list of items
 					private.targetItem[targetItem] = targetItem
 					tinsert(private.itemList, targetItem)
-					local conversionInfo = Conversions.GetSourceItems(targetItem)
+					local conversionInfo = Conversion.GetSourceItems(targetItem)
 					for itemString in pairs(conversionInfo) do
 						if not private.targetItem[itemString] then
 							private.targetItem[itemString] = targetItem
@@ -153,15 +171,17 @@ function private.ScanThread(auctionScan, filterStr)
 					auctionScan:SetScript("OnQueryDone", private.OnQueryDone)
 				elseif itemFilter:GetDisenchant() then
 					local queryOffset = auctionScan:GetNumQueries()
-					local targetItem = Conversions.GetTargetItemByName(itemFilter:GetStr())
+					local targetItem = private.GetConversionTargetItem(itemFilter:GetStr())
 					assert(targetItem)
 					-- generate queries for groups of items that d/e into the target item
-					local disenchantInfo = DisenchantInfo.GetInfo(targetItem)
-					for _, info in ipairs(disenchantInfo.sourceInfo) do
+					local data = Conversion.GetDisenchantData(targetItem)
+					for _, info in ipairs(data.sourceInfo) do
+						local classId = DISENCHANT_CLASS_ID_LOOKUP[info.class]
+						assert(classId)
 						auctionScan:NewQuery()
-							:SetLevelRange(disenchantInfo.minLevel, disenchantInfo.maxLevel)
+							:SetLevelRange(data.minLevel, data.maxLevel)
 							:SetQualityRange(info.quality, info.quality)
-							:SetClass(info.classId)
+							:SetClass(classId)
 							:SetItemLevelRange(info.minItemLevel, info.maxItemLevel)
 					end
 					-- add a query for the target item itself
@@ -199,8 +219,13 @@ function private.ScanThread(auctionScan, filterStr)
 					query:SetUpgrades(itemFilter:GetUpgrades())
 					query:SetPriceRange(itemFilter:GetMinPrice(), itemFilter:GetMaxPrice())
 					query:SetItems(itemFilter:GetItem())
-					query:SetCanLearn(itemFilter:GetCanLearn())
-					query:SetUnlearned(itemFilter:GetUnlearned())
+					-- luacheck: globals CanIMogIt
+					if CanIMogIt and CanIMogIt.PlayerKnowsTransmog then
+						query:SetUnlearned(itemFilter:GetAddedKeyValue("unlearned"))
+					end
+					if CanIMogIt and CanIMogIt.CharacterCanLearnTransmog then
+						query:SetCanLearn(itemFilter:GetAddedKeyValue("canlearn"))
+					end
 					private.generalMaxQuantity[query] = itemFilter:GetMaxQuantity()
 				end
 			end
@@ -212,7 +237,7 @@ function private.ScanThread(auctionScan, filterStr)
 
 	-- run the scan
 	if not auctionScan:ScanQueriesThreaded() then
-		Log.PrintUser(L["TSM failed to scan some auctions. Please rerun the scan."])
+		ChatMessage.PrintUser(L["TSM failed to scan some auctions. Please rerun the scan."])
 	end
 	return true
 end
@@ -223,7 +248,7 @@ end
 -- FilterSearchContext Class
 -- ============================================================================
 
-function FilterSearchContext.GetMaxCanBuy(self, itemString)
+function FilterSearchContext:GetMaxCanBuy(itemString)
 	local targetItemString = private.targetItem[itemString]
 	local maxNum = nil
 	local itemQuery = private.GetMaxQuantityQuery(targetItemString or itemString)
@@ -237,7 +262,7 @@ function FilterSearchContext.GetMaxCanBuy(self, itemString)
 	return maxNum
 end
 
-function FilterSearchContext.OnBuy(self, itemString, quantity)
+function FilterSearchContext:OnBuy(itemString, quantity)
 	local targetItemString = private.targetItem[itemString]
 	if targetItemString then
 		quantity = quantity * private.GetTargetItemRate(targetItemString, itemString)
@@ -268,7 +293,7 @@ end
 function private.ValidateFilterStr(filterStr, mode)
 	assert(mode == "NORMAL" or mode == "CRAFTING" or mode == "DISENCHANT")
 	filterStr = strtrim(filterStr)
-	if mode == "NORMAL" and Environment.IsRetail() and filterStr == "" then
+	if mode == "NORMAL" and not ClientInfo.IsVanillaClassic() and filterStr == "" then
 		return filterStr
 	end
 	local isValid, errMsg = true, nil
@@ -276,7 +301,7 @@ function private.ValidateFilterStr(filterStr, mode)
 	for filter in String.SplitIterator(filterStr, ";") do
 		filter = strtrim(filter)
 		if isValid and gsub(filter, "/", "") ~= "" then
-			local filterIsValid, filterErrMsg = private.itemFilter:ParseStr(filter)
+			local filterIsValid, filterErrType, filterErrArg = private.itemFilter:ParseStr(filter)
 			if filterIsValid then
 				local str = private.itemFilter:GetStr()
 				if mode == "CRAFTING" and not strfind(strlower(filter), "/crafting") and str then
@@ -285,22 +310,22 @@ function private.ValidateFilterStr(filterStr, mode)
 					filter = filter.."/disenchant"
 				end
 				if strfind(strlower(filter), "/crafting") then
-					local craftingTargetItem = str and Conversions.GetTargetItemByName(str) or nil
-					if not craftingTargetItem or not Conversions.GetSourceItems(craftingTargetItem) then
+					local craftingTargetItem = str and private.GetConversionTargetItem(str) or nil
+					if not craftingTargetItem or not Conversion.GetSourceItems(craftingTargetItem) then
 						isValid = false
 						errMsg = errMsg or L["The specified item is not supported for crafting searches."]
 					end
 				end
 				if strfind(strlower(filter), "/disenchant") then
-					local targetItemString = str and Conversions.GetTargetItemByName(str) or nil
-					if not DisenchantInfo.IsTargetItem(targetItemString) then
+					local targetItemString = str and private.GetConversionTargetItem(str) or nil
+					if not Conversion.IsDisenchantTargetItem(targetItemString) then
 						isValid = false
 						errMsg = errMsg or L["The specified item is not supported for disenchant searches."]
 					end
 				end
 			else
 				isValid = false
-				errMsg = errMsg or filterErrMsg
+				errMsg = errMsg or format(ITEM_FILTER_ERRROR_LOOKUP[filterErrType], filterErrArg)
 			end
 		else
 			isValid = false
@@ -325,9 +350,10 @@ function private.MarketValueFunction(subRow)
 			return nil
 		end
 		local targetItemRate = private.GetTargetItemRate(targetItemString, itemString)
-		return Math.Round(targetItemRate * CustomPrice.GetValue(private.marketValueSource, targetItemString))
+		return Math.Round(targetItemRate * CustomString.GetValue(private.marketValueSource, targetItemString))
 	else
-		return CustomPrice.GetValue(private.marketValueSource, itemString or baseItemString)
+		local value = CustomString.GetValue(private.marketValueSource, itemString or baseItemString)
+		return value
 	end
 end
 
@@ -350,22 +376,22 @@ function private.GetTargetItemRate(targetItemString, itemString)
 	if itemString == targetItemString then
 		return 1, 1
 	end
-	if DisenchantInfo.IsTargetItem(targetItemString) then
+	if Conversion.IsDisenchantTargetItem(targetItemString) then
 		local classId = ItemInfo.GetClassId(itemString)
 		local quality = ItemInfo.GetQuality(itemString)
-		local itemLevel = Environment.IsRetail() and ItemInfo.GetItemLevel(itemString) or ItemInfo.GetItemLevel(ItemString.GetBase(itemString))
-		local expansion = Environment.IsRetail() and ItemInfo.GetExpansion(itemString) or nil
-		local amountOfMats = DisenchantInfo.GetTargetItemSourceInfo(targetItemString, classId, quality, itemLevel, expansion)
+		local itemLevel = ClientInfo.IsRetail() and ItemInfo.GetItemLevel(itemString) or ItemInfo.GetItemLevel(ItemString.GetBase(itemString))
+		local expansion = ClientInfo.IsRetail() and ItemInfo.GetExpansion(itemString) or nil
+		local amountOfMats = Conversions.GetDisenchantTargetItemSourceInfo(targetItemString, classId, quality, itemLevel, expansion)
 		if amountOfMats then
 			return amountOfMats, 1
 		end
 	end
-	local conversionInfo = Conversions.GetSourceItems(targetItemString)
+	local conversionInfo = Conversion.GetSourceItems(targetItemString)
 	local conversionChunkSize = 1
-	for _ in Conversions.TargetItemsByMethodIterator(itemString, Conversions.METHOD.MILL) do
+	for _ in Conversion.TargetItemsByMethodIterator(itemString, Conversion.METHOD.MILL) do
 		conversionChunkSize = 5
 	end
-	for _ in Conversions.TargetItemsByMethodIterator(itemString, Conversions.METHOD.PROSPECT) do
+	for _ in Conversion.TargetItemsByMethodIterator(itemString, Conversion.METHOD.PROSPECT) do
 		conversionChunkSize = 5
 	end
 	return conversionInfo and conversionInfo[itemString] or 0, conversionChunkSize
@@ -423,4 +449,20 @@ function private.GetMaxQuantityQuery(itemString)
 		return
 	end
 	return itemQuery
+end
+
+function private.GetConversionTargetItem(targetItemName)
+	targetItemName = strlower(targetItemName)
+	for targetItemString in Conversion.TargetItemIterator() do
+		local name = ItemInfo.GetName(targetItemString)
+		if name and strlower(name) == targetItemName then
+			return targetItemString
+		end
+	end
+	for targetItemString in Conversion.DisenchantTargetItemIterator() do
+		local name = ItemInfo.GetName(targetItemString)
+		if name and strlower(name) == targetItemName then
+			return targetItemString
+		end
+	end
 end

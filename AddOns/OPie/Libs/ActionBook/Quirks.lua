@@ -2,34 +2,36 @@ local COMPAT, _, T = select(4,GetBuildInfo()), ...
 if T.SkipLocalActionBook then return end
 if T.TenEnv then T.TenEnv() end
 
-local EV, AB, KR, RW, IM = T.Evie, T.ActionBook:compatible(2,38), T.ActionBook:compatible("Kindred", 1,26), T.ActionBook:compatible("Rewire", 1,27), T.ActionBook:compatible("Imp", 1,11)
-assert(EV and AB and KR and RW and IM and 1, "Incompatible library bundle")
+local EV, WR, AB, KR, RW, IM = T.Evie, T.Ware, T.ActionBook:compatible(2,38), T.ActionBook:compatible("Kindred", 1,26), T.ActionBook:compatible("Rewire", 1,27), T.ActionBook:compatible("Imp", 1,11)
+assert(EV and WR and AB and KR and RW and IM and 1, "Incompatible library bundle")
 local MODERN, CI_ERA, CF_CATA = COMPAT >= 10e4, COMPAT < 2e4, COMPAT < 10e4 and COMPAT > 4e4
 local playerClass, _, playerRace = UnitClassBase("player"), UnitRace("player")
 
-local safequote do
-	local r = {u="\\117", ["{"]="\\123", ["}"]="\\125"}
-	function safequote(s)
-		return (("%q"):format(s):gsub("[{}u]", r))
-	end
-end
-
-securecall(function() -- weirdly-persistent Druid Incarnations
-	if not MODERN then
+securecall(function() -- weirdly-persistent Druid Incarnations + Celestial Alignment
+	if not MODERN or playerClass ~= "DRUID" then
 		return
 	end
+	local CA_SID, CA2_SID = 194223, 383410 -- Celestial Alignment [-/+ Orbital Strike]
+	local ICoE_SID = {[102560]=1, [390414]=1} -- Incarnation: Chosen of Elune
 	local function checkSpellKnown(id)
 		if not IsSpellKnown(id) then
 			return false, "known-check"
 		end
 	end
+	local function checkKnown_ICoE()
+		if not (IsSpellKnown(CA_SID) and ICoE_SID[C_Spell.GetOverrideSpell(CA_SID)]) then
+			return false, "known-check-icoe.ca"
+		end
+	end
 	RW:SetSpellCastableChecker(33891, checkSpellKnown)
 	RW:SetSpellCastableChecker(102543, checkSpellKnown)
 	RW:SetSpellCastableChecker(102558, checkSpellKnown)
-	RW:SetSpellCastableChecker(102560, function()
-		if not (IsSpellKnown(194223) and select(7, GetSpellInfo((GetSpellInfo(194223)))) == 102560) then
-			return false, "known-check"
-		end
+	RW:SetSpellCastableChecker(CA_SID, checkSpellKnown)
+	for k in pairs(ICoE_SID) do
+		RW:SetSpellCastableChecker(k, checkKnown_ICoE)
+	end
+	AB:SetSpellIconOverride(CA2_SID, function()
+		return C_Spell.GetSpellTexture(CA_SID), nil
 	end)
 end)
 securecall(function() -- class/race-locked mounts
@@ -49,6 +51,11 @@ securecall(function() -- class/race-locked mounts
 		[231442]="SHAMAN",
 		[5784]="WARLOCK", [23161]="WARLOCK", [232412]="WARLOCK", [238452]="WARLOCK", [238454]="WARLOCK",
 		[229388]="WARRIOR",
+		-- Legion Remix
+		[1255264]="DEATHKNIGHT", [1255471]="PALADIN", [1255482]="WARRIOR",
+		[1255456]="HUNTER", [1255478]="SHAMAN",
+		[1255431]="DEMONHUNTER", [1255467]="MONK", [1255477]="ROGUE",
+		[1255463]="MAGE", [1255475]="PRIEST", [1255480]="WARLOCK",
 	}
 	local raceLockedMounts = {
 		-- Paladin chargers
@@ -60,18 +67,16 @@ securecall(function() -- class/race-locked mounts
 		[290608]="ZandalariTroll",
 		[363613]="LightforgedDraenei",
 	}
-	local f, m, reason = UnitClass, classLockedMounts, "uncastable-class-lock"
 	for i=1,2 do
 		local function retUncastable()
-			return false, reason, true
+			return false, i == 1 and "uncastable-class-lock" or "uncastable-race-lock", true
 		end
-		local _, me = f("player")
-		for sid, v in pairs(m) do
+		local me = i == 1 and playerClass or playerRace
+		for sid, v in pairs(i == 1 and classLockedMounts or raceLockedMounts) do
 			if v ~= me then
 				RW:SetSpellCastableChecker(sid, retUncastable)
 			end
 		end
-		f, m, reason = UnitRace, raceLockedMounts, "uncastable-race-lock"
 	end
 end)
 securecall(function() -- Tarecgosa's Visage
@@ -170,7 +175,13 @@ securecall(function() -- failing ability rank disambiguation
 	if not MODERN then
 		return
 	end
-	local Spell_ForcedID = {126819, 28272, 28271, 161372, 51514, 210873, 211004, 211010, 211015, 783, 126892}
+	local Spell_ForcedID = {
+		126819, 28272, 28271, 161372, -- mage
+		51514, 210873, 211004, 211010, 211015, -- shaman
+		783, -- druid
+		126892, -- monk
+		372048, -- evoker
+	}
 	local function checkForcedIDCastable(id)
 		return not not FindSpellBookSlotBySpellID(id), "forced-id-cast"
 	end
@@ -266,11 +277,10 @@ securecall(function() -- /ping's option parsing is silly
 	if not MODERN then
 		return
 	end
-	local f, init = CreateFrame("Frame", nil, nil, "SecureHandlerBaseTemplate"), [[-- AB_PingQuirk_Init 
-		PING_COMMAND, TOKENS = %s, newtable()
-		TOKENS.assist, TOKENS.attack, TOKENS.onmyway, TOKENS.warning = %s, %s, %s, %s
-	]]
-	f:Execute(init:format(safequote(SLASH_PING1 .. " "), safequote(PING_TYPE_ASSIST), safequote(PING_TYPE_ATTACK), safequote(PING_TYPE_ON_MY_WAY), safequote(PING_TYPE_WARNING)))
+	local f = CreateFrame("Frame", nil, nil, "SecureHandlerBaseTemplate")
+	local tk, env = nil, WR.GetRestrictedEnvironment(f)
+	env.PING_COMMAND, tk = SLASH_PING1 .. " ", WR.newtable(env, "TOKENS")
+	tk.assist, tk.attack, tk.onmyway, tk.warning = PING_TYPE_ASSIST, PING_TYPE_ATTACK, PING_TYPE_ON_MY_WAY, PING_TYPE_WARNING
 	f:SetAttribute("RunSlashCmd", [[-- AB_PingQuirk_Run 
 		local cmd, v, target, s = ...
 		if v then
@@ -291,10 +301,10 @@ securecall(function() -- /equipset {not a set name} errors
 		until _G[bn] == nil and GetClickFrame(bn) == nil
 		return bn
 	end
+	-- TODO: should anonymize this: RW/PY has a /click delegation mechanism
 	local f = CreateFrame("Button", uniqueName("ABEquipSetQuirk!"), nil, "SecureActionButtonTemplate")
-	f:SetAttribute("pressAndHoldAction", 1)
 	f:SetAttribute("type", "equipmentset")
-	f:SetAttribute("typerelease", "equipmentset")
+	f:SetAttribute("useOnKeyDown", false)
 	f:SetAttribute("DoEquipCommand", SLASH_CLICK1 .. " " .. f:GetName())
 	f:SetAttribute("RunSlashCmd", [[-- AB_EquipSetQuirk_Run 
 		local cmd, v = ...
@@ -346,6 +356,31 @@ securecall(function() -- Draenic Hologem usability limitation
 		AB:SetPlayerHasToyOverride(210455, false)
 	end
 end)
+securecall(function() -- Modern Hunter Fetch ability disambiguation + usability
+	if not MODERN or playerClass ~= "HUNTER" then return end
+	local PET_FETCH_SID, AVIAN_FETCH_SID, FETCH_SNAME = 125050, 1232995, GetSpellInfo(125050)
+	local state, goal = false, false
+	local function syncFetchState()
+		if state == goal then return end
+		RW:SetCastAlias(FETCH_SNAME, goal and "spell:" .. AVIAN_FETCH_SID or nil, false)
+		state = goal
+		AB:NotifyObservers("spell")
+	end
+	local function checkFetchState()
+		goal = IsSpellKnown(AVIAN_FETCH_SID)
+		if goal ~= state and not InCombatLockdown() then
+			syncFetchState()
+		end
+	end
+	AB:SetSpellIconOverride(PET_FETCH_SID, function()
+		if not (UnitExists("pet") and UnitIsFriend("player", "pet") and not UnitIsDead("pet")) then
+			return nil, false
+		end
+	end)
+	EV.PLAYER_REGEN_ENABLED = syncFetchState
+	EV.PLAYER_LOGIN = checkFetchState
+	EV.TRAIT_CONFIG_UPDATED = checkFetchState
+end)
 
 local MAYBE_FLYABLE, FLIGHT_BLOCKER = true
 securecall(function() -- FLIGHT_BLOCKER init
@@ -353,8 +388,7 @@ securecall(function() -- FLIGHT_BLOCKER init
 		return
 	end
 	local f = CreateFrame("Frame", nil, nil, "SecureHandlerAttributeTemplate")
-	f:SetFrameRef("KR", KR:seclib())
-	f:Execute('KR = self:GetFrameRef("KR")')
+	WR.GetRestrictedEnvironment(f).KR = KR:seclib()
 	f:SetAttribute("_onattributechanged", [[-- AB_BlockedFlyable_Driver 
 		local sk, v = name:match("^state%-(.+)"), value
 		if v == 1 or v == 0 then
@@ -466,6 +500,11 @@ securecall(function() -- Darkmoon Fairegrounds flight restriction
 		return
 	end
 	KR:RegisterStateDriver(FLIGHT_BLOCKER, "dmf", "[in:darkmoon faire] 1; 0")
+end)
+securecall(function() -- K'aresh Phase Diving flight restriction
+	if MODERN then
+		KR:RegisterStateDriver(FLIGHT_BLOCKER, "phasedive", "[in:karesh,noflyable] 1;0")
+	end
 end)
 securecall(function() -- TWW dungeon/delve flight restriction
 	if not MODERN then
@@ -587,5 +626,38 @@ securecall(function() -- Modern: G-99 Breakneck is a fake mount
 	function EV:LOADING_SCREEN_ENABLED()
 		-- [11.1/2504] quest completion cache is flushed on PLW; may not repop by PEW.
 		return hasUnlockedG99() and "remove"
+	end
+end)
+securecall(function() -- Classic Mists: [spec:1] is stuck
+	if MODERN or COMPAT < 5e4 then
+		return
+	end
+	local function syncSpec()
+		local spec = C_SpecializationInfo.GetSpecialization()
+		local specID, name = C_SpecializationInfo.GetSpecializationInfo(spec or 0)
+		local valid = specID and specID ~= 0 and name and name ~= ""
+		local ex = (C_SpecializationInfo.GetActiveSpecGroup() or 1) == 1 and "/p" or "/s"
+		local v = (spec or 0) .. (valid and "/" .. specID .. "/" .. name .. ex or ex)
+		KR:SetStateConditionalValue("spec", v)
+	end
+	function EV:PLAYER_SPECIALIZATION_CHANGED(u)
+		if u == "player" then
+			syncSpec()
+		end
+	end
+	EV.PLAYER_LOGIN = syncSpec
+end)
+securecall(function() -- Legion Remix: Unraveling Sands gets stuck
+	if not MODERN then
+		return
+	end
+	local GOOD_UNRAVEL_SID, BAD_UNRAVEL_SID = 1232808, 436524
+	function EV:PLAYER_LOGIN()
+		if PlayerGetTimerunningSeasonID() == 2 then
+			local good_cast, bad_cast = "spell:" .. GOOD_UNRAVEL_SID, "spell:" .. BAD_UNRAVEL_SID
+			RW:SetCastAlias(GetSpellInfo(BAD_UNRAVEL_SID) or bad_cast, good_cast)
+			RW:SetCastAlias(bad_cast, good_cast)
+		end
+		return "remove"
 	end
 end)

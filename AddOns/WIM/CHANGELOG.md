@@ -1,13 +1,15 @@
 # WIM
 
-## [3.12.13](https://github.com/Legacy-of-Sylvanaar/wow-instant-messenger/tree/3.12.13) (2025-06-02)
-[Full Changelog](https://github.com/Legacy-of-Sylvanaar/wow-instant-messenger/compare/3.12.12...3.12.13) [Previous Releases](https://github.com/Legacy-of-Sylvanaar/wow-instant-messenger/releases)
+## [3.12.17](https://github.com/Legacy-of-Sylvanaar/wow-instant-messenger/tree/3.12.17) (2025-10-27)
+[Full Changelog](https://github.com/Legacy-of-Sylvanaar/wow-instant-messenger/compare/3.12.16...3.12.17) [Previous Releases](https://github.com/Legacy-of-Sylvanaar/wow-instant-messenger/releases)
 
-- Merge branch 'master' of https://github.com/Legacy-of-Sylvanaar/wow-instant-messenger  
-- Add history logging of emote channel. This is part of SAY chat.  
-- Merge pull request #124 from JARVIS-AI/master  
-    Warcraftlogs patch - Add classic and fresh anniversary version for logs  
-- Merge pull request #1 from JARVIS-AI/JARVIS-AI-patch-1  
-    Update URLHandler.lua  
-- Update URLHandler.lua  
-    Add Classic and Fresh Anniversary version for WoW Logs  
+- Merge pull request #134 from Gogo1951/patch-4  
+    Update Interface-Classic version to 11508  
+- Merge pull request #133 from anon1231823/patch-29  
+    Update frFR.lua  
+- Merge pull request #132 from anon1231823/patch-28  
+    Update ptBR.lua  
+- Update Interface-Classic version to 11508  
+    Seems like everything still works, just updated version in ToC to match game client for Classic Era / Anniversary.  
+- Update frFR.lua  
+- Update ptBR.lua  

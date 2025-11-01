@@ -9,7 +9,17 @@ local char=string.char
 local L =addonTable.locale
 local Fun = {}
 addonTable.Fun=Fun
--------------
+----
+local IsAddOnLoaded = IsAddOnLoaded or C_AddOns and C_AddOns.IsAddOnLoaded
+function Fun.IsAddOnLoaded(AddOnName,funx)
+	if IsAddOnLoaded(AddOnName) then
+		funx()
+	else
+		EventUtil.ContinueOnAddOnLoaded(AddOnName, function()
+			funx()
+		end)
+	end
+end
 function PIG_GetSpellBookType()
 	if Enum.SpellBookSpellBank and Enum.SpellBookSpellBank.Player then
 		return Enum.SpellBookSpellBank.Player
@@ -207,11 +217,11 @@ else
 		end
 	end
 end
-function Fun.PIGSetAtlas(buticon,Atlas)
+function Fun.PIGSetAtlas(buticon,Atlas,useAtlasSize,hWrapMode,vWrapMode)
 	if not addonTable.Data.AtlasInfo then return false end
 	for k,v in pairs(addonTable.Data.AtlasInfo) do
 		if v[Atlas] then
-			buticon:SetTexture(k)
+			buticon:SetTexture(k,hWrapMode,vWrapMode)
 			buticon:SetTexCoord(v[Atlas][3], v[Atlas][4], v[Atlas][5], v[Atlas][6])
 			return true
 		end
@@ -262,24 +272,69 @@ function Fun.RGBToHex(t)
 	return format("%02x%02x%02x", r, g, b)
 end
 -----
+local GetLootMethod=GetLootMethod or C_PartyInfo and C_PartyInfo.GetLootMethod
+local SetLootMethod=SetLootMethod or C_PartyInfo and C_PartyInfo.SetLootMethod
 local GetSpecialization = GetSpecialization or C_SpecializationInfo and C_SpecializationInfo.GetSpecialization
 local GetSpecializationInfo = GetSpecializationInfo or C_SpecializationInfo and C_SpecializationInfo.GetSpecializationInfo
+local lootList = {
+	[0]="freeforall",
+	[2]="master",
+	[1]="roundrobin",
+	[3]="group",
+	[4]="needbeforegreed",
+	[5]="personal",
+}
+local lootList_old = {}
+for k,v in pairs(lootList) do
+	lootList_old[v]=k
+end
+local lootListIDs = {
+	0,1,2,3,4
+}
+if PIG_MaxTocversion(60000,true) then
+	table.insert(lootListIDs,5)
+end
+local lootListIDNum=#lootListIDs-1
+local lootmethodName={
+	[0]=LOOT_FREE_FOR_ALL,
+	[2]=LOOT_MASTER_LOOTER,
+	[1]=LOOT_ROUND_ROBIN,
+	[3]=LOOT_GROUP_LOOT,
+	[4]=LOOT_NEED_BEFORE_GREED,
+	[5]=LOOT_PERSONAL_LOOT,
+}
+local lootmethodNameJ={
+	[0]="自由",
+	[2]="队长",
+	[1]="轮流",
+	[3]="队伍",
+	[4]="需求",
+	[5]="个人",
+}
+function Fun.Get_LootTypeData()
+	return lootListIDs,lootmethodName,lootmethodNameJ
+end
+function Fun.Get_LootTypeID(id)
+	if PIG_MaxTocversion(30000,true) and PIG_MaxTocversion(40000) then
+		return lootList[id]
+	else
+		return id
+	end
+end
+function Fun.PIG_GetLootMethod()
+	local lootmethodID,masterLootPartyID, masterLooterRaidID= GetLootMethod();
+	if PIG_MaxTocversion(30000,true) and PIG_MaxTocversion(40000) then
+		return lootList_old[lootmethodID],masterLootPartyID, masterLooterRaidID
+	else
+		return lootmethodID,masterLootPartyID, masterLooterRaidID
+	end
+end
 local function Update_LootTxt(but)
 	if PIG_MaxTocversion() then
 		if IsInGroup() then
 			but:Enable()
-			local lootmethod= GetLootMethod();
-			if lootmethod=="freeforall" then
-				return "\124cff00ff00自由\124r"
-			elseif lootmethod=="roundrobin" then 
-				return "\124cff00ff00轮流\124r"
-			elseif lootmethod=="master" then 
-				return "\124cff00ff00队长\124r"
-			elseif lootmethod=="group" then 
-				return "\124cff00ff00队伍\124r"
-			elseif lootmethod=="needbeforegreed" then 
-				return "\124cff00ff00需求\124r"
-			end
+			local lootmethodID= Fun.PIG_GetLootMethod()
+			return "\124cff00ff00"..lootmethodNameJ[lootmethodID].."\124r"
 		else
 			but:Disable();
 			return "\124cff555555单人\124r"
@@ -314,13 +369,16 @@ function Fun.Update_LootType(uix,funx,set)
 	end)
 	uix:HookScript("OnClick", function (self)
 		if PIG_MaxTocversion() then
-			local lootmethod, _, _ = GetLootMethod();
-			if lootmethod=="freeforall" then
-				SetLootMethod("master","player")
-			elseif lootmethod=="master" then
-				SetLootMethod("freeforall")
+			local lootmethodID= Fun.PIG_GetLootMethod()
+			if lootmethodID==lootListIDNum then
+				SetLootMethod(Fun.Get_LootTypeID(0))
 			else
-				SetLootMethod("freeforall")
+				local newlootID=lootmethodID+1;
+				if newlootID==2 then
+					SetLootMethod(Fun.Get_LootTypeID(newlootID),"player")
+				else
+					SetLootMethod(Fun.Get_LootTypeID(newlootID))
+				end
 			end
 		else
 			local numSpecializations = GetNumSpecializations()--总专精数
@@ -742,150 +800,13 @@ function Fun.GetSelectpindaoID(cfname,moren1)
 		return 0,NONE
 	end
 end
---获取队伍等级
-function Fun.Get_GroupLv()
-	if is_slist() then return "G#0#0#0#0";end
-	local MsgNr="";
-	if IsInRaid() then
-		MsgNr = "R#40#"..GetNumGroupMembers()
-	elseif IsInGroup() then
-		MsgNr="G#"
-		for id = 1, MAX_PARTY_MEMBERS, 1 do
-			if UnitExists("Party"..id) then
-				local dengjiKk = UnitLevel("Party"..id)
-				if id==numgroup then
-					MsgNr=MsgNr..dengjiKk
-				else
-					MsgNr=MsgNr..dengjiKk.."#";
-				end
-			else
-				if id==numgroup then
-					MsgNr=MsgNr.."-"
-				else
-					MsgNr=MsgNr.."-".."#";
-				end
-			end
-		end
-	else
-		MsgNr="G#-#-#-#-";
-	end
-	return MsgNr
-end
-function Fun.Get_GroupLvTxt()
-	if is_slist() then return Fun.Base64_decod("LOmYn+WGhSgwLDAsMCwwKQ=="); end
-	if IsInGroup() then
-		local numgroup = GetNumSubgroupMembers()
-		if numgroup>0 then
-			local MsgNr=",队内("
-			for id=1,numgroup do
-				local dengjiKk = UnitLevel("Party"..id);
-				if id==numgroup then
-					MsgNr=MsgNr..dengjiKk..")";
-				else
-					MsgNr=MsgNr..dengjiKk..",";
-				end
-			end
-			return MsgNr
-		end
-	end
-	return ""
-end
-local function IsdanjiaOK(fubenID,danjiaCF)
-	if danjiaCF[fubenID[1]] and danjiaCF[fubenID[1]][fubenID[2]] then
-		local hangD=danjiaCF[fubenID[1]][fubenID[2]]
-		for id = 1, 4, 1 do
-			if hangD[id][1]>0 and hangD[id][2]>0 then
-				return danjiaCF[fubenID[1]][fubenID[2]]
-			end
-		end
-	end
-	return false
-end
---根据等级计算单价
-function Fun.Get_LvDanjia(lv,fubenID,danjiaCF)
-	if lv==0 then return 0 end
-	if is_slist() then return 0 end
-	local hangD = IsdanjiaOK(fubenID,danjiaCF)
-	if hangD then
-		for id = 1, 4, 1 do
-			local SavetG = hangD[id]
-			if SavetG[1]>0 and SavetG[2]>0 then
-				if lv>=SavetG[1] and lv<=SavetG[2] then
-					return SavetG[3]
-				end
-			end
-		end
-	end
-	return 0
-end
---获取所带副本级别单价文本
-function Fun.Get_LvDanjiaYC(fubenID,danjiaCF)
-	if is_slist() then return "-" end
-	local hangD = IsdanjiaOK(fubenID,danjiaCF)
-	if hangD then
-		local MsgNr = ""
-		for id = 1, 4, 1 do
-			local SavetG = hangD[id]
-			if SavetG[1]>0 and SavetG[2]>0 then
-				MsgNr=MsgNr..SavetG[1].."@"..SavetG[2].."@"..SavetG[3].."#"
-			end
-		end
-		local MsgNr = MsgNr:sub(1,-2)
-		return MsgNr
-	end
-	return "-"
-end
-function Fun.Get_LvDanjiaTxt(fubenID,danjiaCF)
-	if is_slist() then
-		return Fun.Base64_decod("PDEtODA+5YWN6LS5")
-	end
-	local MsgNr = ""
-	local hangD = IsdanjiaOK(fubenID,danjiaCF)
-	if hangD then
-		for id = 1, 4, 1 do
-			local SavetG = hangD[id]
-			if SavetG[1]>0 and SavetG[2]>0 then
-				if SavetG[3]>0 then
-					MsgNr=MsgNr.."<"..SavetG[1].."-"..SavetG[2]..">"..SavetG[3].."G"
-				else
-					MsgNr=MsgNr.."<"..SavetG[1].."-"..SavetG[2]..">"..Fun.Base64_decod("5YWN6LS5")
-				end
-			end
-		end
-	end
-	return MsgNr
-end
---获取设置的最小和最大级别
-local function Get_LVminmax(fubenID,danjiaCF)
-	if is_slist() then return 0,0 end
-	local min,max = nil,nil
-	local hangD = IsdanjiaOK(fubenID,danjiaCF)
-	if hangD then
-		for id = 1, 4, 1 do
-			local SavetG = hangD[id]
-			if SavetG[1]>0 and SavetG[2]>0 then
-				if min then
-					if SavetG[1]<min then
-						min=SavetG[1]
-					end
-				else
-					min=SavetG[1]
-				end
-				if max then
-					if SavetG[2]>max then
-						max=SavetG[2]
-					end
-				else
-					max=SavetG[2]
-				end
-			end
-		end
-	end
-	return min or 0,max or 0	
-end
-function Fun.Get_LVminmaxTxt(fubenID,danjiaCF)
-	local min,max = Get_LVminmax(fubenID,danjiaCF)
-	return min.."#"..max
+-- 去除所有 |c 和 |H 格式标签，只保留 [文本] 中的“显示名”
+local function GetVisibleLength(text)
+    local visible = text:gsub("|H.-|h(.-)|h|r", "%1")  -- 替换物品链接为显示名
+    					:gsub("|c%x%x%x%x%x%x%x%x", "")  -- 移除所有颜色开始
+						:gsub("|r", "")                      -- 移除所有重置符（可选）
+                        :gsub("|T.-|t", "")                   -- 去除图标
+    return #visible
 end
 function Fun.Get_famsg(laiyuan,famsg,CMD_Opne,CMDtxt,otdata)
 	if laiyuan=="yell" then
@@ -913,7 +834,8 @@ function Fun.Get_famsg(laiyuan,famsg,CMD_Opne,CMDtxt,otdata)
 	elseif laiyuan=="Farm_chedui" then
 
 	end
-	return famsg
+
+	return famsg,GetVisibleLength(famsg)
 end
 ----
 function Fun.Key_hebing(str,fengefu)
@@ -1020,104 +942,221 @@ function Fun.Key_fenge(str,fengefu,geshihua,daifengefu)
 end
 --=================
 --压缩数字
+-- local pig_yasuo = {}
+-- local pig_jieya = {}
+-- do
+-- 	local xuhao = 1
+-- 	for asciiCode = string.byte('A'), string.byte('Z') do
+-- 		local char = char(asciiCode)
+-- 		pig_yasuo[xuhao]=char
+-- 		xuhao=xuhao+1
+-- 	end
+-- 	for asciiCode = string.byte('a'), string.byte('z') do
+-- 		local char = char(asciiCode)
+-- 		pig_yasuo[xuhao]=char
+-- 		xuhao=xuhao+1
+-- 	end
+-- 	for asciiCode = string.byte('A'), string.byte('Z') do
+-- 		local char = char(asciiCode)
+-- 		pig_yasuo[xuhao]=char..char
+-- 		xuhao=xuhao+1
+-- 	end
+-- 	for asciiCode = string.byte('a'), string.byte('z') do
+-- 		local char = char(asciiCode)
+-- 		pig_yasuo[xuhao]=char..char
+-- 		xuhao=xuhao+1
+-- 	end
+-- 	for asciiCode = string.byte('A'), string.byte('Z') do
+-- 		local char = char(asciiCode)
+-- 		local charmin = lower(char)
+-- 		pig_yasuo[xuhao]=char..charmin
+-- 		xuhao=xuhao+1
+-- 	end
+-- 	for asciiCode = string.byte('A'), string.byte('Z') do
+-- 		local char = char(asciiCode)
+-- 		local charmin = lower(char)
+-- 		pig_yasuo[xuhao]=charmin..char
+-- 		xuhao=xuhao+1
+-- 	end
+-- 	for k,v in pairs(pig_yasuo) do
+-- 		pig_jieya[v]=k
+-- 	end
+-- end
 local pig_yasuo = {}
 local pig_jieya = {}
 do
-	local xuhao = 1
-	for asciiCode = string.byte('A'), string.byte('Z') do
-		local char = char(asciiCode)
-		pig_yasuo[xuhao]=char
-		xuhao=xuhao+1
-	end
-	for asciiCode = string.byte('a'), string.byte('z') do
-		local char = char(asciiCode)
-		pig_yasuo[xuhao]=char
-		xuhao=xuhao+1
-	end
-	for asciiCode = string.byte('A'), string.byte('Z') do
-		local char = char(asciiCode)
-		pig_yasuo[xuhao]=char..char
-		xuhao=xuhao+1
-	end
-	for asciiCode = string.byte('a'), string.byte('z') do
-		local char = char(asciiCode)
-		pig_yasuo[xuhao]=char..char
-		xuhao=xuhao+1
-	end
-	for asciiCode = string.byte('A'), string.byte('Z') do
-		local char = char(asciiCode)
-		local charmin = lower(char)
-		pig_yasuo[xuhao]=char..charmin
-		xuhao=xuhao+1
-	end
-	for asciiCode = string.byte('A'), string.byte('Z') do
-		local char = char(asciiCode)
-		local charmin = lower(char)
-		pig_yasuo[xuhao]=charmin..char
-		xuhao=xuhao+1
-	end
-	for k,v in pairs(pig_yasuo) do
-		pig_jieya[v]=k
-	end
+    local xuhao = 1
+    for asciiCode = string.byte('A'), string.byte('Z') do
+        local char = char(asciiCode)
+        pig_yasuo[xuhao] = char
+        xuhao = xuhao + 1
+    end
+    for asciiCode = string.byte('a'), string.byte('z') do
+        local char = char(asciiCode)
+        pig_yasuo[xuhao] = char
+        xuhao = xuhao + 1
+    end
+    for asciiCode = string.byte('A'), string.byte('Z') do
+        local char = char(asciiCode)
+        pig_yasuo[xuhao] = char .. char
+        xuhao = xuhao + 1
+    end
+    for asciiCode = string.byte('a'), string.byte('z') do
+        local char = char(asciiCode)
+        pig_yasuo[xuhao] = char .. char
+        xuhao = xuhao + 1
+    end
+    for asciiCode = string.byte('A'), string.byte('Z') do
+        local char = char(asciiCode)
+        local charmin = char:lower()
+        pig_yasuo[xuhao] = char .. charmin
+        xuhao = xuhao + 1
+    end
+    for asciiCode = string.byte('A'), string.byte('Z') do
+        local char = char(asciiCode)
+        local charmin = char:lower()
+        pig_yasuo[xuhao] = charmin .. char
+        xuhao = xuhao + 1
+    end
+    for k, v in pairs(pig_yasuo) do
+        pig_jieya[v] = k
+    end
 end
 function Fun.yasuo_NumberString(sss)
-	if not sss or sss=="" then return "" end
+    if not sss or sss == "" then return "" end
     local txtmsg = ""
     local count = 1
-    local lastDigit=nil
+    local lastDigit = nil
     for i = 1, #sss do
         local str = sss:sub(i, i)
         if str == lastDigit then
             count = count + 1
         else
-			if lastDigit then
-				local str = sss:sub(i, i)
-	            if count > 1 then
-	                txtmsg = txtmsg .. tostring(lastDigit) .. pig_yasuo[count]
-	            else
-	                txtmsg = txtmsg .. tostring(lastDigit)
-	            end
-	        end
+            if lastDigit then
+                if count > 1 then
+                    local compChar = pig_yasuo[count]
+                    if compChar then
+                        txtmsg = txtmsg .. lastDigit .. compChar
+                    else
+                        txtmsg = txtmsg .. lastDigit .. tostring(count)
+                    end
+                else
+                    txtmsg = txtmsg .. lastDigit
+                end
+            end
             count = 1
             lastDigit = str
         end
     end
     if count > 1 then
-        txtmsg = txtmsg .. tostring(lastDigit) .. pig_yasuo[count]
-    elseif count == 1 then
-        txtmsg = txtmsg .. tostring(lastDigit)
+        local compChar = pig_yasuo[count]
+        if compChar then
+            txtmsg = txtmsg .. lastDigit .. compChar
+        else
+            txtmsg = txtmsg .. lastDigit .. tostring(count)
+        end
+    else
+        txtmsg = txtmsg .. lastDigit
     end
+
     return txtmsg
 end
 function Fun.jieya_NumberString(sss)
-	if not sss or sss=="" then return "" end
+    if not sss or sss == "" then return "" end
     local txtdec = ""
-    local zifutxt = nil
-    local count = 0
-    for i = 1, #sss do
+    local i = 1
+    while i <= #sss do
         local char = sss:sub(i, i)
-        local char1 = sss:sub(i+1, i+1)
-        if char:match("%A") then
-			txtdec=txtdec..char
-            zifutxt = char
-        elseif char:match("%a") and char1:match("%a") then
-        	if zifutxt then
-        		for ix=2,pig_jieya[char..char1] do
-        			txtdec=txtdec..zifutxt
-        		end
+        if char:match("%d") then
+            local digit = char
+            i = i + 1
+            local nextChar1 = sss:sub(i, i)
+            if nextChar1 and pig_jieya[nextChar1] then
+                local repeatCount = pig_jieya[nextChar1]
+                for _ = 1, repeatCount do
+                    txtdec = txtdec .. digit
+                end
+                i = i + 1
+            else
+                local nextChar2 = sss:sub(i, i + 1)
+                if nextChar2 and #nextChar2 == 2 and pig_jieya[nextChar2] then
+                    local repeatCount = pig_jieya[nextChar2]
+                    for _ = 1, repeatCount do
+                        txtdec = txtdec .. digit
+                    end
+                    i = i + 2
+                else
+                    txtdec = txtdec .. digit
+                end
             end
-            zifutxt = nil
-        elseif char:match("%a") then
-        	if zifutxt then
-        		for ix=2,pig_jieya[char] do
-        			txtdec=txtdec..zifutxt
-        		end
-            end
-            zifutxt = nil
+        else
+            txtdec = txtdec .. char
+            i = i + 1
         end
     end
+
     return txtdec
 end
+-- function Fun.yasuo_NumberString(sss)
+-- 	if not sss or sss=="" then return "" end
+--     local txtmsg = ""
+--     local count = 1
+--     local lastDigit=nil
+--     for i = 1, #sss do
+--         local str = sss:sub(i, i)
+--         if str == lastDigit then
+--             count = count + 1
+--         else
+-- 			if lastDigit then
+-- 				local str = sss:sub(i, i)
+-- 	            if count > 1 then
+-- 	                txtmsg = txtmsg .. tostring(lastDigit) .. pig_yasuo[count]
+-- 	            else
+-- 	                txtmsg = txtmsg .. tostring(lastDigit)
+-- 	            end
+-- 	        end
+--             count = 1
+--             lastDigit = str
+--         end
+--     end
+--     if count > 1 then
+--         txtmsg = txtmsg .. tostring(lastDigit) .. pig_yasuo[count]
+--     elseif count == 1 then
+--         txtmsg = txtmsg .. tostring(lastDigit)
+--     end
+--     return txtmsg
+-- end
+-- function Fun.jieya_NumberString(sss)
+-- 	if not sss or sss=="" then return "" end
+--     local txtdec = ""
+--     local zifutxt = nil
+--     local count = 0
+--     for i = 1, #sss do
+--         local char = sss:sub(i, i)
+--         local char1 = sss:sub(i+1, i+1)
+--         if char:match("%A") then
+-- 			txtdec=txtdec..char
+--             zifutxt = char
+--         elseif char:match("%a") and char1:match("%a") then
+--         	if zifutxt then
+--         		print(char,char1)
+--         		print(pig_jieya[char..char1])
+--         		for ix=2,pig_jieya[char..char1] do
+--         			txtdec=txtdec..zifutxt
+--         		end
+--             end
+--             zifutxt = nil
+--         elseif char:match("%a") then
+--         	if zifutxt then
+--         		for ix=2,pig_jieya[char] do
+--         			txtdec=txtdec..zifutxt
+--         		end
+--             end
+--             zifutxt = nil
+--         end
+--     end
+--     return txtdec
+-- end
 --压缩配置
 local pig_teshuzifu = {"&","@","#"}
 function Fun.quchu_teshufuhao(str)

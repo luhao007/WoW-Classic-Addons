@@ -22,13 +22,13 @@ function TardisInfo.Farm(Activate)
 	local shenqingMSG = shenqingMSG_T..shenqingMSG_V;
 	local tihuankuohao=Fun.tihuankuohao
 	----
-	local fujiF,fujiTabBut=PIGOptionsList_R(InvF.F,L["TARDIS_CHETOU"],80,"Bot")
+	local fujiF,fujiTabBut=PIGOptionsList_R(InvF.F,L["TARDIS_FARM"],80,"Bot")
 	if Activate then fujiF:Show() fujiTabBut:Selected() end
 	----------------------------------
 	fujiF.JieshouInfoList={};
 	fujiF.yishenqingList={}
 	fujiF.GetBut=TardisInfo.GetInfoBut(fujiF,{"TOPLEFT",fujiF,"TOPLEFT",180,-30},30,2)
-	fujiF.GetBut.ButName=L["TARDIS_CHETOU"]
+	fujiF.GetBut.ButName=L["TARDIS_FARM"]
 	fujiF.GetBut:HookScript("OnClick", function (self)
 		if self.yanchiNerMsg then
 			self.Highlight:Hide()
@@ -42,7 +42,7 @@ function TardisInfo.Farm(Activate)
 		end
 	end);
 	fujiF.GetBut.daojishiJG=PIGA["Tardis"]["Farm"]["DaojishiCD"]
-	function fujiF.GetBut.gengxin_hang()
+	function fujiF.GetBut.Update_DataHang()
 		fujiF.GetBut.yanchiNerMsg=false	
 		fujiF.filtrateData()
 		fujiF.Update_hang()
@@ -68,10 +68,10 @@ function TardisInfo.Farm(Activate)
 	end)
 	fujiF.ButList={}
 	local function hang_EnterLeave(hangui,setui)
-		hangui:HookScript("OnEnter", function (self)
+		hangui:HookScript("OnEnter", function ()
 			setui:SetBackdropColor(unpack(xuanzhongBG[2]));
 		end);
-		hangui:HookScript("OnLeave", function (self)
+		hangui:HookScript("OnLeave", function ()
 			setui:SetBackdropColor(unpack(xuanzhongBG[1]));
 		end);
 	end
@@ -144,8 +144,8 @@ function TardisInfo.Farm(Activate)
 		hangui.info.T:SetJustifyH("LEFT");
 		
 		hangui.miyu = PIGButton(hangui,{"LEFT", hangui, "LEFT", biaotiName[7][2]-4, 0},{58,hang_Height-6},"")
-		hang_EnterLeave(hangui.miyu,hangui)
 		hangui.miyu.Text:SetFont(ChatFontNormal:GetFont(), 12);
+		hang_EnterLeave(hangui.miyu,hangui)
 		hangui.miyu:SetScript("OnClick", function(self)
 			local allname = self:GetParent().allname
 			local qingqiuleve = UnitLevel("player")
@@ -157,7 +157,8 @@ function TardisInfo.Farm(Activate)
 				PIGSendAddonMessage(InvF.Biaotou,qingqiuMSG,"WHISPER", allname)	
 			end
 			fujiF.yishenqingList[allname]=true
-			fujiF.Update_hang()
+			self:Disable()
+			self:SetText("已发送");
 		end)
 	end
 	---
@@ -167,7 +168,6 @@ function TardisInfo.Farm(Activate)
 		if ItemsNum>0 then
 			for x=1,ItemsNum do
 				local class,Level,raceId,Auto_inv,fubenid,LVminmax,GroupLv,DanjiaTxt,NdataT = strsplit("^", fujiF.JieshouInfoList[x][1]);
-				local fbid1,fbid2 =  strsplit("#", fubenid);
 				local min,max =  strsplit("#", LVminmax);
 				local zuxinxi =  {strsplit("#", GroupLv)};
 				local danjiaTT = ""
@@ -180,7 +180,7 @@ function TardisInfo.Farm(Activate)
 						danjiaTT=danjiaTT.."<"..min.."-"..max..">"..ggg.."G,"
 					end
 				end
-				table.insert(fujiF.New_InfoList,{false,fujiF.JieshouInfoList[x][2],class,Level,raceId,Auto_inv,{tonumber(fbid1),tonumber(fbid2)},{tonumber(min),tonumber(max)},zuxinxi,danjiaTT,NdataT})
+				table.insert(fujiF.New_InfoList,{false,fujiF.JieshouInfoList[x][2],class,Level,raceId,Auto_inv,tonumber(fubenid),{tonumber(min),tonumber(max)},zuxinxi,danjiaTT,NdataT})
 			end
 		end
 	end
@@ -190,11 +190,18 @@ function TardisInfo.Farm(Activate)
 			local hangui = fujiF.ButList[i]
 			hangui:Hide()	
 			hangui.miyu:Disable()
+			hangui.Chengke.T:Hide()
+			for Partyi=1,4 do
+				hangui.Chengke.Partybut[Partyi]:Hide()
+			end
+			hangui.info.T:SetText("你不满足司机设置的等级要求");
+			hangui.miyu:SetText("条件不符");
 		end
 		local ItemsData = fujiF.New_InfoList;
 		local ItemsNum = #ItemsData;
 		if ItemsNum>0 then
 			fujiF.GetBut.err:SetText("");
+			local playerLV=UnitLevel("player")
 		    FauxScrollFrame_Update(fujiF.nr.Scroll, ItemsNum, hang_NUM, hang_Height);
 		    local offset = FauxScrollFrame_GetOffset(fujiF.nr.Scroll);
 		    for i = 1, hang_NUM do
@@ -202,10 +209,15 @@ function TardisInfo.Farm(Activate)
 		    	if ItemsData[dangqian] then
 					local hangui = fujiF.ButList[i]
 					hangui:Show()
-					local playerLV=UnitLevel("player")
 					hangui.miyu:SetID(dangqian)
-					hangui.LvMinMax:SetText(ItemsData[dangqian][8][1].."-"..ItemsData[dangqian][8][2]);
 					hangui.allname=ItemsData[dangqian][2]
+					hangui.LvMinMax:SetText(ItemsData[dangqian][8][1].."-"..ItemsData[dangqian][8][2]);
+					local LevelOk = playerLV>=ItemsData[dangqian][8][1] and playerLV<=ItemsData[dangqian][8][2]
+					if LevelOk then
+						hangui.LvMinMax:SetTextColor(0, 1, 0, 0.9)
+					else
+						hangui.LvMinMax:SetTextColor(1, 0, 0, 1)
+					end
 					local WJname,WJserver= strsplit("-", ItemsData[dangqian][2]);
 					if WJserver and WJserver~="" then
 						hangui.Name.T:SetText(WJname.."(*)");
@@ -215,14 +227,13 @@ function TardisInfo.Farm(Activate)
 					local _, classFilename=PIGGetClassInfo(ItemsData[dangqian][3])
 					local rrr, yyy, bbb = GetClassColor(classFilename);
 					hangui.Name.T:SetTextColor(rrr, yyy, bbb,1)
-					if Data.FBdata[ItemsData[dangqian][7][1]] and Data.FBdata[ItemsData[dangqian][7][1]][ItemsData[dangqian][7][2]] then
-						local FbNameX = Data.FBdata[ItemsData[dangqian][7][1]][ItemsData[dangqian][7][2]][1]
-						hangui.Mudidi:SetText(FbNameX);
+					if ItemsData[dangqian][7] then
+						local activityInfo = C_LFGList.GetActivityInfoTable(ItemsData[dangqian][7]);
+						hangui.Mudidi:SetText(activityInfo and activityInfo.fullName or NONE);
+					end
+					if LevelOk then
 						local IsRaid,Party1,Party2,Party3,Party4 =  unpack(ItemsData[dangqian][9]);
 						if IsRaid=="R" then
-							for Partyi=1,4 do
-								hangui.Chengke.Partybut[Partyi]:Hide()
-							end
 							hangui.Chengke.T:Show()
 							hangui.Chengke.T:SetText(Party2.."/"..Party1)
 							if tonumber(Party2)==tonumber(Party1) then
@@ -231,7 +242,6 @@ function TardisInfo.Farm(Activate)
 								hangui.Chengke.T:SetTextColor(0,0.8,0,0.9);
 							end
 						else
-							hangui.Chengke.T:Hide()
 							local party9 = {Party1,Party2,Party3,Party4}
 							for Partyi=1,4 do
 								hangui.Chengke.Partybut[Partyi]:Show()
@@ -248,51 +258,25 @@ function TardisInfo.Farm(Activate)
 						end
 						hangui.info.T:SetText(ItemsData[dangqian][10]..ItemsData[dangqian][11]);
 						PIGEnter(hangui.info,"详情","|cff00FF00车票价格:|r\n|cffFFFFFF"..ItemsData[dangqian][10].."|r\n|cff00FF00车队介绍:|r\n|cffFFFFFF"..ItemsData[dangqian][11].."|r")
-						if playerLV>=ItemsData[dangqian][8][1] and playerLV<=ItemsData[dangqian][8][2] then
-						hangui.LvMinMax:SetTextColor(0, 1, 0, 0.9)
-					else
-						hangui.LvMinMax:SetTextColor(1, 0, 0, 1)
-					end
 						if fujiF.yishenqingList[ItemsData[dangqian][2]] then
 							hangui.miyu:SetText("已发送");
 						else
-							if playerLV<ItemsData[dangqian][8][1] then
-								hangui.miyu:SetText("等级不符");
-								hangui.LvMinMax:SetTextColor(1, 0, 0, 1)
-							elseif playerLV>ItemsData[dangqian][8][2] then
-								hangui.miyu:SetText("等级不符");
-								hangui.LvMinMax:SetTextColor(0.5, 0.5, 0.5, 1)
+							if ItemsData[dangqian][2]==PIG_OptionsUI.Name then
+								hangui.miyu:SetText("自己");
 							else
-								if ItemsData[dangqian][2]==PIG_OptionsUI.Name then
-									hangui.miyu:SetText("自己");
+								hangui.miyu:Enable()
+								if ItemsData[dangqian][6]=="Y" then
+									hangui.miyu:SetText("申请上车");
 								else
-									hangui.miyu:Enable()
-									if ItemsData[dangqian][6]=="Y" then
-										hangui.miyu:SetText("申请上车");
-									else
-										hangui.miyu:SetText(WHISPER);
-									end
+									hangui.miyu:SetText(WHISPER);
 								end
 							end
 						end
-					else
-						local activityInfo = C_LFGList.GetActivityInfoTable(ItemsData[dangqian][7][2]);
-						local FbNameX = tihuankuohao(activityInfo.fullName)
-						hangui.Mudidi:SetText(FbNameX);
-						hangui.Chengke.T:Hide()
-						for Partyi=1,4 do
-							hangui.Chengke.Partybut[Partyi]:Show()
-							hangui.Chengke.Partybut[Partyi].icon:SetDesaturated(true)
-							hangui.Chengke.Partybut[Partyi].T:SetTextColor(0.5,0.5,0.5,0.5);
-							hangui.Chengke.Partybut[Partyi].T:SetText("*")
-						end
-						hangui.info.T:SetText("你不满足此地下城的最低要求");
-						hangui.miyu:SetText("条件不符");
 					end
 				end
 			end
 		else
-			fujiF.GetBut.err:SetText("未获取到"..L["TARDIS_CHETOU"].."信息，请稍后再试!");
+			fujiF.GetBut.err:SetText("未获取到"..L["TARDIS_FARM"].."信息，请稍后再试!");
 		end
 	end
 	------

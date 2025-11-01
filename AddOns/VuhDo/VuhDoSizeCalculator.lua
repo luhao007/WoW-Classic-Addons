@@ -33,7 +33,7 @@ local sHealButtonWidthCache = { };
 local sTopHeightCache = { };
 local sBottomHeightCache = { };
 
-function resetSizeCalcCaches()
+function VUHDO_resetSizeCalcCaches()
 	table.wipe(sHealButtonWidthCache);
 	table.wipe(sTopHeightCache);
 	table.wipe(sBottomHeightCache);
@@ -74,7 +74,7 @@ end
 function VUHDO_getAdditionalBottomHeight(aPanelNum)
 	if not sBottomHeightCache[aPanelNum] then
 		-- HoT icons
-		local tHotCfg = VUHDO_PANEL_SETUP["HOTS"];
+		local tHotCfg = VUHDO_PANEL_SETUP[aPanelNum]["HOTS"];
 		local tBottomSpace;
 
 		if tHotCfg["radioValue"] == 7 or tHotCfg["radioValue"] == 8 then
@@ -121,18 +121,25 @@ end
 
 --
 function VUHDO_getNumHotSlots(aPanelNum)
-	if not VUHDO_strempty(VUHDO_PANEL_SETUP["HOTS"]["SLOTS"][10]) then
+
+	if not VUHDO_strempty(VUHDO_PANEL_SETUP[aPanelNum]["HOTS"]["SLOTS"][12]) then
+		return 9;
+	elseif not VUHDO_strempty(VUHDO_PANEL_SETUP[aPanelNum]["HOTS"]["SLOTS"][11]) then
+		return 8;
+	elseif not VUHDO_strempty(VUHDO_PANEL_SETUP[aPanelNum]["HOTS"]["SLOTS"][10]) then
 		return 7;
-	elseif not VUHDO_strempty(VUHDO_PANEL_SETUP["HOTS"]["SLOTS"][9]) then
+	elseif not VUHDO_strempty(VUHDO_PANEL_SETUP[aPanelNum]["HOTS"]["SLOTS"][9]) then
 		return 6;
 	else
 		for tCnt = 5, 1, -1 do
-			if not VUHDO_strempty(VUHDO_PANEL_SETUP["HOTS"]["SLOTS"][tCnt]) then
+			if not VUHDO_strempty(VUHDO_PANEL_SETUP[aPanelNum]["HOTS"]["SLOTS"][tCnt]) then
 				return tCnt;
 			end
 		end
+
 		return 0;
 	end
+
 end
 local VUHDO_getNumHotSlots = VUHDO_getNumHotSlots;
 
@@ -141,7 +148,8 @@ local VUHDO_getNumHotSlots = VUHDO_getNumHotSlots;
 --
 local tHotCfg;
 local function VUHDO_getHotIconWidth(aPanelNum)
-	tHotCfg = VUHDO_PANEL_SETUP["HOTS"];
+
+	tHotCfg = VUHDO_PANEL_SETUP[aPanelNum]["HOTS"];
 
 	if tHotCfg["radioValue"] == 1 or tHotCfg["radioValue"] == 4 then
 		return VUHDO_PANEL_SETUP[aPanelNum]["SCALING"]["barHeight"]
@@ -150,6 +158,7 @@ local function VUHDO_getHotIconWidth(aPanelNum)
 	else
 		return 0;
 	end
+
 end
 
 

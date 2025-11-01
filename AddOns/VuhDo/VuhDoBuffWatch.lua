@@ -46,7 +46,7 @@ BACKDROP_VUHDO_BUFF_WATCH_MAIN_FRAME_16_16_5555 = {
 	tile = true,
 	tileSize = 16,
 	edgeSize = 16,
-	insets = {  left = 5, right = 5, top = 5, bottom = 5 },
+	insets = { left = 5, right = 5, top = 5, bottom = 5 },
 };
 
 
@@ -67,15 +67,14 @@ local GetTotemInfo = GetTotemInfo;
 local table = table;
 local strsub = strsub;
 local GetTime = GetTime;
-local GetSpellCooldown = GetSpellCooldown;
-local GetSpellInfo = GetSpellInfo;
+local GetSpellCooldown = GetSpellCooldown or VUHDO_getSpellCooldown;
+local GetSpellInfo = GetSpellInfo or VUHDO_getSpellInfo;
 local InCombatLockdown = InCombatLockdown;
 local GetWeaponEnchantInfo = GetWeaponEnchantInfo;
 local UnitOnTaxi = UnitOnTaxi;
-local IsSpellInRange = IsSpellInRange;
+local IsSpellInRange = IsSpellInRange or VUHDO_isSpellInRange;
 local GetShapeshiftFormInfo = GetShapeshiftFormInfo;
 
-local tonumber = tonumber;
 local pairs = pairs;
 local ipairs = ipairs;
 local twipe = table.wipe;
@@ -395,19 +394,22 @@ function VUHDO_initBuffsFromSpellBook()
 
 			if VUHDO_isSpellKnown(tParentSpellName) then
 				tChildSpellName, _, tIcon, _, _, _, tSpellId = GetSpellInfo(tParentSpellName);
-				VUHDO_BUFFS[tChildSpellName] = {
-					["icon"] = tIcon,
-					["id"] = tSpellId
-				};
 
-				if tChildSpellName ~= tParentSpellName then
-					VUHDO_BUFFS[tParentSpellName] = {
+				if tChildSpellName then
+					VUHDO_BUFFS[tChildSpellName] = {
 						["icon"] = tIcon,
 						["id"] = tSpellId
 					};
-				end
 
-				VUHDO_CLASS_BUFFS_BY_TARGET_TYPE[tCategSpells[2]][tParentSpellName] = true;
+					if tChildSpellName ~= tParentSpellName then
+						VUHDO_BUFFS[tParentSpellName] = {
+							["icon"] = tIcon,
+							["id"] = tSpellId
+						};
+					end
+
+					VUHDO_CLASS_BUFFS_BY_TARGET_TYPE[tCategSpells[2]][tParentSpellName] = true;
+				end
 			end
 		end
 	end
@@ -469,7 +471,7 @@ end
 
 
 --
-local tTexture, tStart, tRest, tDuration;
+local tTexture, tStart, tRest;
 local tMissGroup = { };
 local tLowGroup = { };
 local tOkayGroup = { };
@@ -477,7 +479,6 @@ local tOorGroup = { };
 local tGoodTarget;
 local tLowestRest;
 local tLowestUnit;
-local tTotemFound, tStart;
 local tNow;
 local tInRange;
 local tCount;
@@ -637,14 +638,13 @@ end
 
 --
 local tDestGroup;
-local tPlayerGroup;
 local tTargetType;
 local tEnchantDuration;
 local tHasEnchant;
 local tCategName;
 local tNameGroup = { };
 local tIsActive;
-local tRest, tName, tTotemNum, tTexture;
+local tStart, tDuration, tRest, tName, tTexture;
 local function VUHDO_getMissingBuffsForCode(aTargetCode, aBuffInfo, aCategSpec)
 
 	if "N" == strsub(aTargetCode, 1, 1) then
@@ -879,7 +879,7 @@ function VUHDO_updateBuffSwatch(aSwatch)
 
 	if not InCombatLockdown() then
 		aSwatch:SetAttribute("lowtarget", tLowestUnit);
-		aSwatch:SetAttribute("goodtarget", tGoodTarget);
+		aSwatch:SetAttribute("goodtarget", tVariant[2] == VUHDO_BUFF_TARGET_SELF and "player" or tGoodTarget);
 	end
 
 	VUHDO_NUM_LOWS[tSwatchName] = #(tLowGroup or sEmpty) + #(tMissGroup or sEmpty);
@@ -905,7 +905,8 @@ function VUHDO_updateBuffPanel()
 
 	for tUnit, tInfo in pairs(VUHDO_RAID) do
 		if tOldMissBuffs[tUnit] ~= tInfo["missbuff"] then
-			tInfo["debuff"], tInfo["debuffName"] = VUHDO_determineDebuff(tUnit);
+			tInfo["debuff"], tInfo["debuffName"] = VUHDO_getDeterminedDebuffInfo(tUnit, true);
+
 			VUHDO_updateHealthBarsFor(tUnit, VUHDO_UPDATE_DEBUFF);
 		end
 	end
@@ -931,8 +932,8 @@ function VUHDO_execSmartBuffPre(self)
 	local tMaxLowTarget = nil;
 	local tCategSpec;
 	local tMissGroup, tLowGroup, tGoodTarget, tLowestUnit, tOorGroup;
-	local tNumLow, tCooldown, tTotalCd;
-	local tCooldown, tTotalCd;
+	local tNumLow;
+	local tCooldown;
 
 	for _, tCheckSwatch in ipairs(tAllSwatches) do
 		if tCheckSwatch:IsShown() then
@@ -946,9 +947,9 @@ function VUHDO_execSmartBuffPre(self)
 
 			tNumLow = #tMissGroup + #tLowGroup;
 			if not VUHDO_BUFFS[tRefSpell] or not VUHDO_BUFFS[tRefSpell]["id"] then
-				tCooldown, tTotalCd = 0, 0;
+				tCooldown = 0;
 			else
-				tCooldown, tTotalCd = VUHDO_getSpellCooldown(tRefSpell);
+				tCooldown = VUHDO_getSpellCooldown(tRefSpell);
 			end
 
 			if tNumLow > tMaxLow and tCooldown <= 1.5 and VUHDO_BUFF_TARGET_HOSTILE ~= tVariants[2] then
@@ -971,9 +972,9 @@ function VUHDO_execSmartBuffPre(self)
 	end
 
 	if not VUHDO_BUFFS[tMaxLowSpell] or not VUHDO_BUFFS[tMaxLowSpell]["id"] then
-		tCooldown, tTotalCd = 0, 0;
+		tCooldown = 0;
 	else
-		tCooldown, tTotalCd = VUHDO_getSpellCooldown(tMaxLowSpell);
+		tCooldown = VUHDO_getSpellCooldown(tMaxLowSpell);
 	end
 
 	if tCooldown > 0 then return; end

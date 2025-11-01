@@ -5,15 +5,15 @@
 -- ------------------------------------------------------------------------------ --
 
 local TSM = select(2, ...) ---@type TSM
-local BankingUI = TSM.UI:NewPackage("BankingUI")
-local Environment = TSM.Include("Environment")
-local L = TSM.Include("Locale").GetTable()
-local FSM = TSM.Include("Util.FSM")
-local TempTable = TSM.Include("Util.TempTable")
-local Log = TSM.Include("Util.Log")
-local Settings = TSM.Include("Service.Settings")
-local UIElements = TSM.Include("UI.UIElements")
-local UIUtils = TSM.Include("UI.UIUtils")
+local BankingUI = TSM.UI:NewPackage("BankingUI") ---@type AddonPackage
+local ClientInfo = TSM.LibTSMWoW:Include("Util.ClientInfo")
+local L = TSM.Locale.GetTable()
+local FSM = TSM.LibTSMUtil:Include("FSM")
+local TempTable = TSM.LibTSMUtil:Include("BaseType.TempTable")
+local ChatMessage = TSM.LibTSMService:Include("UI.ChatMessage")
+local GroupOperation = TSM.LibTSMTypes:Include("GroupOperation")
+local UIElements = TSM.LibTSMUI:Include("Util.UIElements")
+local UIUtils = TSM.LibTSMUI:Include("Util.UIUtils")
 local private = {
 	settings = nil,
 	fsm = nil,
@@ -37,8 +37,8 @@ local BUTTON_TEXT_LOOKUP = {
 -- Module Functions
 -- ============================================================================
 
-function BankingUI.OnInitialize()
-	private.settings = Settings.NewView()
+function BankingUI.OnInitialize(settingsDB)
+	private.settings = settingsDB:NewView()
 		:AddKey("global", "bankingUIContext", "frame")
 		:AddKey("global", "bankingUIContext", "isOpen")
 		:AddKey("global", "bankingUIContext", "tab")
@@ -49,7 +49,7 @@ function BankingUI.OnInitialize()
 end
 
 function BankingUI.OnDisable()
-	-- hide the frame
+	-- Hide the frame
 	private.fsm:ProcessEvent("EV_BANK_CLOSED")
 end
 
@@ -79,7 +79,7 @@ function private.CreateMainFrame()
 				:SetLayout("HORIZONTAL")
 				:SetHeight(20)
 				:SetMargin(8)
-				:SetPadding(-4, 0, 0, 0) -- account for the left margin of the first button
+				:SetPadding(-4, 0, 0, 0) -- Account for the left margin of the first button
 			)
 			:AddChild(UIElements.New("Frame", "search")
 				:SetLayout("HORIZONTAL")
@@ -109,13 +109,13 @@ function private.CreateMainFrame()
 			)
 			:AddChild(UIElements.New("ApplicationGroupTree", "groupTree")
 				:SetSettingsContext(private.settings, private.GetSettingsContextKey())
-				:SetQuery(TSM.Groups.CreateQuery(), private.settings.tab)
+				:SetQuery(GroupOperation.CreateQuery(), private.settings.tab)
 				:SetSearchString(private.groupSearch)
 			)
 			:AddChild(UIElements.New("HorizontalLine", "line"))
 			:AddChild(UIElements.New("Frame", "footer")
 				:SetLayout("VERTICAL")
-				:SetHeight(170)
+				:SetHeight(ClientInfo.IsRetail() and 202 or 170)
 				:SetPadding(8)
 				:SetBackgroundColor("PRIMARY_BG_ALT")
 				:AddChild(UIElements.New("ProgressBar", "progressBar")
@@ -160,10 +160,7 @@ function private.GetSettingsContextKey()
 end
 
 function private.UpdateCurrentModule(frame)
-	if Environment.HasFeature(Environment.FEATURES.REAGENT_BANK) then
-		ReagentBankFrame_OnShow(ReagentBankFrame)
-	end
-	-- update nav buttons
+	-- Update navigation buttons
 	local navButtonsFrame = frame:GetElement("content.navButtons")
 	for _, module in ipairs(MODULE_LIST) do
 		navButtonsFrame:GetElement("navBtn_"..module)
@@ -171,14 +168,13 @@ function private.UpdateCurrentModule(frame)
 	end
 	navButtonsFrame:Draw()
 
-	-- update group tree
+	-- Update group tree
 	frame:GetElement("content.groupTree")
 		:SetSettingsContext(private.settings, private.GetSettingsContextKey())
-		:SetQuery(TSM.Groups.CreateQuery(), private.settings.tab)
-		:UpdateData(true)
+		:SetQuery(GroupOperation.CreateQuery(), private.settings.tab)
 		:Draw()
 
-	-- update footer buttons
+	-- Update footer buttons
 	local footerButtonsFrame = frame:GetElement("content.footer.buttons")
 	footerButtonsFrame:ReleaseAllChildren()
 	if private.settings.tab == "Warehousing" then
@@ -213,9 +209,16 @@ function private.UpdateCurrentModule(frame)
 			:SetHeight(24)
 			:SetMargin(0, 0, 8, 0)
 			:SetFont("BODY_BODY2_MEDIUM")
-			:SetDisabled(not Environment.HasFeature(Environment.FEATURES.REAGENT_BANK))
+			:SetDisabled(not ClientInfo.IsRetail())
 			:SetText(L["Deposit reagents"])
 			:SetScript("OnClick", private.WarehousingDepositReagentsBtnOnClick)
+		)
+		footerButtonsFrame:AddChildIf(ClientInfo.IsRetail(), UIElements.New("ActionButton", "depositWarboundBtn")
+			:SetHeight(24)
+			:SetMargin(0, 0, 8, 0)
+			:SetFont("BODY_BODY2_MEDIUM")
+			:SetText(L["Deposit Warbound items"])
+			:SetScript("OnClick", private.WarehousingDepositWarboundBtnOnClick)
 		)
 		footerButtonsFrame:AddChild(UIElements.New("Frame", "row4")
 			:SetLayout("HORIZONTAL")
@@ -330,7 +333,7 @@ function private.BaseFrameOnHide()
 end
 
 function private.CloseBtnOnClick(button)
-	Log.PrintUser(L["Hiding the TSM Banking UI. Type '/tsm bankui' to reopen it."])
+	ChatMessage.PrintUser(L["Hiding the TSM Banking UI. Type '/tsm bankui' to reopen it."])
 	button:GetParentElement():Hide()
 	private.fsm:ProcessEvent("EV_FRAME_HIDDEN")
 end
@@ -359,7 +362,15 @@ function private.SelectAllGroupsOnClick(button)
 end
 
 function private.WarehousingDepositReagentsBtnOnClick()
-	DepositReagentBank()
+	if ClientInfo.IsRetail() then
+		C_Bank.AutoDepositItemsIntoBank(Enum.BankType.Character)
+	else
+		DepositReagentBank()
+	end
+end
+
+function private.WarehousingDepositWarboundBtnOnClick()
+	C_Bank.AutoDepositItemsIntoBank(Enum.BankType.Account)
 end
 
 function private.SimpleBtnOnClick(button)
@@ -382,15 +393,21 @@ end
 -- ============================================================================
 
 function private.FSMCreate()
-	TSM.Banking.RegisterFrameCallback(function(openFrame)
-		private.fsm:ProcessEvent(openFrame and "EV_BANK_OPENED" or "EV_BANK_CLOSED")
-	end)
-
 	local fsmContext = {
 		frame = nil,
+		isWarBank = false,
 		progress = nil,
 		activeButton = nil,
 	}
+
+	TSM.Banking.RegisterFrameCallback(function(openFrame)
+		private.fsm:ProcessEvent(openFrame and "EV_BANK_OPENED" or "EV_BANK_CLOSED")
+		local warBankOpen = TSM.Banking.IsWarBankOpen()
+		if fsmContext.isWarBank ~= warBankOpen then
+			private.fsm:ProcessEvent("EV_BANK_TYPE_UPDATED", warBankOpen)
+		end
+	end)
+
 	local function UpdateFrame(context)
 		if context.activeButton and not context.progress then
 			context.activeButton
@@ -399,7 +416,7 @@ function private.FSMCreate()
 			context.activeButton = nil
 		end
 
-		-- update the nav button state
+		-- Update the navigation button state
 		local navButtonsFrame = context.frame:GetElement("content.navButtons")
 		for _, module in ipairs(MODULE_LIST) do
 			navButtonsFrame:GetElement("navBtn_"..module)
@@ -407,24 +424,26 @@ function private.FSMCreate()
 		end
 		navButtonsFrame:Draw()
 
-		-- update the progress bar
+		-- Update the progress bar
 		context.frame:GetElement("content.footer.progressBar")
 			:SetProgress(context.progress or 0)
 			:SetProgressIconHidden(not context.progress)
 			:SetText(context.progress and L["Moving"] or L["Select Action"])
 			:Draw()
 
-		-- update the action button state
+		-- Update the action button state
+		context.frame:SetTitle(context.isWarBank and L["Warbank"] or BANK)
 		local footerButtonsFrame = context.frame:GetElement("content.footer.buttons")
 		if private.settings.tab == "Warehousing" then
 			footerButtonsFrame:GetElement("row1.moveBankBtn")
 				:SetDisabled(context.progress)
+				:SetText(context.isWarBank and L["Move to warbank"] or L["Move to bank"])
 			footerButtonsFrame:GetElement("row1.moveBagsBtn")
 				:SetDisabled(context.progress)
 			footerButtonsFrame:GetElement("restockBagsBtn")
 				:SetDisabled(context.progress)
 			footerButtonsFrame:GetElement("depositReagentsBtn")
-				:SetDisabled(context.progress or not Environment.HasFeature(Environment.FEATURES.REAGENT_BANK))
+				:SetDisabled(context.progress or not ClientInfo.IsRetail())
 			footerButtonsFrame:GetElement("row4.emptyBagsBtn")
 				:SetDisabled(context.progress)
 			footerButtonsFrame:GetElement("row4.restoreBagsBtn")
@@ -432,6 +451,7 @@ function private.FSMCreate()
 		elseif private.settings.tab == "Auctioning" then
 			footerButtonsFrame:GetElement("moveBankBtn")
 				:SetDisabled(context.progress)
+				:SetText(context.isWarBank and L["Move to warbank"] or L["Move to bank"])
 			footerButtonsFrame:GetElement("postCapBagsBtn")
 				:SetDisabled(context.progress)
 			footerButtonsFrame:GetElement("shortfallBagsBtn")
@@ -441,6 +461,7 @@ function private.FSMCreate()
 		elseif private.settings.tab == "Mailing" then
 			footerButtonsFrame:GetElement("moveBankBtn")
 				:SetDisabled(context.progress)
+				:SetText(context.isWarBank and L["Move to warbank"] or L["Move to bank"])
 			footerButtonsFrame:GetElement("nongroupBankBtn")
 				:SetDisabled(context.progress)
 			footerButtonsFrame:GetElement("targetShortfallBagsBtn")
@@ -461,6 +482,7 @@ function private.FSMCreate()
 					context.frame:Hide()
 					context.frame:Release()
 					context.frame = nil
+					context.isWarBank = false
 				end
 				context.activeButton = nil
 			end)
@@ -482,6 +504,7 @@ function private.FSMCreate()
 					context.frame:Hide()
 					context.frame:Release()
 					context.frame = nil
+					context.isWarBank = false
 				end
 				context.activeButton = nil
 			end)
@@ -505,6 +528,10 @@ function private.FSMCreate()
 			:AddTransition("ST_FRAME_HIDDEN")
 			:AddTransition("ST_PROCESSING")
 			:AddTransition("ST_CLOSED")
+			:AddEvent("EV_BANK_TYPE_UPDATED", function(context, isWarBank)
+				context.isWarBank = isWarBank
+				UpdateFrame(context)
+			end)
 			:AddEventTransition("EV_BUTTON_CLICKED", "ST_PROCESSING")
 			:AddEventTransition("EV_TOGGLE", "ST_FRAME_HIDDEN")
 			:AddEventTransition("EV_FRAME_HIDDEN", "ST_FRAME_HIDDEN")
@@ -532,7 +559,7 @@ function private.FSMCreate()
 			end)
 			:AddEvent("EV_THREAD_DONE", function(context)
 				if context.progress == 0 then
-					Log.PrintUser(L["Nothing to move."])
+					ChatMessage.PrintUser(L["Nothing to move."])
 				end
 				return "ST_FRAME_OPEN"
 			end)
@@ -548,7 +575,7 @@ function private.FSMThreadCallback(event, ...)
 	elseif event == "DONE" then
 		private.fsm:ProcessEvent("EV_THREAD_DONE")
 	elseif event == "MOVED" then
-		-- ignore this event
+		-- Ignore this event
 	else
 		error("Unexpected event: "..tostring(event))
 	end

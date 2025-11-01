@@ -6,13 +6,14 @@
 
 local TSM = select(2, ...) ---@type TSM
 local Merchant = TSM.Accounting:NewPackage("Merchant")
-local Event = TSM.Include("Util.Event")
-local Math = TSM.Include("Util.Math")
-local ItemString = TSM.Include("Util.ItemString")
-local Container = TSM.Include("Util.Container")
-local DefaultUI = TSM.Include("Service.DefaultUI")
-local ItemInfo = TSM.Include("Service.ItemInfo")
-local BagTracking = TSM.Include("Service.BagTracking")
+local Event = TSM.LibTSMWoW:Include("Service.Event")
+local Math = TSM.LibTSMUtil:Include("Lua.Math")
+local ItemString = TSM.LibTSMTypes:Include("Item.ItemString")
+local Container = TSM.LibTSMWoW:Include("API.Container")
+local MerchantAPI = TSM.LibTSMWoW:Include("API.Merchant")
+local DefaultUI = TSM.LibTSMWoW:Include("UI.DefaultUI")
+local ItemInfo = TSM.LibTSMService:Include("Item.ItemInfo")
+local BagTracking = TSM.LibTSMService:Include("Inventory.BagTracking")
 local private = {
 	repairMoney = 0,
 	couldRepair = nil,
@@ -36,8 +37,8 @@ function Merchant.OnInitialize()
 	BagTracking.RegisterCallback(private.OnMerchantUpdate)
 	Event.Register("UPDATE_INVENTORY_DURABILITY", private.AddRepairCosts)
 	Container.SecureHookUseItem(private.CheckMerchantSale)
-	hooksecurefunc("BuyMerchantItem", private.OnMerchantBuy)
-	hooksecurefunc("BuybackItem", private.OnMerchantBuyback)
+	MerchantAPI.SecureHookBuyItem(private.OnMerchantBuy)
+	MerchantAPI.SecureHookBuybackItem(private.OnMerchantBuyback)
 end
 
 
@@ -49,10 +50,10 @@ end
 function private.MechantVisibilityHandler(visible)
 	if visible then
 		private.repairMoney = GetMoney()
-		private.couldRepair = CanMerchantRepair()
+		private.couldRepair = MerchantAPI.CanRepair()
 		-- if merchant can repair set up variables so we can track repairs
 		if private.couldRepair then
-			private.repairCost = GetRepairAllCost()
+			private.repairCost = MerchantAPI.GetRepairAllCost()
 		end
 	else
 		private.couldRepair = nil
@@ -85,7 +86,7 @@ function private.AddRepairCosts()
 			-- reset money as this might have been a single item repair
 			private.repairMoney = cash
 			-- reset the repair cost for the next repair
-			private.repairCost = GetRepairAllCost()
+			private.repairCost = MerchantAPI.GetRepairAllCost()
 		end
 	end
 end
@@ -102,7 +103,7 @@ function private.CheckMerchantSale(bag, slot, onSelf)
 	end
 
 	local itemString = ItemString.Get(Container.GetItemLink(bag, slot))
-	local _, stackSize = Container.GetItemInfo(bag, slot)
+	local stackSize = Container.GetStackCount(bag, slot)
 	local copper = ItemInfo.GetVendorSell(itemString)
 	if not itemString or not stackSize or not copper then
 		return
@@ -114,8 +115,8 @@ function private.CheckMerchantSale(bag, slot, onSelf)
 end
 
 function private.OnMerchantBuy(index, quantity)
-	local _, _, price, batchQuantity = GetMerchantItemInfo(index)
-	local itemString = ItemString.Get(GetMerchantItemLink(index))
+	local price, batchQuantity = MerchantAPI.GetItemInfo(index)
+	local itemString = ItemString.Get(MerchantAPI.GetItemLink(index))
 	if not itemString or not price or price <= 0 then
 		return
 	end
@@ -125,8 +126,8 @@ function private.OnMerchantBuy(index, quantity)
 end
 
 function private.OnMerchantBuyback(index)
-	local _, _, price, quantity = GetBuybackItemInfo(index)
-	local itemString = ItemString.Get(GetBuybackItemLink(index))
+	local price, quantity = MerchantAPI.GetBuybackItemInfo(index)
+	local itemString = ItemString.Get(MerchantAPI.GetBuybackItemLink(index))
 	if not itemString or not price or price <= 0 then
 		return
 	end

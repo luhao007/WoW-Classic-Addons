@@ -18,7 +18,6 @@ else
 end
 Data.UILayout[UIname]={"BOTTOM","BOTTOM",QuickPData[2],QuickPData[3]}
 local QuickBut=PIGFrame(UIParent,nil,{QuickPData[1]+14,QuickPData[1]},UIname)
-QuickBut:PIGSetMovable()
 QuickBut:Hide()
 QuickBut.ButList={}
 function QuickBut:UpdateWidth()
@@ -44,19 +43,20 @@ function QuickBut:UpdateWidth()
 	end
 end
 function QuickBut:Add()
-	QuickBut.ButList[1]()
-	-- [1]总开关[2]战场通报[3]饰品管理[4]符文管理[5]装备管理
-	-- [6]炉石/专业[7]职业辅助技能[8]角色信息统计
-	-- [9]售卖助手丢弃[10]售卖助手开[11]售卖助手分[12]售卖助手选矿
-	-------
-	-- [13]时空之门[14]时空之门喊话[15]开团助手[16]带本助手
-	-- [17]带本助手-跟随,
-	-- [18],
-	-- [19],AFK
+	QuickBut.ButList[1]()--[1]总开关
+	-- [2]战场通报[3]饰品管理[4]符文管理[5]装备管理[6]插件管理
+	-- [7]炉石/专业[8]职业辅助技能[9]角色信息统计
+	-- [10]售卖助手丢弃[11]售卖助手开[12]售卖助手分[13]售卖助手选矿
+	-- [19]AFK
 	for i=2,19 do
-		local xfun = self.ButList[i] or function() end
-		xfun()
+		if self.ButList[i] then
+			self.ButList[i]()
+		end
 	end
+	-------
+	-- [20]时空之门[21]时空之门喊话
+	-- [30]开团助手
+	-- [40]带本助手
 	self:UpdateWidth()
 end
 --创建功能动作条按钮
@@ -72,6 +72,14 @@ function Create.PIGQuickBut(QkButUI,Tooltip,Icon,ShowGnUI,FrameLevel,Template)
 		But:SetNormalTexture(Icon)
 	else
 		But:SetNormalAtlas(Icon)
+	end
+	if PIG_OptionsUI.IsOpen_ElvUI() or PIG_OptionsUI.IsOpen_NDui() then
+		But:GetNormalTexture():SetTexCoord(0.1,0.9,0.1,0.9)
+	else
+		But._BACKGROUND = But:CreateTexture(nil, "BACKGROUND");
+		But._BACKGROUND:SetAtlas("search-iconframe-large");
+		But._BACKGROUND:SetPoint("TOPLEFT", But, "TOPLEFT", -0.8, 0.8);
+		But._BACKGROUND:SetPoint("BOTTOMRIGHT", But, "BOTTOMRIGHT", 0.8, -0.8);
 	end
 	But:SetHighlightTexture(130718);
 	But:SetSize(butW-2,butW-2);
@@ -128,6 +136,14 @@ function Create.PIGQuickBut(QkButUI,Tooltip,Icon,ShowGnUI,FrameLevel,Template)
 	QuickBut:UpdateWidth()
 	return But
 end
+--创建功能开启选项+添加功能条按钮
+function Create.PIGModCheckbutton(fuF,text,Point)
+	local But = Create.PIGCheckbutton(fuF,nil,text)
+	But:SetPoint(unpack(Point))
+	local text1 = {string.format(L["ACTION_ADDQUICKBUT"],text[1]),string.format(L["ACTION_ADDQUICKBUTTIS"],text[1])}
+	But.QKBut = Create.PIGCheckbutton(But,{"LEFT",But,"RIGHT",220,0},text1)
+	return But
+end
 --创建侧面功能按钮
 function Create.PIGModbutton(GnTooltip,GnIcon,GnUI,FrameLevel)
 	local nr = PIG_OptionsUI.ListFun
@@ -174,13 +190,5 @@ function Create.PIGModbutton(GnTooltip,GnIcon,GnUI,FrameLevel)
 			end
 		end)
 	end
-	return But
-end
---创建选项按钮
-function Create.PIGModCheckbutton(fuF,text,Point)
-	local But = Create.PIGCheckbutton(fuF,nil,text)
-	But:SetPoint(unpack(Point))
-	local text1 = {string.format(L["ACTION_ADDQUICKBUT"],text[1]),string.format(L["ACTION_ADDQUICKBUTTIS"],text[1])}
-	But.QKBut = Create.PIGCheckbutton(But,{"LEFT",But,"RIGHT",220,0},text1)
 	return But
 end

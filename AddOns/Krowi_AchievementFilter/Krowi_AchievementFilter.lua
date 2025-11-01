@@ -1,10 +1,6 @@
 -- [[ Namespaces ]] --
 local addonName, addon = ...;
 
-local C_AddOns = {}
-C_AddOns.IsAddOnLoaded = IsAddOnLoaded
-C_AddOns.LoadAddOn = LoadAddOn
-
 -- C_AddOns.LoadAddOn("Blizzard_AchievementUI"); -- For testing
 
 -- [[ Ace ]] --
@@ -12,9 +8,6 @@ addon.L = LibStub(addon.Libs.AceLocale):GetLocale(addonName);
 addon.Localization.SetColors(addon.L);
 addon.Event = {};
 LibStub(addon.Libs.AceEvent):Embed(addon.Event);
-
--- [[ Tabs ]] --
-addon.Tabs.Load();
 
 -- [[ Binding names ]] --
 BINDING_HEADER_KrowiAF = addon.Metadata.Title;
@@ -38,23 +31,20 @@ loadHelper:RegisterEvent("ACHIEVEMENT_EARNED");
 local function LoadKrowi_AchievementFilter()
     addon.Diagnostics.Load();
 
-    addon.Data.ExportedCategories.InjectDynamicOptions();
-    addon.Data.ExportedCalendarEvents.InjectDynamicOptions();
-    if addon.Data.ExportedWidgetEvents then
-        addon.Data.ExportedWidgetEvents.InjectDynamicOptions();
-    end
-    if addon.Data.ExportedWorldEvents then
-        addon.Data.ExportedWorldEvents.InjectDynamicOptions();
-    end
+    KrowiAF.LoadTabs();
 
-    addon.Gui:PrepareTabsOrder();
-    addon.Tabs.InjectDynamicOptions();
+    addon.SpecialCategories.InjectDynamicOptions();
+    KrowiAF.InjectEventDataDynamicOptions();
+
+    -- addon.Gui:PrepareTabsOrder();
+    -- addon.Tabs.InjectDynamicOptions();
+    KrowiAF.InjectTabDataDynamicOptions();
     addon.Gui.AchievementFrameHeader:InjectDynamicOptions();
     addon.Filters:InjectDefaults();
-    addon.Plugins:InjectOptions();
+    KrowiAF.PluginsApi:InjectPluginOptions();
     addon.Options:Load(true);
 
-    addon.Plugins:Load();
+    KrowiAF.PluginsApi:LoadPlugins();
 
     addon.Data.DataIntegrityManager.Load();
     addon.Data.SavedData.Load();
@@ -103,7 +93,6 @@ end
 
 function loadHelper:OnEvent(event, arg1, arg2)
     if event == "ADDON_LOADED" then
-        addon.Data.DataIntegrityManager.FixSavedVariables();
         if arg1 == "Krowi_AchievementFilter" then -- This always needs to load
             LoadKrowi_AchievementFilter();
         elseif arg1 == "Blizzard_AchievementUI" then -- This needs the Blizzard_AchievementUI addon available to load
@@ -122,18 +111,27 @@ function loadHelper:OnEvent(event, arg1, arg2)
         end
     elseif event == "PLAYER_ENTERING_WORLD" then
          -- arg1 = isLogin, arg2 = isReload
-        local popUpsOptions, chatMessagesOptions;
+        local popUpsOptions, chatMessagesOptions, popUpsUpcomingOptions, chatMessagesUpcomingOptions;
         if arg1 then
             popUpsOptions = addon.Options.db.profile.EventReminders.PopUps.OnLogin;
             chatMessagesOptions = addon.Options.db.profile.EventReminders.ChatMessages.OnLogin;
+            popUpsUpcomingOptions = addon.Options.db.profile.EventReminders.PopUps.OnLoginUpcoming;
+            chatMessagesUpcomingOptions = addon.Options.db.profile.EventReminders.ChatMessages.OnLoginUpcoming;
         elseif arg2 then
             popUpsOptions = addon.Options.db.profile.EventReminders.PopUps.OnReload;
             chatMessagesOptions = addon.Options.db.profile.EventReminders.ChatMessages.OnReload;
+            popUpsUpcomingOptions = addon.Options.db.profile.EventReminders.PopUps.OnReloadUpcoming;
+            chatMessagesUpcomingOptions = addon.Options.db.profile.EventReminders.ChatMessages.OnReloadUpcoming;
         end
         if arg1 or arg2 then -- Required cause event also is called when zoning in an instance for example
             C_Timer.After(0, function()
                 C_Timer.After(addon.Options.db.profile.EventReminders.OnLoginDelay, function()
                     addon.Gui.EventReminderAlertSystem:ShowActiveEventsOnPlayerEnteringWorld(popUpsOptions, chatMessagesOptions);
+                end);
+            end);
+            C_Timer.After(0, function()
+                C_Timer.After(addon.Options.db.profile.EventReminders.OnLoginUpcomingDelay, function()
+                    addon.Gui.EventReminderAlertSystem:ShowUpcomingCalendarEventsOnPlayerEnteringWorld(popUpsUpcomingOptions, chatMessagesUpcomingOptions);
                 end);
             end);
         end
@@ -150,7 +148,7 @@ loadHelper:SetScript("OnEvent", loadHelper.OnEvent);
 --     if not AllTheThings then
 --         return;
 --     end
-
+    
 --     DebugTable = {};
 --     -- for key1, value1 in pairs(KrowiAF_ATT.Achievements) do
 --         for key2, value2 in pairs(AllTheThings.Achievements) do

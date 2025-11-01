@@ -12,6 +12,84 @@ local Fun=addonTable.Fun
 local GetPIGID=Fun.GetPIGID
 ----------------------------------------
 local fuFrame = PIGOptionsList(L["ABOUT_TABNAME"],"BOT")
+
+--右侧顶部版本
+local Pig_Options=PIG_OptionsUI
+Pig_Options.R.top = PIGFrame(Pig_Options.R)
+Pig_Options.R.top:SetHeight(24)
+Pig_Options.R.top:SetPoint("TOPLEFT", Pig_Options.R, "TOPLEFT", 0, -2)
+Pig_Options.R.top:SetPoint("TOPRIGHT", Pig_Options.R, "TOPRIGHT", -2, 0)
+Pig_Options.R.top:PIGSetBackdrop()
+Pig_Options.R.top:PIGSetMovableNoSave(Pig_Options)
+Pig_Options.R.top:PIGClose(25,25,Pig_Options)
+Pig_Options.R.top.Ver = CreateFrame("Frame", nil, Pig_Options.R.top)
+Pig_Options.R.top.Ver:SetPoint("TOPLEFT", Pig_Options.R.top, "TOPLEFT", 0, 0)
+Pig_Options.R.top.Ver:SetPoint("BOTTOMRIGHT", Pig_Options.R.top, "BOTTOMRIGHT", -30, 0)
+Pig_Options.VersionID=0
+function Pig_Options:GetVer_NUM(EXTaddname,ly)
+	if ly=="audio" then
+		return Pig_Options.R.top.audioVer and Pig_Options.R.top.audioVer[EXTaddname].VersionID or 0
+	else
+		return Pig_Options.R.top.Ver and Pig_Options.R.top.Ver[EXTaddname].VersionID or 0
+	end
+end
+function Pig_Options:GetVer_TXT(EXTaddname,ly)
+	if ly=="audio" then
+		return Pig_Options.R.top.audioVer and Pig_Options.R.top.audioVer[EXTaddname].VersionTXT or 0
+	else
+		return Pig_Options.R.top.Ver and Pig_Options.R.top.Ver[EXTaddname].VersionTXT or 0
+	end
+end
+function Pig_Options:SetVer_EXT(EXTaddname,ly)
+	local VersionTXT=PIGGetAddOnMetadata(EXTaddname, "Version")
+	local VersionID=tonumber(VersionTXT)
+	if ly=="audio" then
+		Pig_Options.R.top.audioVer=Pig_Options.R.top.audioVer or{}
+		Pig_Options.R.top.audioVer[EXTaddname]=Pig_Options.R.top.audioVer[EXTaddname] or {}
+		Pig_Options.R.top.audioVer[EXTaddname].VersionID=VersionID
+		Pig_Options.R.top.audioVer[EXTaddname].VersionTXT=VersionTXT
+	else
+		local name, title, notes, loadable = PIGGetAddOnInfo(EXTaddname)
+		local ziframe = {Pig_Options.R.top.Ver:GetChildren()}
+		local verF = PIGFrame(Pig_Options.R.top.Ver,nil,{0.0001,20})
+		Pig_Options.R.top.Ver[EXTaddname]=verF
+		if #ziframe==0 then
+			verF:SetPoint("LEFT", Pig_Options.R.top.Ver, "LEFT", 4, -2)
+		else
+			verF:SetPoint("LEFT", ziframe[#ziframe].txt, "RIGHT", 0, 0)
+		end
+		verF.txt = PIGFontString(verF,{"LEFT", verF, "LEFT", 0, 0})
+		verF.New = verF:CreateTexture();
+		verF.New:SetAtlas("loottoast-arrow-purple");
+		verF.New:SetSize(14,15);
+		verF.New:SetPoint("BOTTOMLEFT", verF.txt, "TOPRIGHT", -6, -11);
+		verF.New:Hide()
+		verF.VersionTXT=VersionTXT
+		verF.VersionID=VersionID
+	end
+end
+Pig_Options:HookScript("OnShow", function (self)
+	for EXTaddname,v in pairs(L["PIGaddonList"]) do
+		if self.R.top.Ver[EXTaddname] then
+			local verF = Pig_Options.R.top.Ver[EXTaddname]
+			local VerTXT = "|cffFFD700%s:|r|cff00FF00%s|r"
+			if EXTaddname==addonName then
+				verF.txt:SetText(string.format(VerTXT,GAME_VERSION_LABEL,verF.VersionTXT))
+			else
+				verF.txt:SetText("|cff00FFFF + |r"..string.format(VerTXT,L["PIGaddonList"][EXTaddname],verF.VersionTXT))
+			end
+			if PIGA["Ver"][EXTaddname] and PIGA["VerC"][EXTaddname] then
+				if verF.VersionID<PIGA["Ver"][EXTaddname] and #PIGA["VerC"][EXTaddname].p>4 then
+					verF.New:Show()
+					if EXTaddname==addonName then
+						self.UpdateVer:Show()
+					end
+				end
+			end
+		end
+	end
+end);
+
 ------
 local function Add_EditBox(fuUI,Point,biaoti,txt,WWW)
 	local WWW=WWW or 460
@@ -213,26 +291,34 @@ end)
 fuFrame.GETVER = PIGButton(fuFrame,{"LEFT",fuFrame.OpenVerFBut,"RIGHT",10,0},{50,20},"重置")
 fuFrame.GETVER:SetScript("OnClick", function ()
 	PIGA["Ver"]={}
+	PIGA["VerC"]={}
 	PIG_OptionsUI.RLUI:Show()
 end);
 -----
-local reverse=string.reverse
-local function quchuerweizhidian(text)--"6.3.8"--"6.38"
-	local text =text:reverse()
-	local text = gsub(text, "%.", "",1)
-	local text =text:reverse()
-	return text
+--local reverse=string.reverse
+-- local function quchuerweizhidian(text)--"6.3.8"--"6.38"
+-- 	local text =text:reverse()
+-- 	local text = gsub(text, "%.", "",1)
+-- 	local text =text:reverse()
+-- 	return text
+-- end
+local function ISchongfuP(name,data)
+	for i=1,#data do
+		if name==data[i] then
+			return true
+		end
+	end
+	return false
 end
 local function GetExtVerInfo(uifff,EXTName,EXTlocalV, arg1, arg2, arg3, arg4, arg5)
 	if arg1 ~= Ver_biaotou then return end
 	local getName, getype, getVer = strsplit("#", arg2);
-	--print(EXTName,EXTlocalV, arg1, arg2, arg3, arg4, arg5)
 	if getype=="X" then
 		Fun.Save_is_slist(getVer)
 	else
 		local getVer=tonumber(getVer)
 		if arg3=="WHISPER" then
-			if getype=="V" then--回复本地插件版本信息
+			if getype=="V" then--存储手动请求的版本信息
 				PIG_Version.infoList[arg5]=PIG_Version.infoList[arg5] or {}
 				PIG_Version.infoList[arg5][getName]=getVer
 			else
@@ -244,6 +330,26 @@ local function GetExtVerInfo(uifff,EXTName,EXTlocalV, arg1, arg2, arg3, arg4, ar
 					if getVer>EXTlocalV then
 						uifff.yiGenxing=true;
 						PIGA["Ver"][EXTName]=getVer
+						PIGA["VerC"][EXTName]= {["verno"]=0,["p"]={}}
+						PIGA["VerC"][EXTName]=PIGA["VerC"][EXTName] or {["verno"]=0,["p"]={}}
+						if getVer>PIGA["VerC"][EXTName].verno then
+							PIGA["VerC"][EXTName].p={}
+							PIGA["VerC"][EXTName].verno=getVer
+							if not ISchongfuP(arg5,PIGA["VerC"][EXTName].p) then
+								table.insert(PIGA["VerC"][EXTName].p,arg5)
+							end
+						elseif getVer==PIGA["VerC"][EXTName].verno then
+							if not ISchongfuP(arg5,PIGA["VerC"][EXTName].p) then
+								table.insert(PIGA["VerC"][EXTName].p,arg5)
+							end
+						end
+						-- print("--------")
+						-- print("插件名    :"..EXTName)
+						-- print("版本      :"..EXTlocalV)
+						-- print("消息      :"..arg2)
+						-- print("频道      :"..arg3)
+						-- print("名字+服务器:"..arg4)
+						-- print("名字      :"..arg5)
 						if EXTName==addonName then
 							PIG_print(L["ABOUT_UPDATETIPS"],"R")
 						end
@@ -252,17 +358,24 @@ local function GetExtVerInfo(uifff,EXTName,EXTlocalV, arg1, arg2, arg3, arg4, ar
 			end
 		else
 			if getName~=EXTName then return end
-			if getype=="U" then--回复更新请求/不是自己
-				if arg4==PIG_OptionsUI.AllName then return end
-				if arg5==PIG_OptionsUI.Name then return end
+			if getype=="U" then--回复更新请求
 				if getVer<EXTlocalV then--小于自己版本
-					PIGSendAddonMessage(Ver_biaotou,EXTName.."#D#"..EXTlocalV,"WHISPER",arg4)
+					--不是自己
+					if arg4==PIG_OptionsUI.AllName then return end
+					if arg5==PIG_OptionsUI.Name then return end
+					PIGSendAddonMessage(Ver_biaotou,EXTName.."#D#"..EXTlocalV+0.01,"WHISPER",arg4)
 				end
 			end
 		end
 	end
 end
-local function SendExtVerInfo(fsMsg)
+local function SendExtVerInfo(fsMsg,adname,exuix)
+	if PIGA["Ver"][adname] and PIGA["VerC"][adname] then
+		if PIGA["Ver"][adname]>PIG_OptionsUI:GetVer_NUM(adname) and #PIGA["VerC"][adname].p>4 then
+			exuix.yiGenxing=true;
+			return
+		end
+	end
 	if PIG_MaxTocversion(100000) then
 		PIGSendAddonMessage(Ver_biaotou,fsMsg,"YELL")
 	else
@@ -290,12 +403,13 @@ fuFrame:SetScript("OnEvent",function(self, event, arg1, arg2, arg3, arg4, arg5)
 		GetExtVerInfo(self,addonName,PIG_OptionsUI:GetVer_NUM(addonName), arg1, arg2, arg3, arg4, arg5)
 	elseif event=="PLAYER_LOGIN" then
 		Fun.fasong_is_slist(SendExtVerInfo)
-		PIGA["Ver"][addonName]=PIGA["Ver"][addonName] or 0
-		if PIGA["Ver"][addonName]>PIG_OptionsUI:GetVer_NUM(addonName) then
-			self.yiGenxing=true;
-			PIG_print(L["ABOUT_UPDATETIPS"],"R")
-		else
-			SendExtVerInfo(addonName.."#U#"..PIG_OptionsUI:GetVer_NUM(addonName))
+		if PIGA["Ver"][addonName] and PIGA["VerC"][addonName] then
+			if PIGA["Ver"][addonName]>PIG_OptionsUI:GetVer_NUM(addonName) and PIGA["VerC"][addonName] and #PIGA["VerC"][addonName].p>4 then
+				self.yiGenxing=true;
+				PIG_print(L["ABOUT_UPDATETIPS"],"R")
+				return
+			end
 		end
+		SendExtVerInfo(addonName.."#U#"..PIG_OptionsUI:GetVer_NUM(addonName))
 	end
 end)

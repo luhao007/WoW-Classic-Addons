@@ -263,7 +263,7 @@
 						</Layers>
 					</Frame>
 
-					<CheckButton name="$parentGradientRadioButton" text="VUHDO_I18N_GRADIENT" inherits="VuhDoRadioButtonTemplate">
+					<CheckButton name="$parentGradientRadioButton" text="VUHDO_I18N_LIFE_GRADIENT" inherits="VuhDoRadioButtonTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>

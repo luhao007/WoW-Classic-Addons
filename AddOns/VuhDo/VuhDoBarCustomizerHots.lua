@@ -1,34 +1,75 @@
 local _;
-local huge = math.huge;
 local format = format;
 
 local sIsFade;
 local sIsFlashWhenLow;
 local sIsWarnColor;
-local sIsSwiftmend;
-local sHotSetup;
-local sBuffs2Hots = { };
+local sHotSetup = { };
+local sHotSlots = { };
+local sIsHotShowIcon = { };
+local sIsChargesIcon = { };
+local sHotSlotCfgs = { };
+local sEmptyHotSlotCfg = {
+	["mine"] = true,
+	["others"] = false,
+};
+local sHotSlotBouquets = { };
+local sHotSlotsActive = { };
 local sHotCols;
-local sHotSlots;
 local sBarColors;
-local sIsHotShowIcon;
-local sHotSlotCfgs;
-local sIsChargesIcon;
 local sClipL, sClipR, sClipT, sClipB = 0, 1, 0, 1;
 
 local sIsPlayerKnowsSwiftmend = false;
 local sSwiftmendUnits = { };
+local sIsPlayerCanCastSwiftmend;
+local sSwiftmendCooldown = {
+	-- <cooldown start time>,
+	-- <cooldown duration>,
+};
 
-VUHDO_MY_HOTS = { };
-local VUHDO_MY_HOTS = VUHDO_MY_HOTS;
-VUHDO_OTHER_HOTS = { };
-local VUHDO_OTHER_HOTS = VUHDO_OTHER_HOTS;
-VUHDO_MY_AND_OTHERS_HOTS = { };
-local VUHDO_MY_AND_OTHERS_HOTS = VUHDO_MY_AND_OTHERS_HOTS;
+VUHDO_UNIT_HOT_TYPE_MINE = 1;
+VUHDO_UNIT_HOT_TYPE_OTHERS = 2;
+VUHDO_UNIT_HOT_TYPE_BOTH = 3;
+VUHDO_UNIT_HOT_TYPE_OTHERSHOTS = 4;
+
+VUHDO_UNIT_HOT_INFOS = {
+	-- [<unit ID>] = {
+	--	[<aura instance ID>] = {
+	--		<aura icon>,
+	--		<aura expiration time>,
+	--		<aura stacks>,
+	--		<aura total duration>,
+	--		<aura source is player: true|false>,
+	--		<aura name>,
+	--		<aura spell ID>,
+	--	},
+	-- },
+};
+local VUHDO_UNIT_HOT_INFOS = VUHDO_UNIT_HOT_INFOS;
+
+VUHDO_UNIT_HOT_LISTS = {
+	-- [<unit ID>] = {
+	--	[<aura name|spell ID|OTHERS>] = {
+	--		<VUHDO_UNIT_HOT_TYPE_MINE|OTHERS|BOTH|OTHERSHOTS> = {
+	--			<aura instance ID list head> = {
+	--				["auraInstanceId"] = <aura instance ID>,
+	--				["prev"] = <prev aura>,
+	--			},
+	--			<aura count>,
+	--		},
+	--	},
+	-- },
+};
+local VUHDO_UNIT_HOT_LISTS = VUHDO_UNIT_HOT_LISTS;
 
 local VUHDO_ACTIVE_HOTS = { };
 local VUHDO_ACTIVE_HOTS_OTHERS = { };
-local sOthersHotsInfo = { };
+
+local VUHDO_IGNORE_HOT_IDS = {
+	[67358] = true, -- "Rejuvenating" proc has same name in russian and spanish as rejuvenation
+	[126921] = true, -- "Weakened Soul" by Shao-Tien Soul-Render
+	[109964] = true, -- "Spirit Shell" ability aura has the same name as the absorb aura itself
+}
 
 local VUHDO_CHARGE_TEXTURES = {
 	"Interface\\AddOns\\VuhDo\\Images\\hot_stacks1", "Interface\\AddOns\\VuhDo\\Images\\hot_stacks2",
@@ -40,22 +81,20 @@ local VUHDO_SHIELD_TEXTURES = {
 
 local VUHDO_CHARGE_COLORS = { "HOT_CHARGE_1", "HOT_CHARGE_2", "HOT_CHARGE_3", "HOT_CHARGE_4" };
 
-local VUHDO_HOT_CFGS = { "HOT1", "HOT2", "HOT3", "HOT4", "HOT5", "HOT6", "HOT7", "HOT8", "HOT9", "HOT10", };
+local VUHDO_HOT_CFGS = { "HOT1", "HOT2", "HOT3", "HOT4", "HOT5", "HOT6", "HOT7", "HOT8", "HOT9", "HOT10", "HOT11", "HOT12" };
 
 
 -- BURST CACHE -------------------------------------------------
 
 
 local floor = floor;
-local table = table;
-local GetSpellCooldown = GetSpellCooldown;
+local GetSpellCooldown = GetSpellCooldown or VUHDO_getSpellCooldown;
+local GetSpellCharges = C_Spell.GetSpellCharges;
+local GetSpellName = C_Spell.GetSpellName or VUHDO_getSpellName;
 local GetTime = GetTime;
 local strfind = strfind;
 local pairs = pairs;
-local twipe = table.wipe;
 local tostring = tostring;
-local ForEachAura = AuraUtil.ForEachAura or VUHDO_forEachAura;
-local UnpackAuraData = AuraUtil.UnpackAuraData or VUHDO_unpackAuraData;
 
 local _G = _G;
 
@@ -73,20 +112,19 @@ local VUHDO_getBarIconTimer;
 local VUHDO_getBarIconCounter;
 local VUHDO_getBarIconCharge;
 local VUHDO_getBarIconClockOrStub;
-local VUHDO_backColor;
+local VUHDO_backColorWithFallback;
 local VUHDO_textColor;
 
 local VUHDO_PANEL_SETUP;
-local VUHDO_CAST_ICON_DIFF;
 local VUHDO_HEALING_HOTS;
 local VUHDO_RAID;
 local sIsClusterIcons;
 local sIsOthersHots;
 
 function VUHDO_customHotsInitLocalOverrides()
+
 	-- variables
 	VUHDO_PANEL_SETUP = _G["VUHDO_PANEL_SETUP"];
-	VUHDO_CAST_ICON_DIFF = _G["VUHDO_CAST_ICON_DIFF"];
 	VUHDO_HEALING_HOTS = _G["VUHDO_HEALING_HOTS"];
 	VUHDO_RAID = _G["VUHDO_RAID"];
 	VUHDO_ACTIVE_HOTS = _G["VUHDO_ACTIVE_HOTS"];
@@ -106,7 +144,7 @@ function VUHDO_customHotsInitLocalOverrides()
 	VUHDO_getBarIconCounter = _G["VUHDO_getBarIconCounter"];
 	VUHDO_getBarIconCharge = _G["VUHDO_getBarIconCharge"];
 	VUHDO_getBarIconClockOrStub = _G["VUHDO_getBarIconClockOrStub"];
-	VUHDO_backColor = _G["VUHDO_backColor"];
+	VUHDO_backColorWithFallback = _G["VUHDO_backColorWithFallback"];
 	VUHDO_textColor = _G["VUHDO_textColor"];
 
 	sBarColors = VUHDO_PANEL_SETUP["BAR_COLORS"];
@@ -114,20 +152,70 @@ function VUHDO_customHotsInitLocalOverrides()
 	sIsFade = sHotCols["isFadeOut"];
 	sIsFlashWhenLow = sHotCols["isFlashWhenLow"];
 	sIsWarnColor = sHotCols["WARNING"]["enabled"];
-	sHotSetup = VUHDO_PANEL_SETUP["HOTS"];
-	sHotSlots = VUHDO_PANEL_SETUP["HOTS"]["SLOTS"];
-	sIsHotShowIcon = sHotSetup["iconRadioValue"] == 1;
-	sIsChargesIcon = sHotSetup["stacksRadioValue"] == 3;
 	sIsClusterIcons = VUHDO_INTERNAL_TOGGLES[16] or VUHDO_INTERNAL_TOGGLES[18]; -- -- VUHDO_UPDATE_NUM_CLUSTER -- VUHDO_UPDATE_MOUSEOVER_CLUSTER
 	sIsOthersHots = VUHDO_ACTIVE_HOTS["OTHER"];
 
-	sHotSlotCfgs = { };
-	for tCnt = 1, 10 do
-		sHotSlotCfgs[tCnt] = VUHDO_PANEL_SETUP["HOTS"]["SLOTCFG"][tostring(tCnt)];
+	for tPanelNum = 1, 10 do -- VUHDO_MAX_PANELS
+		sHotSetup[tPanelNum] = VUHDO_PANEL_SETUP[tPanelNum]["HOTS"];
+		sHotSlots[tPanelNum] = sHotSetup[tPanelNum]["SLOTS"];
+
+		sIsHotShowIcon[tPanelNum] = sHotSetup[tPanelNum]["iconRadioValue"] == 1;
+		sIsChargesIcon[tPanelNum] = sHotSetup[tPanelNum]["stacksRadioValue"] == 3;
+
+		sHotSlotCfgs[tPanelNum] = { };
+		sHotSlotBouquets[tPanelNum] = { };
+		sHotSlotsActive[tPanelNum] = { };
+
+		for tCnt = 1, 12 do -- VUHDO_MAX_HOTS
+			sHotSlotCfgs[tPanelNum][tCnt] = sHotSetup[tPanelNum]["SLOTCFG"][tostring(tCnt)];
+
+			local tHotName = sHotSlots[tPanelNum][tCnt];
+
+			if tHotName and not VUHDO_strempty(tHotName) then
+				if strfind(tHotName, "BOUQUET_") then
+					sHotSlotBouquets[tPanelNum][tCnt] = true;
+				end
+
+				sHotSlotsActive[tPanelNum][tCnt] = true;
+			end
+		end
 	end
+
 end
 
 ----------------------------------------------------
+
+
+
+--
+local sHotInfoPool = VUHDO_createTablePool("HotInfo", 300);
+
+
+
+--
+local function VUHDO_getPooledHotInfo()
+
+	return sHotInfoPool:get();
+
+end
+
+
+
+--
+local function VUHDO_releasePooledHotInfo(aHotInfo)
+
+	sHotInfoPool:release(aHotInfo);
+
+end
+
+
+
+--
+function VUHDO_getHotInfoPool()
+
+	return sHotInfoPool;
+
+end
 
 
 
@@ -139,21 +227,12 @@ end
 
 
 --
-local tOphEmpty = { nil, 0 };
-function VUHDO_getOtherPlayersHotInfo(aUnit)
-	return sOthersHotsInfo[aUnit] or tOphEmpty;
-end
-
-
-
---
 function VUHDO_setKnowsSwiftmend(aKnowsSwiftmend)
 	sIsPlayerKnowsSwiftmend = aKnowsSwiftmend;
 end
 
 
 
---
 --
 local tCopy = { };
 local function VUHDO_copyColor(aColor)
@@ -168,20 +247,31 @@ end
 --
 local tHotBar;
 local function VUHDO_customizeHotBar(aButton, aRest, anIndex, aDuration, aColor)
+
 	tHotBar = VUHDO_getHealthBar(aButton, anIndex + 3);
 
-	if aColor then tHotBar:SetVuhDoColor(aColor); end
+	if not tHotBar then
+		return;
+	end
 
-	if (aDuration or 0) == 0 or not aRest then tHotBar:SetValue(0);
-	else tHotBar:SetValue(aRest / aDuration); end
+	if aColor then
+		tHotBar:SetVuhDoColor(aColor);
+	end
+
+	if (aDuration or 0) == 0 or not aRest then
+		tHotBar:SetValue(0);
+	else
+		tHotBar:SetValue(aRest / aDuration);
+	end
+
 end
 
 
 
 --
-local tHotName;
 local tDuration2;
 local tChargeTexture;
+local tIsHotShowIcon;
 local tIsChargeShown;
 local tIcon;
 local tTimer;
@@ -190,12 +280,13 @@ local tClock;
 local tDuration;
 local tHotCfg;
 local tIsChargeAlpha;
+local tChargeColor;
 local tStarted;
 local tClockDuration;
 local tOpacity, tTextOpacity;
 local tHotColor;
 local tTimes;
-local function VUHDO_customizeHotIcons(aButton, aHotName, aRest, aTimes, anIcon, aDuration, aShieldCharges, aColor, anIndex, aClipL, aClipR, aClipT, aClipB)
+local function VUHDO_customizeHotIcons(aPanelNum, aButton, aHotName, aRest, aTimes, anIcon, aDuration, aShieldCharges, aColor, anIndex, aClipL, aClipR, aClipT, aClipB)
 
 	tHotCfg = sBarColors[VUHDO_HOT_CFGS[anIndex]];
 	tIcon = VUHDO_getBarIcon(aButton, anIndex);
@@ -226,7 +317,9 @@ local function VUHDO_customizeHotIcons(aButton, aHotName, aRest, aTimes, anIcon,
 		tCounter:SetTextColor(VUHDO_textColor(aColor));
 	end
 
-	if anIcon and (sIsHotShowIcon or aColor) then
+	tIsHotShowIcon = sIsHotShowIcon[aPanelNum];
+
+	if anIcon and (tIsHotShowIcon or aColor) then
 		if VUHDO_ATLAS_TEXTURES[anIcon] then
 			tIcon:SetAtlas(anIcon);
 
@@ -238,7 +331,7 @@ local function VUHDO_customizeHotIcons(aButton, aHotName, aRest, aTimes, anIcon,
 	tIcon:SetTexCoord(aClipL or sClipL, aClipR or sClipR, aClipT or sClipT, aClipB or sClipB);
 	
 	aTimes = aTimes or 0;
-	tIsChargeShown = sIsChargesIcon and aTimes > 0;
+	tIsChargeShown = sIsChargesIcon[aPanelNum] and aTimes > 0;
 	
 	--@TESTING
 	--aTimes = floor(aRest / 3.5);
@@ -250,7 +343,7 @@ local function VUHDO_customizeHotIcons(aButton, aHotName, aRest, aTimes, anIcon,
 	-- FIXME: useSlotColor no longer has a clear purpose
 	if aColor and aColor["useSlotColor"] then
 		tHotColor = VUHDO_copyColor(tHotCfg);
-	elseif aColor and (not aColor["isDefault"] or not sIsHotShowIcon) then
+	elseif aColor and (not aColor["isDefault"] or not tIsHotShowIcon) then
 		tHotColor = aColor;
 
 		if tTimes > 1 and not aColor["noStacksColor"] then
@@ -266,12 +359,18 @@ local function VUHDO_customizeHotIcons(aButton, aHotName, aRest, aTimes, anIcon,
 			end
 		end
 
-		if tHotColor["useText"] and not sIsHotShowIcon then
+		if tHotColor["useText"] and not tIsHotShowIcon then
 			tTimer:SetTextColor(VUHDO_textColor(tHotColor));
 		end
 
 	elseif sIsWarnColor and aRest < sHotCols["WARNING"]["lowSecs"] then
 		tHotColor = sHotCols["WARNING"];
+
+		-- FIXME: color swatch should set isOpacity but doesn't
+		if tHotColor["O"] then
+			tHotColor["useOpacity"] = true;
+		end
+
 		tTimer:SetTextColor(VUHDO_textColor(tHotColor));
 	else
 		tHotColor = VUHDO_copyColor(tHotCfg);
@@ -281,7 +380,7 @@ local function VUHDO_customizeHotIcons(aButton, aHotName, aRest, aTimes, anIcon,
 			tHotColor["useOpacity"] = true;
 		end
 
-		if sIsHotShowIcon then
+		if tIsHotShowIcon then
 			if aColor then
 				tHotColor = aColor;
 			else
@@ -396,12 +495,12 @@ local function VUHDO_customizeHotIcons(aButton, aHotName, aRest, aTimes, anIcon,
 	end
 
 	-- FIXME: this whole function needs refactored to logically group (and dedupe) setting the icon, timer and charges colors
-	if aColor and (not aColor["isDefault"] or not sIsHotShowIcon) then
+	if aColor and (not aColor["isDefault"] or not tIsHotShowIcon) then
 		-- respect the default timer text color set above based on remaining duration
 	elseif sIsWarnColor and aRest < sHotCols["WARNING"]["lowSecs"] then
 		tTimer:SetTextColor(VUHDO_textColor(tHotColor));
 	else
-		if not sIsHotShowIcon and (tTimes <= 1 or not sHotCols["useColorText"]) then
+		if not tIsHotShowIcon and (tTimes <= 1 or not sHotCols["useColorText"]) then
 			tTimer:SetTextColor(VUHDO_textColor(tHotColor));
 		end
 
@@ -416,7 +515,7 @@ local function VUHDO_customizeHotIcons(aButton, aHotName, aRest, aTimes, anIcon,
 		
 		tChargeTexture:Show();
 	elseif aShieldCharges > 0 then
-		if sIsHotShowIcon then
+		if tIsHotShowIcon then
 			tHotColor = tHotCfg;
 		end
 
@@ -436,41 +535,71 @@ end
 
 
 --
+local tResolvedUnit;
 local tAllButtons;
-local tShieldCharges, tShieldName;
+local tShieldName;
+local tShieldSpellId;
+local tShieldCharges;
+local tPanelUnitButtons;
+local tPanelHotSlots;
+local tPanelHotSlotCfgs;
 local tIsMatch;
+local tHotSlotCfg;
 local tIsMine, tIsOthers;
 local function VUHDO_updateHotIcons(aUnit, aHotName, aRest, aTimes, anIcon, aDuration, aMode, aColor, aHotSpellName, aClipL, aClipR, aClipT, aClipB)
-	tAllButtons = VUHDO_getUnitButtons(VUHDO_resolveVehicleUnit(aUnit));
-	if not tAllButtons then return; end
+
+	if not aUnit or not aHotName then
+		return;
+	end
+
+	tResolvedUnit = VUHDO_resolveVehicleUnit(aUnit);
+
+	tAllButtons = VUHDO_getUnitButtons(tResolvedUnit);
+	if not tAllButtons then
+		return;
+	end
 
 	tShieldName = aHotSpellName or aHotName;
+	tShieldSpellId = tonumber(tShieldName);
 
-	if type(tonumber(tShieldName)) == "number" then
-		tShieldName = GetSpellInfo(tonumber(tShieldName));
+	if tShieldSpellId then
+		tShieldName = GetSpellName(tShieldSpellId);
 	end
 
 	tShieldCharges = VUHDO_getShieldLeftCount(aUnit, tShieldName, aMode) or 0; -- if not our shield don't show remaining absorption
 
-	for tIndex, tHotName in pairs(sHotSlots) do
-		if aHotName == tHotName then
+	for tPanelNum = 1, 10 do -- VUHDO_MAX_PANELS
+		tPanelUnitButtons = VUHDO_getUnitButtonsPanel(tResolvedUnit, tPanelNum);
 
-			if aMode == 0 or aColor then tIsMatch = true; -- Bouquet => aColor ~= nil
-			else
-				tIsMine, tIsOthers = sHotSlotCfgs[tIndex]["mine"], sHotSlotCfgs[tIndex]["others"];
-				tIsMatch = (aMode == 1 and     tIsMine and not tIsOthers)
-								or (aMode == 2 and not tIsMine and     tIsOthers)
-								or (aMode == 3 and     tIsMine and     tIsOthers);
-			end
+		if tPanelUnitButtons then
+			tPanelHotSlots = sHotSlots[tPanelNum];
+			tPanelHotSlotCfgs = sHotSlotCfgs[tPanelNum];
 
-			if tIsMatch then
-				if tIndex >= 6 and tIndex <= 8 then
-					for _, tButton in pairs(tAllButtons) do
-						VUHDO_customizeHotBar(tButton, aRest, tIndex, aDuration, aColor);
-					end
-				else
-					for _, tButton in pairs(tAllButtons) do
-						VUHDO_customizeHotIcons(tButton, aHotName, aRest, aTimes, anIcon, aDuration, tShieldCharges, aColor, tIndex, aClipL, aClipR, aClipT, aClipB);
+			if tPanelHotSlots then
+				for tIndex, tHotName in pairs(tPanelHotSlots) do
+					if aHotName == tHotName then
+						if aMode == 0 or aColor then
+							tIsMatch = true; -- Bouquet => aColor ~= nil
+						else
+							tHotSlotCfg = tPanelHotSlotCfgs and tPanelHotSlotCfgs[tIndex] or sEmptyHotSlotCfg;
+							tIsMine, tIsOthers = tHotSlotCfg["mine"], tHotSlotCfg["others"];
+
+							tIsMatch = (aMode == 1 and tIsMine and not tIsOthers)
+								or (aMode == 2 and not tIsMine and tIsOthers)
+								or (aMode == 3 and tIsMine and tIsOthers);
+						end
+
+						if tIsMatch then
+							if tIndex >= 6 and tIndex <= 8 then
+								for _, tButton in pairs(tPanelUnitButtons) do
+									VUHDO_customizeHotBar(tButton, aRest, tIndex, aDuration, aColor);
+								end
+							else
+								for _, tButton in pairs(tPanelUnitButtons) do
+									VUHDO_customizeHotIcons(tPanelNum, tButton, aHotName, aRest, aTimes, anIcon, aDuration, tShieldCharges, aColor, tIndex, aClipL, aClipR, aClipT, aClipB);
+								end
+							end
+						end
 					end
 				end
 			end
@@ -490,7 +619,7 @@ local function VUHDO_removeButtonHots(aButton)
 		if tHotIconFrame then tHotIconFrame:Hide(); end
 	end
 
-	for tCnt = 9, 10 do
+	for tCnt = 9, 12 do -- VUHDO_MAX_HOTS
 		VUHDO_UIFrameFlashStop(VUHDO_getBarIcon(aButton, tCnt));
 		tHotIconFrame = VUHDO_getBarIconFrame(aButton, tCnt);
 		if tHotIconFrame then tHotIconFrame:Hide(); end
@@ -514,49 +643,588 @@ local VUHDO_removeHots = VUHDO_removeHots;
 
 
 
+-- aura icon, expiration, stacks, duration, isMine, name, spell ID
+local VUHDO_UNIT_HOT_INFO_DEFAULT = { nil, 0, 0, 0, nil, nil, nil };
+
+
+
 --
-local tCount;
-local tHotInfo;
-local tAlive;
-local function VUHDO_snapshotHot(aHotName, aRest, aStacks, anIcon, anIsMine, aDuration, aUnit, anExpiry)
-	aStacks = aStacks or 0;
-	tCount = aStacks == 0 and 1 or aStacks;
-	tAlive = GetTime() - anExpiry + (aDuration or 0);
+local function VUHDO_normalizeStacks(aStacks)
 
-	if anIsMine then
-		if not VUHDO_MY_HOTS[aUnit][aHotName] then VUHDO_MY_HOTS[aUnit][aHotName] = { }; end
-		tHotInfo = VUHDO_MY_HOTS[aUnit][aHotName];
-		tHotInfo[1], tHotInfo[2], tHotInfo[3], tHotInfo[4], tHotInfo[5] = aRest, aStacks, anIcon, aDuration, tAlive;
+	return aStacks and (aStacks == 0 and 1 or aStacks);
 
-	elseif VUHDO_ACTIVE_HOTS_OTHERS[aHotName] then
-		if not VUHDO_OTHER_HOTS[aUnit][aHotName] then	VUHDO_OTHER_HOTS[aUnit][aHotName] = { }; end
-		tHotInfo = VUHDO_OTHER_HOTS[aUnit][aHotName];
-
-		if not tHotInfo[1] then
-			tHotInfo[1], tHotInfo[2], tHotInfo[3], tHotInfo[4], tHotInfo[5] = aRest, aStacks, anIcon, aDuration, tAlive;
-		else
-			if aRest > tHotInfo[1] then	tHotInfo[1] = aRest; end
-			tHotInfo[2] = tHotInfo[2] + tCount;
-		end
-	end
-
-	if not VUHDO_MY_AND_OTHERS_HOTS[aUnit][aHotName] then VUHDO_MY_AND_OTHERS_HOTS[aUnit][aHotName] = { }; end
-	tHotInfo = VUHDO_MY_AND_OTHERS_HOTS[aUnit][aHotName];
-	if not tHotInfo[1] then
-		tHotInfo[1], tHotInfo[2], tHotInfo[3], tHotInfo[4], tHotInfo[5] = aRest, aStacks, anIcon, aDuration, tAlive;
-	else
-		if anIsMine or aRest > tHotInfo[1] then tHotInfo[1] = aRest; end
-		tHotInfo[2] = tHotInfo[2] + tCount;
-	end
 end
 
 
 
-local VUHDO_IGNORE_HOT_IDS = {
-	[67358] = true, -- "Rejuvenating" proc has same name in russian and spanish as rejuvenation
-	[126921] = true, -- "Weakened Soul" by Shao-Tien Soul-Render
-	[109964] = true, -- "Spirit Shell" ability aura has the same name as the absorb aura itself
-}
+--
+local tUnitHotInfos;
+local tUnitHotInfo;
+local tStacks;
+local function VUHDO_addUnitHotInfo(aUnit, anAuraInstanceId, anIcon, anExpiry, aStacks, aDuration, anIsMine, aSpellName, aSpellId)
+
+	if not aUnit or not anAuraInstanceId then
+		return;
+	end
+
+	tUnitHotInfos = VUHDO_UNIT_HOT_INFOS[aUnit];
+
+	if not tUnitHotInfos then
+		tUnitHotInfos = { };
+		VUHDO_UNIT_HOT_INFOS[aUnit] = tUnitHotInfos;
+	end
+
+	tStacks = VUHDO_normalizeStacks(aStacks);
+	tUnitHotInfo = tUnitHotInfos[anAuraInstanceId];
+
+	if tUnitHotInfo then
+		if anIcon ~= nil then
+			tUnitHotInfo[1] = anIcon;
+		end
+
+		if anExpiry ~= nil then
+			tUnitHotInfo[2] = anExpiry;
+		end
+
+		if tStacks ~= nil then
+			tUnitHotInfo[3] = tStacks;
+		end
+
+		if aDuration ~= nil then
+			tUnitHotInfo[4] = aDuration;
+		end
+
+		if anIsMine ~= nil then
+			tUnitHotInfo[5] = anIsMine;
+		end
+
+		if aSpellName ~= nil then
+			tUnitHotInfo[6] = aSpellName;
+		end
+
+		if aSpellId ~= nil then
+			tUnitHotInfo[7] = aSpellId;
+		end
+	else
+		tUnitHotInfo = VUHDO_getPooledHotInfo();
+
+		tUnitHotInfo[1] = anIcon or VUHDO_UNIT_HOT_INFO_DEFAULT[1];
+		tUnitHotInfo[2] = anExpiry or VUHDO_UNIT_HOT_INFO_DEFAULT[2];
+		tUnitHotInfo[3] = tStacks or VUHDO_UNIT_HOT_INFO_DEFAULT[3];
+		tUnitHotInfo[4] = aDuration or VUHDO_UNIT_HOT_INFO_DEFAULT[4];
+		tUnitHotInfo[5] = anIsMine or VUHDO_UNIT_HOT_INFO_DEFAULT[5];
+		tUnitHotInfo[6] = aSpellName or VUHDO_UNIT_HOT_INFO_DEFAULT[6];
+		tUnitHotInfo[7] = aSpellId or VUHDO_UNIT_HOT_INFO_DEFAULT[7];
+
+		tUnitHotInfos[anAuraInstanceId] = tUnitHotInfo;
+	end
+
+end
+
+
+
+--
+local tUnitHotInfos;
+local tUnitHotInfo;
+local function VUHDO_removeUnitHotInfo(aUnit, anAuraInstanceId)
+
+	if not aUnit or not anAuraInstanceId then
+		return;
+	end
+
+	tUnitHotInfos = VUHDO_UNIT_HOT_INFOS[aUnit];
+
+	tUnitHotInfo = tUnitHotInfos and tUnitHotInfos[anAuraInstanceId];
+
+	if not tUnitHotInfo then
+		return;
+	end
+
+	tUnitHotInfos[anAuraInstanceId] = nil;
+
+	VUHDO_releasePooledHotInfo(tUnitHotInfo);
+
+end
+
+
+
+--
+function VUHDO_getUnitHotInfos(aUnit)
+
+	if not aUnit then
+		return;
+	end
+
+	return VUHDO_UNIT_HOT_INFOS[aUnit];
+
+end
+
+
+
+--
+local tUnitHotInfos;
+function VUHDO_getUnitHotInfo(aUnit, anAuraInstanceId)
+
+	if not aUnit or not anAuraInstanceId then
+		return;
+	end
+
+	tUnitHotInfos = VUHDO_UNIT_HOT_INFOS[aUnit];
+
+	if not tUnitHotInfos then
+		return;
+	end
+
+	return tUnitHotInfos[anAuraInstanceId];
+
+end
+
+
+
+--
+local tUnitHotLists;
+local tUnitHotList;
+local tUnitHotListSource;
+local tUnitHotListPrev;
+local tUnitHotListNew;
+local tUnitHotPrevInfo;
+local function VUHDO_addUnitHot(aUnit, aSpellName, aSourceType, anAuraInstanceId, anIsMine)
+
+	if not aUnit or not aSpellName or not aSourceType or not anAuraInstanceId then
+		return;
+	end
+
+	tUnitHotLists = VUHDO_UNIT_HOT_LISTS[aUnit];
+
+	if not tUnitHotLists then
+		tUnitHotLists = { };
+		VUHDO_UNIT_HOT_LISTS[aUnit] = tUnitHotLists;
+	end
+
+	tUnitHotList = tUnitHotLists[aSpellName];
+
+	if not tUnitHotList then
+		tUnitHotList = {
+			{ nil, 0 }, -- VUHDO_UNIT_HOT_TYPE_MINE
+			{ nil, 0 }, -- VUHDO_UNIT_HOT_TYPE_OTHERS
+			{ nil, 0 }, -- VUHDO_UNIT_HOT_TYPE_BOTH
+			{ nil, 0 }, -- VUHDO_UNIT_HOT_TYPE_OTHERSHOTS
+		};
+		tUnitHotLists[aSpellName] = tUnitHotList;
+	end
+
+	tUnitHotListSource = tUnitHotList[aSourceType];
+	tUnitHotListPrev = tUnitHotListSource[1];
+
+	tUnitHotListNew = VUHDO_getPooledListNode();
+	tUnitHotListNew["auraInstanceId"] = anAuraInstanceId;
+
+	if tUnitHotListPrev and tUnitHotListPrev["auraInstanceId"] and
+		aSourceType == VUHDO_UNIT_HOT_TYPE_BOTH and not anIsMine then
+		tUnitHotPrevInfo = VUHDO_getUnitHotInfo(aUnit, tUnitHotListPrev["auraInstanceId"]);
+
+		-- player auras take precedent over others auras
+		if tUnitHotPrevInfo and tUnitHotPrevInfo[5] then
+			tUnitHotListNew["prev"] = tUnitHotListPrev["prev"];
+			tUnitHotListPrev["prev"] = tUnitHotListNew;
+		else
+			tUnitHotListNew["prev"] = tUnitHotListPrev;
+			tUnitHotListSource[1] = tUnitHotListNew;
+		end
+	else
+		tUnitHotListNew["prev"] = tUnitHotListPrev;
+		tUnitHotListSource[1] = tUnitHotListNew;
+	end
+
+	tUnitHotListSource[2] = tUnitHotListSource[2] + 1;
+
+end
+
+
+
+--
+local tUnitHotLists;
+local tUnitHotList;
+local tUnitHotListSource;
+local tUnitHotListCur;
+local tUnitHotListPrev;
+local tListNode;
+local function VUHDO_removeUnitHot(aUnit, aSpellName, aSourceType, anAuraInstanceId)
+
+	if not aUnit or not aSpellName or not aSourceType or not anAuraInstanceId then
+		return false;
+	end
+
+	tUnitHotLists = VUHDO_UNIT_HOT_LISTS[aUnit];
+	tUnitHotList = tUnitHotLists and tUnitHotLists[aSpellName];
+	tUnitHotListSource = tUnitHotList and tUnitHotList[aSourceType];
+
+	if not tUnitHotListSource then
+		return false;
+	end
+
+	tUnitHotListCur = tUnitHotListSource[1];
+	tUnitHotListPrev = false;
+
+	tListNode = nil;
+
+	while tUnitHotListCur do
+		if tUnitHotListCur["auraInstanceId"] == anAuraInstanceId then
+			tListNode = tUnitHotListCur;
+
+			if tUnitHotListPrev then
+				tUnitHotListPrev["prev"] = tUnitHotListCur["prev"];
+			else
+				tUnitHotListSource[1] = tUnitHotListCur["prev"];
+			end
+
+			tUnitHotListSource[2] = tUnitHotListSource[2] - 1;
+
+			VUHDO_releasePooledListNode(tListNode);
+
+			return true;
+		else
+			tUnitHotListPrev = tUnitHotListCur;
+			tUnitHotListCur = tUnitHotListCur["prev"];
+		end
+	end
+
+	return false;
+
+end
+
+
+
+--
+local tUnitHotLists;
+local tUnitHotList;
+local tUnitHotListSource;
+function VUHDO_getUnitHot(aUnit, aSpellName, aSourceType)
+
+	if not aUnit or not aSpellName or not aSourceType then
+		return nil, 0;
+	end
+
+	tUnitHotLists = VUHDO_UNIT_HOT_LISTS[aUnit];
+	tUnitHotList = tUnitHotLists and tUnitHotLists[aSpellName];
+	tUnitHotListSource = tUnitHotList and tUnitHotList[aSourceType];
+
+	if not tUnitHotListSource or not tUnitHotListSource[1] then
+		return nil, 0;
+	end
+
+	return tUnitHotListSource[1], tUnitHotListSource[2];
+
+end
+
+
+
+--
+function VUHDO_getUnitHotLists(aUnit)
+
+	if not aUnit then
+		return;
+	end
+
+	return VUHDO_UNIT_HOT_LISTS[aUnit];
+
+end
+
+
+
+--
+local tUnitHotCount;
+function VUHDO_hasUnitHot(aUnit, aSpellName, aSourceType)
+
+	if not aUnit or not aSpellName then
+		return;
+	end
+
+	if not aSourceType then
+		aSourceType = VUHDO_UNIT_HOT_TYPE_MINE;
+	end
+
+	_, tUnitHotCount = VUHDO_getUnitHot(aUnit, aSpellName, aSourceType);
+
+	if tUnitHotCount and tUnitHotCount > 0 then
+		return true;
+	else
+		return false;
+	end
+
+end
+
+
+
+--
+local tOphEmpty = { nil, 0 };
+local tUnitHot;
+local tUnitHotCount;
+local tUnitHotInfo;
+function VUHDO_getOtherPlayersHotInfo(aUnit)
+
+	if not aUnit then
+		return tOphEmpty;
+	end
+
+	tUnitHot, tUnitHotCount = VUHDO_getUnitHot(aUnit, "OTHER", VUHDO_UNIT_HOT_TYPE_OTHERSHOTS);
+
+	if tUnitHot and tUnitHot["auraInstanceId"] then
+		-- tUnitHotInfo: aura icon, expiration, stacks, duration, isMine, name, spell ID
+		tUnitHotInfo = VUHDO_getUnitHotInfo(aUnit, tUnitHot["auraInstanceId"]);
+
+		if tUnitHotInfo then
+			return tUnitHotInfo[1], tUnitHotCount;
+		end
+	end
+
+	return tOphEmpty;
+
+end
+
+
+
+--
+local tUnitHotInfos;
+local tUnitHotInfo;
+local tIsCastByPlayer;
+local tSpellName;
+local tSpellId;
+local tSpellIdStr;
+function VUHDO_removeHot(aUnit, anAuraInstanceId)
+
+	if not aUnit or not anAuraInstanceId then
+		return;
+	end
+
+	tUnitHotInfos = VUHDO_UNIT_HOT_INFOS[aUnit];
+
+	if not tUnitHotInfos then
+		return;
+	end
+
+	tUnitHotInfo = tUnitHotInfos[anAuraInstanceId];
+
+	if not tUnitHotInfo then
+		return;
+	end
+
+	tIsCastByPlayer = tUnitHotInfo[5];
+	tSpellName = tUnitHotInfo[6];
+	tSpellId = tUnitHotInfo[7];
+
+	tSpellIdStr = tostring(tSpellId or -1);
+
+	if VUHDO_ACTIVE_HOTS[tSpellIdStr] then
+		VUHDO_removeUnitHot(aUnit, tSpellIdStr, VUHDO_UNIT_HOT_TYPE_BOTH, anAuraInstanceId);
+
+		if tIsCastByPlayer then
+			VUHDO_removeUnitHot(aUnit, tSpellIdStr, VUHDO_UNIT_HOT_TYPE_MINE, anAuraInstanceId);
+		else
+			VUHDO_removeUnitHot(aUnit, tSpellIdStr, VUHDO_UNIT_HOT_TYPE_OTHERS, anAuraInstanceId);
+		end
+	end
+
+	if VUHDO_ACTIVE_HOTS[tSpellName] then
+		VUHDO_removeUnitHot(aUnit, tSpellName, VUHDO_UNIT_HOT_TYPE_BOTH, anAuraInstanceId);
+
+		if tIsCastByPlayer then
+			VUHDO_removeUnitHot(aUnit, tSpellName, VUHDO_UNIT_HOT_TYPE_MINE, anAuraInstanceId);
+		else
+			VUHDO_removeUnitHot(aUnit, tSpellName, VUHDO_UNIT_HOT_TYPE_OTHERS, anAuraInstanceId);
+		end
+	end
+
+	if not tIsCastByPlayer and VUHDO_HEALING_HOTS[tSpellName] and
+		not VUHDO_ACTIVE_HOTS_OTHERS[tSpellName] and not VUHDO_ACTIVE_HOTS_OTHERS[tSpellIdStr] then
+		VUHDO_removeUnitHot(aUnit, "OTHER", VUHDO_UNIT_HOT_TYPE_OTHERSHOTS, anAuraInstanceId);
+	end
+
+	if sIsPlayerKnowsSwiftmend and (VUHDO_SPELL_ID.REGROWTH == tSpellName or VUHDO_SPELL_ID.REJUVENATION == tSpellName) then
+		sSwiftmendUnits[aUnit] = (sSwiftmendUnits[aUnit] or 0) - 1;
+
+		if sSwiftmendUnits[aUnit] < 0 then
+			sSwiftmendUnits[aUnit] = 0;
+		end
+	end
+
+	VUHDO_removeUnitHotInfo(aUnit, anAuraInstanceId);
+
+end
+
+
+
+--
+local tPanelUnitButtons;
+local tIcon;
+local tBarIconFrame;
+local function VUHDO_removeHotIcon(aPanelNum, aUnit, aResolvedUnit, anIndex)
+
+	if not aUnit or not aResolvedUnit or not anIndex then
+		return;
+	end
+
+	tPanelUnitButtons = VUHDO_getUnitButtonsPanel(aResolvedUnit, aPanelNum);
+
+	if not tPanelUnitButtons then
+		return;
+	end
+
+	if anIndex >= 6 and anIndex <= 8 then
+		for _, tButton in pairs(tPanelUnitButtons) do
+			VUHDO_customizeHotBar(tButton, nil, anIndex);
+		end
+	else
+		for _, tButton in pairs(tPanelUnitButtons) do
+			tIcon = VUHDO_getBarIcon(tButton, anIndex);
+
+			if tIcon then
+				VUHDO_UIFrameFlashStop(tIcon);
+			end
+
+			tBarIconFrame = VUHDO_getBarIconFrame(tButton, anIndex);
+
+			if tBarIconFrame then
+				tBarIconFrame:Hide();
+			end
+		end
+	end
+
+end
+
+
+
+--
+local tUnitHotInfos;
+local tUnitHotLists;
+local tListNodeCur;
+local tListNodeNew;
+function VUHDO_initHots(aUnit)
+
+	if not aUnit then
+		return;
+	end
+
+	tUnitHotInfos = VUHDO_UNIT_HOT_INFOS[aUnit];
+
+	if tUnitHotInfos then
+		for tAuraId, tHotInfo in pairs(tUnitHotInfos) do
+			VUHDO_releasePooledHotInfo(tHotInfo);
+
+			tUnitHotInfos[tAuraId] = nil;
+		end
+	else
+	        if VUHDO_UNIT_HOT_INFOS then
+			VUHDO_UNIT_HOT_INFOS[aUnit] = { };
+		end
+	end
+
+	tUnitHotLists = VUHDO_UNIT_HOT_LISTS[aUnit];
+
+	if tUnitHotLists then
+		for tSpellName, tListByType in pairs(tUnitHotLists) do
+			for tType, tSourceList in pairs(tListByType) do
+				tListNodeCur = tSourceList[1];
+
+				while tListNodeCur do
+					tListNodeNew = tListNodeCur["prev"];
+
+					VUHDO_releasePooledListNode(tListNodeCur);
+
+					tListNodeCur = tListNodeNew;
+				end
+
+				tSourceList[1] = nil;
+				tSourceList[2] = 0;
+			end
+
+			tUnitHotLists[tSpellName] = nil;
+		end
+	else
+		if VUHDO_UNIT_HOT_LISTS then
+			VUHDO_UNIT_HOT_LISTS[aUnit] = { };
+		end
+	end
+
+	sSwiftmendUnits[aUnit] = 0;
+
+end
+
+
+
+--
+local tIsHotInfoAdded;
+local tIsCastByPlayer;
+local tSpellIdStr;
+local tRest;
+function VUHDO_updateHotPredicate(aUnit, aNow, anAuraInstanceId, aName, anIcon, aStacks, aDuration, anExpiry, aUnitCaster, aSpellId, anIsUpdate)
+
+	if not anIcon then
+		return;
+	end
+
+	tIsHotInfoAdded = false;
+	tIsCastByPlayer = aUnitCaster == "player" or aUnitCaster == VUHDO_PLAYER_RAID_ID;
+
+	if not anIsUpdate and sIsPlayerKnowsSwiftmend and (VUHDO_SPELL_ID.REGROWTH == aName or VUHDO_SPELL_ID.REJUVENATION == aName) then
+		VUHDO_addUnitHotInfo(aUnit, anAuraInstanceId, anIcon, anExpiry, aStacks, aDuration, tIsCastByPlayer, aName, aSpellId);
+		tIsHotInfoAdded = true;
+
+		sSwiftmendUnits[aUnit] = (sSwiftmendUnits[aUnit] or 0) + 1;
+	end
+
+	if (anExpiry or 0) == 0 then
+		anExpiry = (aNow + 9999);
+	end
+
+	tSpellIdStr = tostring(aSpellId or -1);
+
+	if not VUHDO_IGNORE_HOT_IDS[aSpellId] then
+		if VUHDO_ACTIVE_HOTS[tSpellIdStr] or VUHDO_ACTIVE_HOTS[aName] then
+			tRest = anExpiry - aNow;
+
+			if tRest > 0 then
+				if not tIsHotInfoAdded then
+					VUHDO_addUnitHotInfo(aUnit, anAuraInstanceId, anIcon, anExpiry, aStacks, aDuration, tIsCastByPlayer, aName, aSpellId);
+				end
+
+				if not anIsUpdate then
+					if VUHDO_ACTIVE_HOTS[tSpellIdStr] then
+						VUHDO_addUnitHot(aUnit, tSpellIdStr, VUHDO_UNIT_HOT_TYPE_BOTH, anAuraInstanceId, tIsCastByPlayer);
+
+						if tIsCastByPlayer then
+							VUHDO_addUnitHot(aUnit, tSpellIdStr, VUHDO_UNIT_HOT_TYPE_MINE, anAuraInstanceId, tIsCastByPlayer);
+						else
+							VUHDO_addUnitHot(aUnit, tSpellIdStr, VUHDO_UNIT_HOT_TYPE_OTHERS, anAuraInstanceId, tIsCastByPlayer);
+						end
+					end
+
+					if VUHDO_ACTIVE_HOTS[aName] then
+						VUHDO_addUnitHot(aUnit, aName, VUHDO_UNIT_HOT_TYPE_BOTH, anAuraInstanceId, tIsCastByPlayer);
+
+						if tIsCastByPlayer then
+							VUHDO_addUnitHot(aUnit, aName, VUHDO_UNIT_HOT_TYPE_MINE, anAuraInstanceId, tIsCastByPlayer);
+						else
+							VUHDO_addUnitHot(aUnit, aName, VUHDO_UNIT_HOT_TYPE_OTHERS, anAuraInstanceId, tIsCastByPlayer);
+						end
+					end
+				end
+			end
+		end
+	end
+
+	if not tIsCastByPlayer and VUHDO_HEALING_HOTS[aName] and
+		not VUHDO_ACTIVE_HOTS_OTHERS[aName] and not VUHDO_ACTIVE_HOTS_OTHERS[tSpellIdStr] then
+		if not tIsHotInfoAdded then
+			VUHDO_addUnitHotInfo(aUnit, anAuraInstanceId, anIcon, anExpiry, aStacks, aDuration, tIsCastByPlayer, aName, aSpellId);
+		end
+
+		if not anIsUpdate then
+			VUHDO_addUnitHot(aUnit, "OTHER", VUHDO_UNIT_HOT_TYPE_OTHERSHOTS, anAuraInstanceId, tIsCastByPlayer);
+		end
+	end
+
+end
 
 
 
@@ -570,69 +1238,76 @@ end
 
 
 --
-local tUnit;
-local tBuffName;
-local tBuffIcon;
+local tPanelUnitButtons;
+local tUnitHot;
+local tUnitHotCount;
+local tUnitHotInfo;
+local tRest;
 local tStacks;
 local tDuration;
-local tExpiry;
-local tCaster;
-local tSpellId;
-local tIsCastByPlayer;
-local tStart;
-local tSmDuration;
-local tEnabled;
-local tRest;
-local tOtherIcon;
-local tOtherHotCnt;
-local tNow;
-local function VUHDO_updateHotIconPredicate(anAuraData)
+local tShieldCharges;
+local function VUHDO_updateHot(aPanelNum, aUnit, aResolvedUnit, anIndex, aSpellName, aSourceType, aNow)
 
-	tBuffName, tBuffIcon, tStacks, _, tDuration, tExpiry, tCaster, _, _, tSpellId = UnpackAuraData(anAuraData);
-
-	if not tBuffIcon then
+	if not aUnit or not aResolvedUnit then
 		return;
 	end
 
-	tIsCastByPlayer = tCaster == "player" or tCaster == VUHDO_PLAYER_RAID_ID;
+	tPanelUnitButtons = VUHDO_getUnitButtonsPanel(aResolvedUnit, aPanelNum);
 
-	if sIsPlayerKnowsSwiftmend and not sIsSwiftmend then
-		if VUHDO_SPELL_ID.REGROWTH == tBuffName or VUHDO_SPELL_ID.REJUVENATION == tBuffName or VUHDO_SPELL_ID.GERMINATION == tBuffName then
-				tStart, tSmDuration, tEnabled = GetSpellCooldown(VUHDO_SPELL_ID.SWIFTMEND);
-
-				if tEnabled ~= 0 and (tStart == nil or tSmDuration == nil or tStart <= 0 or tSmDuration <= 1.6) then
-					sIsSwiftmend = true;
-				end
-		end
+	if not tPanelUnitButtons then
+		return;
 	end
 
-	if (tExpiry or 0) == 0 then
-		tExpiry = (tNow + 9999);
-	end
+	tUnitHot, tUnitHotCount = VUHDO_getUnitHot(aUnit, aSpellName, aSourceType);
 
-	if not VUHDO_IGNORE_HOT_IDS[tSpellId] then
-		if VUHDO_ACTIVE_HOTS[tostring(tSpellId or -1)] or VUHDO_ACTIVE_HOTS[tBuffName] then
-			tRest = tExpiry - tNow;
+	if tUnitHot and tUnitHot["auraInstanceId"] then
+		-- tUnitHotInfo: aura icon, expiration, stacks, duration, isMine, name, spell ID
+		tUnitHotInfo = VUHDO_getUnitHotInfo(aUnit, tUnitHot["auraInstanceId"]);
 
-			if tRest > 0 then
-				if VUHDO_ACTIVE_HOTS[tostring(tSpellId or -1)] then
-					VUHDO_snapshotHot(tostring(tSpellId), tRest, tStacks, tBuffIcon, tIsCastByPlayer, tDuration, tUnit, tExpiry);
+		if tUnitHotInfo then
+			if aSourceType == VUHDO_UNIT_HOT_TYPE_OTHERSHOTS then
+				tRest = 999;
+				tDuration = nil;
+
+				tStacks = tUnitHotCount;
+			else
+				tRest = tUnitHotInfo[2] - aNow;
+				tDuration = tUnitHotInfo[4];
+
+				if tUnitHotCount > 1 and (aSourceType == VUHDO_UNIT_HOT_TYPE_OTHERS or aSourceType == VUHDO_UNIT_HOT_TYPE_BOTH) then
+					tStacks = tUnitHotCount;
+				else
+					tStacks = tUnitHotInfo[3];
 				end
+			end
 
-				if VUHDO_ACTIVE_HOTS[tBuffName] then
-					VUHDO_snapshotHot(tBuffName, tRest, tStacks, tBuffIcon, tIsCastByPlayer, tDuration, tUnit, tExpiry);
+			if anIndex >= 6 and anIndex <= 8 then
+				for _, tButton in pairs(tPanelUnitButtons) do
+					VUHDO_customizeHotBar(tButton, tRest, anIndex, tDuration, nil);
+				end
+			else
+				-- if not our shield don't show remaining absorption
+				tShieldCharges = VUHDO_getShieldLeftCount(aUnit, tUnitHotInfo[6], aSourceType) or 0;
+
+				for _, tButton in pairs(tPanelUnitButtons) do
+					VUHDO_customizeHotIcons(
+						aPanelNum,
+						tButton,
+						aSpellName,
+						tRest,
+						tStacks,
+						tUnitHotInfo[1],
+						tDuration,
+						tShieldCharges,
+						nil,
+						anIndex,
+						nil, nil, nil, nil
+					);
 				end
 			end
 		end
-	end
-
-	if not tIsCastByPlayer and VUHDO_HEALING_HOTS[tBuffName] and
-		not VUHDO_ACTIVE_HOTS_OTHERS[tBuffName] and not VUHDO_ACTIVE_HOTS_OTHERS[tostring(tSpellId or -1)] then
-		tOtherIcon = tBuffIcon;
-		tOtherHotCnt = tOtherHotCnt + 1;
-
-		sOthersHotsInfo[tUnit][1] = tOtherIcon;
-		sOthersHotsInfo[tUnit][2] = tOtherHotCnt;
+	elseif not sHotSlotBouquets[aPanelNum][anIndex] then
+		VUHDO_removeHotIcon(aPanelNum, aUnit, aResolvedUnit, anIndex);
 	end
 
 end
@@ -640,8 +1315,27 @@ end
 
 
 --
-function VUHDO_updateHots(aUnit, anInfo)
+local tResolvedUnit;
+local tAllButtons;
+local tSpellIdStr;
+local tNow;
+local tIsNoBouquetUpdatePossible;
+local tPanelUnitButtons;
+local tPanelHotSlots;
+local tPanelHotSlotsActive;
+local tPanelHotSlotBouquets;
+local tPanelHotSlotCfgs;
+local tSourceType;
+local tHotSlotCfg;
+local tIsMine;
+local tIsOthers;
+function VUHDO_updateHots(aUnit, anInfo, aSpellName, aSpellId)
 
+	if not aUnit or not anInfo then
+		return;
+	end
+
+	-- FIXME: should only do this once on vehicle entrance
 	if anInfo["isVehicle"] then
 		VUHDO_removeHots(aUnit);
 
@@ -652,94 +1346,69 @@ function VUHDO_updateHots(aUnit, anInfo)
 		end -- bei z.B. focus/target
 	end
 
-	if not VUHDO_MY_HOTS[aUnit] then
-		VUHDO_MY_HOTS[aUnit] = { };
+	if not VUHDO_UNIT_HOT_INFOS[aUnit] or not VUHDO_UNIT_HOT_LISTS[aUnit] then
+		return;
 	end
 
-	if not VUHDO_OTHER_HOTS[aUnit] then
-		VUHDO_OTHER_HOTS[aUnit] = { };
+	tResolvedUnit = VUHDO_resolveVehicleUnit(aUnit);
+	tAllButtons = VUHDO_getUnitButtons(tResolvedUnit);
+
+	if not tAllButtons then
+		return;
 	end
 
-	if not VUHDO_MY_AND_OTHERS_HOTS[aUnit] then
-		VUHDO_MY_AND_OTHERS_HOTS[aUnit] = { };
-	end
-
-	for _, tHotInfo in pairs(VUHDO_MY_HOTS[aUnit]) do
-		tHotInfo[1] = nil;
-	end -- Rest == nil => Icon löschen
-
-	for _, tHotInfo in pairs(VUHDO_OTHER_HOTS[aUnit]) do
-		tHotInfo[1] = nil;
-	end
-
-	for _, tHotInfo in pairs(VUHDO_MY_AND_OTHERS_HOTS[aUnit]) do
-		tHotInfo[1] = nil;
-	end
-
-	sIsSwiftmend = false;
-	tOtherIcon = nil;
-	tOtherHotCnt = 0;
-
-	if not sOthersHotsInfo[aUnit] then
-		sOthersHotsInfo[aUnit] = { nil, 0 };
+	if aSpellId then
+		tSpellIdStr = tostring(aSpellId);
 	else
-		sOthersHotsInfo[aUnit][1], sOthersHotsInfo[aUnit][2] = nil, 0;
+		tSpellIdStr = nil;
 	end
 
-	if VUHDO_shouldScanUnit(aUnit) then
-		tUnit = aUnit;
-		tNow = GetTime();
+	tNow = GetTime();
 
-		ForEachAura(aUnit, "HELPFUL", nil, VUHDO_updateHotIconPredicate, true);
-		ForEachAura(aUnit, "HARMFUL", nil, VUHDO_updateHotIconPredicate, true);
+	tIsNoBouquetUpdatePossible = not aSpellName and not aSpellId;
 
-		-- Other players' HoTs
-		if sIsOthersHots then
-			VUHDO_updateHotIcons(aUnit, "OTHER", 999, tOtherHotCnt, tOtherIcon, nil, 0, nil, nil, nil, nil, nil, nil);
-		end
+	for tPanelNum = 1, 10 do -- VUHDO_MAX_PANELS
+		tPanelUnitButtons = VUHDO_getUnitButtonsPanel(tResolvedUnit, tPanelNum);
 
-		-- Clusters
-		if sIsClusterIcons then
-			VUHDO_updateAllClusterIcons(aUnit, anInfo);
-		end
+		if tPanelUnitButtons then
+			tPanelHotSlots = sHotSlots[tPanelNum];
+			tPanelHotSlotsActive = sHotSlotsActive[tPanelNum];
+			tPanelHotSlotBouquets = sHotSlotBouquets[tPanelNum];
+			tPanelHotSlotCfgs = sHotSlotCfgs[tPanelNum];
 
-		-- Swiftmend
-		if sIsPlayerKnowsSwiftmend then
-			sSwiftmendUnits[aUnit] = sIsSwiftmend;
-		end
-	end -- Should scan unit
+			if tPanelHotSlots then
+				for tIndex, tHotName in pairs(tPanelHotSlots) do
+					if tPanelHotSlotsActive and tPanelHotSlotsActive[tIndex] and
+						((aSpellId and tSpellIdStr == tHotName) or (aSpellName and aSpellName == tHotName) or
+						(tIsNoBouquetUpdatePossible and tPanelHotSlotBouquets and not tPanelHotSlotBouquets[tIndex])) then
+						tSourceType = 0;
 
-	-- Own
-	for tHotCmpName, tHotInfo in pairs(VUHDO_MY_HOTS[aUnit]) do
-		VUHDO_updateHotIcons(aUnit, tHotCmpName, tHotInfo[1], tHotInfo[2], tHotInfo[3], tHotInfo[4], 1, nil, nil, nil, nil, nil, nil);
+						if sIsOthersHots and tHotName == "OTHER" then
+							tSourceType = VUHDO_UNIT_HOT_TYPE_OTHERSHOTS;
+						else
+							tHotSlotCfg = tPanelHotSlotCfgs and tPanelHotSlotCfgs[tIndex] or sEmptyHotSlotCfg;
+							tIsMine, tIsOthers = tHotSlotCfg["mine"], tHotSlotCfg["others"];
 
-		if not tHotInfo[1] then
-			twipe(tHotInfo);
-			VUHDO_MY_HOTS[aUnit][tHotCmpName] = nil;
-		end
-	end
+							if tIsMine and not tIsOthers then
+								tSourceType = VUHDO_UNIT_HOT_TYPE_MINE;
+							elseif not tIsMine and tIsOthers then
+								tSourceType = VUHDO_UNIT_HOT_TYPE_OTHERS;
+							elseif tIsMine and tIsOthers then
+								tSourceType = VUHDO_UNIT_HOT_TYPE_BOTH;
+							end
+						end
 
-	-- Others
-	for tHotCmpName, tHotInfo in pairs(VUHDO_OTHER_HOTS[aUnit]) do
-		VUHDO_updateHotIcons(aUnit, tHotCmpName, tHotInfo[1], tHotInfo[2], tHotInfo[3], tHotInfo[4], 2, nil, nil, nil, nil, nil, nil);
-
-		if not tHotInfo[1] then
-			twipe(tHotInfo);
-			VUHDO_OTHER_HOTS[aUnit][tHotCmpName] = nil;
-		end
-	end
-
-	-- Own+Others
-	for tHotCmpName, tHotInfo in pairs(VUHDO_MY_AND_OTHERS_HOTS[aUnit]) do
-		VUHDO_updateHotIcons(aUnit, tHotCmpName, tHotInfo[1], tHotInfo[2], tHotInfo[3], tHotInfo[4], 3, nil, nil, nil, nil, nil, nil);
-
-		if not tHotInfo[1] then
-			twipe(tHotInfo);
-			VUHDO_MY_AND_OTHERS_HOTS[aUnit][tHotCmpName] = nil;
+						if tSourceType > 0 then
+							VUHDO_updateHot(tPanelNum, aUnit, tResolvedUnit, tIndex, tHotName, tSourceType, tNow);
+						end
+					end
+				end
+			end
 		end
 	end
 
 end
+
 
 
 --
@@ -828,22 +1497,10 @@ end
 
 
 --
-function VUHDO_updateAllHoTs()
-	if sIsSuspended then return; end
-
-	twipe(sSwiftmendUnits);
-	for tUnit, tInfo in pairs(VUHDO_RAID) do
-		VUHDO_updateHots(tUnit, tInfo);
-	end
-end
-
-
-
---
 function VUHDO_removeAllHots()
 	local tButton;
 	local tCnt2;
-	for tCnt = 1, 10 do
+	for tCnt = 1, 10 do -- VUHDO_MAX_PANELS
 		if VUHDO_getActionPanel(tCnt) then
 			if VUHDO_isPanelVisible(tCnt) then
 
@@ -867,12 +1524,78 @@ end
 
 
 --
-function VUHDO_resetHotBuffCache()
-	twipe(sBuffs2Hots);
+local tStart;
+local tDuration;
+local tChargeInfo;
+local function VUHDO_updateSwiftmendCooldown()
+
+	if not sIsPlayerKnowsSwiftmend then
+		return;
+	end
+
+	tChargeInfo = GetSpellCharges(VUHDO_SPELL_ID.SWIFTMEND);
+
+	if tChargeInfo then
+		if tChargeInfo.currentCharges > 0 then
+			sIsPlayerCanCastSwiftmend = true;
+		else
+			sIsPlayerCanCastSwiftmend = false;
+		end
+	elseif not sSwiftmendCooldown[0] or not sSwiftmendCooldown[1] then
+		tStart, tDuration = GetSpellCooldown(VUHDO_SPELL_ID.SWIFTMEND);
+
+		if (tStart == nil and tDuration == nil) or (tStart > 0 and tDuration > 1.5) then
+			sSwiftmendCooldown[0], sSwiftmendCooldown[1] = tStart, tDuration;
+
+			sIsPlayerCanCastSwiftmend = false;
+		else
+			sIsPlayerCanCastSwiftmend = true;
+		end
+	elseif (sSwiftmendCooldown[0] + sSwiftmendCooldown[1] - GetTime()) <= 0 then
+		sSwiftmendCooldown[0], sSwiftmendCooldown[1] = nil, nil;
+
+		sIsPlayerCanCastSwiftmend = true;
+	else
+		sIsPlayerCanCastSwiftmend = false;
+	end
+
 end
 
 
 
+--
 function VUHDO_isUnitSwiftmendable(aUnit)
-	return sSwiftmendUnits[aUnit];
+
+	if sIsPlayerKnowsSwiftmend and sIsPlayerCanCastSwiftmend and ((sSwiftmendUnits[aUnit] or 0) > 0) then
+		return true;
+	else
+		return false;
+	end
+
+end
+
+
+
+--
+function VUHDO_updateAllHoTs(aClustersOnly)
+
+	if sIsSuspended then
+		return;
+	end
+
+	VUHDO_updateSwiftmendCooldown();
+
+	for tUnit, tInfo in pairs(VUHDO_RAID) do
+		if not aClustersOnly then
+			VUHDO_updateHots(tUnit, tInfo);
+		end
+
+		if VUHDO_shouldScanUnit(tUnit) then
+			-- Clusters
+			if sIsClusterIcons then
+				VUHDO_updateAllClusterIcons(tUnit, tInfo);
+			end
+		end
+	end
+
 end

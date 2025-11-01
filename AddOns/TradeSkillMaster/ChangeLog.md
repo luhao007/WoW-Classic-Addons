@@ -1,5 +1,5 @@
-## v4.13.21 Changes
+## v4.14.45 Changes
 
-* [Wrath] Fixed issue related to the gold cap being increased
+* [Classic] Update for patch 1.15.8
 
 [Known Issues](https://support.tradeskillmaster.com/en_US/known_issues)

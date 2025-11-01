@@ -6,7 +6,7 @@
 
 local TSM = select(2, ...) ---@type TSM
 local UI = TSM:NewPackage("UI")
-local UIUtils = TSM.Include("UI.UIUtils")
+local UIUtils = TSM.LibTSMUI:Include("Util.UIUtils")
 local ANALYTICS_UI_NAMES = {
 	"auction",
 	"banking",

@@ -25,6 +25,7 @@ app.DefaultColors = {
 	RemovedWithPatch = "ffFEC1C0",	-- General channel color
 	AddedWithPatch = "ffC0fEC1",	-- Triad permutation of General channel color
 	Mount = "ffb19cd9",
+	Illusion = "ffff80ff",
 	Renown = "ff00bff3",
 	Unavailable = "ff808080",
 	SymLink = "ffccccff",
@@ -45,11 +46,6 @@ app.SetCustomColors = function(colorTable)
 end
 
 app.SetCustomColors()
-
-app.ccColors = {};
-for k,v in pairs (app.DefaultColors) do
-	app.ccColors[k] = "|c"..v;
-end;
 
 -- Blizzard colours
 

@@ -1,10 +1,13 @@
-## Interface: 30405
+## Interface: 50502
 ## Author: MysticalOS
 
 ## Title: |cffffe00a<|r|cffff7d0aDBM|r|cffffe00a>|r |cff69ccf0World Events|r
-## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r |cFFFFFFFF副本助手|r |cFF69CCF0世界事件|r
+## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r|cFFFFFFFF副本助手|r |cFF69CCF0世界事件|r
 
 ## IconTexture: Interface\AddOns\DBM-Core\textures\dbm_airhorn
+
+## Category: DBM
+## Category-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r
 
 ## RequiredDeps: DBM-Core
 ## LoadOnDemand: 1
@@ -39,7 +42,7 @@
 ## X-DBM-Mod-Name-ptBR: Eventos Mundiais
 ## X-DBM-Mod-Name-frFR: Évènements Mondiaux
 ## X-DBM-Mod-Name-itIT: Eventi Mondiali
-## X-DBM-Mod-MapID: 230,189,33,547,530
+## X-DBM-Mod-MapID: 230,189,33,547,530,974
 ## X-DBM-Mod-Sort: 1054
 ## X-DBM-Mod-LoadCID: 20130,18166
 ## X-DBM-Mod-MinCoreRevision: 12473

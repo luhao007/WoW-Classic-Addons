@@ -309,6 +309,7 @@ local CVarsList1 = {
 	{FULL_SCREEN_GLOW,"ffxGlow","1","0",OPTION_TOOLTIP_FULL_SCREEN_GLOW,false},
 	{DEATH_EFFECT,"ffxDeath","1","0",OPTION_TOOLTIP_DEATH_EFFECT,false},
 	{"新版TAB","TargetNearestUseNew","1","0","使用7.2版后的TAB选取目标功能,战斗中不会Tab到战斗外目标,不会Tab到你的角色或镜头看不到的目标。\n关闭后将启用旧版的选取最近目标。",false},
+	{"能详细提示","UberTooltips","1","0","启用技能详细提示",false},
 	{"反河蟹","overrideArchive","0","1","恢复某些模型的和谐之前的样子，例如骷髅药水不再是长肉的骷髅",true},
 }
 if PIG_MaxTocversion(100000,true) then

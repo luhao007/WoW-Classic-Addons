@@ -5,32 +5,41 @@
 -- ------------------------------------------------------------------------------ --
 
 local TSM = select(2, ...) ---@type TSM
-local General = TSM.Tooltip:NewPackage("General")
-local Environment = TSM.Include("Environment")
-local L = TSM.Include("Locale").GetTable()
-local DisenchantInfo = TSM.Include("Data.DisenchantInfo")
-local TempTable = TSM.Include("Util.TempTable")
-local ItemString = TSM.Include("Util.ItemString")
-local Wow = TSM.Include("Util.Wow")
-local GroupPath = TSM.Include("Util.GroupPath")
-local ItemInfo = TSM.Include("Service.ItemInfo")
-local CustomPrice = TSM.Include("Service.CustomPrice")
-local Conversions = TSM.Include("Service.Conversions")
-local Inventory = TSM.Include("Service.Inventory")
-local AltTracking = TSM.Include("Service.AltTracking")
-local BagTracking = TSM.Include("Service.BagTracking")
-local MailTracking = TSM.Include("Service.MailTracking")
-local AuctionTracking = TSM.Include("Service.AuctionTracking")
-local Settings = TSM.Include("Service.Settings")
+local General = TSM.Tooltip:NewPackage("General") ---@type AddonPackage
+local ClientInfo = TSM.LibTSMWoW:Include("Util.ClientInfo")
+local L = TSM.Locale.GetTable()
+local TempTable = TSM.LibTSMUtil:Include("BaseType.TempTable")
+local ItemString = TSM.LibTSMTypes:Include("Item.ItemString")
+local SessionInfo = TSM.LibTSMWoW:Include("Util.SessionInfo")
+local Operation = TSM.LibTSMTypes:Include("Operation")
+local Group = TSM.LibTSMTypes:Include("Group")
+local GroupOperation = TSM.LibTSMTypes:Include("GroupOperation")
+local Conversion = TSM.LibTSMTypes:Include("Item.Conversion")
+local CustomString = TSM.LibTSMTypes:Include("CustomString")
+local ItemInfo = TSM.LibTSMService:Include("Item.ItemInfo")
+local VendorBuy = TSM.LibTSMService:Include("Item.VendorBuy")
+local Conversions = TSM.LibTSMApp:Include("Service.Conversions")
+local Inventory = TSM.LibTSMApp:Include("Service.Inventory")
+local AltTracking = TSM.LibTSMApp:Include("Service.AltTracking")
+local BagTracking = TSM.LibTSMService:Include("Inventory.BagTracking")
+local WarbankTracking = TSM.LibTSMService:Include("Inventory.WarbankTracking")
+local Auction = TSM.LibTSMService:Include("Auction")
+local Mail = TSM.LibTSMService:Include("Mail")
+local Theme = TSM.LibTSMService:Include("UI.Theme")
 local private = {
 	tooltipInfo = nil,
 	settings = nil,
 }
 local CONVERT_METHODS = {
-	Conversions.METHOD.MILL,
-	Conversions.METHOD.PROSPECT,
-	Conversions.METHOD.TRANSFORM,
-	Conversions.METHOD.VENDOR_TRADE,
+	Conversion.METHOD.MILL,
+	Conversion.METHOD.PROSPECT,
+	Conversion.METHOD.TRANSFORM,
+	Conversion.METHOD.VENDOR_TRADE,
+}
+local IGNORE_INVENTORY_ITEMS = {
+	["i:6948"] = true, -- Hearthstone
+	["i:110560"] = true, -- Garrison Hearthstone
+	["i:140192"] = true, -- Dalaran Hearthstone
 }
 
 
@@ -39,46 +48,55 @@ local CONVERT_METHODS = {
 -- Module Functions
 -- ============================================================================
 
-function General.OnInitialize()
-	private.settings = Settings.NewView()
+function General.OnInitialize(settingsDB)
+	private.settings = settingsDB:NewView()
 		:AddKey("sync", "internalData", "classKey")
 		:AddKey("global", "userData", "customPriceSources")
+		:AddKey("global", "userData", "customPriceSourceFormat")
 		:AddKey("global", "coreOptions", "destroyValueSource")
+end
 
+function General.OnEnable()
 	local tooltipInfo = TSM.Tooltip.CreateInfo()
 		:SetHeadings(L["TSM General Info"])
 	private.tooltipInfo = tooltipInfo
-	CustomPrice.RegisterCustomSourceCallback(private.UpdateCustomSources)
+	CustomString.RegisterCustomSourceCallback(private.UpdateCustomSources)
 
-	-- group name
+	-- Group name
 	tooltipInfo:AddSettingEntry("groupNameTooltip", nil, private.PopulateGroupLine)
 
-	-- operations
-	for _, moduleName in TSM.Operations.ModuleIterator() do
+	-- Operations
+	for _, moduleName in Operation.TypeIterator() do
 		tooltipInfo:AddSettingEntry("operationTooltips."..moduleName, false, private.PopulateOperationLine, moduleName)
 	end
 
-	-- destroy info
+	-- Destroy info
 	tooltipInfo:AddSettingValueEntry("destroyTooltipFormat", "full", "none", private.PopulateFullDestroyLines)
 	tooltipInfo:AddSettingValueEntry("destroyTooltipFormat", "simple", "none", private.PopulateSimpleDestroyLines)
 
-	-- convert info
+	-- Convert info
 	tooltipInfo:AddSettingValueEntry("convertTooltipFormat", "full", "none", private.PopulateFullConvertLines)
 	tooltipInfo:AddSettingValueEntry("convertTooltipFormat", "simple", "none", private.PopulateSimpleConvertLines)
 
-	-- vendor prices
+	-- Vendor prices
 	tooltipInfo:AddSettingEntry("vendorBuyTooltip", nil, private.PopulateVendorBuyLine)
 	tooltipInfo:AddSettingEntry("vendorSellTooltip", nil, private.PopulateVendorSellLine)
 
-	-- custom sources
+	-- Custom sources
 	private.UpdateCustomSources()
 
-	-- inventory info
+	-- Inventory info
 	tooltipInfo:AddSettingValueEntry("inventoryTooltipFormat", "full", "none", private.PopulateFullInventoryLines)
 	tooltipInfo:AddSettingValueEntry("inventoryTooltipFormat", "simple", "none", private.PopulateSimpleInventoryLine)
 
 	TSM.Tooltip.Register(tooltipInfo)
 end
+
+
+
+-- ============================================================================
+-- Private Helper Functions
+-- ============================================================================
 
 function private.UpdateCustomSources()
 	private.tooltipInfo:DeleteSettingsByKeyMatch("^customPriceTooltips%.")
@@ -93,37 +111,31 @@ function private.UpdateCustomSources()
 	TempTable.Release(customPriceSources)
 end
 
-
-
--- ============================================================================
--- Private Helper Functions
--- ============================================================================
-
 function private.PopulateGroupLine(tooltip, itemString)
-	-- add group / operation info
+	-- Add group / operation info
 	local groupPath, itemInGroup = nil, nil
 	if itemString == ItemString.GetPlaceholder() then
-		-- example tooltip
+		-- Example tooltip
 		groupPath = L["Example"]
 		itemInGroup = true
 	else
-		groupPath = TSM.Groups.GetPathByItem(itemString)
-		if groupPath == TSM.CONST.ROOT_GROUP_PATH then
+		groupPath = Group.GetPathByItem(itemString)
+		if groupPath == Group.GetRootPath() then
 			groupPath = nil
 		else
-			itemInGroup = TSM.Groups.IsItemInGroup(itemString)
+			itemInGroup = Group.IsItemInGroup(itemString)
 		end
 	end
 	if groupPath then
 		local leftText = nil
 		if itemInGroup then
 			leftText = GROUP
-		elseif ItemString.ParseLevel(TSM.Groups.TranslateItemString(itemString)) then
+		elseif ItemString.ParseLevel(Group.TranslateItemString(itemString)) then
 			leftText = GROUP.." ("..L["Item Level"]..")"
 		else
 			leftText = GROUP.." ("..L["Base Item"]..")"
 		end
-		tooltip:AddTextLine(leftText, GroupPath.Format(groupPath))
+		tooltip:AddTextLine(leftText, Group.FormatPath(groupPath))
 	end
 end
 
@@ -131,23 +143,23 @@ function private.PopulateOperationLine(tooltip, itemString, moduleName)
 	assert(moduleName)
 	local operations = TempTable.Acquire()
 	if itemString == ItemString.GetPlaceholder() then
-		-- example tooltip
+		-- Example tooltip
 		tinsert(operations, L["Example"])
 	else
-		local groupPath = TSM.Groups.GetPathByItem(itemString)
-		if groupPath == TSM.CONST.ROOT_GROUP_PATH then
+		local groupPath = Group.GetPathByItem(itemString)
+		if groupPath == Group.GetRootPath() then
 			groupPath = nil
 		end
 		if not groupPath then
 			TempTable.Release(operations)
 			return
 		end
-		for _, operationName in TSM.Operations.GroupOperationIterator(moduleName, groupPath) do
+		for _, operationName in GroupOperation.OperationIterator(groupPath, moduleName) do
 			tinsert(operations, operationName)
 		end
 	end
 	if #operations > 0 then
-		tooltip:AddLine(format(#operations == 1 and L["%s operation"] or L["%s operations"], TSM.Operations.GetLocalizedName(moduleName)), tooltip:ApplyValueColor(table.concat(operations, ", ")))
+		tooltip:AddLine(format(#operations == 1 and L["%s operation"] or L["%s operations"], Operation.GetLocalizedName(moduleName)), tooltip:ApplyValueColor(table.concat(operations, ", ")))
 	end
 	TempTable.Release(operations)
 end
@@ -155,7 +167,7 @@ end
 function private.PopulateFullDestroyLines(tooltip, itemString)
 	private.PopulateSimpleDestroyLines(tooltip, itemString)
 	if itemString == ItemString.GetPlaceholder() then
-		-- example tooltip
+		-- Example tooltip
 		tooltip:StartSection()
 		tooltip:AddSubItemValueLine(ItemString.GetPlaceholder(), 2, 10, 1, 1, 20)
 		tooltip:EndSection()
@@ -167,25 +179,25 @@ function private.PopulateFullDestroyLines(tooltip, itemString)
 	end
 
 	tooltip:StartSection()
-	if method == Conversions.METHOD.DISENCHANT then
+	if method == Conversion.METHOD.DISENCHANT then
 		local classId = ItemInfo.GetClassId(itemString)
 		local quality = ItemInfo.GetQuality(itemString)
-		local itemLevel = Environment.IsRetail() and ItemInfo.GetItemLevel(itemString) or ItemInfo.GetItemLevel(ItemString.GetBase(itemString))
-		local expansion = Environment.IsRetail() and ItemInfo.GetExpansion(itemString) or nil
-		for targetItemString in DisenchantInfo.TargetItemIterator() do
-			local amountOfMats, matRate, minAmount, maxAmount = DisenchantInfo.GetTargetItemSourceInfo(targetItemString, classId, quality, itemLevel, expansion)
+		local itemLevel = ClientInfo.IsRetail() and ItemInfo.GetItemLevel(itemString) or ItemInfo.GetItemLevel(ItemString.GetBase(itemString))
+		local expansion = ClientInfo.IsRetail() and ItemInfo.GetExpansion(itemString) or nil
+		for targetItemString in Conversion.DisenchantTargetItemIterator() do
+			local amountOfMats, matRate, minAmount, maxAmount = Conversions.GetDisenchantTargetItemSourceInfo(targetItemString, classId, quality, itemLevel, expansion)
 			if amountOfMats then
-				local matValue = CustomPrice.GetSourcePrice(targetItemString, private.settings.destroyValueSource) or 0
+				local matValue = CustomString.GetSourceValue(private.settings.destroyValueSource, targetItemString) or 0
 				if matValue > 0 then
 					tooltip:AddSubItemValueLine(targetItemString, matValue, amountOfMats, matRate, minAmount, maxAmount)
 				end
 			end
 		end
 	else
-		for targetItemString, amountOfMats, matRate, minAmount, maxAmount, targetQuality, sourceQuality in Conversions.TargetItemsByMethodIterator(itemString, method) do
-			local matValue = CustomPrice.GetSourcePrice(targetItemString, private.settings.destroyValueSource) or TSM.Crafting.GetConversionsValue(targetItemString, private.settings.destroyValueSource) or 0
+		for targetItemString, amountOfMats, matRate, minAmount, maxAmount, targetQuality, sourceQuality in Conversion.TargetItemsByMethodIterator(itemString, method) do
+			local matValue = CustomString.GetSourceValue(private.settings.destroyValueSource, targetItemString) or TSM.Crafting.GetConversionsValue(targetItemString, private.settings.destroyValueSource) or 0
 			if matValue > 0 then
-				local quality = sourceQuality and TSM.Crafting.DFCrafting.GetExpectedSalvageResult(method, sourceQuality)
+				local quality = sourceQuality and TSM.Crafting.Quality.GetExpectedSalvageResult(method, sourceQuality)
 				if not targetQuality or targetQuality == quality then
 					tooltip:AddSubItemValueLine(targetItemString, matValue, amountOfMats, matRate, minAmount, maxAmount)
 				end
@@ -198,9 +210,9 @@ end
 function private.PopulateSimpleDestroyLines(tooltip, itemString)
 	local value, method = nil, nil
 	if itemString == ItemString.GetPlaceholder() then
-		-- example tooltip
+		-- Example tooltip
 		value = 20
-		method = Conversions.METHOD.PROSPECT
+		method = Conversion.METHOD.PROSPECT
 	else
 		value, method = TSM.Crafting.GetConversionsValue(itemString, private.settings.destroyValueSource)
 	end
@@ -209,15 +221,15 @@ function private.PopulateSimpleDestroyLines(tooltip, itemString)
 	end
 
 	local label = nil
-	if method == Conversions.METHOD.DISENCHANT then
+	if method == Conversion.METHOD.DISENCHANT then
 		label = L["Disenchant Value"]
-	elseif method == Conversions.METHOD.MILL then
+	elseif method == Conversion.METHOD.MILL then
 		label = L["Mill Value"]
-	elseif method == Conversions.METHOD.PROSPECT then
+	elseif method == Conversion.METHOD.PROSPECT then
 		label = L["Prospect Value"]
-	elseif method == Conversions.METHOD.TRANSFORM then
+	elseif method == Conversion.METHOD.TRANSFORM then
 		label = L["Transform Value"]
-	elseif method == Conversions.METHOD.VENDOR_TRADE then
+	elseif method == Conversion.METHOD.VENDOR_TRADE then
 		label = L["Vendor Trade Value"]
 	else
 		error("Invalid method: "..tostring(method))
@@ -227,7 +239,7 @@ end
 
 function private.PopulateFullConvertLines(tooltip, itemString)
 	if itemString == ItemString.GetPlaceholder() then
-		-- example tooltip
+		-- Example tooltip
 		tooltip:AddTextLine(format(L["Convert Value (%s)"], L["Transform"]), 55)
 		tooltip:StartSection()
 		tooltip:AddSubItemValueLine(ItemString.GetPlaceholder(), 55, 1)
@@ -242,7 +254,7 @@ function private.PopulateFullConvertLines(tooltip, itemString)
 		tooltip:StartSection()
 		for _, sourceItemString in ipairs(sources) do
 			local price = sources[sourceItemString]
-			tooltip:AddSubItemValueLine(sourceItemString, price, 1 / Conversions.GetRate(sourceItemString, itemString, method))
+			tooltip:AddSubItemValueLine(sourceItemString, price, 1 / Conversion.GetRate(sourceItemString, itemString, method))
 		end
 		tooltip:EndSection()
 	end
@@ -251,7 +263,7 @@ end
 
 function private.PopulateSimpleConvertLines(tooltip, itemString)
 	if itemString == ItemString.GetPlaceholder() then
-		-- example tooltip
+		-- Example tooltip
 		tooltip:AddTextLine(format(L["Convert Value (%s)"], L["Transform"]), 55)
 		return
 	end
@@ -267,8 +279,8 @@ function private.GetConvertTooltipInfo(itemString, sourcesResultTbl)
 	local minValue, method = nil, nil
 	for i = 1, #CONVERT_METHODS do
 		method = CONVERT_METHODS[i]
-		for sourceItemString, rate in Conversions.SourceItemsByMethodIterator(itemString, method) do
-			local value = CustomPrice.GetSourcePrice(sourceItemString, private.settings.destroyValueSource)
+		for sourceItemString, rate in Conversion.SourceItemsByMethodIterator(itemString, method) do
+			local value = CustomString.GetSourceValue(private.settings.destroyValueSource, sourceItemString)
 			if value then
 				if sourcesResultTbl then
 					tinsert(sourcesResultTbl, sourceItemString)
@@ -285,13 +297,13 @@ function private.GetConvertTooltipInfo(itemString, sourcesResultTbl)
 		return nil, nil
 	end
 	local methodStr = nil
-	if method == Conversions.METHOD.MILL then
+	if method == Conversion.METHOD.MILL then
 		methodStr = L["Mill"]
-	elseif method == Conversions.METHOD.PROSPECT then
+	elseif method == Conversion.METHOD.PROSPECT then
 		methodStr = L["Prospect"]
-	elseif method == Conversions.METHOD.TRANSFORM then
+	elseif method == Conversion.METHOD.TRANSFORM then
 		methodStr = L["Transform"]
-	elseif method == Conversions.METHOD.VENDOR_TRADE then
+	elseif method == Conversion.METHOD.VENDOR_TRADE then
 		methodStr = L["Vendor Trade"]
 	else
 		error("Invalid method")
@@ -302,10 +314,10 @@ end
 function private.PopulateVendorBuyLine(tooltip, itemString)
 	local value = nil
 	if itemString == ItemString.GetPlaceholder() then
-		-- example item
+		-- Example item
 		value = 50
 	else
-		value = ItemInfo.GetVendorBuy(itemString) or 0
+		value = VendorBuy.Get(itemString) or 0
 	end
 	if value > 0 then
 		tooltip:AddItemValueLine(L["Vendor Buy Price"], value)
@@ -315,7 +327,7 @@ end
 function private.PopulateVendorSellLine(tooltip, itemString)
 	local value = nil
 	if itemString == ItemString.GetPlaceholder() then
-		-- example item
+		-- Example item
 		value = 8
 	else
 		value = ItemInfo.GetVendorSell(itemString) or 0
@@ -325,6 +337,7 @@ function private.PopulateVendorSellLine(tooltip, itemString)
 	end
 end
 
+---@param tooltip TooltipBuilder
 function private.PopulateCustomPriceLine(tooltip, itemString, name)
 	assert(name)
 	if not private.settings.customPriceSources[name] then
@@ -333,19 +346,26 @@ function private.PopulateCustomPriceLine(tooltip, itemString, name)
 	end
 	local value = nil
 	if itemString == ItemString.GetPlaceholder() then
-		-- example tooltip
+		-- Example tooltip
 		value = 10
 	else
-		value = CustomPrice.GetValue(name, itemString) or 0
+		value = CustomString.GetValue(name, itemString) or 0
 	end
 	if value > 0 then
-		tooltip:AddItemValueLine(L["Custom Source"].." ("..name..")", value)
+		local format = private.settings.customPriceSourceFormat[name]
+		if format == "gold" then
+			tooltip:AddItemValueLine(L["Custom Source"].." ("..name..")", value)
+		elseif format == "number" then
+			tooltip:AddLine(L["Custom Source"].." ("..name..")", tooltip:ApplyValueColor(FormatLargeNumber(value)))
+		elseif format == "pct" then
+			tooltip:AddLine(L["Custom Source"].." ("..name..")", Theme.GetAuctionPercentColor(value):ColorText(FormatLargeNumber(value).."%"))
+		end
 	end
 end
 
 function private.PopulateFullInventoryLines(tooltip, itemString)
 	if itemString == ItemString.GetPlaceholder() then
-		-- example tooltip
+		-- Example tooltip
 		local totalNum = 0
 		local playerName = UnitName("player")
 		local bag, bank, auction, mail, guildQuantity = 5, 4, 4, 9, 1
@@ -363,6 +383,8 @@ function private.PopulateFullInventoryLines(tooltip, itemString)
 		tooltip:AddLine(L["Example"], format(L["%s in guild vault"], tooltip:ApplyValueColor(guildQuantity)))
 		tooltip:EndSection()
 		return
+	elseif IGNORE_INVENTORY_ITEMS[itemString] then
+		return
 	end
 
 	-- Calculate the total number
@@ -379,60 +401,72 @@ function private.PopulateFullInventoryLines(tooltip, itemString)
 
 	-- Add lines for guilds
 	for _, guildName, guildQuantity in AltTracking.GuildQuantityIterator(itemString) do
-		tooltip:AddLine(guildName, format(L["%s in guild vault"], tooltip:ApplyValueColor(guildQuantity)))
+		tooltip:AddLine(guildName, tooltip:ApplyValueColor(guildQuantity))
+	end
+
+	-- Add line for the warbank
+	local warbankQuantity = WarbankTracking.GetQuantity(itemString)
+	if warbankQuantity > 0 then
+		tooltip:AddLine(L["Warbank"], tooltip:ApplyValueColor(warbankQuantity))
 	end
 
 	tooltip:EndSection()
 end
 
 function private.AddInventoryLine(tooltip, itemString, character, factionrealm)
-	local bag, bank, reagentBank, auction, mail = nil, nil, nil, nil, nil
+	local bag, bank, auction, mail = nil, nil, nil, nil
 	if character then
 		bag = AltTracking.GetBagQuantity(itemString, character, factionrealm)
 		bank = AltTracking.GetBankQuantity(itemString, character, factionrealm)
-		reagentBank = AltTracking.GetReagentBankQuantity(itemString, character, factionrealm)
 		auction = AltTracking.GetAuctionQuantity(itemString, character, factionrealm)
 		mail = AltTracking.GetMailQuantity(itemString, character, factionrealm)
 	else
 		bag = BagTracking.GetBagQuantity(itemString)
 		bank = BagTracking.GetBankQuantity(itemString)
-		reagentBank = BagTracking.GetReagentBankQuantity(itemString)
-		auction = AuctionTracking.GetQuantity(itemString)
-		mail = MailTracking.GetQuantity(itemString)
+		auction = Auction.GetQuantity(itemString)
+		mail = Mail.GetQuantity(itemString)
 	end
-	local playerTotal = bag + bank + reagentBank + auction + mail
+	local playerTotal = bag + bank + auction + mail
 	if playerTotal <= 0 then
 		return
 	end
-	local characterStr = character and Wow.FormatCharacterName(character, factionrealm) or Wow.GetCharacterName()
-	local classKey = private.settings:GetForScopeKey("classKey", character or Wow.GetCharacterName(), factionrealm)
+	local characterStr = character and SessionInfo.FormatCharacterName(character, factionrealm) or SessionInfo.GetCharacterName()
+	local classKey = private.settings:GetForScopeKey("classKey", character or SessionInfo.GetCharacterName(), factionrealm)
 	characterStr = RAID_CLASS_COLORS[classKey] and "|c"..RAID_CLASS_COLORS[classKey].colorStr..characterStr.."|r" or characterStr
-	local rightText = private.RightTextFormatHelper(tooltip, L["%s (%s bags, %s bank, %s AH, %s mail)"], playerTotal, bag, bank + reagentBank, auction, mail)
+	local rightText = private.RightTextFormatHelper(tooltip, L["%s (%s bags, %s bank, %s AH, %s mail)"], playerTotal, bag, bank, auction, mail)
 	tooltip:AddLine(characterStr, rightText)
 end
 
 function private.PopulateSimpleInventoryLine(tooltip, itemString)
 	if itemString == ItemString.GetPlaceholder() then
-		-- example tooltip
-		local totalPlayer, totalAlt, totalGuild, totalAuction = 18, 0, 1, 4
+		-- Example tooltip
+		local totalPlayer, totalAlt, totalGuild, totalAuction, warbank = 18, 0, 1, 4, 2
 		local totalNum2 = totalPlayer + totalAlt + totalGuild + totalAuction
 		local rightText2 = nil
-		if Environment.HasFeature(Environment.FEATURES.GUILD_BANK) then
+		if ClientInfo.HasFeature(ClientInfo.FEATURES.WARBAND_BANK) then
+			rightText2 = private.RightTextFormatHelper(tooltip, L["%s (%s player, %s alts, %s guild, %s warbank, %s AH)"], totalNum2, totalPlayer, totalAlt, totalGuild, warbank, totalAuction)
+		elseif ClientInfo.HasFeature(ClientInfo.FEATURES.GUILD_BANK) then
 			rightText2 = private.RightTextFormatHelper(tooltip, L["%s (%s player, %s alts, %s guild, %s AH)"], totalNum2, totalPlayer, totalAlt, totalGuild, totalAuction)
 		else
 			rightText2 = private.RightTextFormatHelper(tooltip, L["%s (%s player, %s alts, %s AH)"], totalNum2, totalPlayer, totalAlt, totalAuction)
 		end
 		tooltip:AddLine(L["Inventory"], rightText2)
+		return
+	elseif IGNORE_INVENTORY_ITEMS[itemString] then
+		return
 	end
 
 	local totalAlt, totalAltAuction = AltTracking.GetQuantity(itemString)
-	local totalPlayer = BagTracking.GetBagQuantity(itemString) + BagTracking.GetBankQuantity(itemString) + BagTracking.GetReagentBankQuantity(itemString) + MailTracking.GetQuantity(itemString)
-	local totalAuction = AuctionTracking.GetQuantity(itemString) + totalAltAuction
+	local totalPlayer = BagTracking.GetBagQuantity(itemString) + BagTracking.GetBankQuantity(itemString) + Mail.GetQuantity(itemString)
+	local totalAuction = Auction.GetQuantity(itemString) + totalAltAuction
 	local totalGuild = AltTracking.GetTotalGuildQuantity(itemString)
-	local totalNum = totalPlayer + totalAlt + totalGuild + totalAuction
+	local warbank = WarbankTracking.GetQuantity(itemString)
+	local totalNum = totalPlayer + totalAlt + totalGuild + totalAuction + warbank
 	if totalNum > 0 then
 		local rightText = nil
-		if Environment.HasFeature(Environment.FEATURES.GUILD_BANK) then
+		if ClientInfo.HasFeature(ClientInfo.FEATURES.WARBAND_BANK) then
+			rightText = private.RightTextFormatHelper(tooltip, L["%s (%s player, %s alts, %s guild, %s warbank, %s AH)"], totalNum, totalPlayer, totalAlt, totalGuild, warbank, totalAuction)
+		elseif ClientInfo.HasFeature(ClientInfo.FEATURES.GUILD_BANK) then
 			rightText = private.RightTextFormatHelper(tooltip, L["%s (%s player, %s alts, %s guild, %s AH)"], totalNum, totalPlayer, totalAlt, totalGuild, totalAuction)
 		else
 			rightText = private.RightTextFormatHelper(tooltip, L["%s (%s player, %s alts, %s AH)"], totalNum, totalPlayer, totalAlt, totalAuction)

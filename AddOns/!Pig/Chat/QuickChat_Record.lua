@@ -133,19 +133,23 @@ function QuickChatfun.QuickBut_Jilu()
 	end
 
 	--密语记录UI================
-	local UIname,www,hhh,hang_Height,hang_NUM = "PIG_WhisperRecord",170,310,22,12
+	local UIname,www,hang_Height,hang_NUM = "PIG_WhisperRecord",170,22,12
 	Data.UILayout[UIname]={"CENTER","CENTER",0,70}
-	local miyijiluF=PIGFrame(UIParent,nil,{www,hhh},UIname,true)
+	local miyijiluF=PIGFrame(UIParent,nil,{www,(hang_Height+2)*hang_NUM+20},UIname,true)
 	Create.PIG_SetPoint(UIname)
 	miyijiluF:PIGSetBackdrop(0.66)
 	miyijiluF:PIGSetMovable()
 	miyijiluF:PIGClose()
 	miyijiluF.biaoti=PIGFontString(miyijiluF,{"TOP", miyijiluF, "TOP", 0, -4},L["CHAT_WHISPER"]..GUILD_BANK_LOG)
 	miyijiluF.biaoti:SetTextColor(1, 0.843, 0, 1);
-	miyijiluF.kaiguanOpen=PIGA["Chatjilu"]["WHISPER"]["Open"]
-	miyijiluF.tixingOpen=PIGA["Chatjilu"]["WHISPER"]["Tips"]
-	miyijiluF.jichengBlackOpen=PIGA["Chatjilu"]["WHISPER"]["jichengBlack"]
-
+	function miyijiluF:load_peizh()
+		self.kaiguanOpen=PIGA["Chatjilu"]["WHISPER"]["Open"]
+		self.tixingOpen=PIGA["Chatjilu"]["WHISPER"]["Tips"]
+		self.jichengBlackOpen=PIGA["Chatjilu"]["WHISPER"]["jichengBlack"]
+		self.AudioOpen=PIGA["Chatjilu"]["WHISPER"]["AudioOpen"]
+		self.AudioID=PIGA["Chatjilu"]["WHISPER"]["AudioID"]
+	end
+	miyijiluF:load_peizh()
 	miyijiluF.shezhi = CreateFrame("Button",nil,miyijiluF);
 	miyijiluF.shezhi:SetHighlightTexture("interface/buttons/ui-common-mousehilight.blp");
 	miyijiluF.shezhi:SetSize(18,18);
@@ -167,7 +171,9 @@ function QuickChatfun.QuickBut_Jilu()
 			miyijiluF.shezhiF:Show();
 		end
 	end)
-	miyijiluF.shezhiF=PIGFrame(miyijiluF.shezhi,{"TOPRIGHT",miyijiluF,"TOPLEFT",-1,0},{www,hhh})
+	miyijiluF.shezhiF=PIGFrame(miyijiluF.shezhi,{"TOPRIGHT",miyijiluF,"TOPLEFT",-1,0})
+	miyijiluF.shezhiF:SetPoint("BOTTOMRIGHT",miyijiluF,"BOTTOMLEFT",-1,0);
+	miyijiluF.shezhiF:SetWidth(www)
 	miyijiluF.shezhiF:PIGSetBackdrop()
 	miyijiluF.shezhiF:PIGClose()
 	miyijiluF.shezhiF:Hide()
@@ -181,22 +187,61 @@ function QuickChatfun.QuickBut_Jilu()
 		else
 			PIGA["Chatjilu"]["WHISPER"]["Open"]=false 
 		end
+		miyijiluF:load_peizh()
 	end)
-	miyijiluF.shezhiF.tixing = PIGCheckbutton(miyijiluF.shezhiF,{"TOPLEFT", miyijiluF.shezhiF, "TOPLEFT", 10,-60},{L["CHAT_WHISPERTIXING"],L["CHAT_WHISPERTIXINGTOP"]})
-	miyijiluF.shezhiF.tixing:SetScript("OnClick", function (self)
-		if self:GetChecked() then
-			PIGA["Chatjilu"]["WHISPER"]["Tips"]=true 
-		else
-			PIGA["Chatjilu"]["WHISPER"]["Tips"]=false 
-		end
-	end)
-	miyijiluF.shezhiF.jichengBlack = PIGCheckbutton(miyijiluF.shezhiF,{"TOPLEFT", miyijiluF.shezhiF, "TOPLEFT", 10,-90},{"继承"..L["CHAT_FILTERS"]..SETTINGS,"继承过滤设置，被过滤["..WHISPER.."]将不会记录，(具体设置请在聊天过滤中设置，在密语按钮左边)"})
+	miyijiluF.shezhiF.jichengBlack = PIGCheckbutton(miyijiluF.shezhiF,{"TOPLEFT", miyijiluF.shezhiF, "TOPLEFT", 10,-60},{"继承"..L["CHAT_FILTERS"]..SETTINGS,"继承过滤设置，被过滤["..WHISPER.."]将不会记录，(具体设置请在聊天过滤中设置，在密语按钮左边)"})
 	miyijiluF.shezhiF.jichengBlack:SetScript("OnClick", function (self)
 		if self:GetChecked() then
 			PIGA["Chatjilu"]["WHISPER"]["jichengBlack"]=true 
 		else
 			PIGA["Chatjilu"]["WHISPER"]["jichengBlack"]=false 
 		end
+		miyijiluF:load_peizh()
+	end)
+	miyijiluF.shezhiF.tixing = PIGCheckbutton(miyijiluF.shezhiF,{"TOPLEFT", miyijiluF.shezhiF, "TOPLEFT", 10,-90},{L["CHAT_WHISPERTIXING"],L["CHAT_WHISPERTIXINGTOP"]})
+	miyijiluF.shezhiF.tixing:SetScript("OnClick", function (self)
+		if self:GetChecked() then
+			PIGA["Chatjilu"]["WHISPER"]["Tips"]=true 
+		else
+			PIGA["Chatjilu"]["WHISPER"]["Tips"]=false 
+		end
+		miyijiluF:load_peizh()
+	end)
+	local AudioData = {
+		{"提示音1","Interface/AddOns/"..addonName.."/Chat/Audio/1.ogg"},
+		{"提示音2","Interface/AddOns/"..addonName.."/Chat/Audio/2.ogg"},
+		{"提示音3","Interface/AddOns/"..addonName.."/Chat/Audio/3.ogg"},
+		{"提示音4","Interface/AddOns/"..addonName.."/Chat/Audio/4.ogg"},
+		{"提示音5","Interface/AddOns/"..addonName.."/Chat/Audio/5.ogg"},
+	}
+	miyijiluF.shezhiF.WhisperAudio =PIGCheckbutton(miyijiluF.shezhiF,{"TOPLEFT", miyijiluF.shezhiF, "TOPLEFT", 10,-120},{L["CHAT_WHISPERAUDIO"],L["CHAT_WHISPERAUDIOTOP"]})
+	miyijiluF.shezhiF.WhisperAudio:SetScript("OnClick", function (self)
+		if self:GetChecked() then
+			PIGA["Chatjilu"]["WHISPER"]["AudioOpen"]=true;	
+		else
+			PIGA["Chatjilu"]["WHISPER"]["AudioOpen"]=false;
+		end
+		miyijiluF:load_peizh()
+	end);
+	miyijiluF.shezhiF.WhisperAudio.xiala=PIGDownMenu(miyijiluF.shezhiF.WhisperAudio,{"TOPLEFT",miyijiluF.shezhiF.WhisperAudio.Text, "BOTTOMLEFT", 0,-4},{110,22})
+	function miyijiluF.shezhiF.WhisperAudio.xiala:PIGDownMenu_Update_But()
+		local info = {}
+		info.func = self.PIGDownMenu_SetValue
+		for i=1,#AudioData,1 do
+		    info.text, info.arg1 = AudioData[i][1], i
+		    info.checked = i==PIGA["Chatjilu"]["WHISPER"]["AudioID"]
+			self:PIGDownMenu_AddButton(info)
+		end 
+	end
+	function miyijiluF.shezhiF.WhisperAudio.xiala:PIGDownMenu_SetValue(value,arg1)
+		self:PIGDownMenu_SetText(value)
+		PIGA["Chatjilu"]["WHISPER"]["AudioID"]=arg1
+		miyijiluF:load_peizh()
+		PIGCloseDropDownMenus()
+	end
+	miyijiluF.shezhiF.WhisperAudio.PlayBut =PIGDiyBut(miyijiluF.shezhiF.WhisperAudio,{"LEFT",miyijiluF.shezhiF.WhisperAudio.xiala,"RIGHT",2,0},{24,24,nil,nil,"chatframe-button-icon-speaker-on",130757});
+	miyijiluF.shezhiF.WhisperAudio.PlayBut:SetScript("OnClick", function()
+		PIG_PlaySoundFile(AudioData[PIGA["Chatjilu"]["WHISPER"]["AudioID"]])
 	end)
 	---重置密语记录
 	miyijiluF.shezhiF.MIYUJILUBUT = PIGButton(miyijiluF.shezhiF, {"BOTTOMLEFT",miyijiluF.shezhiF,"BOTTOMLEFT",30,10},{76,20},L["ERROR_CLEAR"]..GUILD_BANK_LOG);  
@@ -205,8 +250,10 @@ function QuickChatfun.QuickBut_Jilu()
 	end);
 	miyijiluF.shezhiF:SetScript("OnShow", function (self)
 		self.kaiguan:SetChecked(PIGA["Chatjilu"]["WHISPER"]["Open"])
-		self.tixing:SetChecked(PIGA["Chatjilu"]["WHISPER"]["Tips"])
 		self.jichengBlack:SetChecked(PIGA["Chatjilu"]["WHISPER"]["jichengBlack"])
+		self.tixing:SetChecked(PIGA["Chatjilu"]["WHISPER"]["Tips"])
+		self.WhisperAudio:SetChecked(PIGA["Chatjilu"]["WHISPER"]["AudioOpen"]);
+		self.WhisperAudio.xiala:PIGDownMenu_SetText(AudioData[PIGA["Chatjilu"]["WHISPER"]["AudioID"]][1])
 	end)
 
 	--右键功能
@@ -216,7 +263,7 @@ function QuickChatfun.QuickBut_Jilu()
 	local beijingico=DropDownList1MenuBackdrop.NineSlice.Center:GetTexture()
 	local beijing1,beijing2,beijing3,beijing4=DropDownList1MenuBackdrop.NineSlice.Center:GetVertexColor()
 	local Biankuang1,Biankuang2,Biankuang3,Biankuang4=DropDownList1MenuBackdrop:GetBackdropBorderColor()
-	miyijiluF.RGN=PIGFrame(miyijiluF,nil,{caidanW,caidanH*#listName+12+16})
+	miyijiluF.RGN=PIGFrame(miyijiluF,nil,{caidanW,caidanH*#listName+24})
 	miyijiluF.RGN:SetFrameLevel(10)
 	miyijiluF.RGN:PIGSetBackdrop(0.9)
 	miyijiluF.RGN:SetScript("OnUpdate", function(self, ssss)
@@ -285,7 +332,7 @@ function QuickChatfun.QuickBut_Jilu()
 		local numBNetTotal = BNGetNumFriends()
 		for bnid=1,numBNetTotal do
 			local bninfo=C_BattleNet.GetAccountInfoByID(bnid)
-			if duibiID==bninfo.battleTag then
+			if bninfo and duibiID==bninfo.battleTag then
 				return bninfo.accountName,bnid
 			end
 		end
@@ -624,6 +671,9 @@ function QuickChatfun.QuickBut_Jilu()
 			end
 			if self.tixingOpen and not self:IsVisible() then
 				fuFrame.ChatJilu.Tex.animationGroup:Play()
+			end
+			if self.AudioOpen and not self:IsVisible() then
+				PIG_PlaySoundFile(AudioData[self.AudioID])
 			end
 		end
 		if arg12 then

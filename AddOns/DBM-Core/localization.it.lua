@@ -34,7 +34,8 @@ L.COPY_URL_DIALOG					= "Copia URL"
 --L.TEXT_ONLY_RANGE						= "Range frame is limited to text only due to API restrictions in this area."
 L.NO_RANGE					= "Il Radar Distanziometro non può essere utilizzato nelle istanze. Verrà utilizzato il precedente riquadro testuale"
 L.NO_ARROW					= "La Freccia non può essere usata nelle istanze"
-L.NO_HUD						= "La HUDMap non può essere usata nelle istanze"
+L.NO_HUD					= "La HUDMap non può essere usata nelle istanze"
+L.NO_COMMS					= "La comunicazione degli addon non può essere utilizzata durante gli incontri o le istanze M+ attive. Utilizza nuovamente questo comando dopo la fine dell'incontro o dell'istanza."
 
 L.DYNAMIC_DIFFICULTY_CLUMP	= ""..L.DBM.." ha disabilitato il riquadro distanziometro per questo combattimento per insufficienti informazioni sulle distanze richieste con un gruppo di queste dimensioni."
 L.DYNAMIC_ADD_COUNT			= ""..L.DBM.." ha disabilitato gli avvisi sulla quantità degli add per questo combattimento per insufficienti informazioni sul numero di add presenti con un gruppo di queste dimensioni."
@@ -251,26 +252,29 @@ L.INFOFRAME_ALT				= "Alt:"--Alternate Power
 
 L.LFG_INVITE						= "Invito LFG"
 
-L.SLASHCMD_HELP				= {
-	"Comandi Disponibili:",
+--Common slash commands
+L.SLASHCMD_HELP							= {--AI translated (check me)
+	"Comandi slash disponibili:",
 	"-----------------",
-	"/dbm unlock: Mostra un temporizzatore mobile (alias: move).",
-	"/range <numero> o /distance <numero>: Mostra distanziometro. /rrange o /rdistance per colori invertiti.",
-	"/hudar <number>: Mostra Distanziometro a HUD.",
-	"/dbm timer: Avvia temporizzatore "..L.DBM.." personalizzato, vedi '/dbm timer' per dettagli.",
-	"/dbm arrow: Mostra la freccia "..L.DBM..", vedi '/dbm arrow help' per dettagli.",
-	"/dbm hud: Mostra l'HUD "..L.DBM..", vedi '/dbm hud' per dettagli.",
-	"/dbm help2: Mostra i comandi per gestione incursione."
+	"/dbm unlock: Mostra un timer della barra di stato mobile (alias: move).",
+	"/dbm pull <sec>: Invia un timer di ingaggio per <sec> secondi al raid (richiede promozione. alias: pull).",
+	"/dbm break <min>: Invia un timer di pausa per <min> minuti al raid (richiede promozione. alias: break).",
+	"/dbm timer: Avvia un timer personalizzato di " .. L.DBM .. ", vedere '/dbm timer' per dettagli.",
+	"/dbm key: Esegue controlli delle chiavi M+ e delle valutazioni su party/gilda e scorciatoie per i teletrasporti delle dungeon. (alias: key, keys, keystone)",
+	"/dbm lag: Esegue un controllo della latenza per tutto il raid.",
+	"/dbm durability: Esegue un controllo della durabilità per tutto il raid.",
+	"/dbm help2: Mostra comandi slash aggiuntivi"
 }
-L.SLASHCMD_HELP2				= {
-	"Comandi Disponibili:",
+--Less used slash commands
+L.SLASHCMD_HELP2						= {--AI translated (check me)
+	"Comandi slash disponibili:",
 	"-----------------",
-	"/dbm pull <sec>: Avvia un temporizzatore per pull di <sec> secondi all'incursione (richiede assist. alias: pull).",
-	"/dbm break <min>: Avvia un temporizzatore per pause di <min> minuti all'incursione (richiede assist. alias: break).",
-	"/dbm version: Verifica la versione delle boss mod (alias: ver).",
-	"/dbm version2: Verifica la versione delle boss mod e invia un messaggio a quelli con versioni obsolete (alias: ver2).",
-	"/dbm lag: Controlla la latenza di tutti i giocatori nell'incursione.",
-	"/dbm durability: Controlla l'integrità dell'equipaggiamento di tutti i giocatori nell'incursione."
+	"/dbm version: Controlla la versione del boss mod (alias: ver).",
+	"/dbm version2: Controlla la versione del boss mod e invia un messaggio agli utenti obsoleti (alias: ver2).",
+	"/range <numero> o /distance <numero>: Mostra il riquadro di distanza. /rrange o /rdistance per invertire i colori.",
+	"/hudar <numero>: Mostra il rilevatore di distanza HUD.",
+	"/dbm arrow: Mostra la freccia " .. L.DBM .. ", vedere '/dbm arrow help' per dettagli.",
+	"/dbm hud: Mostra l'HUD " .. L.DBM .. ", vedere '/dbm hud' per dettagli."
 }
 L.TIMER_USAGE	= {
 	"Comandi Temporizzatore "..L.DBM..":",
@@ -616,14 +620,9 @@ L.SPEED_CLEAR_TIMER_TEXT	= "Migliore Clear"
 L.COMBAT_RES_TIMER_TEXT	= "Prossima Carica CR"
 L.TIMER_RESPAWN		= "Respawn %s"
 
-L.LAG_CHECKING				= "Analisi Latenza incursione..."
-L.LAG_HEADER					= L.DEADLY_BOSS_MODS.." - Risultati Latenza"
-L.LAG_ENTRY					= "%s: Reame [%d ms] / Locale [%d ms]"
-L.LAG_FOOTER					= "Nessuna Risposta: %s"
-
-L.DUR_CHECKING				= "Analisi Stato Equipaggiamento Incursione..."
-L.DUR_HEADER					= L.DEADLY_BOSS_MODS.." - Risultati Stato Equipaggiamento"
-L.DUR_ENTRY					= "%s: Durata [%d percento] / Equipaggiamento rotto [%s]"
+L.LAG_HEADER					= L.DBM.." - Risultati Latenza"
+L.DUR_HEADER					= L.DBM.." - Risultati Stato Equipaggiamento"
+--L.KEYSTONES_HEADER					= L.DBM.. " - Keystones"
 
 --L.OVERRIDE_ACTIVATED					= "Configuration overrides have been activated for this encounter by RL"
 
@@ -643,3 +642,14 @@ L.LDB_TOOLTIP_HELP2	= "Clicca col tasto destro per aprire la configurazione"
 --L.WORLD_BUFFS.blackfathomBoon						= "boon of Blackfathom"
 
 -- Difficulty info not found in normal globals, used by both GUI and tooltip
+
+-- Keystone dungeon names (keep to a max of 6 characters)
+-- See https://wago.tools/db2/MapChallengeMode for ID => Dungeon Names
+--L.KEYSTONE_NAMES[378] = 'HOA' -- Halls of Atonement
+--L.KEYSTONE_NAMES[391] = 'STREET' -- Tazavesh: Streets of Wonder
+--L.KEYSTONE_NAMES[392] = 'GAMBIT' -- Tazavesh: So'leah's Gambit
+--L.KEYSTONE_NAMES[499] = 'PRIORY' -- Priority of the Sacred Flame
+--L.KEYSTONE_NAMES[503] = 'ARAK' -- Ara-Kara, City of Echoes
+--L.KEYSTONE_NAMES[505] = 'DAWN' -- The Dawnbreaker
+--L.KEYSTONE_NAMES[525] = 'FLOOD' -- Operation Floodgate
+--L.KEYSTONE_NAMES[542] = 'DOME' -- Eco-Dome Al'dani

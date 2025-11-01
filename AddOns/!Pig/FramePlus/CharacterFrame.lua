@@ -1,5 +1,6 @@
 local addonName, addonTable = ...;
 local gsub = _G.string.gsub
+local match = _G.string.match
 local Create=addonTable.Create
 local PIGFrame=Create.PIGFrame
 local PIGLine=Create.PIGLine
@@ -14,7 +15,8 @@ local InvSlot=Data.InvSlot
 local EngravingSlot=Data.EngravingSlot
 local TalentData=Data.TalentData
 local FramePlusfun=addonTable.FramePlusfun
-local FasongYCqingqiu=addonTable.Fun.FasongYCqingqiu
+local Fun=addonTable.Fun
+local FasongYCqingqiu=Fun.FasongYCqingqiu
 ----
 local GetContainerNumFreeSlots = C_Container.GetContainerNumFreeSlots
 local GetContainerNumSlots = C_Container.GetContainerNumSlots
@@ -28,16 +30,28 @@ local GetCoinTextureString= GetCoinTextureString or  C_CurrencyInfo and C_Curren
 if not InspectTalentFrameSpentPoints then InspectTalentFrameSpentPoints = CreateFrame("Frame") end
 local XWidth, XHeight =CharacterHeadSlot:GetWidth(),CharacterHeadSlot:GetHeight()
 -----------------------
+local _GetItemLevel=Fun._GetItemLevel
+local function Update_ItemLevel(unit,ZBID,framef,itemLink)
+    local ItemLevel = _GetItemLevel(unit, ZBID,nil,itemLink)
+    if ItemLevel == "RETRIEVING" and framef.attempt < 10 then
+    	framef.attempt = framef.attempt + 1
+        C_Timer.After(0.05, function()
+        	Update_ItemLevel(unit,ZBID,framef,itemLink)
+        end)
+    else
+    	framef.ZLV:SetText(ItemLevel or "")
+    end
+end
 local function Update_Level_V(framef,unit,ZBID)
 	framef.ZLV:SetText("");
 	local itemLink = GetInventoryItemLink(unit, ZBID)
 	if itemLink then
 		local quality = GetInventoryItemQuality(unit, ZBID)
 		if quality then
-			local effectiveILvl = GetDetailedItemLevelInfo(itemLink)
-			framef.ZLV:SetText(effectiveILvl);
 			local r, g, b = GetItemQualityColor(quality)
 			framef.ZLV:SetTextColor(r, g, b, 1);
+			framef.attempt = 0
+			Update_ItemLevel(unit,ZBID,framef,itemLink)
 		end
 	end
 end
@@ -50,6 +64,7 @@ local function Update_ranse_V(framef,unit,ZBID)
 		framef.ranse:Show()
 	end
 end
+shudshakdas=1
 local function Update_Data_ALL(laiyuan)--刷新数据
 	local LYname=""
 	if laiyuan==PaperDollFrame then
@@ -156,21 +171,20 @@ local function ADD_UI_Puls(laiyuan)
 	end
 	---	
 	if PIGA["FramePlus"]["Character_ItemList"] then
-		if C_Engraving and C_Engraving.IsEngravingEnabled() then
-			hooksecurefunc("ToggleEngravingFrame", function()
-				FramePlusfun.UpdatePoint(PaperDollFrame)
-			end)
-		end
 		PIGItemListUI(laiyuan)
 	end
 end
 local function Load_addonsFun(FrameX)
 	ADD_UI_Puls(FrameX)
 	FrameX:HookScript("OnShow", function(self,event,arg1)
-		if PIG_MaxTocversion(20000) then
-			FasongYCqingqiu(InspectNameText:GetText(),4)
-		elseif PIG_MaxTocversion() then
-			FasongYCqingqiu(InspectNameText:GetText(),3)
+		local nameui = InspectNameText or InspectFrameTitleText
+		local namex=nameui:GetText()
+		if namex and namex~="" and namex==NAME then
+			if PIG_MaxTocversion(20000) then
+				FasongYCqingqiu(nameui:GetText(),4)
+			elseif PIG_MaxTocversion() then
+				FasongYCqingqiu(nameui:GetText(),3)
+			end
 		end
 		if _G[Data.LongInspectUIUIname] then
 			_G[Data.LongInspectUIUIname]:Hide()
@@ -181,8 +195,11 @@ local function Load_addonsFun(FrameX)
 		if event=="INSPECT_READY" then
 			if self.unit then
 				local GUID=UnitGUID(self.unit)
-				if arg1==GUID then 
-					Update_Data_ALL(self)
+				if arg1==GUID then
+					if self.loadTicker then self.loadTicker:Cancel() end
+					self.loadTicker=C_Timer.NewTimer(0.2,function()
+						Update_Data_ALL(self)
+					end)
 				end
 			end
 		elseif event=="PLAYER_EQUIPMENT_CHANGED" then
@@ -210,13 +227,8 @@ function FramePlusfun.Character_ADD()
 		Load_addonsFun(InspectFrame)
 	else
 		if PIGA["FramePlus"]["Character_ItemLevel"] or PIGA["FramePlus"]["Character_ItemColor"] or PIGA["FramePlus"]["Character_ItemList"] then
-			local InspectPIG = CreateFrame("Frame")
-			InspectPIG:RegisterEvent("ADDON_LOADED")
-			InspectPIG:HookScript("OnEvent", function(self,event,arg1)
-				if event=="ADDON_LOADED" and arg1=="Blizzard_InspectUI" then
-					self:UnregisterEvent("ADDON_LOADED");
-					Load_addonsFun(InspectFrame)
-				end
+			Fun.IsAddOnLoaded("Blizzard_InspectUI",function()
+				Load_addonsFun(InspectFrame)
 			end)
 		end
 	end
@@ -548,7 +560,9 @@ local function add_AutoEquip(ManageEquip)
 	local function _createFlyoutBG (buttonAnchor)
 		local numBGs = buttonAnchor["numBGs"];
 		numBGs = numBGs + 1;
-		local texture = buttonAnchor:CreateTexture(nil, nil, "PaperDollFrameFlyoutTexture");
+		local texture = buttonAnchor:CreateTexture();
+		texture:SetTexture("Interface/PaperDollInfoFrame/UI-GearManager-Flyout");
+		texture:Hide()
 		buttonAnchor["bg" .. numBGs] = texture;
 		buttonAnchor["numBGs"] = numBGs;
 		return texture;
@@ -806,7 +820,8 @@ local function add_AutoEquip(ManageEquip)
 		local buttons = PaperDollFrameItemFlyout.buttons;
 		local buttonAnchor = PaperDollFrameItemFlyoutButtons;	
 		local numButtons = #buttons;
-		local button = CreateFrame("BUTTON", "PaperDollFrameItemFlyoutButtons" .. numButtons + 1, buttonAnchor, "PIGpopoutButton_Flyout_ButtonTemplate");
+		local button = CreateFrame("BUTTON", "PaperDollFrameItemFlyoutButtons" .. numButtons + 1, buttonAnchor, "ItemButtonTemplate");
+		button.cooldown = CreateFrame("Cooldown", nil, button, "CooldownFrameTemplate");
 		button:HookScript("OnEnter", function(self)
 			if self.UpdateTooltip then self.UpdateTooltip(); end
 			PaperDollFrameItemFlyout.FlyoutButShow=nil 
@@ -1937,18 +1952,9 @@ function FramePlusfun.Character_Shuxing()
 					end
 				end)
 			end
-			if IsAddOnLoaded("Blizzard_EngravingUI") then
-				add_fuwenUICZ()
-			else	
-				local fujianjiazai = CreateFrame("FRAME")
-				fujianjiazai:RegisterEvent("ADDON_LOADED")
-				fujianjiazai:SetScript("OnEvent", function(self, event, arg1)
-					if arg1 == "Blizzard_EngravingUI" then
-						self:UnregisterEvent("ADDON_LOADED")
-						add_fuwenUICZ()
-					end
-				end)
-			end
+			Fun.IsAddOnLoaded("Blizzard_EngravingUI",function()
+		        add_fuwenUICZ()
+			end)
 		end
 		HideUIPanel(CharacterFrame);
 	elseif PIG_MaxTocversion(40000) then
@@ -2006,29 +2012,4 @@ function FramePlusfun.Character_Shuxing()
 	end
 	Character_Mingzhong()
 	Character_xiuliG()
-end
-function FramePlusfun.UpdatePoint(fuji)
-	if not fuji then return end
-	if fuji.ZBLsit then
-		FramePlusfun.C_PointData={-1,0,fuji}
-		if PIG_MaxTocversion(50000) then
-			if ElvUI then
-				FramePlusfun.C_PointData[1],FramePlusfun.C_PointData[2]=-33,-12
-			elseif NDui then
-				if NDuiStatPanel and NDuiStatPanel:IsShown() then
-					FramePlusfun.C_PointData[3]=NDuiStatPanel
-					FramePlusfun.C_PointData[1],FramePlusfun.C_PointData[2]=2,1
-				else
-					FramePlusfun.C_PointData[1],FramePlusfun.C_PointData[2]=-36,-15
-				end
-			else
-				FramePlusfun.C_PointData[1],FramePlusfun.C_PointData[2]=-34,-12.6
-			end
-
-		end
-		if fuji:GetName()==Data.LongInspectUIUIname  then
-			FramePlusfun.C_PointData[1],FramePlusfun.C_PointData[2]=-34,-12.6
-		end
-		fuji.ZBLsit:SetPoint("TOPLEFT", FramePlusfun.C_PointData[3], "TOPRIGHT",FramePlusfun.C_PointData[1],FramePlusfun.C_PointData[2])
-	end
 end

@@ -116,7 +116,6 @@
 	 </Frames>
  </Frame>
 
-
 	<Frame name="VuhDoNewOptionsColorsHotsTemplate" virtual="true">
 		<Frames>
 			<Frame name="$parentHotsPanel" inherits="VuhDoPanelTemplate">
@@ -295,7 +294,7 @@
 						</Scripts>
 					</Frame>
 
-					<Frame name="$parentWarningTexture" inherits="VuhDoColorSwatchTexture">
+					<Frame name="$parentHot11Texture" inherits="VuhDoColorSwatchTexture">
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
@@ -305,118 +304,38 @@
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								VUHDO_lnfSetModel(self, "VUHDO_PANEL_SETUP.BAR_COLORS.HOTS.WARNING");
-								VUHDO_lnfInitColorSwatch(self, VUHDO_I18N_WARNING, VUHDO_I18N_WARNING);
-								VUHDO_lnfSetTooltip(self, VUHDO_I18N_TT.K254);
+								VUHDO_lnfSetModel(self, "VUHDO_PANEL_SETUP.BAR_COLORS.HOT11");
+								VUHDO_lnfInitColorSwatch(self, VUHDO_I18N_SQUARE_8, VUHDO_I18N_SQUARE_8);
+								VUHDO_lnfSetTooltip(self, VUHDO_I18N_TT.K598);
 							</OnLoad>
+							<OnShow>
+								VUHDO_lnfPatchFont(self, "TitleString");
+								VUHDO_lnfColorSwatchInitFromModel(self);
+								VUHDO_colorsHotsSetSwatchHotName(self, 11);
+							</OnShow>
 						</Scripts>
 					</Frame>
 
-					<Frame name="$parentWarningSlider" inherits="VuhDoHSliderTemplate">
-						<Size>
-							<AbsDimension x="204" y="32" />
-						</Size>
+					<Frame name="$parentHot12Texture" inherits="VuhDoColorSwatchTexture">
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
-									<AbsDimension x="130" y="-321" />
+									<AbsDimension x="13" y="-354" />
 								</Offset>
 							</Anchor>
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								VUHDO_lnfSetModel(self, "VUHDO_PANEL_SETUP.BAR_COLORS.HOTS.WARNING.lowSecs")
-								VUHDO_lnfSliderOnLoad(self, VUHDO_I18N_WARN_PREC_AT, 0, 10, " " .. VUHDO_I18N_SECS, 0.5);
-								VUHDO_lnfSetTooltip(self, VUHDO_I18N_TT.K255);
+								VUHDO_lnfSetModel(self, "VUHDO_PANEL_SETUP.BAR_COLORS.HOT12");
+								VUHDO_lnfInitColorSwatch(self, VUHDO_I18N_SQUARE_9, VUHDO_I18N_SQUARE_9);
+								VUHDO_lnfSetTooltip(self, VUHDO_I18N_TT.K599);
 							</OnLoad>
+							<OnShow>
+								VUHDO_lnfPatchFont(self, "TitleString");
+								VUHDO_lnfColorSwatchInitFromModel(self);
+								VUHDO_colorsHotsSetSwatchHotName(self, 12);
+							</OnShow>
 						</Scripts>
-					</Frame>
-
-					<CheckButton name="$parentWarnCheckButton" text="VUHDO_I18N_WARNING" inherits="VuhDoCheckButtonTemplate">
-						<Anchors>
-							<Anchor point="TOPLEFT">
-								<Offset>
-									<AbsDimension x="344" y="-317" />
-								</Offset>
-							</Anchor>
-						</Anchors>
-						<Scripts>
-							<OnLoad>
-								VUHDO_lnfSetModel(self, "VUHDO_PANEL_SETUP.BAR_COLORS.HOTS.WARNING.enabled");
-								VUHDO_lnfSetTooltip(self, VUHDO_I18N_TT.K258);
-							</OnLoad>
-						</Scripts>
-					</CheckButton>
-
-					<Frame name="$parentExpiryLabel" inherits="VuhDoLabelFrameTemplate">
-						<Size>
-							<AbsDimension x="75" y="18" />
-						</Size>
-						<Anchors>
-							<Anchor point="TOPLEFT">
-								<Offset>
-									<AbsDimension x="364" y="-302" />
-								</Offset>
-							</Anchor>
-						</Anchors>
-						<Layers>
-							<Layer>
-								<FontString name="$parentLabel" text="VUHDO_I18N_EXPIRY_WARNING" justifyH="RIGHT" inherits="VuDoDefaultFontTemplate">
-								</FontString>
-							</Layer>
-						</Layers>
-					</Frame>
-
-					<CheckButton name="$parentFadeCheckButton" text="VUHDO_I18N_FADE_OUT" inherits="VuhDoCheckButtonTemplate">
-						<Anchors>
-							<Anchor point="TOPLEFT">
-								<Offset>
-									<AbsDimension x="13" y="-369" />
-								</Offset>
-							</Anchor>
-						</Anchors>
-						<Scripts>
-							<OnLoad>
-								VUHDO_lnfSetModel(self, "VUHDO_PANEL_SETUP.BAR_COLORS.HOTS.isFadeOut");
-								VUHDO_lnfSetTooltip(self, VUHDO_I18N_TT.K583);
-							</OnLoad>
-						</Scripts>
-					</CheckButton>
-
-					<CheckButton name="$parentFlashCheckButton" text="VUHDO_I18N_FLASH" inherits="VuhDoCheckButtonTemplate">
-						<Anchors>
-							<Anchor point="TOPLEFT">
-								<Offset>
-									<AbsDimension x="119" y="-369" />
-								</Offset>
-							</Anchor>
-						</Anchors>
-						<Scripts>
-							<OnLoad>
-								VUHDO_lnfSetModel(self, "VUHDO_PANEL_SETUP.BAR_COLORS.HOTS.isFlashWhenLow");
-								VUHDO_lnfSetTooltip(self, VUHDO_I18N_TT.K584);
-							</OnLoad>
-						</Scripts>
-					</CheckButton>
-
-
-					<Frame name="$parentBackgroundLabel" inherits="VuhDoLabelFrameTemplate">
-						<Size>
-							<AbsDimension x="75" y="18" />
-						</Size>
-						<Anchors>
-							<Anchor point="TOPLEFT">
-								<Offset>
-									<AbsDimension x="13" y="-352" />
-								</Offset>
-							</Anchor>
-						</Anchors>
-						<Layers>
-							<Layer>
-								<FontString name="$parentLabel" text="VUHDO_I18N_BACKGROUND" justifyH="RIGHT" inherits="VuDoDefaultFontTemplate">
-								</FontString>
-							</Layer>
-						</Layers>
 					</Frame>
 
 					<Frame name="$parentOffLabel" inherits="VuhDoLabelFrameTemplate">
@@ -627,6 +546,26 @@
 							<Anchor point="TOPLEFT">
 								<Offset>
 									<AbsDimension x="130" y="-278" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+
+					<Frame name="$parentHot11RadiGroup" inherits="VuhDoHotTimerRadioGroup">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="130" y="-316" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+
+					<Frame name="$parentHot12RadiGroup" inherits="VuhDoHotTimerRadioGroup">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="130" y="-354" />
 								</Offset>
 							</Anchor>
 						</Anchors>

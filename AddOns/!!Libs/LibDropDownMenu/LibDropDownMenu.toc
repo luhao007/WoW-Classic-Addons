@@ -1,12 +1,22 @@
-## Interface: 100207
-## Interface-Cata: 40400
-## Interface-Classic: 11502
+## Interface: 110200, 50500, 11507
 ## Title: Lib: LibDropDownMenu
 ## Notes: Library providing downdown menu like blizzards DropDownMenu
 ## Author: Hizuro
 ## IconTexture: 986485
-## Version: r41
-## OptionalDeps: LibStub, CallbackHandler-1.0
+## Version: r56
+
+## Category-enUS: Libraries
+## Category-deDE: Bibliotheken
+## Category-esES: Bibliotecas
+## Category-esMX: Bibliotecas
+## Category-frFR: Bibliothèques
+## Category-itIT: Biblioteche
+## Category-koKR: 도서관
+## Category-ptBR: Bibliotecas
+## Category-ruRU: Библиотеки
+## Category-zhCN: 函数库
+## Category-zhTW: 函式庫
+
 
 ## X-Curse-Project-ID: 298617
 

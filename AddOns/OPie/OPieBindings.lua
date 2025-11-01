@@ -1,17 +1,17 @@
 local COMPAT, _, T = select(4,GetBuildInfo()), ...
-local L, EV, PC, TS, XU, config, KR = T.L, T.Evie, T.OPieCore, T.TenSettings, T.exUI, T.config, OPie.ActionBook:compatible("Kindred", 1, 0)
+local L, EV, PC, TS, XU, config, KR = T.L, T.Evie, T.OPieCore, T.TenSettings, T.exUI, T.config, T.ActionBook:compatible("Kindred", 1, 0)
 local MODERN = COMPAT >= 10e4
 
 local frame = TS:CreateOptionsPanel(L"Ring Bindings", "OPie")
 	frame.desc:SetText(L"Customize OPie key bindings below. Hover over a binding button for additional information and options."
 		.. (MODERN and "\n" .. L"Profiles activate automatically when you switch character specializations." or ""))
-local OBC_Profile = CreateFrame("Frame", "OBC_Profile", frame, "UIDropDownMenuTemplate")
+local OBC_Profile = XU:Create("DropDown", nil, frame)
 	OBC_Profile:SetPoint("TOPLEFT", 0, -80)
-	UIDropDownMenu_SetWidth(OBC_Profile, 200)
-	OBC_Profile.initialize, OBC_Profile.text = OPC_Profile.initialize, OPC_Profile.text
-local bindSet = CreateFrame("Frame", "OBC_BindingSet", frame, "UIDropDownMenuTemplate")
+	OBC_Profile:SetWidth(250)
+	OBC_Profile.initialize, OBC_Profile.text = T.OPC_Profile.initialize, T.OPC_Profile.text
+local bindSet = XU:Create("DropDown", nil, frame)
 	bindSet:SetPoint("LEFT", OBC_Profile, "RIGHT", 44, 0)
-	UIDropDownMenu_SetWidth(bindSet, 250)
+	bindSet:SetWidth(300)
 local bindLines, bindLines2, bindZone, bindZoneOrigin = {}, {}, CreateFrame("Frame", nil, frame) do
 	bindZone:SetClipsChildren(true)
 	bindZone:SetHitRectInsets(0, -22, 0, 0)
@@ -281,7 +281,7 @@ local function updatePanelContent()
 	end
 	bindZone.OnBindingAltClick = currentOwner.altClick
 	bindZone.OnBindingShiftClick = currentOwner.shiftClick
-	UIDropDownMenu_SetText(bindSet, currentOwner.name .. (currentOwner.nameSuffix or ""))
+	bindSet:SetText(currentOwner.name .. (currentOwner.nameSuffix or ""))
 end
 function bindZone.SetBinding(buttonOrId, binding)
 	local id, bidx = type(buttonOrId) == "number" and buttonOrId or buttonOrId:GetID()
@@ -354,7 +354,7 @@ function T.ShowSliceBindingPanel(ringKey)
 	frame:OpenPanel()
 	bindSet.set(nil, subBindings, ringKey)
 	frame.resetOnHide = true
-	config.pulseDropdown(bindSet)
+	bindSet:Pulse()
 end
 
 T.AddSlashSuffix(function() frame:OpenPanel() end, "bind", "binding", "bindings")

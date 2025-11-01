@@ -1,6 +1,7 @@
 <Ui>
 	<Script file="AudioList.lua" />
 	<Script file="Fun.lua" />
+	<Script file="LFG.lua" />
 	<Script file="ActionFun.lua" />	
 	<Script file="PIGGetItemInfo.lua" />
 	<Script file="Data.lua" />
@@ -9,7 +10,9 @@
 	<Script file="Button.lua" />
 	<Script file="ColorBut.lua" />
 	<Script file="CheckButton.lua" />
+	<Script file="EditBox.lua" />
 	<Script file="Slider.lua" />
+	<Script file="ScrollFrame.lua" />
 	<Script file="StatusBar.lua" />
 	<Script file="DownMenu.lua" />
 	<Script file="BlizzardUI.lua" />

@@ -1,8 +1,5 @@
 local addonName, addon = ...;
 
-local C_AddOns = {}
-C_AddOns.IsAddOnLoaded = IsAddOnLoaded
-
 local customPreviousAchievements = {};
 customPreviousAchievements[15664] = 15663;
 customPreviousAchievements[15665] = 15664;
@@ -64,23 +61,20 @@ function addon.GetAchievementsInZone(mapID, getAll)
     return achievements;
 end
 
-function addon.GetAchievementNumbers(_filters, achievement, numOfAch, numOfCompAch, numOfNotObtAch) -- , numOfIncompAch
+function addon.GetAchievementNumbers(_filters, achievement, numOfAch, numOfCompAch, numOfNotObtAch, ignoreFilters) -- , numOfIncompAch
     if achievement.AlwaysVisible then
         return numOfAch, numOfCompAch, numOfNotObtAch; -- , numOfIncompAch
     end
     local filters = addon.Filters;
-	if filters and filters.Validate(_filters, achievement, true) > 0 then -- If set to false we lag the game
+	if filters and filters.Validate(_filters, achievement, ignoreFilters, true) > 0 then -- If set to false we lag the game
 		numOfAch = numOfAch + 1;
 		local _, _, _, completed = addon.GetAchievementInfo(achievement.Id);
-        local state;
-        if achievement.TemporaryObtainable then
-            state = achievement.TemporaryObtainable.Obtainable();
-        end
+        local state = achievement:GetObtainableState();
 		if completed then
 			numOfCompAch = numOfCompAch + 1;
 		-- else
 		-- 	numOfIncompAch = numOfIncompAch + 1;
-        elseif state and (state == false or state == "Past" or state == "Future") then
+        elseif state == "Past" or state == "Future" then
 			numOfNotObtAch = numOfNotObtAch + 1;
 		end
 	end
@@ -165,32 +159,46 @@ function addon.ClearWatchAchievement(achievement, update)
     if update ~= false then
         addon.Gui:RefreshView();
     end
-    for i = 1, #addon.Data.WatchListCategories do
-        if (addon.Data.WatchListCategories[i].Achievements and #addon.Data.WatchListCategories[i].Achievements == 0) or (addon.Data.WatchListCategories[i].Children and #addon.Data.WatchListCategories[i].Children == 0) then
-            KrowiAF_SavedData.WatchedAchievements = nil;
-            addon.Data.WatchListCategories[i].Achievements = nil;
+    for i = 1, #addon.SpecialCategories.WatchList do
+        if (addon.SpecialCategories.WatchList[i].Achievements and #addon.SpecialCategories.WatchList[i].Achievements == 0) or (addon.SpecialCategories.WatchList[i].Children and #addon.SpecialCategories.WatchList[i].Children == 0) then
+            addon.Data.SavedData.AchievementData:ClearWatchedAchievements();
+            addon.SpecialCategories.WatchList[i].Achievements = nil;
         end
     end
 end
 
 function addon.WatchAchievement(achievement, update)
     achievement:Watch();
-    for i = 1, #addon.Data.WatchListCategories do
+    for i = 1, #addon.SpecialCategories.WatchList do
         if addon.Options.db.profile.AdjustableCategories.WatchList[i] then
-            local watchListCategory = AddWatchListCategoriesTree(addon.Data.WatchListCategories[i], achievement);
+            local watchListCategory = AddWatchListCategoriesTree(addon.SpecialCategories.WatchList[i], achievement);
             watchListCategory:AddWatchedAchievement(achievement);
         end
 	end
     if update ~= false then
+        local scrollPercentage = KrowiAF_AchievementsFrame.ScrollBox:GetScrollPercentage();
         addon.Gui:RefreshView();
+        KrowiAF_AchievementsFrame.ScrollBox:SetScrollPercentage(scrollPercentage);
     end
 end
 
 function addon.AddToTrackingAchievementsCategories(achievement, update)
-    for i = 1, #addon.Data.TrackingAchievementsCategories do
+    for i = 1, #addon.SpecialCategories.TrackingAchievements do
         if addon.Options.db.profile.AdjustableCategories.TrackingAchievements[i] then
-            local trackingAchievementsCategory = AddTrackingAchievementsCategoriesTree(addon.Data.TrackingAchievementsCategories[i], achievement);
+            local trackingAchievementsCategory = AddTrackingAchievementsCategoriesTree(addon.SpecialCategories.TrackingAchievements[i], achievement);
             trackingAchievementsCategory:AddAchievement(achievement);
+        end
+    end
+    if update ~= false then
+        KrowiAF_CategoriesFrame:Update(true);
+        KrowiAF_AchievementsFrame:ForceUpdate();
+    end
+end
+
+function addon.AddToUncategorizedAchievementsCategories(achievement, update)
+    for i = 1, #addon.SpecialCategories.Uncategorized do
+        if addon.Options.db.profile.AdjustableCategories.Uncategorized[i] then
+            addon.SpecialCategories.Uncategorized[i]:AddAchievement(achievement);
         end
     end
     if update ~= false then
@@ -214,9 +222,9 @@ function addon.IncludeAchievement(achievement, update)
     if update ~= false then
         addon.Gui:RefreshView();
     end
-    for i = 1, #addon.Data.ExcludedCategories do
-        if (addon.Data.ExcludedCategories[i].Achievements and #addon.Data.ExcludedCategories[i].Achievements == 0) or (addon.Data.ExcludedCategories[i].Children and #addon.Data.ExcludedCategories[i].Children == 0) then
-            addon.Data.ExcludedCategories[i].Achievements = nil;
+    for i = 1, #addon.SpecialCategories.Excluded do
+        if (addon.SpecialCategories.Excluded[i].Achievements and #addon.SpecialCategories.Excluded[i].Achievements == 0) or (addon.SpecialCategories.Excluded[i].Children and #addon.SpecialCategories.Excluded[i].Children == 0) then
+            addon.SpecialCategories.Excluded[i].Achievements = nil;
         end
     end
     if KrowiAF_SavedData.ExcludedAchievements then
@@ -230,9 +238,9 @@ end
 function addon.ExcludeAchievement(achievement, update)
     achievement:Exclude();
     if addon.Options.db.profile.Categories.Excluded.Show then
-        for i = 1, #addon.Data.ExcludedCategories do
+        for i = 1, #addon.SpecialCategories.Excluded do
             if addon.Options.db.profile.AdjustableCategories.Excluded[i] then
-                local excludedCategory = AddExcludedCategoriesTree(addon.Data.ExcludedCategories[i], achievement);
+                local excludedCategory = AddExcludedCategoriesTree(addon.SpecialCategories.Excluded[i], achievement);
                 excludedCategory:AddExcludedAchievement(achievement);
             end
         end
@@ -248,12 +256,11 @@ local function CheckDecFlags(flags, flag)
     return (flags / flag) % 2 >= 1;
 end
 
-local function AddToUncategorizedCategories(achievement)
-    for i = 1, #addon.Data.UncategorizedCategories do
-        if addon.Options.db.profile.AdjustableCategories.Uncategorized[i] then
-            addon.Data.UncategorizedCategories[i]:AddAchievement(achievement);
-        end
-	end
+addon.UncategorizedAchievements = {};
+local function AddToUncategorizedCategories(achievementInfo)
+    local achievementId = achievementInfo.Id;
+    addon.Data.Achievements[achievementId].Uncategorized = true;
+    addon.UncategorizedAchievements[achievementId] = true;
 end
 
 local function HandleAchievementExistence(achievementInfo)
@@ -347,8 +354,10 @@ end
 local buildCacheHelper = CreateFrame("Frame");
 local co, coMaxDuration, coStart, coStarted, coFinished;
 local coOnFinish, coOnDelay = {}, {};
+local maxGapSize = 20000; -- Biggest gap is 19320 in 11.0.5 as of 2024-11-10
+-- local biggestGapSize = 0;
 local function HandleAchievements(gapSize, i, highestId, characterGuid)
-    while gapSize < 500 or i < highestId do -- Biggest gap is 209 in 9.0.5 as of 2021-05-03
+    while gapSize < maxGapSize or i < highestId do
         local achievementInfo = addon.GetAchievementInfoTable(i);
         HandleAchievement(characterGuid, achievementInfo);
         if achievementInfo.Id and achievementInfo.Exists then
@@ -356,20 +365,24 @@ local function HandleAchievements(gapSize, i, highestId, characterGuid)
         else
             gapSize = gapSize + 1;
         end
+        -- if gapSize > biggestGapSize then
+        --     biggestGapSize = gapSize;
+        -- end
         i = i + 1;
         if (debugprofilestop() - coStart > coMaxDuration) then
             if #coOnDelay >= 1 then
                 for _, onDelay in next, coOnDelay do
-                    onDelay(highestId + 500 - i - gapSize);
+                    onDelay(highestId + maxGapSize - i);
                 end
             end
             coroutine.yield();
         end
     end
+    -- print("Biggest gap size:", biggestGapSize);
     buildCacheHelper:SetScript("OnUpdate", nil);
     coFinished = true;
     coStarted = nil;
-    addon.Diagnostics.Debug("Cache: Finished loading data");
+    addon.Diagnostics.Trace("Cache: Finished loading data");
     if #coOnFinish >= 1 then
         for _, onFinish in next, coOnFinish do
             onFinish(criteriaCache);
@@ -393,13 +406,14 @@ function addon.BuildCacheAsync(onFinish, onDelay)
     end
 
     coStarted = true;
-    addon.Diagnostics.Debug("Cache: Start loading data");
+    addon.Diagnostics.Trace("Cache: Start loading data");
     local characterGuid = UnitGUID("player");
     criteriaCache = {};
     local gapSize, i = 0, 1;
     local character = addon.Data.SavedData.CharacterData.Upsert(characterGuid);
     character.Points = 0;
-    local highestId = addon.Data.HighestAchievementId;
+    addon.Data.SortAchievementIds(); -- Sort beforehand to make sure the highest id is at the end
+    local highestId = addon.Data.AchievementIds[#addon.Data.AchievementIds];
     co = coroutine.create(HandleAchievements);
     coMaxDuration = 500 / (tonumber(C_CVar.GetCVar("targetFPS")) or GetFrameRate());
     coStart = debugprofilestop();
@@ -489,7 +503,7 @@ function addon.OverwriteFunctions()
 
     local origAchievementFrame_SelectAchievement = AchievementFrame_SelectAchievement;
     AchievementFrame_SelectAchievement = function(id)
-        if addon.Data.Achievements[id] then
+        if addon.Data.Achievements[id] and addon.Data.Achievements[id].Category then
             KrowiAF_SelectAchievementFromID(id);
             return;
         end
@@ -580,10 +594,8 @@ local function MakeStatic(frame, rememberLastPositionOption, target)
 
     frame:SetMovable(false);
     frame:EnableMouse(false);
-    frame:SetScript("OnMouseDown", function(frame, button)
-    end);
-    frame:SetScript("OnMouseUp", function(frame, button)
-    end);
+    frame:SetScript("OnMouseDown", function() end);
+    frame:SetScript("OnMouseUp", function() end);
 end
 
 function addon.MakeWindowStatic()
@@ -647,6 +659,11 @@ function addon.GetSecondsSince(date)
     return time(date);
 end
 
+function addon.GetAchievmentName(achievementId)
+    local _, name = GetAchievementInfo(achievementId);
+    return name;
+end
+
 function addon.GetAchievementInfo(achievementId) -- Returns an additional bool indicating if the achievement is added to the game yet or not
     local id, name, points, completed, month, day, year, description, flags, icon, rewardText, isGuild, wasEarnedByMe, earnedBy, isStatistic = GetAchievementInfo(achievementId);
     if not id then
@@ -655,9 +672,19 @@ function addon.GetAchievementInfo(achievementId) -- Returns an additional bool i
         " * This is the placeholder for " .. achievementId .. " until it's available next patch.", flags, 134400, "", false, false, "", false, false;
     end
     flags = addon.Objects.Flags:New(flags);
-    if id == 18849 or id == 18850 then
-        flags.IsTracking = true;
-    end
+    -- if id == 18849 or id == 18850 then
+    --     flags.IsTracking = true;
+    -- end
+    -- if addon.Options.db.profile.Achievements.ShowOtherFactionWarbandAsCompleted then
+	-- 	if flags.IsAccountWide and KrowiAF_Achievements.Completed[achievementId] and KrowiAF_Achievements.Completed[achievementId].FirstCompletedOn then
+	-- 		local date = date("*t", KrowiAF_Achievements.Completed[achievementId].FirstCompletedOn);
+	-- 		completed = true;
+	-- 		month = date.month;
+	-- 		day = date.day;
+	-- 		year = date.year - 2000;
+	-- 		wasEarnedByMe = true;
+	-- 	end
+	-- end
     return id, name, points, completed, month, day, year, description, flags, icon, rewardText, isGuild, wasEarnedByMe, earnedBy, isStatistic, true;
 end
 
@@ -676,6 +703,7 @@ function addon.GetAchievementInfoTable(achievementId) -- Returns an additional b
         Description = description,
         Flags = flags,
         Icon = icon,
+        HasReward = rewardText ~= "",
         RewardText = rewardText,
         IsGuild = isGuild,
         WasEarnedByMe = wasEarnedByMe,
@@ -683,6 +711,30 @@ function addon.GetAchievementInfoTable(achievementId) -- Returns an additional b
         IsStatistic = isStatistic,
         Exists = exists
     };
+end
+
+SLASH_KAFAIT1 = "/kafait"
+SlashCmdList["KAFAIT"] = function(msg)
+    local achievementId = tonumber(msg)
+    if not achievementId then
+        print("Usage: /kafait <achievementId>")
+        return
+    end
+    local info = addon.GetAchievementInfoTable(achievementId)
+    if info then
+        for k, v in pairs(info) do
+            if type(v) == "table" then
+                print(k .. ":", "{table}")
+                for tk, tv in pairs(v) do
+                    print("  " .. tk .. ":", tv)
+                end
+            else
+                print(k .. ":", tostring(v))
+            end
+        end
+    else
+        print("No info found for achievementId:", achievementId)
+    end
 end
 
 function addon.GetNextAchievement(achievement)
@@ -697,9 +749,9 @@ function addon.GetNextAchievement(achievement)
     return nil, false;
 end
 
-local function GetAchievementCriteriaInfoInternal(achievementId, criteriaString, criteriaType, completed, quantity, reqQuantity, charName, flags, assetID, quantityString, criteriaID, eligible)
+local function GetAchievementCriteriaInfoInternal(achievementId, criteriaString, criteriaType, completed, quantity, reqQuantity, charName, flags, assetID, quantityString, criteriaID, eligible, duration, elapsed)
     local hasValueProgress = (quantity ~= nil and reqQuantity ~= nil and not (quantity == 0 and (reqQuantity == 0 or reqQuantity == 1))) or achievementId == 17335;
-    return criteriaString, criteriaType, completed, quantity, reqQuantity, charName, flags, assetID, quantityString, criteriaID, eligible, hasValueProgress;
+    return criteriaString, criteriaType, completed, quantity, reqQuantity, charName, flags, assetID, quantityString, criteriaID, eligible, hasValueProgress, duration, elapsed;
 end
 
 function addon.GetAchievementCriteriaInfo(achievementId, criteriaIndex, countHidden)
@@ -721,25 +773,29 @@ function addon.GetAchievementNumCriteria(achievementId)
     end
 end
 
-local function ClassCanUseSet(transmogSet, classId)
-    return CheckDecFlags(transmogSet.ClassMask, math.pow(2, classId - 1));
+local function ClassCanUseSet(setInfo, classId)
+    return CheckDecFlags(setInfo.classMask, math.pow(2, classId - 1));
 end
 
-local function FactionCanUseSet(transmogSet, faction)
-    local setInfo = C_TransmogSets.GetSetInfo(transmogSet.Id);
+local function FactionCanUseSet(setInfo, faction)
     return setInfo and (setInfo.requiredFaction == nil or setInfo.requiredFaction == faction);
 end
 
-function addon.GetUsableSets(transmogSets)
-    local usableTransmogSets = {};
+function addon.GetUsableSets(transmogSetIds)
+    local usableTransmogSetIds = {};
     local _, _, classId = UnitClass("player");
     local faction = UnitFactionGroup("player");
-    for _, transmogSet in next, transmogSets do
-        if ClassCanUseSet(transmogSet, classId) and FactionCanUseSet(transmogSet, faction) then
-            tinsert(usableTransmogSets, transmogSet);
+    for _, transmogSetId in next, transmogSetIds do
+        local setInfo = C_TransmogSets.GetSetInfo(transmogSetId);
+        if setInfo then
+            if ClassCanUseSet(setInfo, classId) and FactionCanUseSet(setInfo, faction) then
+                tinsert(usableTransmogSetIds, transmogSetId);
+            end
+        else
+            addon.Diagnostics.Debug("No transmog info found for " .. transmogSetId);
         end
     end
-    return usableTransmogSets;
+    return usableTransmogSetIds;
 end
 
 function addon.ChangeAchievementMicroButtonOnClick()
@@ -753,7 +809,7 @@ function addon.ChangeAchievementMicroButtonOnClick()
     end
     local tab = KrowiAF_SavedData.Tabs[addon.Options.db.profile.MicroButtonTab];
     AchievementMicroButton:SetScript("OnClick", function(self)
-        addon.Gui:ToggleAchievementFrame(tab.AddonName, tab.Name);
+        KrowiAF_ToggleAchievementFrame(tab.AddonName, tab.Name);
     end);
 end
 
@@ -794,62 +850,6 @@ function addon.IsCustomModifierKeyDown(modifier)
     end
 end
 
---  Budgets 50% of target or current FPS to perform a workload.
---  finished = start(workload, onFinish, onDelay)
---  Arguments:
---      workload        table       Stack (last in, first out) of functions to call.
---      onFinish        function?   Optional callback when the table is empty.
---      onDelay         function?   Optional callback each time work delays to the next frame.
---  Returns:
---      finished        boolean     True when finished without any delay; false otherwise.
-function addon.StartWork(name, workload, onFinish, onDelay)
-    name = name and " " .. name or "";
-    if type(onFinish) == "string" then
-        local onFinishPrint = onFinish;
-        onFinish = function()
-            addon.Diagnostics.Debug(onFinishPrint);
-        end;
-    end
-    if type(onFinish) ~= "function" then
-        onFinish = nil;
-    end
-    local overallStart = debugprofilestop();
-    if type(onDelay) == "boolean" then
-        onDelay = function()
-            addon.Diagnostics.Debug(#workload .. name .. " remaining after " .. ("%.2d"):format(debugprofilestop() - overallStart) / 1000);
-        end;
-    end
-    if type(onDelay) ~= "function" then
-        onDelay = nil;
-    end
-
-    local maxDuration = 500 / (tonumber(C_CVar.GetCVar("targetFPS")) or GetFrameRate());
-    local function continue()
-        local startTime = debugprofilestop();
-        local task = tremove(workload);
-        while task do
-            if type(task) == "function" then
-                task();
-            elseif type(task) == "table" then
-                task[1](unpack(task, 2, #task));
-            end
-            if (debugprofilestop() - startTime > maxDuration) then
-                C_Timer.After(0, continue);
-                if onDelay then
-                    onDelay();
-                end
-                return false;
-            end
-            task = tremove(workload);
-        end
-        if onFinish then
-            onFinish();
-        end
-        return true;
-    end
-    return continue();
-end
-
 local function RunTask(task)
     if type(task) == "function" then
         task();
@@ -858,12 +858,65 @@ local function RunTask(task)
     end
 end
 
+--  Budgets 50% of target or current FPS to perform a workload. 
+--  finished = start(workload, onFinish, onDelay)
+--  Arguments:
+--      workload        table       Stack (last in, first out) of functions to call.
+--      onFinish        function?   Optional callback when the table is empty.
+--      onDelay         function?   Optional callback each time work delays to the next frame.
+--  Returns:
+--      finished        boolean     True when finished without any delay; false otherwise.
+-- function addon.StartWork(name, workload, onFinish, onDelay)
+--     name = name and " " .. name or "";
+--     if type(onFinish) == "string" then
+--         local onFinishPrint = onFinish;
+--         onFinish = function()
+--             addon.Diagnostics.Debug(onFinishPrint);
+--         end;
+--     end
+--     if type(onFinish) ~= "function" then
+--         onFinish = nil;
+--     end
+--     local overallStart = debugprofilestop();
+--     if type(onDelay) == "boolean" then
+--         onDelay = function()
+--             addon.Diagnostics.Debug(#workload .. name .. " remaining after " .. ("%.2d"):format(debugprofilestop() - overallStart) / 1000);
+--         end;
+--     end
+--     if type(onDelay) ~= "function" then
+--         onDelay = nil;
+--     end
+
+--     local maxDuration = 500 / (tonumber(C_CVar.GetCVar("targetFPS")) or GetFrameRate());
+--     local function continue()
+--         local startTime = debugprofilestop();
+--         local task = tremove(workload, 1);
+--         while task do
+--             RunTask(task);
+--             if (debugprofilestop() - startTime > maxDuration) then
+--                 C_Timer.After(0, continue);
+--                 if onDelay then
+--                     onDelay();
+--                 end
+--                 return false;
+--             end
+--             task = tremove(workload, 1);
+--         end
+--         if onFinish then
+--             onFinish();
+--         end
+--         return true;
+--     end
+--     return continue();
+-- end
+
+local taskIndex = 1;
 local function GetNumOfTasksLeft(workloadTables, tasks)
     local numOfTasksLeft = tasks and #tasks or 0;
     for _, wl in next, workloadTables do
         numOfTasksLeft = numOfTasksLeft + #wl;
     end
-    return numOfTasksLeft;
+    return numOfTasksLeft - taskIndex + 1;
 end
 
 local function Delay(continue, startTime, maxDuration, onDelay, workloadTables, tasks)
@@ -878,13 +931,15 @@ local function Delay(continue, startTime, maxDuration, onDelay, workloadTables, 
 end
 
 local function GetNextTask(tasks, workloadTables)
-    local task = tremove(tasks);
+    taskIndex = taskIndex + 1;
+    local task = tasks[taskIndex];
     if task then
         return tasks, task;
     end
     tasks = tremove(workloadTables);
     if tasks then
-        task = tremove(tasks);
+        taskIndex = 1
+        task = tasks[taskIndex];
     end
     return tasks, task;
 end
@@ -894,13 +949,13 @@ function addon.StartTasksGroups(tasksGroups, onFinish, onDelay)
     local tasks = tremove(tasksGroups);
     local function continue()
         local startTime = debugprofilestop();
-        local task = tremove(tasks);
+        local task = tasks and tasks[taskIndex];
         while task do
             RunTask(task);
-            if Delay(continue, startTime, maxDuration, onDelay, tasksGroups, tasks) then
+            tasks, task = GetNextTask(tasks, tasksGroups); -- Get the new task first so in case the task takes longer than a frame duration, the current tasks keeps looping
+            if Delay(continue, startTime, maxDuration, onDelay, tasksGroups, tasks) then -- Really need to solve this in a different way!!!
                 return false;
             end
-            tasks, task = GetNextTask(tasks, tasksGroups);
         end
         if onFinish then
             onFinish();

@@ -5,15 +5,16 @@
 -- ------------------------------------------------------------------------------ --
 
 local TSM = select(2, ...) ---@type TSM
-local Sell = TSM.Vendoring:NewPackage("Sell")
-local Database = TSM.Include("Util.Database")
-local TempTable = TSM.Include("Util.TempTable")
-local ItemString = TSM.Include("Util.ItemString")
-local Container = TSM.Include("Util.Container")
-local ItemInfo = TSM.Include("Service.ItemInfo")
-local CustomPrice = TSM.Include("Service.CustomPrice")
-local BagTracking = TSM.Include("Service.BagTracking")
+local Sell = TSM.Vendoring:NewPackage("Sell") ---@type AddonPackage
+local Database = TSM.LibTSMUtil:Include("Database")
+local TempTable = TSM.LibTSMUtil:Include("BaseType.TempTable")
+local ItemString = TSM.LibTSMTypes:Include("Item.ItemString")
+local Container = TSM.LibTSMWoW:Include("API.Container")
+local ItemInfo = TSM.LibTSMService:Include("Item.ItemInfo")
+local CustomString = TSM.LibTSMTypes:Include("CustomString")
+local BagTracking = TSM.LibTSMService:Include("Inventory.BagTracking")
 local private = {
+	settings = nil,
 	ignoreDB = nil,
 	potentialValueDB = nil,
 }
@@ -24,7 +25,10 @@ local private = {
 -- Module Functions
 -- ============================================================================
 
-function Sell.OnInitialize()
+function Sell.OnInitialize(settingsDB)
+	private.settings = settingsDB:NewView()
+		:AddKey("global", "userData", "vendoringIgnore")
+		:AddKey("global", "vendoringOptions", "qsMarketValue")
 	local used = TempTable.Acquire()
 	private.ignoreDB = Database.NewSchema("VENDORING_IGNORE")
 		:AddUniqueStringField("itemString")
@@ -32,7 +36,7 @@ function Sell.OnInitialize()
 		:AddBooleanField("ignorePermanent")
 		:Commit()
 	private.ignoreDB:BulkInsertStart()
-	for itemString in pairs(TSM.db.global.userData.vendoringIgnore) do
+	for itemString in pairs(private.settings.vendoringIgnore) do
 		itemString = ItemString.Get(itemString)
 		if not used[itemString] then
 			used[itemString] = true
@@ -66,8 +70,8 @@ function Sell.IgnoreItemSession(itemString)
 end
 
 function Sell.IgnoreItemPermanent(itemString)
-	assert(not TSM.db.global.userData.vendoringIgnore[itemString])
-	TSM.db.global.userData.vendoringIgnore[itemString] = true
+	assert(not private.settings.vendoringIgnore[itemString])
+	private.settings.vendoringIgnore[itemString] = true
 
 	local row = private.ignoreDB:GetUniqueRow("itemString", itemString)
 	if row then
@@ -85,8 +89,8 @@ function Sell.IgnoreItemPermanent(itemString)
 end
 
 function Sell.ForgetIgnoreItemPermanent(itemString)
-	assert(TSM.db.global.userData.vendoringIgnore[itemString])
-	TSM.db.global.userData.vendoringIgnore[itemString] = nil
+	assert(private.settings.vendoringIgnore[itemString])
+	private.settings.vendoringIgnore[itemString] = nil
 
 	local row = private.ignoreDB:GetUniqueRow("itemString", itemString)
 	assert(row and row:GetField("ignorePermanent"))
@@ -114,30 +118,24 @@ function Sell.CreateBagsQuery()
 		:VirtualField("name", "string", ItemInfo.GetName, "itemString", "?")
 		:VirtualField("vendorSell", "number", ItemInfo.GetVendorSell, "itemString", 0)
 		:VirtualField("quality", "number", ItemInfo.GetQuality, "itemString", -1)
-		:Equal("isBoP", false)
-		:Equal("isBoA", false)
 	Sell.ResetBagsQuery(query)
 	return query
 end
 
 function Sell.ResetBagsQuery(query)
-	query:ResetOrderBy()
 	query:ResetFilters()
 	BagTracking.FilterQueryBags(query)
 	query:NotEqual("ignoreSession", true)
 		:NotEqual("ignorePermanent", true)
-		:Equal("isBoP", false)
-		:Equal("isBoA", false)
+		:Equal("isBound", false)
 		:GreaterThan("vendorSell", 0)
-		:OrderBy("name", true)
 end
 
 function Sell.SellItem(itemString, includeSoulbound)
 	local query = BagTracking.CreateQueryBags()
 		:OrderBy("slotId", true)
 		:Select("bag", "slot", "itemString")
-		:Equal("isBoP", false)
-		:Equal("isBoA", false)
+		:Equal("isBound", false)
 	for _, bag, slot, bagItemString in query:Iterator() do
 		if itemString == bagItemString and ItemString.Get(Container.GetItemLink(bag, slot)) == itemString then
 			Container.UseItem(bag, slot)
@@ -158,10 +156,9 @@ function private.UpdatePotentialValueDB()
 		:OrderBy("slotId", true)
 		:Select("itemString")
 		:Distinct("itemString")
-		:Equal("isBoP", false)
-		:Equal("isBoA", false)
+		:Equal("isBound", false)
 	for _, itemString in query:Iterator() do
-		local value = CustomPrice.GetValue(TSM.db.global.vendoringOptions.qsMarketValue, itemString)
+		local value = CustomString.GetValue(private.settings.qsMarketValue, itemString)
 		if value then
 			private.potentialValueDB:BulkInsertNewRow(itemString, value)
 		end

@@ -1,9 +1,0 @@
-<Ui>
-    <!-- 列表每行格式 -->
-    <Frame name="PIGApplistbutTemplate" mixin="PIGApplistbutMixin" inherits="BackdropTemplate" virtual="true">
-        <Size y="24"/>
-		<Scripts>
-	        <OnLoad method="OnLoad"/>
-	    </Scripts>
-    </Frame>
-</Ui>

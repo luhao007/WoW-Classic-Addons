@@ -5,16 +5,15 @@
 -- ------------------------------------------------------------------------------ --
 
 local TSM = select(2, ...) ---@type TSM
-local MailingUI = TSM.UI:NewPackage("MailingUI")
-local Environment = TSM.Include("Environment")
-local L = TSM.Include("Locale").GetTable()
-local Delay = TSM.Include("Util.Delay")
-local FSM = TSM.Include("Util.FSM")
-local ScriptWrapper = TSM.Include("Util.ScriptWrapper")
-local Settings = TSM.Include("Service.Settings")
-local DefaultUI = TSM.Include("Service.DefaultUI")
-local UIElements = TSM.Include("UI.UIElements")
-local UIUtils = TSM.Include("UI.UIUtils")
+local MailingUI = TSM.UI:NewPackage("MailingUI") ---@type AddonPackage
+local ClientInfo = TSM.LibTSMWoW:Include("Util.ClientInfo")
+local L = TSM.Locale.GetTable()
+local DelayTimer = TSM.LibTSMWoW:IncludeClassType("DelayTimer")
+local FSM = TSM.LibTSMUtil:Include("FSM")
+local ScriptWrapper = TSM.LibTSMWoW:Include("API.ScriptWrapper")
+local DefaultUI = TSM.LibTSMWoW:Include("UI.DefaultUI")
+local UIElements = TSM.LibTSMUI:Include("Util.UIElements")
+local UIUtils = TSM.LibTSMUI:Include("Util.UIUtils")
 local private = {
 	settings = nil,
 	topLevelPages = {},
@@ -32,8 +31,8 @@ local MIN_FRAME_SIZE = { width = 575, height = 400 }
 -- Module Functions
 -- ============================================================================
 
-function MailingUI.OnInitialize()
-	private.settings = Settings.NewView()
+function MailingUI.OnInitialize(settingsDB)
+	private.settings = settingsDB:NewView()
 		:AddKey("global", "mailingUIContext", "showDefault")
 		:AddKey("global", "mailingUIContext", "frame")
 	private.FSMCreate()
@@ -116,7 +115,7 @@ end
 -- ============================================================================
 
 function private.FSMCreate()
-	private.showTimer = Delay.CreateTimer("MAILING_SHOW", function() private.fsm:ProcessEvent("EV_MAIL_SHOW") end)
+	private.showTimer = DelayTimer.New("MAILING_SHOW", function() private.fsm:ProcessEvent("EV_MAIL_SHOW") end)
 	DefaultUI.RegisterMailVisibleCallback(function(visible)
 		if visible then
 			private.showTimer:RunForFrames(0)
@@ -154,7 +153,7 @@ function private.FSMCreate()
 		)
 		:AddState(FSM.NewState("ST_DEFAULT_OPEN")
 			:SetOnEnter(function(context, isIgnored)
-				if Environment.IsRetail() then
+				if ClientInfo.IsRetail() then
 					ShowUIPanel(MailFrame)
 				else
 					MailFrame_Show()
@@ -162,10 +161,10 @@ function private.FSMCreate()
 
 				if not private.defaultUISwitchBtn then
 					private.defaultUISwitchBtn = UIElements.New("ActionButton", "switchBtn")
-						:SetSize(60, Environment.IsRetail() and 15 or 16)
+						:SetSize(60, ClientInfo.IsRetail() and 15 or 16)
 						:SetFont("BODY_BODY3")
-						:AddAnchor("TOPRIGHT", Environment.IsRetail() and -27 or -26, Environment.IsRetail() and -4 or -3)
-						:SetRelativeLevel(Environment.IsRetail() and 600 or 3)
+						:AddAnchor("TOPRIGHT", ClientInfo.IsRetail() and -27 or -26, ClientInfo.IsRetail() and -4 or -3)
+						:SetRelativeLevel(ClientInfo.IsRetail() and 600 or 3)
 						:DisableClickCooldown()
 						:SetText(L["TSM4"])
 						:SetScript("OnClick", private.SwitchBtnOnClick)
@@ -196,7 +195,7 @@ function private.FSMCreate()
 		)
 		:AddState(FSM.NewState("ST_FRAME_OPEN")
 			:SetOnEnter(function(context)
-				if not Environment.IsRetail() then
+				if not ClientInfo.IsRetail() then
 					OpenAllBags()
 				end
 				CheckInbox()
@@ -226,7 +225,7 @@ function private.FSMCreate()
 				return "ST_CLOSED"
 			end)
 			:AddEvent("EV_MAIL_SHOW", function(context)
-				if not Environment.IsRetail() then
+				if not ClientInfo.IsRetail() then
 					OpenAllBags()
 				end
 				CheckInbox()

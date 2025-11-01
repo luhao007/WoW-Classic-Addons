@@ -29,25 +29,31 @@ local function VUHDO_placeAllReadyIcons()
 
 	for tPanelNum = 1, VUHDO_MAX_PANELS do
 		for _, tButton in pairs(VUHDO_getPanelButtons(tPanelNum)) do
-			if tButton:GetAttribute("unit") then VUHDO_placeReadyIcon(tButton);
-			else break; end
+			if tButton:GetAttribute("unit") then
+				VUHDO_placeReadyIcon(tButton);
+			else
+				break;
+			end
 		end
 	end
+
 end
 
 
 
 --
 local function VUHDO_hideAllReadyIcons()
-	local tAllButtons;
 
 	for tPanelNum = 1, VUHDO_MAX_PANELS do
 		for _, tButton in pairs(VUHDO_getPanelButtons(tPanelNum)) do
 			if tButton:GetAttribute("unit") then
 				VUHDO_UIFrameFlash(VUHDO_getBarRoleIcon(tButton, 20), 0, 2, 10, false, 0, 8);
-			else break; end
+			else
+				break;
+			end
 		end
 	end
+
 end
 
 

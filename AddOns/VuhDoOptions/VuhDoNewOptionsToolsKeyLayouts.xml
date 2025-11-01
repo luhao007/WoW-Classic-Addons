@@ -6,7 +6,7 @@
 
 			<Frame name="$parentStorePanel" inherits="VuhDoPanelTemplate">
 				<Size>
-					<AbsDimension x="320" y="245" />
+					<AbsDimension x="320" y="285" />
 				</Size>
 				<Anchors>
 					<Anchor point="TOPLEFT">
@@ -23,7 +23,7 @@
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
-									<AbsDimension x="210" y="-127" />
+									<AbsDimension x="210" y="-165" />
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -41,7 +41,7 @@
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
-									<AbsDimension x="210" y="-165" />
+									<AbsDimension x="210" y="-203" />
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -59,7 +59,7 @@
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
-									<AbsDimension x="210" y="-203" />
+									<AbsDimension x="210" y="-241" />
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -242,7 +242,7 @@
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
-									<AbsDimension x="210" y="-89" />
+									<AbsDimension x="210" y="-127" />
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -260,7 +260,7 @@
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
-									<AbsDimension x="210" y="-51" />
+									<AbsDimension x="210" y="-89" />
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -287,6 +287,25 @@
 						</Scripts>
 					</CheckButton>
 
+					<CheckButton name="$parentLoadHotsOnlySlotsCheckButton"  text="VUHDO_I18N_LOAD_HOTS_ONLY_SLOTS" inherits="VuhDoCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="210" y="-51" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								VUHDO_lnfSetModel(self, "VUHDO_SPELL_CONFIG.IS_LOAD_HOTS_ONLY_SLOTS");
+								VUHDO_lnfSetTooltip(self, VUHDO_I18N_TT.K609);
+
+								VUHDO_lnfAddConstraint(self, VUHDO_LF_CONSTRAINT_DISABLE, "VUHDO_SPELL_CONFIG.IS_LOAD_HOTS", false);
+							</OnLoad>
+						</Scripts>
+					</CheckButton>
+
+
 					<Frame name="$parentTitleLabel" inherits="VuhDoLabelFrameTemplate">
 						<Layers>
 							<Layer>
@@ -307,7 +326,7 @@
 				<Anchors>
 					<Anchor point="TOPLEFT">
 						<Offset>
-							<AbsDimension x="30" y="-285" />
+							<AbsDimension x="30" y="-325" />
 						</Offset>
 					</Anchor>
 				</Anchors>

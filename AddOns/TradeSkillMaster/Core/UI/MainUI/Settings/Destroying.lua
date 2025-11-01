@@ -5,13 +5,23 @@
 -- ------------------------------------------------------------------------------ --
 
 local TSM = select(2, ...) ---@type TSM
-local Destroying = TSM.MainUI.Settings:NewPackage("Destroying")
-local L = TSM.Include("Locale").GetTable()
-local UIElements = TSM.Include("UI.UIElements")
-local UIUtils = TSM.Include("UI.UIUtils")
-local private = {}
+local Destroying = TSM.MainUI.Settings:NewPackage("Destroying") ---@type AddonPackage
+local L = TSM.Locale.GetTable()
+local UIElements = TSM.LibTSMUI:Include("Util.UIElements")
+local UIUtils = TSM.LibTSMUI:Include("Util.UIUtils")
+local private = {
+	settings = nil,
+}
 local ITEM_QUALITY_DESCS = { ITEM_QUALITY2_DESC, ITEM_QUALITY3_DESC, ITEM_QUALITY4_DESC }
 local ITEM_QUALITY_KEYS = { 2, 3, 4 }
+local SETTING_TOOLTIPS = {
+	autoStack = L["Automtaically combine smaller stacks of herbs and ore as needed for milling and prospecting respectively."],
+	autoShow = L["Automatically show the Destroying UI when you have something in your bags to destroy."],
+	includeSoulbound = L["Include soulbound items in the list of items to disenchant."],
+	deMaxQuanlity = L["The max quality of item which Destroying will list for disenchanting."],
+	deAbovePrice = L["Destroying will only list items with a disenchant value above this price for disenchanting."],
+
+}
 
 
 
@@ -19,8 +29,14 @@ local ITEM_QUALITY_KEYS = { 2, 3, 4 }
 -- Module Functions
 -- ============================================================================
 
-function Destroying.OnInitialize()
-	TSM.MainUI.Settings.RegisterSettingPage("Destroying", "middle", private.GetDestroyingSettingsFrame)
+function Destroying.OnInitialize(settingsDB)
+	private.settings = settingsDB:NewView()
+		:AddKey("global", "destroyingOptions", "autoStack")
+		:AddKey("global", "destroyingOptions", "autoShow")
+		:AddKey("global", "destroyingOptions", "includeSoulbound")
+		:AddKey("global", "destroyingOptions", "deMaxQuality")
+		:AddKey("global", "destroyingOptions", "deAbovePrice")
+	TSM.MainUI.Settings.RegisterSettingPage(L["Destroying"], "middle", private.GetDestroyingSettingsFrame)
 end
 
 
@@ -33,7 +49,7 @@ function private.GetDestroyingSettingsFrame()
 	UIUtils.AnalyticsRecordPathChange("main", "settings", "destroying")
 	return UIElements.New("ScrollFrame", "destroyingSettings")
 		:SetPadding(8, 8, 8, 0)
-		:AddChild(TSM.MainUI.Settings.CreateExpandableSection("Destroying", "general", L["General Options"], "")
+		:AddChild(TSM.MainUI.Settings.CreateExpandableSection(L["Destroying"], "general", L["General Options"], "")
 			:AddChild(UIElements.New("Frame", "check1")
 				:SetLayout("HORIZONTAL")
 				:SetHeight(20)
@@ -42,7 +58,8 @@ function private.GetDestroyingSettingsFrame()
 					:SetWidth("AUTO")
 					:SetFont("BODY_BODY2_MEDIUM")
 					:SetText(L["Enable automatic stack combination"])
-					:SetSettingInfo(TSM.db.global.destroyingOptions, "autoStack")
+					:SetSettingInfo(private.settings, "autoStack")
+					:SetTooltip(SETTING_TOOLTIPS.autoStack)
 				)
 				:AddChild(UIElements.New("Spacer", "spacer"))
 			)
@@ -54,7 +71,8 @@ function private.GetDestroyingSettingsFrame()
 					:SetWidth("AUTO")
 					:SetFont("BODY_BODY2_MEDIUM")
 					:SetText(L["Show destroying frame automatically"])
-					:SetSettingInfo(TSM.db.global.destroyingOptions, "autoShow")
+					:SetSettingInfo(private.settings, "autoShow")
+					:SetTooltip(SETTING_TOOLTIPS.autoShow)
 				)
 				:AddChild(UIElements.New("Spacer", "spacer"))
 			)
@@ -65,7 +83,8 @@ function private.GetDestroyingSettingsFrame()
 					:SetWidth("AUTO")
 					:SetFont("BODY_BODY2_MEDIUM")
 					:SetText(L["Include soulbound items"])
-					:SetSettingInfo(TSM.db.global.destroyingOptions, "includeSoulbound")
+					:SetSettingInfo(private.settings, "includeSoulbound")
+					:SetTooltip(SETTING_TOOLTIPS.includeSoulbound)
 				)
 				:AddChild(UIElements.New("Spacer", "spacer"))
 			)
@@ -81,30 +100,16 @@ function private.GetDestroyingSettingsFrame()
 				:SetHeight(26)
 				:SetMargin(0, 0, 0, 12)
 				:SetItems(ITEM_QUALITY_DESCS, ITEM_QUALITY_KEYS)
-				:SetSettingInfo(TSM.db.global.destroyingOptions, "deMaxQuality")
+				:SetSettingInfo(private.settings, "deMaxQuality")
+				:SetTooltip(SETTING_TOOLTIPS.deMaxQuanlity)
 			)
-			:AddChild(TSM.MainUI.Settings.CreateInputWithReset("deDisenchantPriceField", L["Only show items with disenchant values above this price"], "global.destroyingOptions.deAbovePrice"))
+			:AddChild(TSM.MainUI.Settings.CreateInputWithReset("deDisenchantPriceField", L["Only show items with disenchant values above this price"], private.settings, "deAbovePrice", nil, nil, SETTING_TOOLTIPS.deAbovePrice))
 		)
-		:AddChild(TSM.MainUI.Settings.CreateExpandableSection("Destroying", "ignore", L["Ignored Items"], L["Use this list to manage what items you'd like TSM to ignore from destroying."])
-			:AddChild(UIElements.New("QueryScrollingTable", "items")
+		:AddChild(TSM.MainUI.Settings.CreateExpandableSection("Destroying", "ignore", L["Ignored Items"], L["Click on an item below to unignore it for destroying."])
+			:AddChild(UIElements.New("SimpleItemList", "items")
 				:SetHeight(136)
-				:GetScrollingTableInfo()
-					:NewColumn("item")
-						:SetTitle(L["Item"])
-						:SetFont("ITEM_BODY3")
-						:SetJustifyH("LEFT")
-						:SetIconSize(12)
-						:SetTextInfo("itemString", UIUtils.GetDisplayItemName)
-						:SetIconInfo("texture")
-						:SetTooltipInfo("itemString")
-						:SetSortInfo("name")
-						:DisableHiding()
-						:Commit()
-					:Commit()
 				:SetQuery(TSM.Destroying.CreateIgnoreQuery())
-				:SetAutoReleaseQuery(true)
-				:SetSelectionDisabled(true)
-				:SetScript("OnRowClick", private.IgnoredItemsOnRowClick)
+				:SetScript("OnItemClick", private.RemoveIgnoredItem)
 			)
 		)
 end
@@ -115,9 +120,6 @@ end
 -- Local Script Handlers
 -- ============================================================================
 
-function private.IgnoredItemsOnRowClick(_, record, mouseButton)
-	if mouseButton ~= "LeftButton" then
-		return
-	end
-	TSM.Destroying.ForgetIgnoreItemPermanent(record:GetField("itemString"))
+function private.RemoveIgnoredItem(_, itemString)
+	TSM.Destroying.ForgetIgnoreItemPermanent(itemString)
 end

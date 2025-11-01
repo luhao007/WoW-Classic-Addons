@@ -12,6 +12,30 @@ local IsAddOnLoaded=IsAddOnLoaded or C_AddOns and C_AddOns.IsAddOnLoaded
 ----------------------------------
 function BusinessInfo.AHPlus_Mainline()
 	if not PIGA["AHPlus"]["Open"] or AuctionHouseFrame.History then return end
+	local AuctionHouseTooltipType = {
+		BucketPetLink = 1,
+		ItemLink = 2,
+		ItemKey = 3,
+		SpecificPetLink = 4,
+	};
+	local function GetAuctionHouseTooltipType(rowData)
+		if rowData.itemLink then
+			local linkType = LinkUtil.ExtractLink(rowData.itemLink);
+			if linkType == "battlepet" then
+				return AuctionHouseTooltipType.SpecificPetLink, rowData.itemLink;
+			elseif linkType == "item" then
+				return AuctionHouseTooltipType.ItemLink, rowData.itemLink;
+			end
+		elseif rowData.itemKey then
+			local restrictQualityToFilter = true;
+			local itemKeyInfo = C_AuctionHouse.GetItemKeyInfo(rowData.itemKey, restrictQualityToFilter);
+			if itemKeyInfo and itemKeyInfo.battlePetLink then
+				return AuctionHouseTooltipType.BucketPetLink, itemKeyInfo.battlePetLink;
+			end
+			return AuctionHouseTooltipType.ItemKey, rowData.itemKey;
+		end
+		return nil;
+	end
 	local function Show_hangdata(hangui)
 		local itemKey = hangui.rowData.itemKey
 		local itemKeyInfo = C_AuctionHouse.GetItemKeyInfo(itemKey);
@@ -20,82 +44,115 @@ function BusinessInfo.AHPlus_Mainline()
 			if minPrice and minPrice>0 then
 				local newName=nil
 				local name = hangui.cells[2].Text:GetText()
-				local data = C_TooltipInfo.GetItemKey(itemKey.itemID, itemKey.itemLevel, itemKey.itemSuffix,itemKey.battlePetSpeciesID)
 				if name then
+					local _xxitemLink
+					if PIG_MaxTocversion(60000) then
+						local rowData=hangui:GetRowData()
+						local tooltipType, data = GetAuctionHouseTooltipType(rowData);
+						if not tooltipType then return end
+						PIG_TooltipUI:ClearLines();
+						if tooltipType == AuctionHouseTooltipType.BucketPetLink or tooltipType == AuctionHouseTooltipType.SpecificPetLink then
+							BattlePetToolTip_ShowLink(data);
+						else
+							if tooltipType == AuctionHouseTooltipType.ItemLink then
+								local hideVendorPrice = true;
+								PIG_TooltipUI:SetHyperlink(rowData.itemLink, nil, nil, hideVendorPrice);
+							elseif tooltipType == AuctionHouseTooltipType.ItemKey then
+								PIG_TooltipUI:SetItemKey(data.itemID, data.itemLevel, data.itemSuffix, C_AuctionHouse.GetItemKeyRequiredLevel(data));
+							end
+						end
+						local _, link = PIG_TooltipUI:GetItem()
+						_xxitemLink = link
+					else
+						local data = C_TooltipInfo.GetItemKey(itemKey.itemID, itemKey.itemLevel, itemKey.itemSuffix,itemKey.battlePetSpeciesID)
+						_xxitemLink=data.hyperlink
+					end
+					if not _xxitemLink then return end
 					if name:match("（") then
 						newName = name:match("|cff%w%w%w%w%w%w(.-)（%w+）|r")
 					else
 						newName = name:match("|cff%w%w%w%w%w%w(.-)|r")
 					end
-					hangui.updown.Text:SetTextColor(0.5, 0.5, 0.5, 0.5);
-					hangui.updown.Text:SetText("--");
+					hangui.cells[2].updown.Text:SetTextColor(0.5, 0.5, 0.5, 0.5);
+					hangui.cells[2].updown.Text:SetText("--");
 					local NewData=BusinessInfo.GetCacheDataG(newName)
 					if NewData then
 						local NewDataNum = #NewData
 						local OldGGGV_1 = NewData[NewDataNum]
-						local baifenbi = (minPrice/OldGGGV_1[1])*100+0.5
-						local baifenbi = floor(baifenbi)
-						hangui.updown.Text:SetText(baifenbi.."%");
-						hangui.updown.newName=newName
-						if baifenbi<100 then
-							hangui.updown.Text:SetTextColor(0, 1, 0, 1);
-						elseif baifenbi>100 then
-							hangui.updown.Text:SetTextColor(1, 0, 0, 1);
-						else
-							hangui.updown.Text:SetTextColor(1, 1, 1, 1);
-						end
-						if minPrice~=OldGGGV_1[1] and GetServerTime()-OldGGGV_1[2]>300 then
-							BusinessInfo.ADD_Newdata(newName,minPrice,data.hyperlink,itemKey.itemID)
+						if OldGGGV_1 then
+							local baifenbi = (minPrice/OldGGGV_1[1])*100+0.5
+							local baifenbi = floor(baifenbi)
+							hangui.cells[2].updown.Text:SetText(baifenbi.."%");
+							hangui.cells[2].updown.newName=newName
+							if baifenbi<100 then
+								hangui.cells[2].updown.Text:SetTextColor(0, 1, 0, 1);
+							elseif baifenbi>100 then
+								hangui.cells[2].updown.Text:SetTextColor(1, 0, 0, 1);
+							else
+								hangui.cells[2].updown.Text:SetTextColor(1, 1, 1, 1);
+							end
+							if minPrice~=OldGGGV_1[1] and GetServerTime()-OldGGGV_1[2]>300 then
+								BusinessInfo.ADD_Newdata(newName,minPrice,_xxitemLink,itemKey.itemID)
+							end
 						end
 					else				
-						BusinessInfo.ADD_Newdata(newName,minPrice,data.hyperlink,itemKey.itemID)
+						BusinessInfo.ADD_Newdata(newName,minPrice,_xxitemLink,itemKey.itemID)
 					end
 				end
 			end
 		else
-			C_Timer.After(0.01,function()
+			C_Timer.After(0.1,function()
 				Show_hangdata(hangui)
 			end)
 		end
 	end
 	hooksecurefunc(AuctionHouseFrame.BrowseResultsFrame.ItemList.ScrollBox, "OnViewInitializedFrame", function(frame, elementData)
-		--local dataID = elementData:GetElementData()
 		local Mfuji = elementData
-		if not Mfuji.updown then
-			Mfuji.updown = CreateFrame("Frame", nil, Mfuji);
-			Mfuji.updown:SetSize(44,18);
-			Mfuji.updown:SetPoint("LEFT",Mfuji,"LEFT",110,0);
-			Mfuji.updown.Text = PIGFontString(Mfuji.updown,{"RIGHT",Mfuji.updown,"RIGHT",0,0})
-			Mfuji.updown.Text:SetPoint("LEFT",Mfuji.updown,"LEFT",0,0);
-			Mfuji.updown.Text:SetJustifyH("RIGHT");
-			Mfuji.updown:HookScript("OnEnter", function(self)
-				self:GetParent().HighlightTexture:Show();
-				if self.newName then
-					local NewData=BusinessInfo.GetCacheDataG(self.newName)
-					if NewData then
-						AuctionHouseFrame.BrowseResultsFrame.qushiUI:Show()
-						AuctionHouseFrame.BrowseResultsFrame.qushiUI:SetPoint("TOPRIGHT",self,"TOPLEFT",18,1);
-						local Name = self:GetParent().cells[2].Text:GetText()
-						AuctionHouseFrame.BrowseResultsFrame.qushiUI.qushiF.qushitu(NewData,Name)
+		if Mfuji.cells[2] then
+			Mfuji.cells[2]:SetPoint("TOPLEFT",Mfuji.cells[1],"TOPRIGHT",48,0);
+			Mfuji.cells[2]:SetPoint("BOTTOMLEFT",Mfuji.cells[1],"BOTTOMRIGHT",48,0);
+			if not Mfuji.cells[2].updown then
+				Mfuji.cells[2].updown = CreateFrame("Frame", nil, Mfuji.cells[2]);
+				Mfuji.cells[2].updown:SetSize(44,18);
+				Mfuji.cells[2].updown:SetPoint("RIGHT",Mfuji.cells[2],"LEFT",-2,0);
+				Mfuji.cells[2].updown.Text = PIGFontString(Mfuji.cells[2].updown,{"RIGHT",Mfuji.cells[2].updown,"RIGHT",0,0})
+				Mfuji.cells[2].updown.Text:SetPoint("LEFT",Mfuji.cells[2].updown,"LEFT",0,0);
+				Mfuji.cells[2].updown.Text:SetJustifyH("RIGHT");
+				Mfuji.cells[2].updown:HookScript("OnEnter", function(self)
+					local fuhang = self:GetParent():GetParent()
+					fuhang.HighlightTexture:Show();
+					if self.newName then
+						local NewData=BusinessInfo.GetCacheDataG(self.newName)
+						if NewData then
+							AuctionHouseFrame.BrowseResultsFrame.qushiUI:Show()
+							AuctionHouseFrame.BrowseResultsFrame.qushiUI:SetPoint("TOPRIGHT",self,"TOPLEFT",18,1);
+							local Name = fuhang.cells[2].Text:GetText()
+							AuctionHouseFrame.BrowseResultsFrame.qushiUI.qushiF.qushitu(NewData,Name)
+						end
 					end
-				end
-			end);
-			Mfuji.updown:HookScript("OnLeave", function(self)
-				self:GetParent().HighlightTexture:Hide();
-				AuctionHouseFrame.BrowseResultsFrame.qushiUI:Hide()
-			end);
+				end);
+				Mfuji.cells[2].updown:HookScript("OnLeave", function(self)
+					local fuhang = self:GetParent():GetParent()
+					fuhang.HighlightTexture:Hide();
+					AuctionHouseFrame.BrowseResultsFrame.qushiUI:Hide()
+				end);
+			end
 		end
-		Show_hangdata(Mfuji)	
+		Show_hangdata(Mfuji)
 	end)
-	AuctionHouseFrame.BrowseResultsFrame.qushiUI=PIGFrame(AuctionHouseFrame.BrowseResultsFrame)
+	AuctionHouseFrame.BrowseResultsFrame.qushiUI=PIGFrame(AuctionHouseFrame.BrowseResultsFrame,nil,nil,nil,nil,nil,{["ElvUI"]={0,0,0,0},["NDui"]={0,0,0,0}})
 	AuctionHouseFrame.BrowseResultsFrame.qushiUI:SetSize(328,204);
-	AuctionHouseFrame.BrowseResultsFrame.qushiUI:PIGSetBackdrop(1,nil,nil,nil,0)
+	AuctionHouseFrame.BrowseResultsFrame.qushiUI:PIGSetBackdrop(1)
 	AuctionHouseFrame.BrowseResultsFrame.qushiUI:SetFrameStrata("HIGH")
 	AuctionHouseFrame.BrowseResultsFrame.qushiUI.qushiF=BusinessInfo.ADD_qushi(AuctionHouseFrame.BrowseResultsFrame.qushiUI,true)
 	AuctionHouseFrame.BrowseResultsFrame.qushiUI.qushiF:SetPoint("TOPLEFT", AuctionHouseFrame.BrowseResultsFrame.qushiUI, "TOPLEFT",4, -24);
 	AuctionHouseFrame.BrowseResultsFrame.qushiUI.qushiF:SetPoint("BOTTOMRIGHT", AuctionHouseFrame.BrowseResultsFrame.qushiUI, "BOTTOMRIGHT",-4, 4);
-	AuctionHouseFrame.BrowseResultsFrame.qushitishi:SetPoint("TOPLEFT",AuctionHouseFrame.BrowseResultsFrame,"TOPLEFT",128,-3);
 	AuctionHouseFrame.BrowseResultsFrame.qushitishi:SetFrameLevel(510)
+	if PIG_MaxTocversion() then
+		AuctionHouseFrame.BrowseResultsFrame.qushitishi:SetPoint("TOPLEFT",AuctionHouseFrame.BrowseResultsFrame,"TOPLEFT",154,-3);
+	else
+		AuctionHouseFrame.BrowseResultsFrame.qushitishi:SetPoint("TOPLEFT",AuctionHouseFrame.BrowseResultsFrame,"TOPLEFT",130,-3);
+	end
 
 	---缓存----------
 	AuctionHouseFrame.History = PIGButton(AuctionHouseFrame,{"TOPRIGHT",AuctionHouseFrame,"TOPRIGHT",-100,-1},{110,18},"缓存价格",nil,nil,nil,nil,0);

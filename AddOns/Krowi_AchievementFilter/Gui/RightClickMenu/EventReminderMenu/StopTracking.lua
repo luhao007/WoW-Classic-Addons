@@ -7,7 +7,7 @@ function section:CheckAdd()
 end
 
 local function GetTypeAsString(type)
-    local eventType = addon.Objects.EventType;
+    local eventType = KrowiAF.Enum.EventType;
     for typeAsString, typeAsValue in next, eventType do
         if type == typeAsValue then
             return typeAsString;
@@ -16,9 +16,10 @@ local function GetTypeAsString(type)
 end
 
 function section:Add(menu, event)
-    menu:AddFull({
-		Text = addon.L["Stop tracking"],
-		Func = function()
+    addon.MenuUtil:CreateButtonAndAdd(
+        menu,
+        addon.L["Stop tracking"],
+		function()
             local typeAsString = GetTypeAsString(event.Type);
 			addon.Options.db.profile.EventReminders[typeAsString .. "Events"][event.Id] = false;
             if event.LinkedEventIds then
@@ -28,5 +29,5 @@ function section:Add(menu, event)
             end
             addon.Gui.EventReminderSideButtonSystem:Refresh();
 		end
-	});
+	);
 end

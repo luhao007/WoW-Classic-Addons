@@ -29,13 +29,10 @@ QuickButUI.ButList[5]=function()
 		["Equip_Use"]=QuickButUI.EquipmentPIG["Equip_Use"],
 	};
 	-------
-	local Icon=255350
+	local Icon=133122--255350
 	local ClickTooltip ="《"..CHARACTER_INFO.."C键》界面管理配装"
 	local Tooltip = KEY_BUTTON1.."-|cff00FFFF展开切换按钮|r\n"..KEY_BUTTON2.."-|cff00FFFF卸下身上有耐久装备|r"
 	local AutoEquip=PIGQuickBut(GnUI,Tooltip,Icon)
-	local butW = AutoEquip:GetHeight()
-	AutoEquip:GetNormalTexture():SetPoint("TOPLEFT", -3, 0);
-	AutoEquip:GetNormalTexture():SetPoint("BOTTOMRIGHT", 3, 0);
 	AutoEquip.tips = PIGFontString(AutoEquip,nil,"你没有已保存的配装，\n"..ClickTooltip,"OUTLINE");
 	AutoEquip.tips:SetJustifyH("RIGHT")
 	AutoEquip.tips:SetTextColor(1, 0, 0, 1)
@@ -52,52 +49,40 @@ QuickButUI.ButList[5]=function()
 	end)
 	AutoEquipList.ButList={}
 	for i=1,PIG_EquipmentData.anniushu do
-		local EquipBut = CreateFrame("Button", nil, AutoEquipList,nil,i)
+		local EquipBut = PIGFrame(AutoEquipList,nil,{butW, butW-4})
+		EquipBut.butid=i
 		AutoEquipList.ButList[i]=EquipBut
-		EquipBut:SetHighlightTexture(130718);
-		EquipBut:SetSize(butW, butW)
-		EquipBut.BGtex = PIGFrame(EquipBut,{"CENTER",EquipBut,"CENTER",0, 0},{butW, butW})
-		EquipBut.BGtex:PIGSetBackdrop(0.2,0.2)
-		EquipBut.BGtex:SetFrameLevel(EquipBut:GetFrameLevel()-1)
+		EquipBut:PIGSetBackdrop(0.2,0.2)
+		EquipBut.NormalTex = EquipBut:CreateTexture(nil, "OVERLAY");
 		if PIG_MaxTocversion(20000) then
-			EquipBut:SetNormalTexture("interface/timer/bigtimernumbers.blp");
-			EquipBut:GetNormalTexture():SetTexCoord(PIG_EquipmentData.NumTexCoord[i][1],PIG_EquipmentData.NumTexCoord[i][2],PIG_EquipmentData.NumTexCoord[i][3],PIG_EquipmentData.NumTexCoord[i][4]);
+			EquipBut.NormalTex:SetTexture("interface/timer/bigtimernumbers.blp");
+			EquipBut.NormalTex:SetTexCoord(PIG_EquipmentData.NumTexCoord[i][1],PIG_EquipmentData.NumTexCoord[i][2],PIG_EquipmentData.NumTexCoord[i][3],PIG_EquipmentData.NumTexCoord[i][4]);
 		end
-		EquipBut.name = PIGFontString(EquipBut,{"LEFT", EquipBut, "RIGHT", 0, 0},nil,"OUTLINE",12)
-		EquipBut.name:SetTextColor(1, 1, 1, 1)
-		EquipBut:RegisterForClicks("AnyUp");
+		EquipBut.NormalTex:SetAllPoints(EquipBut)
+		EquipBut.Highlight = EquipBut:CreateTexture(nil, "Highlight");
+		EquipBut.Highlight:SetTexture(130718);
+		EquipBut.Highlight:SetAllPoints(EquipBut)
+		EquipBut.Highlight:SetBlendMode("ADD")
 		EquipBut.Down = EquipBut:CreateTexture(nil, "OVERLAY");
 		EquipBut.Down:SetTexture(130839);
 		EquipBut.Down:SetAllPoints(EquipBut)
 		EquipBut.Down:Hide();
+		EquipBut.name = PIGFontString(EquipBut,{"LEFT", EquipBut, "RIGHT", 0, 0},nil,"OUTLINE")
+		EquipBut.name:SetTextColor(1, 1, 1, 1)
+
 		EquipBut:HookScript("OnMouseDown", function (self)
 			self.Down:Show();
 			GameTooltip:ClearLines();
 			GameTooltip:Hide() 
 		end);
-		EquipBut:HookScript("OnMouseUp", function (self)
+		EquipBut:HookScript("OnMouseUp", function (self,button)
 			self.Down:Hide();
-		end);
-		EquipBut:HookScript("OnEnter", function (self)
-			if AutoRuneListUI and AutoRuneListUI:IsShown() then AutoEquip.xuyaoShow=true;AutoRuneListUI:Hide() end
-			AutoEquipList:Show()
-			GameTooltip:ClearLines();
-			GameTooltip:SetOwner(self, "ANCHOR_TOPLEFT",20,0);
-			GameTooltip:AddLine(KEY_BUTTON1.."-|cff00FFFF切换配装|r\n"..KEY_BUTTON2.."-|cff00FFFF保存配装|r")
-			GameTooltip:Show();
-		end);
-		EquipBut:HookScript("OnLeave", function ()
-			GameTooltip:ClearLines();
-			GameTooltip:Hide()
-			AutoEquipList:Hide()
-		end);
-		EquipBut:HookScript("OnClick", function(self,button)
 			PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
 			if PIG_MaxTocversion(30000) then
 				if button=="LeftButton" then
-					PIG_EquipmentData.Equip_Use(self:GetID())
+					PIG_EquipmentData.Equip_Use(self.butid)
 				else
-					PIG_EquipmentData.Equip_Save(self:GetID())
+					PIG_EquipmentData.Equip_Save(self.butid)
 				end
 			else
 				local erqid = self.id
@@ -172,10 +157,23 @@ QuickButUI.ButList[5]=function()
 				end
 			end
 			AutoEquipList:Hide()
-		end)
+		end);
+		EquipBut:HookScript("OnEnter", function (self)
+			if AutoRuneListUI and AutoRuneListUI:IsShown() then AutoEquip.xuyaoShow=true;AutoRuneListUI:Hide() end
+			AutoEquipList:Show()
+			GameTooltip:ClearLines();
+			GameTooltip:SetOwner(self, "ANCHOR_TOPLEFT",20,0);
+			GameTooltip:AddLine(KEY_BUTTON1.."-|cff00FFFF切换配装|r\n"..KEY_BUTTON2.."-|cff00FFFF保存配装|r")
+			GameTooltip:Show();
+		end);
+		EquipBut:HookScript("OnLeave", function ()
+			GameTooltip:ClearLines();
+			GameTooltip:Hide()
+			AutoEquipList:Hide()
+		end);
 	end
 	--
-	function AutoEquip:UpDatePoints()
+	function AutoEquip:UpDatePoints(cunzainum)
 		local WowHeight=GetScreenHeight();
 		local offset1 = self:GetBottom();
 		AutoEquipList:ClearAllPoints();
@@ -188,7 +186,7 @@ QuickButUI.ButList[5]=function()
 					fujikj:SetPoint("TOPRIGHT",AutoEquipList,"TOPRIGHT",0,-2);
 				else
 					local fujikj_1 = AutoEquipList.ButList[i-1]
-					fujikj:SetPoint("TOPRIGHT",fujikj_1,"BOTTOMRIGHT",0,-2);
+					fujikj:SetPoint("TOPRIGHT",fujikj_1,"BOTTOMRIGHT",0,0);
 				end
 			end
 			AutoEquipList:SetPoint("TOPRIGHT",self,"BOTTOMRIGHT",0,0);
@@ -201,12 +199,13 @@ QuickButUI.ButList[5]=function()
 					fujikj:SetPoint("BOTTOMRIGHT",AutoEquipList,"BOTTOMRIGHT",0,2);
 				else
 					local fujikj_1 = AutoEquipList.ButList[i-1]
-					fujikj:SetPoint("BOTTOMRIGHT",fujikj_1,"TOPRIGHT",0,2);
+					fujikj:SetPoint("BOTTOMRIGHT",fujikj_1,"TOPRIGHT",0,0);
 				end
 			end
 			AutoEquipList:SetPoint("BOTTOMRIGHT",self,"TOPRIGHT",0,0);
 			AutoEquip.tips:SetPoint("BOTTOMRIGHT",self,"TOPRIGHT",10,0);
 		end
+		if cunzainum>0 then AutoEquipList:SetHeight((butW+2)*cunzainum+2) end
 		AutoEquipList:Show()
 	end
 	AutoEquip:HookScript("OnLeave", function(self)
@@ -249,12 +248,12 @@ QuickButUI.ButList[5]=function()
 					fujikj:Show()
 					fujikj.id=equipmentSetIDs[id]
 					local name, iconFileID, setID, isEquipped, numItems, numEquipped, numInInventory, numLost, numIgnored = C_EquipmentSet.GetEquipmentSetInfo(equipmentSetIDs[id])
-					fujikj:SetNormalTexture(iconFileID);
+					fujikj.NormalTex:SetTexture(iconFileID);
 					fujikj.name:SetText(name);
 				else
 					fujikj:Hide()
 					fujikj.id=nil
-					fujikj:SetNormalTexture("");
+					fujikj.NormalTex:SetTexture("");
 					fujikj.name:SetText("");
 				end
 			end
@@ -262,7 +261,7 @@ QuickButUI.ButList[5]=function()
 		if self.cunzainum==0 then
 			self.tips:Show()
 		end
-		self:UpDatePoints()
+		self:UpDatePoints(self.cunzainum)
 	end)
 	AutoEquip:HookScript("OnClick", function(self,button)
 		if button=="LeftButton" then

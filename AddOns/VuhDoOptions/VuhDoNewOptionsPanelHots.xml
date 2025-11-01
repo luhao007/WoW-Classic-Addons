@@ -175,7 +175,7 @@
 				<Anchors>
 					<Anchor point="TOPLEFT">
 						<Offset>
-							<AbsDimension x="13" y="-13" />
+							<AbsDimension x="13" y="-10" />
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -223,7 +223,7 @@
 									</Anchors>
 									<Scripts>
 										<OnLoad>
-											VUHDO_lnfSetRadioModel(self, "VUHDO_PANEL_SETUP.HOTS.iconRadioValue", 1);
+											VUHDO_lnfSetRadioModel(self, "VUHDO_PANEL_SETUP.#PNUM#.HOTS.iconRadioValue", 1);
 											VUHDO_lnfSetTooltip(self, VUHDO_I18N_TT.K473);
 										</OnLoad>
 									</Scripts>
@@ -240,7 +240,7 @@
 									</Anchors>
 									<Scripts>
 										<OnLoad>
-											VUHDO_lnfSetRadioModel(self, "VUHDO_PANEL_SETUP.HOTS.iconRadioValue", 2);
+											VUHDO_lnfSetRadioModel(self, "VUHDO_PANEL_SETUP.#PNUM#.HOTS.iconRadioValue", 2);
 											VUHDO_lnfSetTooltip(self, VUHDO_I18N_TT.K474);
 										</OnLoad>
 									</Scripts>
@@ -257,7 +257,7 @@
 									</Anchors>
 									<Scripts>
 										<OnLoad>
-											VUHDO_lnfSetRadioModel(self, "VUHDO_PANEL_SETUP.HOTS.iconRadioValue", 3);
+											VUHDO_lnfSetRadioModel(self, "VUHDO_PANEL_SETUP.#PNUM#.HOTS.iconRadioValue", 3);
 											VUHDO_lnfSetTooltip(self, VUHDO_I18N_TT.K331);
 										</OnLoad>
 									</Scripts>
@@ -273,7 +273,7 @@
 									</Anchors>
 									<Scripts>
 										<OnLoad>
-												VUHDO_lnfSetRadioModel(self, "VUHDO_PANEL_SETUP.HOTS.iconRadioValue", 4);
+												VUHDO_lnfSetRadioModel(self, "VUHDO_PANEL_SETUP.#PNUM#.HOTS.iconRadioValue", 4);
 												VUHDO_lnfSetTooltip(self, VUHDO_I18N_TT.K586);
 										</OnLoad>
 									</Scripts>
@@ -303,7 +303,7 @@
 									</Anchors>
 									<Scripts>
 										<OnLoad>
-											VUHDO_lnfSetRadioModel(self, "VUHDO_PANEL_SETUP.HOTS.stacksRadioValue", 1);
+											VUHDO_lnfSetRadioModel(self, "VUHDO_PANEL_SETUP.#PNUM#.HOTS.stacksRadioValue", 1);
 											VUHDO_lnfSetTooltip(self, VUHDO_I18N_TT.K406);
 										</OnLoad>
 									</Scripts>
@@ -320,7 +320,7 @@
 									</Anchors>
 									<Scripts>
 										<OnLoad>
-											VUHDO_lnfSetRadioModel(self, "VUHDO_PANEL_SETUP.HOTS.stacksRadioValue", 2);
+											VUHDO_lnfSetRadioModel(self, "VUHDO_PANEL_SETUP.#PNUM#.HOTS.stacksRadioValue", 2);
 											VUHDO_lnfSetTooltip(self, VUHDO_I18N_TT.K407);
 										</OnLoad>
 									</Scripts>
@@ -337,7 +337,7 @@
 									</Anchors>
 									<Scripts>
 										<OnLoad>
-											VUHDO_lnfSetRadioModel(self, "VUHDO_PANEL_SETUP.HOTS.stacksRadioValue", 3);
+											VUHDO_lnfSetRadioModel(self, "VUHDO_PANEL_SETUP.#PNUM#.HOTS.stacksRadioValue", 3);
 											VUHDO_lnfSetTooltip(self, VUHDO_I18N_TT.K408);
 										</OnLoad>
 									</Scripts>
@@ -385,7 +385,7 @@
 								</Anchors>
 								<Scripts>
 									<OnLoad>
-										VUHDO_lnfSetRadioModel(self, "VUHDO_PANEL_SETUP.HOTS.radioValue", 9);
+										VUHDO_lnfSetRadioModel(self, "VUHDO_PANEL_SETUP.#PNUM#.HOTS.radioValue", 9);
 										VUHDO_lnfSetTooltip(self, VUHDO_I18N_TT.K325);
 									</OnLoad>
 								</Scripts>
@@ -401,7 +401,7 @@
 								</Anchors>
 								<Scripts>
 									<OnLoad>
-										VUHDO_lnfSetRadioModel(self, "VUHDO_PANEL_SETUP.HOTS.radioValue", 10);
+										VUHDO_lnfSetRadioModel(self, "VUHDO_PANEL_SETUP.#PNUM#.HOTS.radioValue", 10);
 										VUHDO_lnfSetTooltip(self, VUHDO_I18N_TT.K325);
 									</OnLoad>
 								</Scripts>
@@ -417,7 +417,7 @@
 								</Anchors>
 								<Scripts>
 									<OnLoad>
-										VUHDO_lnfSetRadioModel(self, "VUHDO_PANEL_SETUP.HOTS.radioValue", 8);
+										VUHDO_lnfSetRadioModel(self, "VUHDO_PANEL_SETUP.#PNUM#.HOTS.radioValue", 8);
 										VUHDO_lnfSetTooltip(self, VUHDO_I18N_TT.K326);
 									</OnLoad>
 								</Scripts>
@@ -433,7 +433,7 @@
 								</Anchors>
 								<Scripts>
 									<OnLoad>
-										VUHDO_lnfSetRadioModel(self, "VUHDO_PANEL_SETUP.HOTS.radioValue", 7);
+										VUHDO_lnfSetRadioModel(self, "VUHDO_PANEL_SETUP.#PNUM#.HOTS.radioValue", 7);
 										VUHDO_lnfSetTooltip(self, VUHDO_I18N_TT.K327);
 									</OnLoad>
 								</Scripts>
@@ -449,7 +449,7 @@
 								</Anchors>
 								<Scripts>
 									<OnLoad>
-										VUHDO_lnfSetRadioModel(self, "VUHDO_PANEL_SETUP.HOTS.radioValue", 6);
+										VUHDO_lnfSetRadioModel(self, "VUHDO_PANEL_SETUP.#PNUM#.HOTS.radioValue", 6);
 										VUHDO_lnfSetTooltip(self, VUHDO_I18N_TT.K328);
 									</OnLoad>
 								</Scripts>
@@ -465,7 +465,7 @@
 								</Anchors>
 								<Scripts>
 									<OnLoad>
-										VUHDO_lnfSetRadioModel(self, "VUHDO_PANEL_SETUP.HOTS.radioValue", 5);
+										VUHDO_lnfSetRadioModel(self, "VUHDO_PANEL_SETUP.#PNUM#.HOTS.radioValue", 5);
 										VUHDO_lnfSetTooltip(self, VUHDO_I18N_TT.K329);
 									</OnLoad>
 								</Scripts>
@@ -481,7 +481,7 @@
 								</Anchors>
 								<Scripts>
 									<OnLoad>
-										VUHDO_lnfSetRadioModel(self, "VUHDO_PANEL_SETUP.HOTS.radioValue", 11);
+										VUHDO_lnfSetRadioModel(self, "VUHDO_PANEL_SETUP.#PNUM#.HOTS.radioValue", 11);
 										VUHDO_lnfSetTooltip(self, VUHDO_I18N_TT.K503);
 									</OnLoad>
 								</Scripts>
@@ -497,7 +497,7 @@
 								</Anchors>
 								<Scripts>
 									<OnLoad>
-										VUHDO_lnfSetRadioModel(self, "VUHDO_PANEL_SETUP.HOTS.radioValue", 12);
+										VUHDO_lnfSetRadioModel(self, "VUHDO_PANEL_SETUP.#PNUM#.HOTS.radioValue", 12);
 										VUHDO_lnfSetTooltip(self, VUHDO_I18N_TT.K504);
 									</OnLoad>
 								</Scripts>
@@ -513,7 +513,7 @@
 								</Anchors>
 								<Scripts>
 									<OnLoad>
-										VUHDO_lnfSetRadioModel(self, "VUHDO_PANEL_SETUP.HOTS.radioValue", 14);
+										VUHDO_lnfSetRadioModel(self, "VUHDO_PANEL_SETUP.#PNUM#.HOTS.radioValue", 14);
 										VUHDO_lnfSetTooltip(self, VUHDO_I18N_TT.K505);
 									</OnLoad>
 								</Scripts>
@@ -529,7 +529,7 @@
 								</Anchors>
 								<Scripts>
 									<OnLoad>
-										VUHDO_lnfSetRadioModel(self, "VUHDO_PANEL_SETUP.HOTS.radioValue", 13);
+										VUHDO_lnfSetRadioModel(self, "VUHDO_PANEL_SETUP.#PNUM#.HOTS.radioValue", 13);
 										VUHDO_lnfSetTooltip(self, VUHDO_I18N_TT.K506);
 									</OnLoad>
 								</Scripts>
@@ -546,7 +546,7 @@
 								</Anchors>
 								<Scripts>
 									<OnLoad>
-										VUHDO_lnfSetRadioModel(self, "VUHDO_PANEL_SETUP.HOTS.radioValue", 3);
+										VUHDO_lnfSetRadioModel(self, "VUHDO_PANEL_SETUP.#PNUM#.HOTS.radioValue", 3);
 										VUHDO_lnfSetTooltip(self, VUHDO_I18N_TT.K071);
 									</OnLoad>
 								</Scripts>
@@ -562,7 +562,7 @@
 								</Anchors>
 								<Scripts>
 									<OnLoad>
-										VUHDO_lnfSetRadioModel(self, "VUHDO_PANEL_SETUP.HOTS.radioValue", 2);
+										VUHDO_lnfSetRadioModel(self, "VUHDO_PANEL_SETUP.#PNUM#.HOTS.radioValue", 2);
 										VUHDO_lnfSetTooltip(self, VUHDO_I18N_TT.K072);
 									</OnLoad>
 								</Scripts>
@@ -578,7 +578,7 @@
 								</Anchors>
 								<Scripts>
 									<OnLoad>
-										VUHDO_lnfSetRadioModel(self, "VUHDO_PANEL_SETUP.HOTS.radioValue", 1);
+										VUHDO_lnfSetRadioModel(self, "VUHDO_PANEL_SETUP.#PNUM#.HOTS.radioValue", 1);
 										VUHDO_lnfSetTooltip(self, VUHDO_I18N_TT.K073);
 									</OnLoad>
 								</Scripts>
@@ -594,7 +594,7 @@
 								</Anchors>
 								<Scripts>
 									<OnLoad>
-										VUHDO_lnfSetRadioModel(self, "VUHDO_PANEL_SETUP.HOTS.radioValue", 4);
+										VUHDO_lnfSetRadioModel(self, "VUHDO_PANEL_SETUP.#PNUM#.HOTS.radioValue", 4);
 										VUHDO_lnfSetTooltip(self, VUHDO_I18N_TT.K074);
 									</OnLoad>
 								</Scripts>
@@ -611,7 +611,7 @@
 								</Anchors>
 								<Scripts>
 									<OnLoad>
-										VUHDO_lnfSetRadioModel(self, "VUHDO_PANEL_SETUP.HOTS.radioValue", 20);
+										VUHDO_lnfSetRadioModel(self, "VUHDO_PANEL_SETUP.#PNUM#.HOTS.radioValue", 20);
 									</OnLoad>
 								</Scripts>
 							</CheckButton>
@@ -626,7 +626,7 @@
 								</Anchors>
 								<Scripts>
 									<OnLoad>
-										VUHDO_lnfSetRadioModel(self, "VUHDO_PANEL_SETUP.HOTS.radioValue", 21);
+										VUHDO_lnfSetRadioModel(self, "VUHDO_PANEL_SETUP.#PNUM#.HOTS.radioValue", 21);
 									</OnLoad>
 								</Scripts>
 							</CheckButton>
@@ -724,6 +724,24 @@
 									<Anchor point="CENTER">
 										<Offset>
 											<AbsDimension x="0" y="0" />
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Frame>
+							<Frame name="$parentTexture8" inherits="VuhDoSquareDemoTexture">
+								<Anchors>
+									<Anchor point="CENTER">
+										<Offset>
+											<AbsDimension x="-14" y="0" />
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Frame>
+							<Frame name="$parentTexture9" inherits="VuhDoSquareDemoTexture">
+								<Anchors>
+									<Anchor point="CENTER">
+										<Offset>
+											<AbsDimension x="14" y="0" />
 										</Offset>
 									</Anchor>
 								</Anchors>
@@ -826,6 +844,25 @@
 									</Anchor>
 								</Anchors>
 							</Frame>
+							<Frame name="$parentTexture8" inherits="VuhDoSquareDemoTexture">
+								<Anchors>
+									<Anchor point="CENTER">
+										<Offset>
+											<AbsDimension x="-14" y="0" />
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Frame>
+							<Frame name="$parentTexture9" inherits="VuhDoSquareDemoTexture">
+								<Anchors>
+									<Anchor point="CENTER">
+										<Offset>
+											<AbsDimension x="14" y="0" />
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Frame>
+
 
 						</Frames>
 						<Scripts>
@@ -870,7 +907,7 @@
 				<Anchors>
 					<Anchor point="TOPLEFT">
 						<Offset>
-							<AbsDimension x="260" y="-13" />
+							<AbsDimension x="260" y="-10" />
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -895,7 +932,7 @@
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								VUHDO_lnfSetModel(self, "VUHDO_PANEL_SETUP.HOTS.TIMER_TEXT");
+								VUHDO_lnfSetModel(self, "VUHDO_PANEL_SETUP.#PNUM#.HOTS.TIMER_TEXT");
 							</OnLoad>
 						</Scripts>
 					</Button>
@@ -910,7 +947,7 @@
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								VUHDO_lnfSetModel(self, "VUHDO_PANEL_SETUP.HOTS.COUNTER_TEXT");
+								VUHDO_lnfSetModel(self, "VUHDO_PANEL_SETUP.#PNUM#.HOTS.COUNTER_TEXT");
 							</OnLoad>
 						</Scripts>
 					</Button>
@@ -925,7 +962,7 @@
 				<Anchors>
 					<Anchor point="TOPLEFT">
 						<Offset>
-							<AbsDimension x="400" y="-13" />
+							<AbsDimension x="400" y="-10" />
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -985,12 +1022,12 @@
 
 			<Frame name="$parentHotOrderPanel" inherits="VuhDoPanelTemplate">
 				<Size>
-					<AbsDimension x="270" y="266" />
+					<AbsDimension x="270" y="312" />
 				</Size>
 				<Anchors>
 					<Anchor point="TOPLEFT">
 						<Offset>
-							<AbsDimension x="260" y="-140" />
+							<AbsDimension x="260" y="-130" />
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -1009,7 +1046,7 @@
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
-									<AbsDimension x="13" y="-39" />
+									<AbsDimension x="13" y="-28" />
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -1019,7 +1056,7 @@
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
-									<AbsDimension x="13" y="-73" />
+									<AbsDimension x="13" y="-59" />
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -1029,7 +1066,7 @@
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
-									<AbsDimension x="13" y="-104" />
+									<AbsDimension x="13" y="-90" />
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -1039,7 +1076,7 @@
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
-									<AbsDimension x="13" y="-135" />
+									<AbsDimension x="13" y="-121" />
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -1049,7 +1086,7 @@
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
-									<AbsDimension x="13" y="-166" />
+									<AbsDimension x="13" y="-152" />
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -1059,7 +1096,7 @@
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
-									<AbsDimension x="13" y="-197" />
+									<AbsDimension x="13" y="-183" />
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -1069,7 +1106,27 @@
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
-									<AbsDimension x="13" y="-228" />
+									<AbsDimension x="13" y="-214" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+
+					<Frame name="$parentSlot11Container" inherits="VuhDoHotSlotContainer">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="13" y="-245" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+
+					<Frame name="$parentSlot12Container" inherits="VuhDoHotSlotContainer">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="13" y="-276" />
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -1082,7 +1139,7 @@
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
-									<AbsDimension x="180" y="-20" />
+									<AbsDimension x="190" y="-12" />
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -1101,7 +1158,7 @@
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
-									<AbsDimension x="225" y="-20" />
+									<AbsDimension x="225" y="-12" />
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -1118,12 +1175,12 @@
 
 			<Frame name="$parentMoreHotOrderPanel" hidden="true" inherits="VuhDoPanelTemplate">
 				<Size>
-					<AbsDimension x="270" y="266" />
+					<AbsDimension x="270" y="312" />
 				</Size>
 				<Anchors>
 					<Anchor point="TOPLEFT">
 						<Offset>
-							<AbsDimension x="260" y="-140" />
+							<AbsDimension x="260" y="-130" />
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -1142,7 +1199,7 @@
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
-									<AbsDimension x="13" y="-39" />
+									<AbsDimension x="13" y="-30" />
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -1152,7 +1209,7 @@
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
-									<AbsDimension x="13" y="-73" />
+									<AbsDimension x="13" y="-61" />
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -1162,7 +1219,7 @@
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
-									<AbsDimension x="13" y="-104" />
+									<AbsDimension x="13" y="-92" />
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -1172,7 +1229,7 @@
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
-									<AbsDimension x="13" y="-135" />
+									<AbsDimension x="13" y="-123" />
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -1182,7 +1239,7 @@
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
-									<AbsDimension x="13" y="-166" />
+									<AbsDimension x="13" y="-154" />
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -1192,7 +1249,7 @@
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
-									<AbsDimension x="13" y="-197" />
+									<AbsDimension x="13" y="-185" />
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -1202,7 +1259,27 @@
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
-									<AbsDimension x="13" y="-228" />
+									<AbsDimension x="13" y="-216" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+
+					<Frame name="$parentSlot11Container" inherits="VuhDoMoreHotSlotContainer">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="13" y="-247" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+
+					<Frame name="$parentSlot12Container" inherits="VuhDoMoreHotSlotContainer">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="13" y="-278" />
 								</Offset>
 							</Anchor>
 						</Anchors>

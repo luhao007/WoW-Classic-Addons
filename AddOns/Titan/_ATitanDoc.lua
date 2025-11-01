@@ -38,7 +38,7 @@ These are routines Titan will keep stable.
 Changes to these varaibles and routines will be broadcast to developers via Discord at a minimum.
 
 Dev : 
-These are global routines Tian uses. These may change at any time per Titan needs and design.
+These are global routines Titan uses. These may change at any time per Titan needs and design.
 
 File : 
 Each file has a terse description of its contents.
@@ -86,22 +86,19 @@ Inside the Titan folder you will notice :
 
 
 === .toc
+NOTE: Summer 2025 Titan dropped TitanClassic as a method to make CE and other WoW versions distinct.
 
 The folder and the .toc files MUST have the same name!
 Sort of... the name prior to the underscore(_) must be the same as the folder name. 
 The part after (postfix) has meaning to the WoW addon loader.
-WoW has three versions represented by the three postfix values.
+This list changes : https://warcraft.wiki.gg/wiki/TOC_format
+
+Titan uses at least two postfix values.
 _Mainline : current retail version
-_Wrath : Wrath of the Lich King version.
 _Vanilla : Classic Era version
 
-These values may change as the versions evolve, say Cata is added. 
-Or they may not :). Years from now we may wonder why Wrath represents Dragonflight!
-
-Titan uses this TOC method. Notice the Titan folder has no 'wrath' or 'vanilla' .toc.
-TitanClassic folder has both 'wrath' and 'vanilla' .toc but no 'mainline' .toc.
-This allows Titan to load differently so plugins (built-in or 3rd party) intended for Classic versions can run without change.
-Titan has no dependencies but Titan plugins need to list Titan or TitanClassic.
+Titan uses this TOC method. Notice a couple built-ins use _Vanilla.toc.
+This allows Titan to load plugins (built-in or 3rd party) intended for Classic only without change.
 
 === .toc internals
 NOTE: The ## Interface value should match the current interface value of the corresponding WoW version.

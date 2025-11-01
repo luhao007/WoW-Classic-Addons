@@ -117,25 +117,62 @@ QuestieDB.questFlags = {
     WEEKLY = 32768,
 }
 
+-- https://wowpedia.fandom.com/wiki/FactionID
 QuestieDB.factionIDs = {
     THORIUM_BROTHERHOOD = 59,
+    HORDE = 67,
     UNDERCITY = 68,
     DARNASSUS = 69,
     STEAMWHEEDLE_CARTEL = 169,
     ZANDALAR_TRIBE = 270,
+    ALLIANCE = 469,
     ARGENT_DAWN = 529,
+    DARKSPEAR_TROLLS = 530,
     TIMBERMAW_HOLD = 576,
-    HYDRAXIAN_WATERLORDS = 749,
+    WINTERSABER_TRAINERS = 589,
     CENARION_CIRCLE = 609,
+    HYDRAXIAN_WATERLORDS = 749,
     SHEN_DRALAR = 809,
     DARKMOON_FAIRE = 909,
     BROOD_OF_NOZDORMU = 910,
+    SILVERMOON_CITY = 911,
     EXODAR = 930,
+    THE_ALDOR = 932,
+    THE_SCRYERS = 934,
+    THE_SHA_TAR = 935,
     THE_KALUAK = 1073,
     KIRIN_TOR = 1090,
+    GOLDEN_LOTUS = 1269,
+    SHADO_PAN = 1270,
+    ORDER_OF_THE_CLOUD_SERPENT = 1271,
+    THE_TILLERS = 1272,
+    JOGU_THE_DRUNK = 1273,
+    ELLA = 1275,
+    OLD_HILLPAW = 1276,
+    CHEE_CHEE = 1277,
+    SHO = 1278,
+    HAOHAN_MUDCLAW = 1279,
+    TINA_MUDCLAW = 1280,
+    GINA_MUDCLAW = 1281,
+    FISH_FELLREED = 1282,
+    FARMER_FUNG = 1283,
+    THE_ANGLERS = 1302,
+    THE_KLAXXI = 1337,
+    THE_AUGUST_CELESTIALS = 1341,
+    THE_LOREWALKERS = 1345,
+    HUOJIN_PANDAREN = 1352,
+    TUSHUI_PANDAREN = 1353,
+    NOMI = 1357, -- hidden faction
+    NAT_PAGLE = 1358,
+    THE_BLACK_PRINCE = 1359,
+    DOMINANCE_OFFENSIVE = 1375,
+    OPERATION_SHIELDWALL = 1376,
+    KIRIN_TOR_OFFENSIVE = 1387,
+    SUNREAVER_ONSLAUGHT = 1388,
+    SHADO_PAN_ASSAULT = 1435,
 }
 
--- temporary, until we remove the old db funcitons
+-- temporary, until we remove the old db functions
 QuestieDB._questAdapterQueryOrder = {}
 for key, id in pairs(QuestieDB.questKeys) do
     QuestieDB._questAdapterQueryOrder[id] = key

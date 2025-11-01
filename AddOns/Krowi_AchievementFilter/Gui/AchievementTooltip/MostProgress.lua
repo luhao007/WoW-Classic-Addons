@@ -7,12 +7,8 @@ function section:CheckAdd(achievement)
 	if achievement.IsCompleted or achievement.IsAccountWide or achievement.TransmogSets or addon.Options.db.profile.Tooltip.Achievements.MostProgress.Characters <= 0 then
 		return;
 	end
-	local state;
-	if achievement.TemporaryObtainable then
-		state = achievement.TemporaryObtainable.Obtainable();
-	end
-	local pastObtainable = state and (not state or state == "Past");
-	if not addon.Options.db.profile.Tooltip.Achievements.ObjectivesProgress.Show or pastObtainable then
+	local state = achievement:GetObtainableState();
+	if not addon.Options.db.profile.Tooltip.Achievements.ObjectivesProgress.Show or state == "Past" then
 		return;
 	end
 	numCriteria = addon.GetAchievementNumCriteria(achievement.Id);
@@ -71,7 +67,7 @@ local sortFuncs = {
     addon.Objects.CompareFunc:New("number", "Score");
     addon.Objects.CompareFunc:New("string", "Name");
     addon.Objects.CompareFunc:New("string", "Realm");
-    addon.Objects.CompareFunc:New("string", "Faction");
+    addon.Objects.CompareFunc:New("number", "Faction");
     addon.Objects.CompareFunc:New("string", "Class");
 };
 
@@ -111,7 +107,7 @@ end
 local function AddName(character, achievement, thisRealm, names, numberOfNames)
 	local _, _, _, argbHex = GetClassColor(character.Class);
 	local name = "|c" .. argbHex .. character.Name;
-	if achievement.OtherFactionAchievementId and character.Faction and character.Faction ~= addon.Objects.Faction[achievement.Faction] then
+	if achievement.OtherFactionAchievementId and character.Faction and character.Faction ~= achievement.Faction then
 		name = name .. " (" .. addon.L[character.Faction] .. ")";
 	end
 	if addon.Options.db.profile.Tooltip.Achievements.MostProgress.AlwaysShowRealm or character.Realm ~= thisRealm then

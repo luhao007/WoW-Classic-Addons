@@ -42,7 +42,6 @@ function BusinessInfo.StatsInfo_ADDUI()
 	local StatsInfo=PIGFrame(UIParent,{"CENTER",UIParent,"CENTER",0,60},{Width,Height},GnUI,true)
 	StatsInfo:PIGSetBackdrop()
 	StatsInfo:PIGClose()
-	StatsInfo:PIGSetMovable()
 	StatsInfo:PIGSetMovableNoSave()
 	StatsInfo.butW=46
 	StatsInfo.hang_Height=19

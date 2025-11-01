@@ -664,25 +664,6 @@ function I.HandlePanelNotification(notification)
 	end
 end
 
-function M:CreateOptionsSlider(parent, name, width)
-	local s, t = CreateFrame("Slider", name, parent, "MinimalSliderTemplate")
-	s:SetWidth(width)
-	t = s:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
-	t, s.text = s:CreateFontString(nil, "OVERLAY"), t
-	t, s.lo = s:CreateFontString(nil, "OVERLAY"), t
-	s.hi = t
-	s.lo:SetFontObject(GameFontHighlightSmall)
-	s.hi:SetFontObject(GameFontHighlightSmall)
-	s.lo:SetTextColor(0.8, 0.8, 0.8)
-	s.hi:SetTextColor(0.8, 0.8, 0.8)
-	s.lo:SetPoint("RIGHT", s, "LEFT", -2, 0)
-	s.hi:SetPoint("LEFT", s, "RIGHT", 2, 0)
-	s.lo:SetText(LOW)
-	s.hi:SetText(HIGH)
-	s:SetScript("OnValueChanged", nil)
-	return s, 4, s:GetHeight()/2
-end
-
 do -- M:ShowFrameOverlay(self, overlayFrame)
 	local container, watcher, occupant = CreateFrame("Frame"), CreateFrame("Frame") do
 		container:EnableMouse(true) container:Hide()

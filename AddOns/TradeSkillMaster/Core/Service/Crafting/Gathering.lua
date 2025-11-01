@@ -5,26 +5,25 @@
 -- ------------------------------------------------------------------------------ --
 
 local TSM = select(2, ...) ---@type TSM
-local Gathering = TSM.Crafting:NewPackage("Gathering")
-local Environment = TSM.Include("Environment")
-local DisenchantInfo = TSM.Include("Data.DisenchantInfo")
-local Database = TSM.Include("Util.Database")
-local Table = TSM.Include("Util.Table")
-local Delay = TSM.Include("Util.Delay")
-local CraftString = TSM.Include("Util.CraftString")
-local RecipeString = TSM.Include("Util.RecipeString")
-local TempTable = TSM.Include("Util.TempTable")
-local Wow = TSM.Include("Util.Wow")
-local Vararg = TSM.Include("Util.Vararg")
-local ItemInfo = TSM.Include("Service.ItemInfo")
-local Conversions = TSM.Include("Service.Conversions")
-local BagTracking = TSM.Include("Service.BagTracking")
-local GuildTracking = TSM.Include("Service.GuildTracking")
-local AltTracking = TSM.Include("Service.AltTracking")
-local MailTracking = TSM.Include("Service.MailTracking")
-local PlayerInfo = TSM.Include("Service.PlayerInfo")
-local Settings = TSM.Include("Service.Settings")
+local Gathering = TSM.Crafting:NewPackage("Gathering") ---@type AddonPackage
+local ClientInfo = TSM.LibTSMWoW:Include("Util.ClientInfo")
+local Database = TSM.LibTSMUtil:Include("Database")
+local Table = TSM.LibTSMUtil:Include("Lua.Table")
+local DelayTimer = TSM.LibTSMWoW:IncludeClassType("DelayTimer")
+local TempTable = TSM.LibTSMUtil:Include("BaseType.TempTable")
+local SessionInfo = TSM.LibTSMWoW:Include("Util.SessionInfo")
+local Vararg = TSM.LibTSMUtil:Include("Lua.Vararg")
+local Conversion = TSM.LibTSMTypes:Include("Item.Conversion")
+local ItemInfo = TSM.LibTSMService:Include("Item.ItemInfo")
+local VendorBuy = TSM.LibTSMService:Include("Item.VendorBuy")
+local BagTracking = TSM.LibTSMService:Include("Inventory.BagTracking")
+local WarbankTracking = TSM.LibTSMService:Include("Inventory.WarbankTracking")
+local Guild = TSM.LibTSMService:Include("Guild")
+local AltTracking = TSM.LibTSMApp:Include("Service.AltTracking")
+local Mail = TSM.LibTSMService:Include("Mail")
+local PlayerInfo = TSM.LibTSMApp:Include("Service.PlayerInfo")
 local private = {
+	settingsDB = nil,
 	settings = nil,
 	db = nil,
 	queuedCraftsUpdateQuery = nil, -- luacheck: ignore 1004 - just stored for GC reasons
@@ -40,17 +39,18 @@ local private = {
 -- Module Functions
 -- ============================================================================
 
-function Gathering.OnInitialize()
-	private.settings = Settings.NewView()
+function Gathering.OnInitialize(settingsDB)
+	private.settingsDB = settingsDB
+	private.settings = settingsDB:NewView()
 		:AddKey("profile", "gatheringOptions", "sources")
 		:AddKey("factionrealm", "gatheringContext", "crafter")
 		:AddKey("factionrealm", "gatheringContext", "professions")
 		:AddKey("global", "coreOptions", "regionWide")
-	if not Environment.HasFeature(Environment.FEATURES.GUILD_BANK) then
+	if not ClientInfo.HasFeature(ClientInfo.FEATURES.GUILD_BANK) then
 		Table.RemoveByValue(private.settings.sources, "guildBank")
 		Table.RemoveByValue(private.settings.sources, "altGuildBank")
 	end
-	if Environment.IsRetail() then
+	if ClientInfo.IsRetail() then
 		Table.RemoveByValue(private.settings.sources, "bank")
 	end
 end
@@ -65,8 +65,11 @@ function Gathering.OnEnable()
 	private.queuedCraftsUpdateQuery = TSM.Crafting.CreateQueuedCraftsQuery()
 		:SetUpdateCallback(private.OnQueuedCraftsUpdated)
 	private.OnQueuedCraftsUpdated()
-	private.dbUpdateTimer = Delay.CreateTimer("GATHERING_DB_UPDATE", private.UpdateDB)
+	private.dbUpdateTimer = DelayTimer.New("GATHERING_DB_UPDATE", private.UpdateDB)
 	BagTracking.RegisterQuantityCallback(function()
+		private.dbUpdateTimer:RunForTime(1)
+	end)
+	WarbankTracking.RegisterQuantityCallback(function()
 		private.dbUpdateTimer:RunForTime(1)
 	end)
 end
@@ -230,14 +233,8 @@ function private.UpdateDB()
 	end
 	query:End()
 	for _, recipeString, numQueued in query:Iterator() do
-		local craftString = CraftString.FromRecipeString(recipeString)
-		for _, itemString, quantity in TSM.Crafting.MatIterator(craftString) do
+		for _, itemString, quantity in TSM.Crafting.MatIteratorByRecipeString(recipeString) do
 			matsNumNeed[itemString] = (matsNumNeed[itemString] or 0) + quantity * numQueued
-		end
-		for _, _, itemId in RecipeString.OptionalMatIterator(recipeString) do
-			local matItemString = "i:"..itemId
-			local quantity = TSM.Crafting.GetOptionalMatQuantity(craftString, itemId)
-			matsNumNeed[matItemString] = (matsNumNeed[matItemString] or 0) + quantity * numQueued
 		end
 	end
 	query:Release()
@@ -348,7 +345,7 @@ function private.ProcessSource(itemString, numNeed, source, sourceList)
 		local crafterMailQuantity = AltTracking.GetMailQuantity(itemString, crafter)
 		if crafterMailQuantity > 0 then
 			crafterMailQuantity = min(crafterMailQuantity, numNeed)
-			if crafter == Wow.GetCharacterName() then
+			if crafter == SessionInfo.GetCharacterName() then
 				tinsert(sourceList, "openMail/"..crafterMailQuantity.."/")
 			else
 				tinsert(sourceList, "alt/"..crafterMailQuantity.."/"..crafter)
@@ -363,17 +360,17 @@ function private.ProcessSource(itemString, numNeed, source, sourceList)
 			return 0
 		end
 	elseif source == "vendor" then
-		if ItemInfo.GetVendorBuy(itemString) then
+		if VendorBuy.Get(itemString) then
 			-- assume we can buy all we need from the vendor
 			tinsert(sourceList, "vendor/"..numNeed.."/")
 			return 0
 		end
 	elseif source == "guildBank" then
-		local guild = PlayerInfo.GetPlayerGuild(crafter, Wow.GetFactionrealmName())
+		local guild = PlayerInfo.GetPlayerGuild(crafter, SessionInfo.GetFactionrealmName())
 		local guildBankQuantity = guild and AltTracking.GetGuildQuantity(itemString, guild) or 0
 		if guildBankQuantity > 0 then
 			guildBankQuantity = min(guildBankQuantity, numNeed)
-			if crafter == Wow.GetCharacterName() then
+			if crafter == SessionInfo.GetCharacterName() then
 				-- we are on the crafter
 				tinsert(sourceList, "guildBank/"..guildBankQuantity.."/")
 			else
@@ -387,11 +384,11 @@ function private.ProcessSource(itemString, numNeed, source, sourceList)
 			-- can't mail soulbound items
 			return numNeed
 		end
-		if crafter ~= Wow.GetCharacterName() then
+		if crafter ~= SessionInfo.GetCharacterName() then
 			-- we are on the alt, so see if we can gather items from this character
-			local bagQuantity, bankQuantity, reagentBankQuantity = BagTracking.GetQuantities(itemString)
-			bankQuantity = bankQuantity + reagentBankQuantity
-			local mailQuantity = MailTracking.GetQuantity(itemString)
+			local bagQuantity, bankQuantity = BagTracking.GetQuantities(itemString)
+			bankQuantity = bankQuantity
+			local mailQuantity = Mail.GetQuantity(itemString)
 
 			if bagQuantity > 0 then
 				bagQuantity = min(numNeed, bagQuantity)
@@ -422,25 +419,22 @@ function private.ProcessSource(itemString, numNeed, source, sourceList)
 		-- check alts
 		local altNum = 0
 		local altCharacters = TempTable.Acquire()
-		for factionrealm, isConnected in TSM.db:GetConnectedRealmIterator("factionrealm") do
-			if isConnected or private.settings.regionWide then
-				for _, character in TSM.db:FactionrealmCharacterIterator(factionrealm) do
-					local characterKey = nil
-					if factionrealm == Wow.GetFactionrealmName() then
-						characterKey = character
-					else
-						characterKey = character.." - "..factionrealm
-					end
-					if characterKey ~= crafter and characterKey ~= Wow.GetCharacterName() then
-						local num = 0
-						num = num + AltTracking.GetBagQuantity(itemString, character, factionrealm)
-						num = num + AltTracking.GetBankQuantity(itemString, character, factionrealm)
-						num = num + AltTracking.GetReagentBankQuantity(itemString, character, factionrealm)
-						num = num + AltTracking.GetMailQuantity(itemString, character, factionrealm)
-						if num > 0 then
-							tinsert(altCharacters, characterKey)
-							altNum = altNum + num
-						end
+		for _, factionrealm in private.settingsDB:AccessibleRealmIterator("factionrealm", not private.settings.regionWide) do
+			for _, character in private.settingsDB:AccessibleCharacterIterator(nil, factionrealm) do
+				local characterKey = nil
+				if factionrealm == SessionInfo.GetFactionrealmName() then
+					characterKey = character
+				else
+					characterKey = character.." - "..factionrealm
+				end
+				if characterKey ~= crafter and characterKey ~= SessionInfo.GetCharacterName() then
+					local num = 0
+					num = num + AltTracking.GetBagQuantity(itemString, character, factionrealm)
+					num = num + AltTracking.GetBankQuantity(itemString, character, factionrealm)
+					num = num + AltTracking.GetMailQuantity(itemString, character, factionrealm)
+					if num > 0 then
+						tinsert(altCharacters, characterKey)
+						altNum = altNum + num
 					end
 				end
 			end
@@ -454,10 +448,10 @@ function private.ProcessSource(itemString, numNeed, source, sourceList)
 			return numNeed - altNum
 		end
 	elseif source == "altGuildBank" then
-		local currentGuild = PlayerInfo.GetPlayerGuild(Wow.GetCharacterName(), Wow.GetFactionrealmName())
-		if currentGuild and crafter ~= Wow.GetCharacterName() then
+		local currentGuild = PlayerInfo.GetPlayerGuild(SessionInfo.GetCharacterName(), SessionInfo.GetFactionrealmName())
+		if currentGuild and crafter ~= SessionInfo.GetCharacterName() then
 			-- we are on an alt, so see if we can gather items from this character's guild bank
-			local guildBankQuantity = GuildTracking.GetQuantity(itemString)
+			local guildBankQuantity = Guild.GetQuantity(itemString)
 			if guildBankQuantity > 0 then
 				guildBankQuantity = min(numNeed, guildBankQuantity)
 				tinsert(sourceList, "guildBank/"..guildBankQuantity.."/")
@@ -477,7 +471,7 @@ function private.ProcessSource(itemString, numNeed, source, sourceList)
 				local guildBankQuantity = AltTracking.GetGuildQuantity(itemString, guild)
 				if guildBankQuantity > 0 then
 					local characterKey = nil
-					if factionrealm == Wow.GetFactionrealmName() then
+					if factionrealm == SessionInfo.GetFactionrealmName() then
 						characterKey = character
 					else
 						characterKey = character.." - "..factionrealm
@@ -514,7 +508,7 @@ function private.ProcessSource(itemString, numNeed, source, sourceList)
 			-- can't buy soulbound items
 			return numNeed
 		end
-		if not Conversions.GetSourceItems(itemString) then
+		if not Conversion.GetSourceItems(itemString) then
 			-- can't convert to get this item
 			return numNeed
 		end
@@ -526,7 +520,7 @@ function private.ProcessSource(itemString, numNeed, source, sourceList)
 			-- can't buy soulbound items
 			return numNeed
 		end
-		if not DisenchantInfo.IsTargetItem(itemString) then
+		if not Conversion.IsDisenchantTargetItem(itemString) then
 			-- can't disenchant to get this item
 			return numNeed
 		end
@@ -541,7 +535,12 @@ end
 
 function private.GetCrafterInventoryQuantity(itemString)
 	local crafter = private.settings.crafter
-	return AltTracking.GetBagQuantity(itemString, crafter) + (Environment.IsRetail() and AltTracking.GetReagentBankQuantity(itemString, crafter) + AltTracking.GetBankQuantity(itemString, crafter) or 0)
+	local quantity = AltTracking.GetBagQuantity(itemString, crafter)
+	if ClientInfo.IsRetail() then
+		quantity = quantity + AltTracking.GetBankQuantity(itemString, crafter)
+		quantity = quantity + WarbankTracking.GetQuantity(itemString)
+	end
+	return quantity
 end
 
 function private.HandleNumHave(itemString, numNeed, numHave)

@@ -1,2 +1,0 @@
-GatherMateData2FishDB = {
-}

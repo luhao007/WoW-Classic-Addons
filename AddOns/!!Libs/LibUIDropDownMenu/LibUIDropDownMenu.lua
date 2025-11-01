@@ -1,4 +1,4 @@
--- $Id: LibUIDropDownMenu.lua 135 2024-02-05 16:50:14Z arithmandar $
+-- $Id: LibUIDropDownMenu.lua 123 2023-07-29 01:42:12Z arithmandar $
 -- ----------------------------------------------------------------------------
 -- Localized Lua globals.
 -- ----------------------------------------------------------------------------
@@ -18,7 +18,7 @@ local GameTooltip_SetTitle, GameTooltip_AddInstructionLine, GameTooltip_AddNorma
 
 -- ----------------------------------------------------------------------------
 local MAJOR_VERSION = "LibUIDropDownMenu-4.0"
-local MINOR_VERSION = 90000 + tonumber(("$Rev: 135 $"):match("%d+"))
+local MINOR_VERSION = 90000 + tonumber(("$Rev: 123 $"):match("%d+"))
 
 
 local LibStub = _G.LibStub
@@ -169,9 +169,6 @@ local function create_MenuButton(name, parent)
 		end
 		if (WoWRetail) then
 			GetValueOrCallFunction(self, "funcOnEnter", self);
-			if self.NewFeature then
-				self.NewFeature:Hide();
-			end
 		end
 	end
 
@@ -243,11 +240,11 @@ local function create_MenuButton(name, parent)
 	
 	-- UIDropDownMenuButtonIcon Script BEGIN
 	local function icon_OnClick(self, button)
-		local buttonParent = self:GetParent()
-		if not buttonParent then
+		local button = self:GetParent()
+		if not button then
 			return
 		end
-		button_OnClick(buttonParent, button)
+		button_OnClick(self, button)
 	end
 	
 	local function icon_OnEnter(self)
@@ -282,7 +279,6 @@ local function create_MenuButton(name, parent)
 		
 		button_OnLeave(button);
 	end
-	
 	local function icon_OnMouseUp(self, button)
 		if ( button == "LeftButton" ) then
 			icon_OnClick(self, button)
@@ -290,33 +286,31 @@ local function create_MenuButton(name, parent)
 	end
 	-- UIDropDownMenuButtonIcon Script END
 	
-	-- Button Frame
 	local f = CreateFrame("Button", name, parent or nil)
     f:SetWidth(100)
     f:SetHeight(16)
     f:SetFrameLevel(f:GetParent():GetFrameLevel()+2)
 
-	f.Highlight = f:CreateTexture( name and (name.."Highlight") or nil, "BACKGROUND")
+	f.Highlight = f:CreateTexture(name.."Highlight", "BACKGROUND")
 	f.Highlight:SetTexture("Interface\\QuestFrame\\UI-QuestTitleHighlight")
 	f.Highlight:SetBlendMode("ADD")
 	f.Highlight:SetAllPoints()
 	f.Highlight:Hide()
 	
-	f.Check = f:CreateTexture( name and (name.."Check") or nil, "ARTWORK")
+	f.Check = f:CreateTexture(name.."Check", "ARTWORK")
 	f.Check:SetTexture("Interface\\Common\\UI-DropDownRadioChecks")
 	f.Check:SetSize(16, 16)
 	f.Check:SetPoint("LEFT", f, 0, 0)
 	f.Check:SetTexCoord(0, 0.5, 0.5, 1)
 
-	f.UnCheck = f:CreateTexture( name and (name.."UnCheck") or nil, "ARTWORK")
+	f.UnCheck = f:CreateTexture(name.."UnCheck", "ARTWORK")
 	f.UnCheck:SetTexture("Interface\\Common\\UI-DropDownRadioChecks")
 	f.UnCheck:SetSize(16, 16)
 	f.UnCheck:SetPoint("LEFT", f, 0, 0)
 	f.UnCheck:SetTexCoord(0.5, 1, 0.5, 1)
 	
-	-- Icon Texture
 	local fIcon
-	fIcon = f:CreateTexture( name and (name.."Icon") or nil, "ARTWORK")
+	fIcon = f:CreateTexture(name.."Icon", "ARTWORK")
 	fIcon:SetSize(16, 16)
 	fIcon:SetPoint("RIGHT", f, 0, 0)
 	fIcon:Hide()
@@ -335,17 +329,17 @@ local function create_MenuButton(name, parent)
 	
 	-- ColorSwatch
 	local fcw
-	fcw = CreateFrame("Button", name and (name.."ColorSwatch") or nil, f, BackdropTemplateMixin and DropDownMenuButtonMixin and "BackdropTemplate,ColorSwatchTemplate" or BackdropTemplateMixin and "BackdropTemplate" or nil)
+	fcw = CreateFrame("Button", name.."ColorSwatch", f, BackdropTemplateMixin and DropDownMenuButtonMixin and "BackdropTemplate,ColorSwatchTemplate" or BackdropTemplateMixin and "BackdropTemplate" or nil)
 	fcw:SetPoint("RIGHT", f, -6, 0)
 	fcw:Hide()
 	if not DropDownMenuButtonMixin then
 		fcw:SetSize(16, 16)
-		fcw.SwatchBg = fcw:CreateTexture( name and (name.."ColorSwatchSwatchBg") or nil, "BACKGROUND")
+		fcw.SwatchBg = fcw:CreateTexture(name.."ColorSwatchSwatchBg", "BACKGROUND")
 		fcw.SwatchBg:SetVertexColor(1, 1, 1)
 		fcw.SwatchBg:SetWidth(14)
 		fcw.SwatchBg:SetHeight(14)
 		fcw.SwatchBg:SetPoint("CENTER", fcw, 0, 0)
-		local button1NormalTexture = fcw:CreateTexture( name and (name.."ColorSwatchNormalTexture") or nil)
+		local button1NormalTexture = fcw:CreateTexture(name.."ColorSwatchNormalTexture")
 		button1NormalTexture:SetTexture("Interface\\ChatFrame\\ChatFrameColorSwatch")
 		button1NormalTexture:SetAllPoints()
 		fcw:SetNormalTexture(button1NormalTexture)
@@ -366,11 +360,12 @@ local function create_MenuButton(name, parent)
 	f.ColorSwatch = fcw
 	
 	-- ExpandArrow
-	local fea = CreateFrame("Button", name and (name.."ExpandArrow") or nil, f)
+	local fea = CreateFrame("Button", name.."ExpandArrow", f)
+
 	fea:SetSize(16, 16)
 	fea:SetPoint("RIGHT", f, 0, 0)
 	fea:Hide()
-	local button2NormalTexture = fea:CreateTexture( name and (name.."ExpandArrowNormalTexture") or nil)
+	local button2NormalTexture = fea:CreateTexture(name.."ExpandArrowNormalTexture")
 	button2NormalTexture:SetTexture("Interface\\ChatFrame\\ChatFrameExpandArrow")
 	button2NormalTexture:SetAllPoints()
 	fea:SetNormalTexture(button2NormalTexture)
@@ -397,7 +392,7 @@ local function create_MenuButton(name, parent)
 	f.ExpandArrow = fea
 
 	-- InvisibleButton
-	local fib = CreateFrame("Button", name and (name.."InvisibleButton") or nil, f)
+	local fib = CreateFrame("Button", name.."InvisibleButton", f)
 	fib:Hide()
 	fib:SetPoint("TOPLEFT", f, 0, 0)
 	fib:SetPoint("BOTTOMLEFT", f, 0, 0)
@@ -435,20 +430,7 @@ local function create_MenuButton(name, parent)
 		tooltip:Hide();
 	end)
 	f.invisibleButton = fib
-	
-	-- NewFeature
-	if (WoWRetail) then
-		local fnf = CreateFrame("Frame", name and (name.."NewFeature") or nil, f, "NewFeatureLabelTemplate");
-		fnf:SetFrameStrata("HIGH");
-		fnf:SetScale(0.8);
-		fnf:SetFrameLevel(100);
-		fnf:SetSize(1, 1);
-		fnf:Hide();
-		
-		f.NewFeature = fnf;
-	end
 
-	-- MenuButton scripts
 	f:SetScript("OnClick", function(self, button)
 		button_OnClick(self, button)
 	end)
@@ -465,7 +447,7 @@ local function create_MenuButton(name, parent)
 		self.invisibleButton:Show()
 	end)
 
-	local text1 = f:CreateFontString( name and (name.."NormalText") or nil)
+	local text1 = f:CreateFontString(name.."NormalText")
 	f:SetFontString(text1)
 	text1:SetPoint("LEFT", f, -5, 0)
 	f:SetNormalFontObject("GameFontHighlightSmallLeft")
@@ -498,41 +480,26 @@ local function creatre_DropDownList(name, parent)
 		insets = { left = 5, right = 5, top = 5, bottom = 5 },
 	}
 	
-	local f = name and _G[name] or CreateFrame("Button", name)
+	local f = _G[name] or CreateFrame("Button", name)
 	f:SetParent(parent or nil)
 	f:Hide()
 	f:SetFrameStrata("DIALOG")
 	f:EnableMouse(true)
 	
-	local fbd = name and _G[name.."Backdrop"] or CreateFrame("Frame", name and (name.."Backdrop") or nil, f, BackdropTemplateMixin and "DialogBorderDarkTemplate" or nil)
+	local fbd = _G[name.."Backdrop"] or CreateFrame("Frame", name.."Backdrop", f, BackdropTemplateMixin and "DialogBorderDarkTemplate" or nil)
 	fbd:SetAllPoints()
 	fbd.backdropInfo = BACKDROP_DIALOG_DARK
 	f.Backdrop = fbd
 	
-	local fmb = name and _G[name.."MenuBackdrop"] or CreateFrame("Frame", name and (name.."MenuBackdrop") or nil, f, TooltipBackdropTemplateMixin and "TooltipBackdropTemplate" or nil)
+	local fmb = _G[name.."MenuBackdrop"] or CreateFrame("Frame", name.."MenuBackdrop", f, TooltipBackdropTemplateMixin and "TooltipBackdropTemplate" or nil)
 	fmb:SetAllPoints()
 	fmb.backdropInfo = BACKDROP_TOOLTIP_16_16_5555
 	fmb:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b)
 	fmb:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b)
 	f.MenuBackdrop = fmb
 	
-	f.Button1 = name and _G[name.."Button1"] or create_MenuButton(name and (name.."Button1") or nil, f) -- to replace the inherits of "UIDropDownMenuButtonTemplate"
+	f.Button1 = _G[name.."Button1"] or create_MenuButton(name.."Button1", f) -- to replace the inherits of "UIDropDownMenuButtonTemplate"
 	f.Button1:SetID(1)
-
-	-- Checking if NewFeature exists or not
-	if (WoWRetail) then
-		if not f.Button1.NewFeature then
-			local fnf = CreateFrame("Frame", name and (name.."NewFeature") or nil, f, "NewFeatureLabelTemplate");
-			fnf:SetFrameStrata("HIGH");
-			fnf:SetScale(0.8);
-			fnf:SetFrameLevel(100);
-			fnf:SetSize(1, 1);
-			fnf:Hide();
-			
-			f.Button1.NewFeature = fnf;
-		end
-	end
-	
 	
 	f:SetScript("OnClick", function(self)
 		self:Hide()
@@ -622,64 +589,64 @@ local function create_DropDownMenu(name, parent)
 		f = CreateFrame("Frame", name, parent or nil)
 	end
 	
-	--if not name then name = "" end
+	if not name then name = "" end
 	
 	f:SetSize(40, 32)
 	
-	f.Left = f:CreateTexture( name and (name.."Left") or nil, "ARTWORK")
+	f.Left = f:CreateTexture(name.."Left", "ARTWORK")
 	f.Left:SetTexture("Interface\\Glues\\CharacterCreate\\CharacterCreate-LabelFrame")
 	f.Left:SetSize(25, 64)
 	f.Left:SetPoint("TOPLEFT", f, 0, 17)
 	f.Left:SetTexCoord(0, 0.1953125, 0, 1)
 	
-	f.Middle = f:CreateTexture( name and (name.."Middle") or nil, "ARTWORK")
+	f.Middle = f:CreateTexture(name.."Middle", "ARTWORK")
 	f.Middle:SetTexture("Interface\\Glues\\CharacterCreate\\CharacterCreate-LabelFrame")
 	f.Middle:SetSize(115, 64)
 	f.Middle:SetPoint("LEFT", f.Left, "RIGHT")
 	f.Middle:SetTexCoord(0.1953125, 0.8046875, 0, 1)
 	
-	f.Right = f:CreateTexture( name and (name.."Right") or nil, "ARTWORK")
+	f.Right = f:CreateTexture(name.."Right", "ARTWORK")
 	f.Right:SetTexture("Interface\\Glues\\CharacterCreate\\CharacterCreate-LabelFrame")
 	f.Right:SetSize(25, 64)
 	f.Right:SetPoint("LEFT", f.Middle, "RIGHT")
 	f.Right:SetTexCoord(0.8046875, 1, 0, 1)
 	
-	f.Text = f:CreateFontString( name and (name.."Text") or nil, "ARTWORK", "GameFontHighlightSmall")
+	f.Text = f:CreateFontString(name.."Text", "ARTWORK", "GameFontHighlightSmall")
 	f.Text:SetWordWrap(false)
 	f.Text:SetJustifyH("RIGHT")
 	f.Text:SetSize(0, 10)
 	f.Text:SetPoint("RIGHT", f.Right, -43, 2)
 	
-	f.Icon = f:CreateTexture( name and (name.."Icon") or nil, "OVERLAY")
+	f.Icon = f:CreateTexture(name.."Icon", "OVERLAY")
 	f.Icon:Hide()
 	f.Icon:SetSize(16, 16)
 	f.Icon:SetPoint("LEFT", 30, 2)
 	
 	-- // UIDropDownMenuButtonScriptTemplate
-	f.Button = CreateFrame("Button", name and (name.."Button") or nil, f)
+	f.Button = CreateFrame("Button", name.."Button", f)
 	f.Button:SetMotionScriptsWhileDisabled(true)
 	f.Button:SetSize(24, 24)
 	f.Button:SetPoint("TOPRIGHT", f.Right, -16, -18)
 	
-	f.Button.NormalTexture = f.Button:CreateTexture( name and (name.."NormalTexture") or nil)
+	f.Button.NormalTexture = f.Button:CreateTexture(name.."NormalTexture")
 	f.Button.NormalTexture:SetTexture("Interface\\ChatFrame\\UI-ChatIcon-ScrollDown-Up")
 	f.Button.NormalTexture:SetSize(24, 24)
 	f.Button.NormalTexture:SetPoint("RIGHT", f.Button, 0, 0)
 	f.Button:SetNormalTexture(f.Button.NormalTexture)
 	
-	f.Button.PushedTexture = f.Button:CreateTexture( name and (name.."PushedTexture") or nil)
+	f.Button.PushedTexture = f.Button:CreateTexture(name.."PushedTexture")
 	f.Button.PushedTexture:SetTexture("Interface\\ChatFrame\\UI-ChatIcon-ScrollDown-Down")
 	f.Button.PushedTexture:SetSize(24, 24)
 	f.Button.PushedTexture:SetPoint("RIGHT", f.Button, 0, 0)
 	f.Button:SetPushedTexture(f.Button.PushedTexture)
 	
-	f.Button.DisabledTexture = f.Button:CreateTexture( name and (name.."DisabledTexture") or nil)
+	f.Button.DisabledTexture = f.Button:CreateTexture(name.."DisabledTexture")
 	f.Button.DisabledTexture:SetTexture("Interface\\ChatFrame\\UI-ChatIcon-ScrollDown-Disabled")
 	f.Button.DisabledTexture:SetSize(24, 24)
 	f.Button.DisabledTexture:SetPoint("RIGHT", f.Button, 0, 0)
 	f.Button:SetDisabledTexture(f.Button.DisabledTexture)
 	
-	f.Button.HighlightTexture = f.Button:CreateTexture( name and (name.."HighlightTexture") or nil)
+	f.Button.HighlightTexture = f.Button:CreateTexture(name.."HighlightTexture")
 	f.Button.HighlightTexture:SetTexture("Interface\\Buttons\\UI-Common-MouseHilight")
 	f.Button.HighlightTexture:SetSize(24, 24)
 	f.Button.HighlightTexture:SetPoint("RIGHT", f.Button, 0, 0)
@@ -800,9 +767,6 @@ function lib:UIDropDownMenu_Initialize(frame, initFunction, displayMode, level, 
 	local dropDownList = _G["L_DropDownList"..level];
 	dropDownList.dropdown = frame;
 	dropDownList.shouldRefresh = true;
-	if (WoWRetail) then
-		dropDownList:SetWindow(frame:GetWindow());
-	end
 
 	lib:UIDropDownMenu_SetDisplayMode(frame, displayMode);
 end
@@ -925,7 +889,6 @@ info.mouseOverIcon = [TEXTURE] -- An override icon when a button is moused over.
 info.ignoreAsMenuSelection [nil, true] -- Never set the menu text/icon to this, even when this button is checked
 info.registerForRightClick [nil, true] -- Register dropdown buttons for right clicks
 info.registerForAnyClick [nil, true] -- Register dropdown buttons for any clicks
-info.showNewLabel
 ]]
 
 -- Create (return) empty table
@@ -1154,7 +1117,6 @@ function lib:UIDropDownMenu_AddButton(info, level)
 	if (WoWRetail) then
 		button.iconXOffset = info.iconXOffset;
 		button.ignoreAsMenuSelection = info.ignoreAsMenuSelection;
-		button.showNewLabel = info.showNewLabel;
 	else
 		button.classicChecks = info.classicChecks;
 	end
@@ -1339,10 +1301,7 @@ function lib:UIDropDownMenu_AddButton(info, level)
 		_G[listFrameName.."Button"..index.."UnCheck"]:Hide();
 	end
 	button.checked = info.checked;
-	if (WoWRetail and button.NewFeature) then
-		button.NewFeature:SetShown(button.showNewLabel);
-	end
-	
+
 	-- If has a colorswatch, show it and vertex color it
 	local colorSwatch = _G[listFrameName.."Button"..index.."ColorSwatch"];
 	if ( info.hasColorSwatch ) then
@@ -1454,9 +1413,6 @@ function lib:UIDropDownMenu_GetButtonWidth(button)
 	if ( button.hasArrow or button.hasColorSwatch ) then
 		width = width + 10;
 	end
-	if (WoWRetail and button.showNewLabel and button.NewFeature) then
-		width = width + button.NewFeature.Label:GetUnboundedStringWidth();
-	end
 	if ( button.notCheckable ) then
 		width = width - 30;
 	end
@@ -1527,12 +1483,6 @@ function lib:UIDropDownMenu_Refresh(frame, useValue, dropdownLevel)
 				checkImage:Hide();
 				uncheckImage:Show();
 			end
-		end
-
-		if (WoWRetail and button.NewFeature) then
-			local normalText = _G[button:GetName().."NormalText"];
-			button.NewFeature:SetShown(button.showNewLabel);
-			button.NewFeature:SetPoint("LEFT", normalText, "RIGHT", 20, 0);
 		end
 
 		if ( button:IsShown() ) then
@@ -2084,11 +2034,7 @@ function lib:UIDropDownMenuButton_OpenColorPicker(self, button)
 		button = self;
 	end
 	L_UIDROPDOWNMENU_MENU_VALUE = button.value;
-	if (WoWRetail) then
-		ColorPickerFrame:SetupColorPickerAndShow(button);
-	else
-		lib:OpenColorPicker(button); 
-	end
+	lib:OpenColorPicker(button); 
 end
 
 function lib:UIDropDownMenu_DisableButton(level, id)
@@ -2197,29 +2143,20 @@ function lib:UIDropDownMenu_GetValue(id)
 end
 
 function lib:OpenColorPicker(info)
-	if (WoWRetail) then
-		ColorPickerFrame:SetupColorPickerAndShow(info);
-	else
-		ColorPickerFrame.func = info.swatchFunc;
-		ColorPickerFrame.hasOpacity = info.hasOpacity;
-		ColorPickerFrame.opacityFunc = info.opacityFunc;
-		ColorPickerFrame.opacity = info.opacity;
-		ColorPickerFrame.previousValues = {r = info.r, g = info.g, b = info.b, opacity = info.opacity};
-		ColorPickerFrame.cancelFunc = info.cancelFunc;
-		ColorPickerFrame.extraInfo = info.extraInfo;
-		-- This must come last, since it triggers a call to ColorPickerFrame.func()
-		ColorPickerFrame:SetColorRGB(info.r, info.g, info.b);
-		ShowUIPanel(ColorPickerFrame);
-	end
+	ColorPickerFrame.func = info.swatchFunc;
+	ColorPickerFrame.hasOpacity = info.hasOpacity;
+	ColorPickerFrame.opacityFunc = info.opacityFunc;
+	ColorPickerFrame.opacity = info.opacity;
+	ColorPickerFrame.previousValues = {r = info.r, g = info.g, b = info.b, opacity = info.opacity};
+	ColorPickerFrame.cancelFunc = info.cancelFunc;
+	ColorPickerFrame.extraInfo = info.extraInfo;
+	-- This must come last, since it triggers a call to ColorPickerFrame.func()
+	ColorPickerFrame:SetColorRGB(info.r, info.g, info.b);
+	ShowUIPanel(ColorPickerFrame);
 end
 
 function lib:ColorPicker_GetPreviousValues()
-	if (WoWRetail) then
-		local r, g, b = ColorPickerFrame:GetPreviousValues();
-		return r, g, b;
-	else
-		return ColorPickerFrame.previousValues.r, ColorPickerFrame.previousValues.g, ColorPickerFrame.previousValues.b;
-	end
+	return ColorPickerFrame.previousValues.r, ColorPickerFrame.previousValues.g, ColorPickerFrame.previousValues.b;
 end
 
 -- //////////////////////////////////////////////////////////////
@@ -2311,13 +2248,6 @@ end
 
 function lib.UIDropDownCustomMenuEntryMixin:GetContextData()
 	return self.contextData;
-end
-
-
-lib.ColorSwatchMixin = {}
-
-function lib.ColorSwatchMixin:SetColor(color)
-	self.Color:SetVertexColor(color:GetRGB());
 end
 
 -- //////////////////////////////////////////////////////////////

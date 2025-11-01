@@ -243,7 +243,7 @@ fuFrame.NPCID = PIGButton(fuFrame,{"TOPLEFT",fuFrame,"TOPLEFT",20,-220},{125,24}
 fuFrame.NPCID:SetScript("OnClick", function (self)
 	print(UnitGUID("target"))
 end);
-fuFrame.GetItem = PIGButton(fuFrame,{"TOPLEFT",fuFrame,"TOPLEFT",230,-300},{110,24},"获取物品信息")
+fuFrame.GetItem = PIGButton(fuFrame,{"TOPLEFT",fuFrame,"TOPLEFT",230,-260},{110,24},"获取物品信息")
 fuFrame.GetItem:SetScript("OnClick", function (self,button)
 	if button=="LeftButton" then
 		--local itemName,itemLink = GetItemInfo(self.E:GetNumber())
@@ -261,7 +261,38 @@ fuFrame.GetItem.E = CreateFrame("EditBox", nil, fuFrame.GetItem, "InputBoxInstru
 fuFrame.GetItem.E:SetSize(200,24);
 fuFrame.GetItem.E:SetPoint("RIGHT",fuFrame.GetItem,"LEFT",-4,0);
 fuFrame.GetItem.E:SetFontObject(ChatFontNormal);
-fuFrame.GetItem.E:SetAutoFocus(false);--自动获得焦点
+fuFrame.GetItem.E:SetAutoFocus(false);
+--输出副本ID
+fuFrame.FBdataID=PIGDownMenu(fuFrame,{"TOPLEFT",fuFrame,"TOPLEFT",20,-300},{200,24})
+fuFrame.FBdataID:PIGDownMenu_SetText(DUNGEONS..RAIDS.."-ID")
+function fuFrame.FBdataID:PIGDownMenu_Update_But(level, menuList)
+	local info = {}
+	if (level or 1) == 1 then
+		local List=Fun.PIG_GetCategories(4)
+		for ix=1,#List do
+			local GroupList,GroupData=Fun.PIG_GetGroups(List[ix][1])
+			for ixx=1,#GroupList do
+				info.func = nil
+				info.notCheckable=true
+				info.text= List[ix][2].."-"..GroupList[ixx][2]
+				info.menuList, info.hasArrow = GroupData[GroupList[ixx][1]], true
+				self:PIGDownMenu_AddButton(info)
+			end
+		end
+	else
+		info.func = self.PIGDownMenu_SetValue
+		info.notCheckable=true
+		for acid=1, #menuList do
+			info.text= menuList[acid][1]..menuList[acid][2]
+			info.arg1= menuList[acid][1]
+			self:PIGDownMenu_AddButton(info, level)
+		end
+	end 
+end
+function fuFrame.FBdataID:PIGDownMenu_SetValue(value,arg1,arg2)
+	print(INFO..": "..value,arg1)
+	PIGCloseDropDownMenus()
+end
 -----------------
 fuFrame:SetScript("OnShow", function()
 	if GetCVar("scriptErrors")=="1" then
@@ -269,6 +300,24 @@ fuFrame:SetScript("OnShow", function()
 	end
 	fuFrame.taintLog:PIGDownMenu_SetText(taintlistmenu[GetCVar("taintLog")])
 end);
+--屏幕网格
+fuFrame.GridLine = PIGButton(fuFrame,{"TOPLEFT",fuFrame,"TOPLEFT",20,-380},{100,24},"网格线")
+fuFrame.GridLine:SetScript("OnClick", function (self)
+	if not self.addyes then
+		self.addyes=true
+		PIGLine(UIParent,"C",nil,2,{24,0},{1,0,0,1})
+		PIGLine(UIParent,"LR",nil,2,nil,{1,0,0,1})
+		local WowWidth=GetScreenWidth();
+		local Width1=WowWidth*0.05
+		for i=1,10 do
+			PIGLine(UIParent,"C",-Width1*i,2,{24,0},{1,1,0,1})
+			PIGLine(UIParent,"C",Width1*i,2,{24,0},{1,1,0,1})
+			PIGLine(UIParent,"LR",Width1*i,2,nil,{1,1,0,1})
+			PIGLine(UIParent,"LR",-Width1*i,2,nil,{1,1,0,1})
+		end
+	end
+end)
+
 ---创建常用3宏
 local hongNameList = {["RL"]={"/Reload",132096},["FST"]={"/fstack",132089},["EVE"]={"/eventtrace",132092}}
 fuFrame.New_hong = PIGButton(fuFrame,{"BOTTOMLEFT",fuFrame,"BOTTOMLEFT",20,20},{100,24},"ADD_FWR")
@@ -314,14 +363,3 @@ fuFrame.zhuanma = PIGButton(fuFrame,{"BOTTOMRIGHT",fuFrame,"BOTTOMRIGHT",0,0},{1
 fuFrame.zhuanma:SetScript("OnClick", function (self)
 	_G[Data.ExportImportUIname]:Show_HideFun()
 end)
---屏幕中线
--- local offsetww = UIParent:GetWidth()*0.5
--- PIGLine(UIParent,"C")
--- local ButtoSDn = CreateFrame("Button",nil,UIParent, "UIPanelButtonTemplate,SecureActionButtonTemplate");
--- ButtoSDn:SetSize(76,25);
--- ButtoSDn:SetPoint("CENTER",UIParent,"CENTER",4,0);
--- ButtoSDn:SetText("ASDADA");
--- ButtoSDn:SetScript("OnClick", function ()
-
-
--- end);

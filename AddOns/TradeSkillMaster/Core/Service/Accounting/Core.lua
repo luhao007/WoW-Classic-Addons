@@ -6,7 +6,7 @@
 
 local TSM = select(2, ...) ---@type TSM
 local Accounting = TSM:NewPackage("Accounting")
-local Math = TSM.Include("Util.Math")
+local Math = TSM.LibTSMUtil:Include("Lua.Math")
 local private = {
 	characterGuildTemp = {},
 }

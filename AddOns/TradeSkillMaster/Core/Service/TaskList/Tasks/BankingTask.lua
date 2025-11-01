@@ -5,10 +5,11 @@
 -- ------------------------------------------------------------------------------ --
 
 local TSM = select(2, ...) ---@type TSM
-local BankingTask = TSM.Include("LibTSMClass").DefineClass("BankingTask", TSM.TaskList.ItemTask)
-local L = TSM.Include("Locale").GetTable()
-local BagTracking = TSM.Include("Service.BagTracking")
-local GuildTracking = TSM.Include("Service.GuildTracking")
+local LibTSMClass = LibStub("LibTSMClass")
+local BankingTask = LibTSMClass.DefineClass("BankingTask", TSM.TaskList.ItemTask)
+local L = TSM.Locale.GetTable()
+local BagTracking = TSM.LibTSMService:Include("Inventory.BagTracking")
+local Guild = TSM.LibTSMService:Include("Guild")
 TSM.TaskList.BankingTask = BankingTask
 local private = {
 	registeredCallbacks = false,
@@ -76,12 +77,13 @@ function BankingTask._UpdateState(self)
 	end
 	local canMove = false
 	for itemString in pairs(self:GetItems()) do
-		if self._isGuildBank and GuildTracking.GetQuantity(itemString) > 0 then
+		if self._isGuildBank and Guild.GetQuantity(itemString) > 0 then
 			canMove = true
 			break
 		elseif not self._isGuildBank then
-			local _, bankQuantity, reagentBankQuantity = BagTracking.GetQuantities(itemString)
-			if bankQuantity + reagentBankQuantity > 0 then
+			-- TODO: Support the warbank
+			local _, bankQuantity = BagTracking.GetQuantities(itemString)
+			if bankQuantity > 0 then
 				canMove = true
 				break
 			end

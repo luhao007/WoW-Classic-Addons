@@ -5,16 +5,15 @@
 -- ------------------------------------------------------------------------------ --
 
 local TSM = select(2, ...) ---@type TSM
-local VendoringUI = TSM.UI:NewPackage("VendoringUI")
-local Environment = TSM.Include("Environment")
-local L = TSM.Include("Locale").GetTable()
-local Delay = TSM.Include("Util.Delay")
-local FSM = TSM.Include("Util.FSM")
-local Event = TSM.Include("Util.Event")
-local DefaultUI = TSM.Include("Service.DefaultUI")
-local Settings = TSM.Include("Service.Settings")
-local UIElements = TSM.Include("UI.UIElements")
-local UIUtils = TSM.Include("UI.UIUtils")
+local VendoringUI = TSM.UI:NewPackage("VendoringUI") ---@type AddonPackage
+local ClientInfo = TSM.LibTSMWoW:Include("Util.ClientInfo")
+local L = TSM.Locale.GetTable()
+local DelayTimer = TSM.LibTSMWoW:IncludeClassType("DelayTimer")
+local FSM = TSM.LibTSMUtil:Include("FSM")
+local Event = TSM.LibTSMWoW:Include("Service.Event")
+local DefaultUI = TSM.LibTSMWoW:Include("UI.DefaultUI")
+local UIElements = TSM.LibTSMUI:Include("Util.UIElements")
+local UIUtils = TSM.LibTSMUI:Include("Util.UIUtils")
 local private = {
 	settings = nil,
 	topLevelPages = {},
@@ -31,11 +30,11 @@ local MIN_FRAME_SIZE = { width = 560, height = 500 }
 -- Module Functions
 -- ============================================================================
 
-function VendoringUI.OnInitialize()
-	private.settings = Settings.NewView()
+function VendoringUI.OnInitialize(settingsDB)
+	private.settings = settingsDB:NewView()
 		:AddKey("global", "vendoringUIContext", "showDefault")
 		:AddKey("global", "vendoringUIContext", "frame")
-	private.showTimer = Delay.CreateTimer("VENDORING_SHOW", function() private.fsm:ProcessEvent("EV_MERCHANT_SHOW") end)
+	private.showTimer = DelayTimer.New("VENDORING_SHOW", function() private.fsm:ProcessEvent("EV_MERCHANT_SHOW") end)
 	private.FSMCreate()
 end
 
@@ -142,10 +141,10 @@ function private.FSMCreate()
 			:SetOnEnter(function(context, isIgnored)
 				if not private.defaultUISwitchBtn then
 					private.defaultUISwitchBtn = UIElements.New("ActionButton", "switchBtn")
-						:SetSize(60, Environment.IsRetail() and 15 or 16)
+						:SetSize(60, ClientInfo.IsRetail() and 15 or 16)
 						:SetFont("BODY_BODY3_MEDIUM")
-						:AddAnchor("TOPRIGHT", Environment.IsRetail() and -27 or -26, Environment.IsRetail() and -4 or -3)
-						:SetRelativeLevel(Environment.IsRetail() and 600 or 3)
+						:AddAnchor("TOPRIGHT", ClientInfo.IsRetail() and -27 or -26, ClientInfo.IsRetail() and -4 or -3)
+						:SetRelativeLevel(ClientInfo.IsRetail() and 600 or 3)
 						:DisableClickCooldown()
 						:SetText(L["TSM4"])
 						:SetScript("OnClick", private.SwitchBtnOnClick)
@@ -184,7 +183,7 @@ function private.FSMCreate()
 				context.frame:Show()
 				context.frame:GetElement("titleFrame.switchBtn"):Show()
 				context.frame:Draw()
-				if Environment.IsRetail() then
+				if ClientInfo.IsRetail() then
 					Event.Register("CURRENCY_DISPLAY_UPDATE", CurrencyUpdate)
 				end
 				private.isVisible = true
@@ -197,7 +196,7 @@ function private.FSMCreate()
 				else
 					MerchantFrame:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 16, -116)
 				end
-				if Environment.IsRetail() then
+				if ClientInfo.IsRetail() then
 					Event.Unregister("CURRENCY_DISPLAY_UPDATE", CurrencyUpdate)
 				end
 				private.isVisible = false

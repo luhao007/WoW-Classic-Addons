@@ -98,6 +98,7 @@ local ImmediateEvents = {
 	RowOnEnter = true,
 	RowOnLeave = true,
 	RowOnClick = true,
+	OnWindowUpdated = true,
 }
 -- Allows non-hardcoded assignment of Events which should ignore Runners and simply process immediately when fired
 -- This is helpful when an Event has an Event Sequence defined but also may occur during a Runner, which would lead to the

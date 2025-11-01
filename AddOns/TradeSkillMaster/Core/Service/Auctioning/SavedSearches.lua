@@ -5,16 +5,15 @@
 -- ------------------------------------------------------------------------------ --
 
 local TSM = select(2, ...) ---@type TSM
-local SavedSearches = TSM.Auctioning:NewPackage("SavedSearches")
-local L = TSM.Include("Locale").GetTable()
-local Log = TSM.Include("Util.Log")
-local String = TSM.Include("Util.String")
-local Database = TSM.Include("Util.Database")
-local TempTable = TSM.Include("Util.TempTable")
-local Theme = TSM.Include("Util.Theme")
-local GroupPath = TSM.Include("Util.GroupPath")
-local Settings = TSM.Include("Service.Settings")
-local UIUtils = TSM.Include("UI.UIUtils")
+local SavedSearches = TSM.Auctioning:NewPackage("SavedSearches") ---@type AddonPackage
+local L = TSM.Locale.GetTable()
+local Log = TSM.LibTSMUtil:Include("Util.Log")
+local String = TSM.LibTSMUtil:Include("Lua.String")
+local Database = TSM.LibTSMUtil:Include("Database")
+local TempTable = TSM.LibTSMUtil:Include("BaseType.TempTable")
+local Theme = TSM.LibTSMService:Include("UI.Theme")
+local Group = TSM.LibTSMTypes:Include("Group")
+local UIUtils = TSM.LibTSMUI:Include("Util.UIUtils")
 local private = {
 	settings = nil,
 	db = nil,
@@ -28,8 +27,8 @@ local MAX_RECENT_SEARCHES = 500
 -- Module Functions
 -- ============================================================================
 
-function SavedSearches.OnInitialize()
-	private.settings = Settings.NewView()
+function SavedSearches.OnInitialize(settingsDB)
+	private.settings = settingsDB:NewView()
 		:AddKey("global", "userData", "savedAuctioningSearches")
 
 	-- remove duplicates
@@ -90,22 +89,19 @@ function SavedSearches.CreateFavoriteSearchesQuery()
 		:OrderBy("name", true)
 end
 
-function SavedSearches.SetSearchIsFavorite(dbRow, isFavorite)
-	local filter = dbRow:GetField("filter")
+function SavedSearches.SetSearchIsFavorite(index, isFavorite)
+	private.db:SetUniqueRowField("index", index, "isFavorite", isFavorite)
+	local filter = private.db:GetUniqueRowField("index", index, "filter")
 	private.settings.savedAuctioningSearches.isFavorite[filter] = isFavorite or nil
-	dbRow:SetField("isFavorite", isFavorite)
-		:Update()
 end
 
-function SavedSearches.RenameSearch(dbRow, newName)
-	local filter = dbRow:GetField("filter")
+function SavedSearches.RenameSearch(index, newName)
+	private.db:SetUniqueRowField("index", index, "name", newName)
+	local filter = private.db:GetUniqueRowField("index", index, "filter")
 	private.settings.savedAuctioningSearches.name[filter] = newName
-	dbRow:SetField("name", newName)
-		:Update()
 end
 
-function SavedSearches.DeleteSearch(dbRow)
-	local index, filter = dbRow:GetFields("index", "filter")
+function SavedSearches.DeleteSearch(index, filter)
 	tremove(private.settings.savedAuctioningSearches.filters, index)
 	tremove(private.settings.savedAuctioningSearches.searchTypes, index)
 	private.settings.savedAuctioningSearches.name[filter] = nil
@@ -143,8 +139,8 @@ function SavedSearches.RecordSearch(searchList, searchType)
 		:Create()
 end
 
-function SavedSearches.FiltersToTable(dbRow, tbl)
-	String.SafeSplit(dbRow:GetField("filter"), FILTER_SEP, tbl)
+function SavedSearches.FiltersToTable(filter, tbl)
+	String.SafeSplit(filter, FILTER_SEP, tbl)
 end
 
 
@@ -174,9 +170,8 @@ function private.GetSearchName(filter, searchType)
 	end
 	if searchType == "postGroups" or searchType == "cancelGroups" then
 		for groupPath in gmatch(filter, "[^"..FILTER_SEP.."]+") do
-			local groupName = GroupPath.GetName(groupPath)
-			local level = select('#', strsplit(TSM.CONST.GROUP_SEP, groupPath))
-			tinsert(filters, Theme.GetGroupColor(level):ColorText(groupName))
+			local groupName = Group.GetName(groupPath)
+			tinsert(filters, Theme.GetGroupColor(Group.GetLevel(groupPath)):ColorText(groupName))
 		end
 		searchTypeStr = searchType == "postGroups" and L["Post Scan"] or L["Cancel Scan"]
 		numFiltersStr = #filters == 1 and L["1 Group"] or format(L["%d Groups"], #filters)

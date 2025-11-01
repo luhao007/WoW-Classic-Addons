@@ -14,11 +14,6 @@
 
 local lib = LibStub("Krowi_Util-1.0");
 
-local C_AddOns = {}
-C_AddOns.IsAddOnLoaded = IsAddOnLoaded
-C_AddOns.LoadAddOn = LoadAddOn
-C_AddOns.GetAddOnMetadata = GetAddOnMetadata
-
 if not lib then
 	return;
 end

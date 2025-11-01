@@ -21,7 +21,6 @@ local function createconfig()
 
 	local function set(info, arg1, arg2, arg3, arg4)
 		local ns,opt = string.split(".", info.arg)
-		--TomTom:Print("set", ns, opt, arg1, arg2, arg3, arg4)
 		if arg2 then
 			local entry = TomTom.db.profile[ns][opt]
 			entry[1] = arg1
@@ -38,6 +37,10 @@ local function createconfig()
 			TomTom:ShowHideWorldCoords()
 		elseif ns == "arrow" then
 			TomTom:ShowHideCrazyArrow()
+		elseif ns == "minimap" and (opt == "theme" or opt == "default_iconsize") then
+			TomTom:ReloadWaypoints()
+		elseif ns == "worldmap" and (opt == "theme" or opt == "default_iconsize") then
+			TomTom:ReloadWaypoints()
 		elseif ns == "poi" and TomTom.WOW_MAINLINE then
 			TomTom:EnableDisablePOIIntegration()
 		elseif opt == "otherzone" then
@@ -158,6 +161,37 @@ local function createconfig()
 		},
 	} -- End coordinate block settings
 
+	local arrowThemeConfig = {
+		["classic"] = {
+			texture = "Interface\\Addons\\TomTom\\Images\\Arrow-1024",
+			iconCoords = {0, 256 / 2304, 0, 256 / 3072},
+		},
+		["modern"] = {
+			texture = "Interface\\Addons\\TomTom\\Images\\Modern\\ArrowNavColour",
+			iconCoords = {0, 256 / 2304, 0, 256 / 3072},
+		},
+		["modern-top-down"] = {
+			texture = "Interface\\Addons\\TomTom\\Images\\Modern\\ArrowNavTopDownColour",
+			iconCoords = {0, 256 / 2304, 0, 256 / 3072},
+		}
+	}
+
+	local function getThemeConfig(key)
+		local theme = addon.db.profile.arrow.theme
+		if not theme then theme = "classic" end
+
+		local config = arrowThemeConfig[theme]
+		return config[key]
+	end
+
+	local function getArrowTexture()
+		return getThemeConfig("texture")
+	end
+
+	local function getArrowTextureCoords()
+		return getThemeConfig("iconCoords")
+	end
+
 	options.args.crazytaxi = {
 		type = "group",
 		order = 3,
@@ -176,6 +210,49 @@ local function createconfig()
 				name = L["Enable floating waypoint arrow"],
 				width = "double",
 				arg = "arrow.enable",
+			},
+			theme = {
+				order = 2.1,
+				type = "group",
+				name = L["Themes"],
+				width = "half",
+				inline = true,
+				args = {
+					help = {
+						type = "description",
+						order = 1,
+						name = L["There are a few different themes that you can apply to the waypoint arrow, use this section to configure."],
+					},
+					theme = {
+						order = 2,
+						type = "select",
+						name = L["Theme"],
+						desc = L["You can customize the display of the crazy arrow with a variety of themes."],
+						width = "double",
+						values = {
+							["classic"] = L["Classic theme"],
+							["modern"] = L["Modern theme"],
+							["modern-top-down"] = L["Modern top-down theme"],
+						},
+						arg = "arrow.theme",
+					},
+					spacer = {
+						order = 3,
+						type = "description",
+						name = "    ",
+						width = "half",
+					},
+					arrowTexture = {
+						order = 4,
+						type = "description",
+						name = " ",
+						width = 0.25,
+						image = getArrowTexture,
+						imageCoords = getArrowTextureCoords,
+						imageWidth = 75,
+						imageHeight = 75,
+					},
+				}
 			},
 			autoqueue = {
 				order = 3,
@@ -433,6 +510,22 @@ local function createconfig()
 		},
 	} -- End crazy taxi options
 
+	-- Enable texture theme lookup
+	local function getMinimapThemeDotTexture()
+		local theme = addon.db.profile.minimap.theme
+		return addon.waypointThemeRegistry:GetThemeDotTexture(theme)
+	end
+
+	local function getMinimapThemeArrowTexture()
+		local theme = addon.db.profile.minimap.theme
+		return addon.waypointThemeRegistry:GetThemeArrowTexture(theme)
+	end
+
+	local function getWorldMapThemeDotTexture()
+		local theme = addon.db.profile.worldmap.theme
+		return addon.waypointThemeRegistry:GetThemeDotTexture(theme)
+	end
+
 	options.args.minimap = {
 		type = "group",
 		order = 4,
@@ -476,6 +569,54 @@ local function createconfig()
 				width = "double",
 				arg = "minimap.menu",
 			},
+			theme = {
+				order = 6,
+				type = "group",
+				name = L["Themes"],
+				width = "half",
+				inline = true,
+				args = {
+					help = {
+						type = "description",
+						order = 1,
+						name = L["There are a few different themes that you can apply to the minimap waypoints, use this section to configure."],
+					},
+					theme = {
+						order = 2,
+						type = "select",
+						name = L["Theme"],
+						desc = L["You can customize the display of the waypoints on your minimap with a variety of themes."],
+						width = "double",
+						values = addon.waypointThemeRegistry:GetThemeConfigOptions(),
+						sorting = addon.waypointThemeRegistry:GetThemeConfigOptionsSorting(),
+						arg = "minimap.theme",
+					},
+					spacer = {
+						order = 3,
+						type = "description",
+						name = "    ",
+						width = "half",
+					},
+					dotTexture = {
+						order = 4,
+						type = "description",
+						name = " ",
+						width = 0.25,
+						image = getMinimapThemeDotTexture,
+						imageWidth = 20,
+						imageHeight = 20,
+					},
+					arrowTexture = {
+						order = 4,
+						type = "description",
+						name = " ",
+						width = 0.25,
+						image = getMinimapThemeArrowTexture,
+						imageWidth = 20,
+						imageHeight = 20,
+					},
+				}
+			},
 			iconsize = {
 				order = 10,
 				type = "range",
@@ -483,21 +624,6 @@ local function createconfig()
 				desc = L["This setting allows you to control the default size of the minimap icon. "],
 				min = 4, max = 64, step = 2,
 				arg = "minimap.default_iconsize",
-			},
-			icon = {
-				order = 11,
-				type = "select",
-				name = L["Minimap Icon"],
-				desc = L["This setting allows you to select the default icon for the minimap"],
-				values = {
-					["Interface\\AddOns\\TomTom\\Images\\GoldGreenDot"] = L["Old Gold Green Dot"],
-					["Interface\\AddOns\\TomTom\\Images\\GoldBlueDotNew"] = L["New Gold Blue Dot"],
-					["Interface\\AddOns\\TomTom\\Images\\GoldGreenDotNew"] = L["New Gold Green Dot"],
-					["Interface\\AddOns\\TomTom\\Images\\GoldPurpleDotNew"] = L["New Gold Purple Dot"],
-					["Interface\\AddOns\\TomTom\\Images\\GoldRedDotNew"] = L["New Gold Red Dot"],
-					["Interface\\AddOns\\TomTom\\Images\\PurpleRing"] = L["New Purple Ring"],
-				},
-				arg = "minimap.default_icon",
 			},
 		},
 	} -- End minimap options
@@ -630,36 +756,52 @@ local function createconfig()
 					},
 				},
 			},
-			icon = {
+			theme = {
 				order = 9,
 				type = "group",
+				name = L["Themes"],
+				width = "half",
 				inline = true,
-				name = L["Icon Control"],
 				args = {
-				iconsize = {
-						order = 20,
+					help = {
+						type = "description",
+						order = 1,
+						name = L["There are a few different themes that you can apply to the minimap waypoints, use this section to configure."],
+					},
+					theme = {
+						order = 2,
+						type = "select",
+						name = L["Theme"],
+						desc = L["You can customize the display of the waypoints on your minimap with a variety of themes."],
+						width = "double",
+						values = addon.waypointThemeRegistry:GetThemeConfigOptions(),
+						sorting = addon.waypointThemeRegistry:GetThemeConfigOptionsSorting(),
+						arg = "worldmap.theme",
+					},
+					spacer = {
+						order = 3,
+						type = "description",
+						name = "    ",
+						width = "half",
+					},
+					dotTexture = {
+						order = 4,
+						type = "description",
+						name = " ",
+						width = 0.25,
+						image = getWorldMapThemeDotTexture,
+						imageWidth = 20,
+						imageHeight = 20,
+					},
+					iconsize = {
+						order = 5,
 						type = "range",
 						name = L["World Map Icon Size"],
 						desc = L["This setting allows you to control the default size of the world map icon"],
 						min = 4, max = 64, step = 2,
 						arg = "worldmap.default_iconsize",
 					},
-					icon_default = {
-						order = 21,
-						type = "select",
-						name = L["World Map Icon"],
-						desc = L["This setting allows you to select the default icon for the world map"],
-						values = {
-							["Interface\\AddOns\\TomTom\\Images\\GoldGreenDot"] = L["Old Gold Green Dot"],
-							["Interface\\AddOns\\TomTom\\Images\\GoldBlueDotNew"] = L["New Gold Blue Dot"],
-							["Interface\\AddOns\\TomTom\\Images\\GoldGreenDotNew"] = L["New Gold Green Dot"],
-							["Interface\\AddOns\\TomTom\\Images\\GoldPurpleDotNew"] = L["New Gold Purple Dot"],
-							["Interface\\AddOns\\TomTom\\Images\\GoldRedDotNew"] = L["New Gold Red Dot"],
-							["Interface\\AddOns\\TomTom\\Images\\PurpleRing"] = L["New Purple Ring"],
-						},
-						arg = "worldmap.default_icon",
-					},
-				},
+				}
 			},
 		},
 	} -- End world map options
@@ -931,12 +1073,46 @@ end
 local aboutOptions = {
 	type = "group",
 	args = {
-		version = {
+		logo = {
 			order = 1,
 			type = "description",
-			name = function() return "Version: TomTom-".. addon.version end,
-
-		}
+			name = " ",
+			image = "Interface\\AddOns\\TomTom\\Images\\Modern\\TomTom-Logo.tga",
+			imageWidth = 128,
+			imageHeight = 128,
+		},
+		version = {
+			order = 2,
+			type = "description",
+			fontSize = "medium",
+			name = function() return "|cffffd200Version:|r TomTom-".. addon.version end,
+		},
+		spacer = {
+			order = 3,
+			type = "description",
+			name = " ",
+		},
+		creditsHeader = {
+			order = 4,
+			type = "header",
+			name = "Credits",
+		},
+		creditsList = {
+			order = 5,
+			type = "description",
+			fontSize = "medium",
+			name = table.concat({
+				"|cffffd200Author:|r Cladhaire",
+				"|cffffd200Co-maintainer:|r Ludovicus",
+				"|cffffd200Contributors:|r",
+				"- Carl Thomas (modern artwork)",
+				"- Chris Braithwaite (modern artwork)",
+				"- Localization by many helpers",
+				"",
+				"|cffffd200Special Thanks:|r",
+				" The WoW addon community",
+			}, "\n"),
+		},
 	},
 }
 

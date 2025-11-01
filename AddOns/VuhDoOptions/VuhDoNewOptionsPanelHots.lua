@@ -5,11 +5,12 @@ VUHDO_HOT_BAR_MODELS = { };
 --
 local tSortTable = { };
 function VUHDO_initHotComboModels()
+
 	table.wipe(VUHDO_HOT_MODELS);
 
 	VUHDO_HOT_MODELS[1] = { "", "-- " .. VUHDO_I18N_EMPTY_HOTS .. " --" };
-	VUHDO_HOT_MODELS[2] = { "OTHER", "|cff0000ff[s]|r " .. VUHDO_I18N_OTHER_HOTS};
-	VUHDO_HOT_MODELS[3] = { "CLUSTER", "|cff0000ff[s]|r " .. VUHDO_I18N_CLUSTER_FINDER};
+	VUHDO_HOT_MODELS[2] = { "OTHER", "|cff0000ff[s]|r " .. VUHDO_I18N_OTHER_HOTS };
+	VUHDO_HOT_MODELS[3] = { "CLUSTER", "|cff0000ff[s]|r " .. VUHDO_I18N_CLUSTER_FINDER };
 
 	for tCnt = 1, #VUHDO_PLAYER_HOTS do
 		VUHDO_HOT_MODELS[tCnt + 3] = { VUHDO_PLAYER_HOTS[tCnt], "[h] " .. VUHDO_PLAYER_HOTS[tCnt] };
@@ -17,7 +18,7 @@ function VUHDO_initHotComboModels()
 
 	table.wipe(tSortTable);
 	for tName, _ in pairs(VUHDO_BOUQUETS["STORED"]) do
-		tinsert(tSortTable, {"BOUQUET_" .. tName, "|cff000000[b]|r " .. tName} );
+		tinsert(tSortTable, { "BOUQUET_" .. tName, "|cff000000[b]|r " .. tName } );
 	end
 
 	table.sort(tSortTable,
@@ -29,6 +30,7 @@ function VUHDO_initHotComboModels()
 	for _, tModel in ipairs(tSortTable) do
 		tinsert(VUHDO_HOT_MODELS, tModel);
 	end
+
 end
 
 
@@ -36,6 +38,7 @@ end
 --
 local tSortTable = { };
 function VUHDO_initHotBarComboModels()
+
 	table.wipe(VUHDO_HOT_BAR_MODELS);
 
 	VUHDO_HOT_BAR_MODELS[1] = { "", "-- " .. VUHDO_I18N_EMPTY_HOTS .. " --" };
@@ -45,7 +48,7 @@ function VUHDO_initHotBarComboModels()
 
 	table.wipe(tSortTable);
 	for tName, _ in pairs(VUHDO_BOUQUETS["STORED"]) do
-		tinsert(tSortTable, {"BOUQUET_" .. tName, "|cff000000[b]|r " .. tName} );
+		tinsert(tSortTable, { "BOUQUET_" .. tName, "|cff000000[b]|r " .. tName } );
 	end
 
 	table.sort(tSortTable,
@@ -57,6 +60,7 @@ function VUHDO_initHotBarComboModels()
 	for _, tModel in ipairs(tSortTable) do
 		tinsert(VUHDO_HOT_BAR_MODELS, tModel);
 	end
+
 end
 
 
@@ -121,11 +125,12 @@ end
 
 --
 local VUHDO_SLOT_NO_FROM_HOT_NO = {
-	1, 2, 3, 4, 5, 1, 2, 3, 6, 7,
+	1, 2, 3, 4, 5, 1, 2, 3, 6, 7, 8, 9
 }
 
 --
 function VUHDO_hotSlotContainerOnLoad(aContainer)
+
 	local tContainerName = aContainer:GetName();
 	local tHotSlotNum = VUHDO_getNumbersFromString(tContainerName, 1)[1];
 	local tContainerNum = VUHDO_SLOT_NO_FROM_HOT_NO[tHotSlotNum] or "";
@@ -134,13 +139,14 @@ function VUHDO_hotSlotContainerOnLoad(aContainer)
 	tLabel:SetText(VUHDO_I18N_SLOT .. " " .. tContainerNum);
 
 	local tCombo = _G[tContainerName .. "SelectComboBox"];
-	VUHDO_setComboModel(tCombo, "VUHDO_PANEL_SETUP.HOTS.SLOTS.##" .. tHotSlotNum, VUHDO_HOT_MODELS);
+	VUHDO_setComboModel(tCombo, "VUHDO_PANEL_SETUP.#PNUM#.HOTS.SLOTS.##" .. tHotSlotNum, VUHDO_HOT_MODELS);
 
 	local tMineBox = _G[tContainerName .. "MineCheckBox"];
-	VUHDO_lnfSetModel(tMineBox, "VUHDO_PANEL_SETUP.HOTS.SLOTCFG." .. tHotSlotNum .. ".mine");
+	VUHDO_lnfSetModel(tMineBox, "VUHDO_PANEL_SETUP.#PNUM#.HOTS.SLOTCFG." .. tHotSlotNum .. ".mine");
 
 	local tOthersBox = _G[tContainerName .. "OthersCheckBox"];
-	VUHDO_lnfSetModel(tOthersBox, "VUHDO_PANEL_SETUP.HOTS.SLOTCFG." .. tHotSlotNum .. ".others");
+	VUHDO_lnfSetModel(tOthersBox, "VUHDO_PANEL_SETUP.#PNUM#.HOTS.SLOTCFG." .. tHotSlotNum .. ".others");
+
 end
 
 
@@ -155,7 +161,7 @@ function VUHDO_hotMoreSlotContainerOnLoad(aContainer)
 	tLabel:SetText(VUHDO_I18N_SLOT .. " " .. tContainerNum);
 
 	local tSlider = _G[tContainerName .. "ScaleSlider"];
-	VUHDO_lnfSetModel(tSlider, "VUHDO_PANEL_SETUP.HOTS.SLOTCFG." .. tHotSlotNum .. ".scale");
+	VUHDO_lnfSetModel(tSlider, "VUHDO_PANEL_SETUP.#PNUM#.HOTS.SLOTCFG." .. tHotSlotNum .. ".scale");
 	VUHDO_lnfSliderOnLoad(tSlider, "", 0.5, 2, "", 0.05);
 	VUHDO_lnfSetTooltip(tSlider, VUHDO_I18N_TT.K545);
 end

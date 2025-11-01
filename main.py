@@ -1,9 +1,12 @@
 import logging
+
 import click
 
+import utils
 # from instawow_manager import InstawowManager
 from manage import Manager
-import utils
+from utils import Color
+
 
 # CN WOW is stuck at 3.4.3, where the official classic is bumped to 4.4.0.
 # Thus the install/updte function would not work.
@@ -12,9 +15,9 @@ class Context:
 
     def __init__(self, ctx: click.Context, verbose: bool):
         """Basic content for CLI."""
-        ctx.params['log_level'] = verbose
+        ctx.params["log_level"] = verbose
         platform = utils.get_platform()
-        self.game_flavour = 'vanilla_classic' if platform == 'classic_era' else platform
+        self.game_flavour = "vanilla_classic" if platform == "classic_era" else platform
         # self.manager = InstawowManager(self.game_flavour, False)
         # self.manager_lib = InstawowManager(self.game_flavour, True)
         # ctx.call_on_close(self.manager.conn.close)
@@ -22,17 +25,16 @@ class Context:
 
 
 def _manage():
-    print('Modifying addons to fit each other...')
+    print(f"{Color.YELLOW}Modifying addons to fit each other...{Color.RESET}")
     Manager().process()
     Manager().process_libs()
-    print('Done!')
+    print(f"{Color.YELLOW}Done!{Color.RESET}")
 
 
-@click.group(context_settings={'help_option_names': ('-h', '--help')})
-@click.option('--verbose', '-v', help='Show more logs',
-              is_flag=True, default=False)
+@click.group(context_settings={"help_option_names": ("-h", "--help")})
+@click.option("--verbose", "-v", help="Show more logs", is_flag=True, default=False)
 @click.pass_context
-def main(ctx, verbose):
+def main(ctx: click.Context, verbose: bool):
     """luhao007's Addon Manager."""
     if verbose:
         logging.basicConfig(level=logging.INFO)

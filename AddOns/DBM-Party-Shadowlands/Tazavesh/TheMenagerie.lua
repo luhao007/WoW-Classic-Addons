@@ -1,7 +1,7 @@
 local mod	= DBM:NewMod(2454, "DBM-Party-Shadowlands", 9, 1194)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20241103105705")
+mod:SetRevision("20250906092635")
 mod:SetCreatureID(176556, 176555, 176705)
 mod:SetEncounterID(2441)
 mod:SetUsedIcons(1)
@@ -43,7 +43,7 @@ local specWarnGripofHunger			= mod:NewSpecialWarningRun(349663, nil, nil, nil, 4
 local specWarnGrandConsumption		= mod:NewSpecialWarningDodge(349663, nil, nil, nil, 2, 2)
 
 local timerGripofHungerCD			= mod:NewCDTimer(23, 349663, nil, nil, nil, 2)--23-30
-local timerGrandconsumptionCD		= mod:NewCDTimer(30.3, 349797, nil, nil, nil, 3)
+local timerGrandconsumptionCD		= mod:NewCDTimer(30, 349797, nil, nil, nil, 3)
 
 mod:AddSetIconOption("SetIconOnGluttony", 349627, true, 0, {1})
 --Achillite
@@ -54,7 +54,7 @@ local specWarnPurificationProtocol	= mod:NewSpecialWarningDispel(349954, "Remove
 local timerAchilliteCD				= mod:NewNextTimer(23, -23231, nil, nil, nil, 1, "132349")
 local timerVentingProtocolCD		= mod:NewCDTimer(26.6, 349987, nil, nil, nil, 3)
 local timerFlagellationProtocolCD	= mod:NewCDTimer(23, 349934, nil, nil, nil, 3)
-local timerPurificationProtocolCD	= mod:NewCDTimer(18.2, 320200, nil, nil, nil, 3, nil, DBM_COMMON_L.MAGIC_ICON)
+local timerPurificationProtocolCD	= mod:NewCDTimer(18.2, 349954, nil, nil, nil, 3, nil, DBM_COMMON_L.MAGIC_ICON)
 
 mod:AddInfoFrameOption(349934, true)
 --Venza Goldfuse
@@ -72,7 +72,7 @@ mod.vb.chainsCast = 0
 
 function mod:OnCombatStart(delay)
 	--Alcruux timers
-	timerGripofHungerCD:Start(11.8-delay)
+	timerGripofHungerCD:Start(11.6-delay)
 	timerGrandconsumptionCD:Start(24.2-delay)
 	--if hardmode stuff then
 		--timerAchilliteCD:Start(28-delay)
@@ -114,22 +114,22 @@ function mod:SPELL_CAST_START(args)
 		self.vb.chainsCast = self.vb.chainsCast + 1
 		specWarnChainsofDamnation:Show()
 		specWarnChainsofDamnation:Play("targetchange")
-		timerChainsofDamnationCD:Start(self.vb.chainsCast == 1 and 21.8 or 30.3, self.vb.chainsCast+1)
+		timerChainsofDamnationCD:Start(self.vb.chainsCast == 1 and 21.8 or 29.1, self.vb.chainsCast+1)
 	end
 end
 
 function mod:SPELL_CAST_SUCCESS(args)
 	local spellId = args.spellId
-	if spellId == 181089 then
+	if spellId == 181089 then--Encounter Event
 		local cid = self:GetCIDFromGUID(args.sourceGUID)
 		if cid == 176555 then--Achillite
-			timerPurificationProtocolCD:Start(4.7)
-			timerFlagellationProtocolCD:Start(14.5)
-			timerVentingProtocolCD:Start(21.7)
+			timerPurificationProtocolCD:Start(2.4)
+			timerFlagellationProtocolCD:Start(13.3)
+			timerVentingProtocolCD:Start(19.5)
 		elseif cid == 176705 then--Venza Gldfuse
 			self.vb.chainsCast = 0
 			timerChainsofDamnationCD:Start(4.8, 1)
-			timerWhirlingAnnihilationCD:Start(16.9)
+			timerWhirlingAnnihilationCD:Start(15.7)
 		end
 	end
 end
@@ -149,7 +149,7 @@ function mod:SPELL_AURA_APPLIED(args)
 			self:SetIcon(args.destName, 1)
 		end
 	elseif spellId == 349933 then
-		if self.Options.InfoFrame then
+		if self.Options.InfoFrame and not DBM.Test.testRunning then
 			local bossUnitID = self:GetUnitIdFromGUID(args.destGUID)
 			DBM.InfoFrame:SetHeader(args.spellName)
 			DBM.InfoFrame:Show(2, "enemyabsorb", nil, args.amount, bossUnitID)
@@ -204,16 +204,16 @@ function mod:RAID_BOSS_WHISPER(msg)
 	end
 end
 
-function mod:CHAT_MSG_MONSTER_SAY(msg, npc, _, _, target)
+function mod:CHAT_MSG_MONSTER_SAY(msg)
 	--"<457.34 22:32:38> [CHAT_MSG_MONSTER_SAY] Are rampaging beasts ruining your day? We have the solution!#Xy'noc###Omegal##0#0##0#1027#nil#0#false#false#false#false", -- [6130]
 	--"<480.65 22:33:01> [INSTANCE_ENCOUNTER_ENGAGE_UNIT] Fake Args:#boss1#true#true#true#Achillite#Creature-0-4228-2441-29407-176555-00002A9633#elite#1982340#bo
 	--"<481.86 22:33:02> [CLEU] SPELL_CAST_SUCCESS#Creature-0-4228-2441-29407-176555-00002A9633#Achillite##nil#181089#Encounter Event#nil#nil", -- [6420]
-	if (msg == L.AchilliteRPTrigger or msg:find(L.AchilliteRPTrigger)) and self:LatencyCheck() then
+	if (msg == L.AchilliteRPTrigger or msg:find(L.AchilliteRPTrigger)) then
 		self:SendSync("AchilliteRP")
 	--"<506.68 22:33:27> [CHAT_MSG_MONSTER_SAY] Now's my chance! That axe is mine!#Venza Goldfuse###Omegal##0#0##0#1039#nil#0#false#false#false#false", -- [6741]
 	--"<530.43 22:33:51> [INSTANCE_ENCOUNTER_ENGAGE_UNIT] Fake Args:#boss1#true#true#true#Achillite#Creature-0-4228-2441-29407-176555-00002A9633#elite#43829#boss2#true#true#true#Venza Goldfuse#Creature-0-4228-2441-29407-176705-00002A
 	--"<530.43 22:33:51> [CLEU] SPELL_CAST_SUCCESS#Creature-0-4228-2441-29407-176705-00002A9633#Venza Goldfuse##nil#181089#Encounter Event#nil#nil", -- [7113]
-	elseif (msg == L.VenzaRPTrigger or msg:find(L.VenzaRPTrigger)) and self:LatencyCheck() then
+	elseif (msg == L.VenzaRPTrigger or msg:find(L.VenzaRPTrigger)) then
 		self:SendSync("VenzaRP")
 	end
 end

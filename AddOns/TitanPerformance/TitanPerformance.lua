@@ -15,11 +15,11 @@ local updateTable = { TITAN_PERFORMANCE_ID, TITAN_PANEL_UPDATE_ALL };
 local APP_MIN = 1
 local APP_MAX = 40
 
----@diagnostic disable-next-line: deprecated
+---@diagnostic disable-next-line: deprecated, undefined-global
 local NumAddons = C_AddOns.GetNumAddOns or GetNumAddOns
----@diagnostic disable-next-line: deprecated
+---@diagnostic disable-next-line: deprecated, undefined-global
 local AddOnInfo = C_AddOns.GetAddOnInfo or GetAddOnInfo
----@diagnostic disable-next-line: deprecated
+---@diagnostic disable-next-line: deprecated, undefined-global
 local IsAddOnLoaded = C_AddOns.IsAddOnLoaded or IsAddOnLoaded
 
 local TITAN_FPS_THRESHOLD_TABLE = {

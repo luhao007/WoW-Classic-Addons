@@ -7,7 +7,7 @@ BtWQuestsDatabase:AddObjectsTable({
     [182115] = {
         name = "Wanted Poster",
         locations = {
-            [1946] = {
+            [102] = {
                 {
                     x = 0.791045,
                     y = 0.648686,
@@ -18,7 +18,7 @@ BtWQuestsDatabase:AddObjectsTable({
     [182165] = {
         name = "Wanted Poster",
         locations = {
-            [1946] = {
+            [102] = {
                 {
                     x = 0.319961,
                     y = 0.493247,
@@ -29,7 +29,7 @@ BtWQuestsDatabase:AddObjectsTable({
     [182392] = {
         name = "Garadar Bulletin Board",
         locations = {
-            [1951] = {
+            [107] = {
                 {
                     x = 0.557676,
                     y = 0.380136,
@@ -40,7 +40,7 @@ BtWQuestsDatabase:AddObjectsTable({
     [182393] = {
         name = "Telaar Bulletin Board",
         locations = {
-            [1951] = {
+            [107] = {
                 {
                     x = 0.546689,
                     y = 0.707494,
@@ -51,7 +51,7 @@ BtWQuestsDatabase:AddObjectsTable({
     [182549] = {
         name = "Fel Orc Plans",
         locations = {
-            [1952] = {
+            [108] = {
                 {
                     x = 0.67924,
                     y = 0.535622,
@@ -62,7 +62,7 @@ BtWQuestsDatabase:AddObjectsTable({
     [182587] = {
         name = "Wanted Poster",
         locations = {
-            [1952] = {
+            [108] = {
                 {
                     x = 0.575991,
                     y = 0.547201,
@@ -73,7 +73,7 @@ BtWQuestsDatabase:AddObjectsTable({
     [182588] = {
         name = "Wanted Poster",
         locations = {
-            [1952] = {
+            [108] = {
                 {
                     x = 0.498103,
                     y = 0.452828,
@@ -84,7 +84,7 @@ BtWQuestsDatabase:AddObjectsTable({
     [183284] = {
         name = "Wanted Poster",
         locations = {
-            [1946] = {
+            [102] = {
                 {
                     x = 0.417423,
                     y = 0.272435,
@@ -95,7 +95,7 @@ BtWQuestsDatabase:AddObjectsTable({
     [183770] = {
         name = "B'naar Control Console",
         locations = {
-            [1953] = {
+            [109] = {
                 {
                     x = 0.231896,
                     y = 0.68156,
@@ -106,7 +106,7 @@ BtWQuestsDatabase:AddObjectsTable({
     [183811] = {
         name = "Wanted Poster",
         locations = {
-            [1953] = {
+            [109] = {
                 {
                     x = 0.320913,
                     y = 0.646452,
@@ -117,7 +117,7 @@ BtWQuestsDatabase:AddObjectsTable({
     [184300] = {
         name = "Necromantic Focus",
         locations = {
-            [1953] = {
+            [109] = {
                 {
                     x = 0.603046,
                     y = 0.779688,
@@ -128,7 +128,7 @@ BtWQuestsDatabase:AddObjectsTable({
     [184660] = {
         name = "Wanted Poster",
         locations = {
-            [1949] = {
+            [105] = {
                 {
                     x = 0.519326,
                     y = 0.577787,
@@ -139,7 +139,7 @@ BtWQuestsDatabase:AddObjectsTable({
     [184825] = {
         name = "Lashh'an Tome",
         locations = {
-            [1949] = {
+            [105] = {
                 {
                     x = 0.34301,
                     y = 0.774009,
@@ -156,7 +156,7 @@ BtWQuestsDatabase:AddObjectsTable({
     [185035] = {
         name = "Wanted Poster",
         locations = {
-            [1949] = {
+            [105] = {
                 {
                     x = 0.366134,
                     y = 0.672995,
@@ -167,7 +167,7 @@ BtWQuestsDatabase:AddObjectsTable({
     [185165] = {
         name = "Legion Communicator",
         locations = {
-            [1949] = {
+            [105] = {
                 {
                     x = 0.732705,
                     y = 0.400336,

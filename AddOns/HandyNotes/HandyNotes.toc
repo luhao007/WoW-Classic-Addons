@@ -1,11 +1,13 @@
-## Interface: 30405
+## Interface: 50502
 ## Author: Xinhuan
-## Version: v1.6.23
+## Version: v1.6.26
 
-## Title: HandyNotes |cff99ddff谷|r|cff88ccee风|r|cff77bbdd修|r|cff66aacc复|r|cff5599bb版|r
+## Title: HandyNotes
 ## Notes: Handy notes for your maps
-## Title-zhCN: |cFFFFE00A<|r|cFF40C7EB探索|r|cFFFFE00A>|r |cFFFFFFFF地图标记|r |cFFFFE00AHandyNotes|r
+## Title-zhCN: |cFFFFE00A<|r|cFF40C7EB探索|r|cFFFFE00A>|r|cFFFFFFFF地图标记|r |cFFFFE00AHandyNotes|r
 ## Notes-zhCN: 可以在地图上添加标记
+
+## Category-zhCN: |cFFFFE00A<|r|cFF40C7EB探索|r|cFFFFE00A>|r
 
 ## OptionalDeps: Ace3, TomTom, HereBeDragons
 ## LoadManagers: AddonLoader

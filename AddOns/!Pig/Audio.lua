@@ -8,6 +8,7 @@ local PIGOptionsList=Create.PIGOptionsList
 local PIGFontString=Create.PIGFontString
 local PIGSetFont=Create.PIGSetFont
 ----------------------------------------
+local EnableAddOn=EnableAddOn or C_AddOns and C_AddOns.EnableAddOn
 local fuFrame = PIGOptionsList("语音","BOT")
 ------
 local audioName ={"Bobo","Rurutia","Sakura"}

@@ -14,7 +14,7 @@
 				</Anchors>
 				<Frames>
 
-					<CheckButton name="$parentHideStandardFocusCheckButton" text="VUHDO_I18N_FOCUS" inherits="VuhDoTriStateCheckButtonTemplate">
+					<CheckButton name="$parentHideStandardFocusCheckButton" text="VUHDO_I18N_FOCUS_UNIT" inherits="VuhDoTriStateCheckButtonTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
@@ -240,7 +240,7 @@
 						</Layers>
 					</Frame>
 
-					<CheckButton name="$parenEnableCheckButton" text="VUHDO_I18N_ENABLE" inherits="VuhDoCheckButtonTemplate">
+					<CheckButton name="$parentEnableCheckButton" text="VUHDO_I18N_ENABLE" inherits="VuhDoCheckButtonTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>

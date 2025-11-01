@@ -1,11 +1,14 @@
-## Interface: 30405
+## Interface: 50502
 ## Author: MysticalOS
-## Version: 11.2.2
+## Version: 12.0.2
 
 ## Title: |cffffe00a<|r|cffff7d0aDBM Mod|r|cffffe00a>|r |cffff6010Raids (WW)|r
-## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r |cFFFFFFFF副本助手|r |cFF69CCF0团队|r |cFF22B14C地心之战|r
+## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r|cFFFFFFFF副本助手|r |cFF69CCF0团队|r |cFF22B14C地心之战|r
 
 ## IconTexture: Interface\AddOns\DBM-Core\textures\dbm_airhorn
+
+## Category: DBM
+## Category-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r
 
 ## RequiredDeps: DBM-Core
 ## LoadOnDemand: 1
@@ -29,7 +32,6 @@
 ## X-DBM-Mod-MinCoreRevision: 20230617000000
 ## X-DBM-Mod-MinExpansion: 10
 ## X-Curse-Project-ID: 3358
-## X-WoWI-ID: 8814
 ## X-Wago-ID: qv633o6b
 ## X-Part-Of: DBM-Core
 

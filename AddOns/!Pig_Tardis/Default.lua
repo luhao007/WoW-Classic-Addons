@@ -7,6 +7,15 @@ local extDefault ={
 		["Open"] = true,
 		["DaojishiCD"]=0,
 	},
+	["Invite"]={
+		["Open"] = true,
+		["Template"]={},
+		["YellTemp"]={},
+		["CMD"]="777",
+		["CMD_Msg"]=false,
+		["Yell_CHANNEL"]={["SAY"] = true},
+		["YellMsg"]="",
+	},
 	["Houche"]={
 		["Open"] = true,
 		["AutoInvite"]=true,
@@ -16,8 +25,11 @@ local extDefault ={
 	},
 	["Chedui"]={
 		["Open"] = true,
-		["ADD_Level"]=0,
-		["ADD_comment"]="",
+		["Favorite_Siji"]={},
+		["Ban_Siji"]={},
+		["Favorite_Chengke"]={},
+		["Ban_Chengke"]={},
+		["ApplyTemp"]={},
 	},
 	["Plane"]={
 		["Open"] = true,
@@ -30,15 +42,12 @@ local extDefault ={
 	["Yell"]={
 		["Open"] = true,
 		["ShowDesktopBut"]=false,
-		["mubiaoNum"]={{},{},{},},
-		["Yell_NR"]="[Pig]....",
+		["YellTemp"]={},
+		["CMD"]="888",
+		["CMD_Msg"]=false,
 		["Yell_CHANNEL"]={["SAY"] = true},
-		["MaxPlayerNum"]=40,
-		["jinzuCMD"]="888",
-		["jinzuCMD_inv"]=false,
-		["InvMode"]=1,
-		["InvMode1_Info"]={},
-		["Yell_CD"]=300,
+		["YellMsg"]="",
+		["Conditions"]={},
 	},
 }
 Default["Tardis"]=extDefault

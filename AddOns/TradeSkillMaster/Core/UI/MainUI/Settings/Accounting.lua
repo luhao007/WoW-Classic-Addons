@@ -5,12 +5,18 @@
 -- ------------------------------------------------------------------------------ --
 
 local TSM = select(2, ...) ---@type TSM
-local Accounting = TSM.MainUI.Settings:NewPackage("Accounting")
-local L = TSM.Include("Locale").GetTable()
-local Log = TSM.Include("Util.Log")
-local UIElements = TSM.Include("UI.UIElements")
-local UIUtils = TSM.Include("UI.UIUtils")
-local private = {}
+local Accounting = TSM.MainUI.Settings:NewPackage("Accounting") ---@type AddonPackage
+local L = TSM.Locale.GetTable()
+local ChatMessage = TSM.LibTSMService:Include("UI.ChatMessage")
+local UIElements = TSM.LibTSMUI:Include("Util.UIElements")
+local UIUtils = TSM.LibTSMUI:Include("Util.UIUtils")
+local private = {
+	settings = nil,
+}
+local SETTING_TOOLTIPS = {
+	trackTrades = L["If enabled, TSM will automatically track trades where a single type of item is exchanged for an amount of gold as a sale or purchase."],
+	autoTrackTrades = L["Disables the confirmation for tracking sales / purchases from trades."],
+}
 
 
 
@@ -18,7 +24,10 @@ local private = {}
 -- Module Functions
 -- ============================================================================
 
-function Accounting.OnInitialize()
+function Accounting.OnInitialize(settingsDB)
+	private.settings = settingsDB:NewView()
+		:AddKey("global", "accountingOptions", "trackTrades")
+		:AddKey("global", "accountingOptions", "autoTrackTrades")
 	TSM.MainUI.Settings.RegisterSettingPage(L["Accounting"], "middle", private.GetAccountingSettingsFrame)
 end
 
@@ -41,7 +50,8 @@ function private.GetAccountingSettingsFrame()
 					:SetWidth("AUTO")
 					:SetFont("BODY_BODY2_MEDIUM")
 					:SetText(L["Track Sales / Purchases via trade"])
-					:SetSettingInfo(TSM.db.global.accountingOptions, "trackTrades")
+					:SetSettingInfo(private.settings, "trackTrades")
+					:SetTooltip(SETTING_TOOLTIPS.trackTrades)
 				)
 				:AddChild(UIElements.New("Spacer", "spacer"))
 			)
@@ -52,7 +62,8 @@ function private.GetAccountingSettingsFrame()
 					:SetWidth("AUTO")
 					:SetFont("BODY_BODY2_MEDIUM")
 					:SetText(L["Don't prompt to record trades"])
-					:SetSettingInfo(TSM.db.global.accountingOptions, "autoTrackTrades")
+					:SetSettingInfo(private.settings, "autoTrackTrades")
+					:SetTooltip(SETTING_TOOLTIPS.autoTrackTrades)
 				)
 				:AddChild(UIElements.New("Spacer", "spacer"))
 			)
@@ -97,10 +108,10 @@ end
 
 function private.ClearBtnOnClick(button)
 	local days = tonumber(button:GetElement("__parent.input"):GetValue())
-	local desc = format(L["Are you sure you want to clear accounting data older than %d days for the currenet realm?"], days)
+	local desc = format(L["Are you sure you want to clear accounting data older than %d days for the current realm?"], days)
 	button:GetBaseElement():ShowConfirmationDialog(L["Clear Old Data?"], desc, private.ClearDataConfirmed, days)
 end
 
 function private.ClearDataConfirmed(days)
-	Log.PrintfUser(L["Removed a total of %s old records."], TSM.Accounting.Transactions.RemoveOldData(days) + TSM.Accounting.Money.RemoveOldData(days) + TSM.Accounting.Auctions.RemoveOldData(days))
+	ChatMessage.PrintfUser(L["Removed a total of %s old records."], TSM.Accounting.Transactions.RemoveOldData(days) + TSM.Accounting.Money.RemoveOldData(days) + TSM.Accounting.Auctions.RemoveOldData(days))
 end

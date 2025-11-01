@@ -1,7 +1,7 @@
 ---@diagnostic disable: param-type-mismatch
 --[===[ File
 Titan adjusts some WoW frames based on the WoW version!
-Mainly used for Classic versions where TITAN_ID == "TitanClassic"
+Mainly used when user can NOT edit / move most UI frames.
 
 DragonFlight introduced an Edit Mode for the user to move various frames where they want them.
 Titan no longer needs to do this work for most frames.
@@ -210,7 +210,9 @@ Messy but declare the lib routines used in the Classic versions
 
 Share the calc Y routine
 --]]
-if TITAN_ID == "TitanClassic" then
+if Titan_Global.switch.can_edit_ui then
+	-- User can edit UI frames so Titan will not adjust...
+else
 
 
 local hooks_done = false;
@@ -445,9 +447,7 @@ local function MoveFrame(frame_ptr, start_y, top_bottom, force)
 		-- Should note get here...
 		dbg = dbg.." No frame ??"
 	end
-	if Titan_Global.debug.movable then
-		TitanDebug(dbg)
-	end
+	Titan_Debug.Out('titan', 'movable', dbg)
 end
 
 --[[ local
@@ -744,9 +744,7 @@ local function TitanMovableFrame_MoveFrames(force)
 	if InCombatLockdown() then
 		-- nothing to do
 	else
-		if Titan_Global.debug.movable then
-			TitanDebug("Start frame adjust...")
-		end
+		Titan_Debug.Out('titan', 'movable', "Start frame adjust...")
 		for i = 1,#MData,1 do
 			local dbg = "Mv"
 			local ok = false
@@ -759,9 +757,7 @@ local function TitanMovableFrame_MoveFrames(force)
 					dbg = dbg.." move"
 					ok = true
 				end
-				if Titan_Global.debug.movable then
-					TitanDebug(dbg)
-				end
+				Titan_Debug.Out('titan', 'movable', dbg)
 				if ok then
 					-- Adjust the frame per MData
 					MData[i].move(force)
@@ -782,9 +778,7 @@ local function TitanMovableFrame_MoveFrames(force)
 		end
 		Titan_FCF_UpdateDockPosition(); -- chat
 		UpdateContainerFrameAnchors(); -- Move bags as needed
-		if Titan_Global.debug.movable then
-			TitanDebug("...End frame adjust")
-		end
+		Titan_Debug.Out('titan', 'movable', "...End frame adjust")
 	end
 end
 
@@ -806,9 +800,7 @@ function TitanPanel_AdjustFrames(force, reason)
 	-- such as when the user has just de/selected top or bottom bars
 	local f = force or false -- do not require the parameter
 	local str = reason or "?"
-	if Titan_Global.debug.movable then
-		TitanDebug("Adj: "..str)
-	end
+		Titan_Debug.Out('titan', 'movable', "Adj: "..str)
 	-- Adjust frame positions top and bottom based on user choices
 	if hooks_done then
 		TitanMovableFrame_MoveFrames(f)

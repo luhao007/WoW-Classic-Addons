@@ -73,6 +73,13 @@ DF:InstallTemplate ("dropdown", "PLATER_DROPDOWN_OPTIONS", {
 })
 
 
+DF:InstallTemplate ("button", "PLATER_BUTTON_DARK", {
+	backdrop = {edgeFile = [[Interface\Buttons\WHITE8X8]], edgeSize = 1, bgFile = [[Interface\Tooltips\UI-Tooltip-Background]], tileSize = 8, tile = true},
+	backdropcolor = {0.05, 0.05, 0.05, .7},
+	backdropbordercolor = {0, 0, 0, 1},
+})
+
+
 -- those two may be removed, as they are covered by settings now
 DF:NewColor ("PLATER_FRIEND", .71, 1, 1, 1)
 DF:NewColor ("PLATER_GUILD", 0.498039, 1, .2, 1)
@@ -130,6 +137,7 @@ PLATER_DEFAULT_SETTINGS = {
 		--format: [SpellID] = filePath
 		cast_audiocues = {},
 		cast_audiocues_channel = "Master",
+		cast_audiocue_cooldown = 0.1, --in seconds, delay to play the same audio again
 
 		--store the cast colors customized by the user
 		cast_colors = {}, --[spellId] = {[1] = color, [2] = enabled, [3] = custom spell name}
@@ -641,6 +649,7 @@ PLATER_DEFAULT_SETTINGS = {
 		show_healthbars_on_softinteract = true,
 		ignore_softinteract_objects = false,
 		hide_name_on_game_objects = true,
+		name_on_game_object_color = {1, 1, 1, 1},
 		show_softinteract_icons = true,
 		
 		enable_masque_support = false,
@@ -771,7 +780,7 @@ PLATER_DEFAULT_SETTINGS = {
 		health_cutoff_extra_glow = false,
 		health_cutoff_hide_divisor = false,
 		
-		update_throttle = 0.120,
+		update_throttle = 0.25,
 		culling_distance = 100,
 		use_playerclass_color = true, --friendly player
 		
@@ -794,12 +803,13 @@ PLATER_DEFAULT_SETTINGS = {
 		aura_cooldown_edge_texture = [[Interface\AddOns\Plater\images\cooldown_edge_2]],
 		
 		aura_enabled = true,
-		auras_experimental_update_classic_era = true,
 		aura_show_tooltip = false,
 		aura_width = 26,
 		aura_height = 16,
+		aura_border_thickness = 1,
 		aura_width2 = 26,
 		aura_height2 = 16,
+		aura_border_thickness2 = 1,
 		auras_per_row_auto = true,
 		auras_per_row_amount = 10,
 		auras_per_row_amount2 = 10,
@@ -867,6 +877,7 @@ PLATER_DEFAULT_SETTINGS = {
 		extra_icon_stack_outline = "NONE",
 		extra_icon_backdrop_color = {0, 0, 0, 0.612853},
 		extra_icon_border_color = {0, 0, 0, 1},
+		extra_icon_border_size = 1,
 		
 		debuff_show_cc = true, --extra frame show cc
 		debuff_show_cc_border = {.3, .2, .2, 1},
@@ -885,9 +896,11 @@ PLATER_DEFAULT_SETTINGS = {
 		
 		aura_width_personal = 32,
 		aura_height_personal = 20,
+		aura_border_thickness_personal = 1,
 		aura_show_buffs_personal = false,
 		aura_show_debuffs_personal = true,
 		aura_show_all_duration_buffs_personal = false,
+		aura_show_only_important_buffs_personal = false,
 		
 		aura_show_important = true,
 		aura_show_dispellable = true,
@@ -897,6 +910,8 @@ PLATER_DEFAULT_SETTINGS = {
 		aura_show_aura_by_the_player = true,
 		aura_show_aura_by_other_players = false,
 		aura_show_buff_by_the_unit = true,
+		aura_show_debuff_by_the_unit = true,
+		aura_show_aura_by_other_npcs = true,
 		aura_border_colors_by_type = false,
 		aura_show_crowdcontrol = false,
 		aura_show_offensive_cd = false,
@@ -910,6 +925,7 @@ PLATER_DEFAULT_SETTINGS = {
 			defensive = {.85, .45, .1, 1},
 			offensive = {0, .65, .1, 1},
 			crowdcontrol = {.3, .2, .2, 1},
+			default = {0, 0, 0, 1},
 		},
 		
 		aura_tracker = {
@@ -934,12 +950,20 @@ PLATER_DEFAULT_SETTINGS = {
 		},
 		
 		bossmod_support_enabled = true,
-		bossmod_support_bars_enabled = false,
-		bossmod_aura_height = 32,
-		bossmod_aura_width = 32,
+		bossmod_castrename_enabled = true,
+		bossmod_castrename_priority = false,
+		bossmod_support_bars_enabled = true,
+		bossmod_support_bars_text_enabled = true,
+		bossmod_aura_height = 24,
+		bossmod_aura_width = 24,
 		bossmod_cooldown_text_size = 16,
 		bossmod_cooldown_text_enabled = true,
-		bossmod_icons_anchor = {side = 8, x = 0, y = 30},
+		bossmod_icons_anchor = {side = 2, x = -5, y = 25},
+		bossmod_aura_glow_cooldown = true,
+		bossmod_aura_glow_important_only = true,
+		bossmod_aura_glow_casts = true,
+		bossmod_aura_glow_casts_glow_type = 4,
+		bossmod_aura_glow_cooldown_glow_type = 1,
 		
 		not_affecting_combat_enabled = false,
 		not_affecting_combat_alpha = 0.6,
@@ -1001,6 +1025,15 @@ PLATER_DEFAULT_SETTINGS = {
 			["world"] =  true,
 			["cities"] = false,
 		},
+		
+		auto_toggle_always_show_enabled = false,
+		auto_toggle_always_show = {
+			["party"] = true,
+			["raid"] = true,
+			["arena"] = true,
+			["world"] =  true,
+			["cities"] = true,
+		},
 
 		auto_inside_raid_dungeon = {
 			hide_enemy_player_pets = false,
@@ -1015,6 +1048,8 @@ PLATER_DEFAULT_SETTINGS = {
 			enemy_ooc = false,
 			blizz_healthbar_ic = false,
 			blizz_healthbar_ooc = false,
+			always_show_ic = false,
+			always_show_ooc = false,
 		},
 
 		spell_animations = true,

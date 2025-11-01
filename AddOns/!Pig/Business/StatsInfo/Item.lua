@@ -21,8 +21,8 @@ local GetRuneData=Fun.GetRuneData
 local GetItemLinkJJ=Fun.GetItemLinkJJ
 local HY_ItemLinkJJ=Fun.HY_ItemLinkJJ
 --------
-local GetContainerNumSlots = C_Container.GetContainerNumSlots
-local GetContainerItemLink=C_Container.GetContainerItemLink
+local GetContainerNumSlots = GetContainerNumSlots or C_Container and C_Container.GetContainerNumSlots
+local GetContainerItemLink = GetContainerItemLink or C_Container and C_Container.GetContainerItemLink
 local GetItemInfo=GetItemInfo or C_Item and C_Item.GetItemInfo
 local GetItemInfoInstant=GetItemInfoInstant or C_Item and C_Item.GetItemInfoInstant
 -----------

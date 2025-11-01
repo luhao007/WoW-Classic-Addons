@@ -16,12 +16,19 @@ L.OTabWorld					= "世界首領"
 L.OTabScenarios				= "事件"
 L.OTabPlugins				= "其他"
 L.OTabOptions				= "核心選項"
+--L.OTabTools							= "Tools"--Such as break timer button, durability checks, latency checks, keystone checks (in future)
 L.OTabAbout					= "關於"
 
 --Main Tab, Tools checks
-L.Tools_LatencyCheck				= "延遲檢查"
-L.Tools_DurabilityCheck				= "耐久度檢查"
-L.Tools_KeystoneCheck				= "鑰石檢查"
+L.Tools_LatencyCheck			= "延遲檢查"
+L.Tools_DurabilityCheck			= "耐久度檢查"
+L.Tools_KeystoneCheck			= "鑰石檢查"
+
+L.Tools_BreakTimer				= "開始休息計時"
+L.Tools_PizzaTimer				= "開始一般計時"
+
+L.Tools_Duration				= "持續時間"
+L.Tools_Message					= "計時訊息"
 
 L.TabCategory_CURRENT_SEASON	= "當前賽季"
 
@@ -124,6 +131,8 @@ L.LogCurrentMPlus					= "當前等級傳奇+地下城"--Retail Only
 L.LogCurrentMythicZero				= "當前等級傳奇0層地下城"--Retail Only
 L.LogTWDungeons						= "時光漫遊 或 克羅米時光地下城"--Retail Only
 L.LogCurrentHeroic					= "當前等級英雄地下城 (注意：如果您通過地城搜尋器佇列英雄並想要記錄，請關閉地城搜尋器過濾)"
+L.LogDelves							= "當前探究層級"--Retail Only
+L.LogChallenges						= "當前層級特別挑戰 (像是托加斯特、幻象、法師塔)"--Retail Only
 
 -- Panel: Extra Features
 L.Panel_ExtraFeatures		= "額外功能"
@@ -153,6 +162,11 @@ L.AutoAcceptFriendInvite	= "自動接受來自朋友的隊伍邀請"
 L.AutoAcceptGuildInvite		= "自動接受來自公會成員的隊伍邀請"
 L.Area_Advanced				= "進階選項"
 L.FakeBW					= "假裝使用BigWigs版本檢查而不是用DBM版本(適合用在工會強制使用BigWigs時)"
+--
+L.Area_Tooltip						= "工具提示整合"
+L.EnableTooltip						= "將DBM統計數據加入到由DBM支援的首領工具提示中"
+L.EnableTooltipInCombat				= "在戰鬥中顯示工具提示訊息"
+L.EnableTooltipHeader				= "在工具提示中包括DBM標題"
 
 -- Panel: Profiles
 L.Panel_Profile				= "配置檔"
@@ -185,58 +199,63 @@ L.ImportErrorOn				= "缺少設置中的自定義聲音: %s"
 L.ImportVoiceMissing		= "缺少語音包: %s"
 
 -- Tab: Alerts
-L.TabCategory_Alerts	 	= "警告"
-L.Area_SpecAnnounceConfig	= "特別警告視覺和聲音指南"
-L.Area_SpecAnnounceNotes	= "特別警告註記指南"
-L.Area_VoicePackInfo		= "有關DBM語音包的訊息"
+L.TabCategory_Alerts	 	    = "警告"
+L.Area_SpecAnnounceConfig	    = "特別警告視覺和聲音指南"
+L.Area_SpecAnnounceNotes	    = "特別警告註記指南"
+L.Area_VoicePackInfo		    = "有關DBM語音包的訊息"
 -- Panel: Raidwarning
-L.Tab_RaidWarning 			= "警告"
-L.RaidWarning_Header		= "警告選項"
-L.RaidWarnColors 			= "警告顏色"
-L.RaidWarnColor_1 			= "顏色1"
-L.RaidWarnColor_2 			= "顏色2"
-L.RaidWarnColor_3			= "顏色3"
-L.RaidWarnColor_4 			= "顏色4"
-L.InfoRaidWarning			= [[你可以對團隊警告的顏色及其位置進行設定。
+L.Tab_RaidWarning 			    = "警告"
+L.RaidWarning_Header		    = "警告選項"
+L.RaidWarnColors 			    = "警告顏色"
+L.RaidWarnColor_1 			    = "顏色1"
+L.RaidWarnColor_2 			    = "顏色2"--只使用在至暗之夜
+L.RaidWarnColor_3			    = "顏色3"
+L.RaidWarnColor_4 			    = "顏色4"
+L.InfoRaidWarning			    = [[你可以對團隊警告的顏色及其位置進行設定。
 在這裡會顯示例如“玩家X中了Y效果”之類的資訊。]]
-L.ColorResetted 			= "該顏色設置已重置"
-L.ShowWarningsInChat 		= "在聊天視窗中顯示通告"
-L.WarningIconLeft 			= "左側顯示圖示"
-L.WarningIconRight 			= "右側顯示圖示"
-L.WarningIconChat 			= "在聊天視窗顯示圖示"
-L.WarningAlphabetical		= "依字母排序"
-L.Warn_Duration				= "警告持續時間：%0.1f秒"
-L.None						= "無"
-L.Random					= "隨機"
-L.Outline					= "描邊"
-L.ThickOutline				= "厚描邊"
-L.MonochromeOutline			= "單色描邊"
-L.MonochromeThickOutline	= "單色加粗描邊"
-L.RaidWarnSound				= "在團隊通告時播放音效"
+L.ColorResetted 			    = "該顏色設置已重置"
+L.ShowWarningsInChat 		    = "在聊天視窗中顯示通告"
+L.WarningIconLeft 			    = "左側顯示圖示"
+L.WarningIconRight 			    = "右側顯示圖示"
+L.WarningIconChat 			    = "在聊天視窗顯示圖示"
+L.WarningAlphabetical		    = "依字母排序"
+L.Warn_Duration				    = "警告持續時間：%0.1f秒"
+L.None						    = "無"
+L.Random					    = "隨機"
+L.Outline					    = "描邊"
+L.ThickOutline				    = "厚描邊"
+L.MonochromeOutline			    = "單色描邊"
+L.MonochromeThickOutline	    = "單色加粗描邊"
+L.RaidWarnSound				    = "在團隊通告時播放音效"
+L.AnnouncementMidnightNotice	= "此面板上的選項用於暴雪分類為'輕微'的警告"
 
 -- Panel: Spec Warn Frame
-L.Panel_SpecWarnFrame		= "特別提示"
-L.Area_SpecWarn				= "特別提示選項"
-L.SpecWarn_ClassColor		= "為特別提示套用職業顏色"
-L.ShowSWarningsInChat 		= "在聊天視窗中顯示特別提示"
-L.SWarnNameInNote			= "使用特別提示5選項如果自訂註記有包含你的名字"
-L.SpecialWarningIcon		= "在特別提示上顯示圖示"
-L.ShortTextSpellname		= "使用簡短法術名稱文字(如果可用)"
-L.SpecWarn_FlashFrameRepeat	= "閃爍%d次"
-L.SpecWarn_Flash			= "閃爍螢幕"
-L.SpecWarn_Vibrate			= "震動控制器"
-L.SpecWarn_FlashRepeat		= "反覆閃爍"
-L.SpecWarn_FlashColor		= "閃爍顏色:%d"
-L.SpecWarn_FlashDur			= "閃爍長度:%0.1f"
-L.SpecWarn_FlashAlpha		= "閃爍透明度:%0.1f"
-L.SpecWarn_DemoButton		= "顯示範例"
-L.SpecWarn_ResetMe			= "重置為預設值"
-L.SpecialWarnSoundOption	= "設置預設音效"
-L.SpecialWarnHeader1		= "類型1: 設置影響您或您的操作的普通優先級提示選擇"
-L.SpecialWarnHeader2		= "類型2: 設置影響每個人的一般優先級提示選擇"
-L.SpecialWarnHeader3		= "類型3: 設置高優先級提示的選擇"
-L.SpecialWarnHeader4		= "類型4: 設置高優先級運行特別提示的選擇"
-L.SpecialWarnHeader5		= "類型5: 設置提示選項，並在註釋中包含您的玩家名稱"
+L.Panel_SpecWarnFrame		    = "特別提示"
+L.Area_SpecWarn				    = "特別提示選項"
+L.SpecWarn_ClassColor		    = "為特別提示套用職業顏色"
+L.ShowSWarningsInChat 		    = "在聊天視窗中顯示特別提示"
+L.SWarnNameInNote			    = "使用特別提示5選項如果自訂註記有包含你的名字"
+L.SpecialWarningIcon		    = "在特別提示上顯示圖示"
+L.ShortTextSpellname		    = "使用簡短法術名稱文字(如果可用)"
+L.SpecWarn_FlashFrameRepeat	    = "閃爍%d次"
+L.SpecWarn_Flash			    = "閃爍螢幕"
+L.SpecWarn_Vibrate			    = "震動控制器"
+L.SpecWarn_FlashRepeat		    = "反覆閃爍"
+L.SpecWarn_FlashColor		    = "閃爍顏色:%d"
+L.SpecWarn_FlashDur			    = "閃爍長度:%0.1f"
+L.SpecWarn_FlashAlpha		    = "閃爍透明度:%0.1f"
+L.SpecWarn_DemoButton		    = "顯示範例"
+L.SpecWarn_ResetMe			    = "重置為預設值"
+L.SpecialWarnSoundOption	    = "設置預設音效"
+--PreMidnight
+L.SpecialWarnHeader1		    = "類型1: 設置影響您或您的操作的普通優先級提示選擇"
+L.SpecialWarnHeader2		    = "類型2: 設置影響每個人的一般優先級提示選擇"
+L.SpecialWarnHeader3		    = "類型3: 設置高優先級提示的選擇"
+L.SpecialWarnHeader4		    = "類型4: 設置高優先級運行特別提示的選擇"
+L.SpecialWarnHeader5		    = "類型5: 設置提示選項，並在註釋中包含您的玩家名稱"
+--Post Midnight
+L.SpecialWarnHeaderMedium		= "暴雪歸類為'中等'的機制警告"
+L.SpecialWarnHeaderCritical		= "暴雪歸類為'關鍵'的機制警告"
 
 -- Panel: Generalwarnings
 L.Tab_GeneralMessages 			= "聊天訊息"
@@ -530,6 +549,7 @@ L.HideBossEmoteFrame				= "首領戰鬥時隱藏團隊首領表情框架"
 L.HideWatchFrame					= "首領戰鬥時隱追蹤框架(任務目標)，如果沒有追踪成就，或不是在傳奇+中"
 L.HideQuestTooltips					= "首領戰鬥時隱藏任務目標提示"--Currently hidden (NYI)
 L.HideTooltips						= "首領戰鬥時隱藏完全隱藏提示"
+L.HideBlizzardTimeline				= "首領戰鬥時隱藏暴雪團隊時間線"
 
 -- Panel: Raid Leader Controls
 L.Tab_RLControls					= "團隊領隊控制項"
@@ -582,6 +602,8 @@ L.Panel_Range				= "距離框架"
 
 -- Panel: Nameplate
 L.Panel_Nameplates				= "名條"
+L.Plater_Config				    = "開啟 Plater 設置"
+L.ThreatPlates_Config			= "開啟 Threat Plates 設置"
 L.Area_NPStyle					= "風格 (注意：僅在DBM處理名條時配置風格。)"
 L.NPAuraText					= "在名條圖示上顯示計時文字"
 L.NPAuraSize					= "光環像素大小 (平方): %d"

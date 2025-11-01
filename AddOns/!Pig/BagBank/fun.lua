@@ -18,36 +18,32 @@ local Data = addonTable.Data
 local bagData=Data.bagData
 local bagIDMax= Data.bagData["bagIDMax"]
 --刷新背包LV
+local function Update_ButLV(itemButton,bagid,slotid)
+	if itemButton then itemButton.ZLV:SetText("") end
+	local itemID, itemLink, icon, stackCount, quality=PIGGetContainerItemInfo(bagid,slotid)
+	if itemLink then
+		local itemID, itemType, itemSubType, itemEquipLoc, icon, classID, subClassID = GetItemInfoInstant(itemLink)
+		local quality=quality or 1
+		if quality>1 and classID==2 or classID==4 then
+			local actualItemLevel, previewLevel, sparseItemLevel = C_Item.GetDetailedItemLevelInfo(itemLink)
+			local colorRGBR, colorRGBG, colorRGBB, qualityString = C_Item.GetItemQualityColor(quality)
+			if itemButton.ZLV then
+				itemButton.ZLV:SetText(actualItemLevel);
+				itemButton.ZLV:SetTextColor(colorRGBR, colorRGBG, colorRGBB, 1);
+			end
+		end
+	end
+end
 local function Update_itemLV_(itemButton, id, slot)
 	if itemButton.ZLV then
-		if itemButton.ZLV then itemButton.ZLV:SetText("") end
-		if PIG_MaxTocversion() then
-			local itemLink = GetContainerItemLink(id, slot)
-			if itemLink then
-				local _,_,itemQuality,_,_,_,_,_,_,_,_,classID = GetItemInfo(itemLink);
-				if itemQuality and itemQuality>1 then
-					if classID==2 or classID==4 then
-						local effectiveILvl = GetDetailedItemLevelInfo(itemLink)
-						itemButton.ZLV:SetText(effectiveILvl);
-						local r, g, b = GetItemQualityColor(itemQuality);
-						itemButton.ZLV:SetTextColor(r, g, b, 1);
-					end
-				end
-			end
+		if id=="retail" then
+			Update_ButLV(itemButton,itemButton:GetBankTabID(), itemButton:GetContainerSlotID())
 		else
-			local bagID = itemButton:GetBagID();
-			local itemID, itemLink, icon, stackCount, quality=PIGGetContainerItemInfo(bagID, itemButton:GetID())
-			if itemLink then
-				local itemID, itemType, itemSubType, itemEquipLoc, icon, classID, subClassID = GetItemInfoInstant(itemLink)
-				local quality=quality or 1
-				if quality>1 and classID==2 or classID==4 then
-					local actualItemLevel, previewLevel, sparseItemLevel = C_Item.GetDetailedItemLevelInfo(itemLink)
-					local colorRGBR, colorRGBG, colorRGBB, qualityString = C_Item.GetItemQualityColor(quality)
-					if itemButton.ZLV then
-						itemButton.ZLV:SetText(actualItemLevel);
-						itemButton.ZLV:SetTextColor(colorRGBR, colorRGBG, colorRGBB, 1);
-					end
-				end
+			if itemButton.ZLV then itemButton.ZLV:SetText("") end
+			if PIG_MaxTocversion() then
+				Update_ButLV(itemButton,id, slot)
+			else
+				Update_ButLV(itemButton,itemButton:GetBagID(), itemButton:GetID())
 			end
 		end
 	end
@@ -170,11 +166,11 @@ function BagBankfun.Bag_Item_Ranse(frame, size, id)
 	end
 end
 ---
-function BagBankfun.xuanzhuangsanjiao(self,open)
-	if open then
-		self:SetRotation(-3.1415926, {x=0.4, y=0.5})
+function BagBankfun.UpdateIconDirection(Tex1,showui)
+	if showui then
+		Tex1:SetRotation(-3.1415926, {x=0.4, y=0.5})
 	else
-		self:SetRotation(0, {x=0.4, y=0.5})
+		Tex1:SetRotation(0, {x=0.4, y=0.5})
 	end
 end
 ----
@@ -204,15 +200,19 @@ end
 --银行格子LV
 function BagBankfun.Bank_Item_lv(frame, size, id)
 	if not PIGA["BagBank"]["wupinLV"] then return end
-	if id then
-		if id<=bagData["bankmun"] then
-			local framef=_G["BankFrameItem"..id];
-			Update_itemLV_(framef, -1, id)
-		end
+	if frame=="retail" then
+		Update_itemLV_(size, frame)
 	else
-		for ig=1,bagData["bankmun"] do
-			local framef=_G["BankFrameItem"..ig];
-			Update_itemLV_(framef, -1, ig)
+		if id then
+			if id<=bagData["bankmun"] then
+				local framef=_G["BankFrameItem"..id];
+				Update_itemLV_(framef, -1, id)
+			end
+		else
+			for ig=1,bagData["bankmun"] do
+				local framef=_G["BankFrameItem"..ig];
+				Update_itemLV_(framef, -1, ig)
+			end
 		end
 	end
 end
@@ -297,7 +297,8 @@ function BagBankfun.addfenleibagbut(fujiui,uiname)
 		end
 		baginfo.icon=bankicon
 	end
-	function fujiui:Show_Hide_but(showV)
+	function fujiui:ShowHide_butList(event)
+		local showV = event and fujiui.ButLsit[1]:IsShown() or not fujiui.ButLsit[1]:IsShown() 
 		local numSlots,full = GetNumBankSlots();
 		for vb=1,#baginfo.id do
 			local fameXX = fujiui.ButLsit[vb]

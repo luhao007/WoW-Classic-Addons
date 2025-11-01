@@ -5,19 +5,19 @@
 -- ------------------------------------------------------------------------------ --
 
 local TSM = select(2, ...) ---@type TSM
-local Trade = TSM.Accounting:NewPackage("Trade")
-local L = TSM.Include("Locale").GetTable()
-local Event = TSM.Include("Util.Event")
-local TempTable = TSM.Include("Util.TempTable")
-local Money = TSM.Include("Util.Money")
-local ItemString = TSM.Include("Util.ItemString")
-local Wow = TSM.Include("Util.Wow")
-local ItemInfo = TSM.Include("Service.ItemInfo")
-local Settings = TSM.Include("Service.Settings")
+local Trade = TSM.Accounting:NewPackage("Trade") ---@type AddonPackage
+local L = TSM.Locale.GetTable()
+local Event = TSM.LibTSMWoW:Include("Service.Event")
+local TempTable = TSM.LibTSMUtil:Include("BaseType.TempTable")
+local StaticPopupDialog = TSM.LibTSMWoW:IncludeClassType("StaticPopupDialog")
+local Money = TSM.LibTSMUtil:Include("UI.Money")
+local ItemString = TSM.LibTSMTypes:Include("Item.ItemString")
+local ItemInfo = TSM.LibTSMService:Include("Item.ItemInfo")
 local private = {
 	settings = nil,
 	tradeInfo = nil,
 	popupContext = nil,
+	popupDialog = nil,
 }
 
 
@@ -26,8 +26,8 @@ local private = {
 -- Module Functions
 -- ============================================================================
 
-function Trade.OnInitialize()
-	private.settings = Settings.NewView()
+function Trade.OnInitialize(settingsDB)
+	private.settings = settingsDB:NewView()
 		:AddKey("global", "accountingOptions", "trackTrades")
 		:AddKey("global", "accountingOptions", "autoTrackTrades")
 	Event.Register("TRADE_ACCEPT_UPDATE", private.OnAcceptUpdate)
@@ -117,10 +117,10 @@ function private.OnChatMsg(_, msg)
 		local gotText, gaveText = nil, nil
 		if tradeType == "buy" then
 			gotText = format("%sx%d", ItemInfo.GetLink(itemString), count)
-			gaveText = Money.ToString(money)
+			gaveText = Money.ToStringExact(money)
 		elseif tradeType == "sale" then
 			gaveText = format("%sx%d", ItemInfo.GetLink(itemString), count)
-			gotText = Money.ToString(money)
+			gotText = Money.ToStringExact(money)
 		else
 			error("Invalid tradeType: "..tostring(tradeType))
 		end
@@ -135,26 +135,22 @@ function private.OnChatMsg(_, msg)
 				return
 			end
 			private.popupContext = insertInfo
-			if not StaticPopupDialogs["TSMAccountingOnTrade"] then
-				StaticPopupDialogs["TSMAccountingOnTrade"] = {
-					button1 = YES,
-					button2 = NO,
-					timeout = 0,
-					whileDead = true,
-					hideOnEscape = true,
-					OnAccept = function()
+			if not private.popupDialog then
+				private.popupDialog = StaticPopupDialog.New()
+					:SetYesNo()
+					:HideOnEscape()
+					:SetScript("OnAccept", function()
 						private.DoInsert(private.popupContext)
 						TempTable.Release(private.popupContext)
 						private.popupContext = nil
-					end,
-					OnCancel = function()
+					end)
+					:SetScript("OnCancel", function()
 						TempTable.Release(private.popupContext)
 						private.popupContext = nil
-					end,
-				}
+					end)
 			end
-			StaticPopupDialogs["TSMAccountingOnTrade"].text = format(L["TSM detected that you just traded %s to %s in return for %s. Would you like Accounting to store a record of this trade?"], gaveText, insertInfo.name, gotText)
-			Wow.ShowStaticPopupDialog("TSMAccountingOnTrade")
+			private.popupDialog:SetText(format(L["TSM detected that you just traded %s to %s in return for %s. Would you like Accounting to store a record of this trade?"], gaveText, insertInfo.name, gotText))
+			private.popupDialog:Show()
 		end
 	end
 end

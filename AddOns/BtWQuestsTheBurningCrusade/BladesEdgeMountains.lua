@@ -5,9 +5,9 @@ local EXPANSION_ID = BtWQuests.Constant.Expansions.TheBurningCrusade;
 local CATEGORY_ID = BtWQuests.Constant.Category.TheBurningCrusade.BladesEdgeMountains;
 local Chain = BtWQuests.Constant.Chain.TheBurningCrusade.BladesEdgeMountains;
 local ALLIANCE_RESTRICTIONS, HORDE_RESTRICTIONS = BtWQuests.Constant.Restrictions.Alliance, BtWQuests.Constant.Restrictions.Horde;
-local MAP_ID = 1949
+local MAP_ID = 105
 local ACHIEVEMENT_ID = 1193
-local CONTINENT_ID = 1945
+local CONTINENT_ID = 1467
 local LEVEL_RANGE = {20, 30}
 local LEVEL_PREREQUISITES = {
     {

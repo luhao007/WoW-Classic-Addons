@@ -1,4 +1,5 @@
 local _, addonTable = ...;
+local Fun=addonTable.Fun
 local match = _G.string.match
 local GetRaceClassTXT=addonTable.Fun.GetRaceClassTXT
 local ClasseNameID=addonTable.Data.ClasseNameID
@@ -13,9 +14,13 @@ function FramePlusfun.Friends()
 	if not PIGA["FramePlus"]["Friends"] then return end
 	FriendsFrame:Hide()
 	local www = FriendsFrame:GetWidth()
-	local butWidth_2 = www*2
-	local butWidth = www*2-40
-	FriendsFrame:SetWidth(butWidth_2)
+	local butWidthall = www*1.64
+	if PIG_MaxTocversion(110200) then
+		butWidthall = www*1.8
+	end
+	FriendsFrame:SetWidth(butWidthall)
+	local butWidth = butWidthall-40
+	local butWidth_2 = butWidth*0.5
 	local hangH,iconH,texW = 28,16,500
 	--在线状态
 	local FriendsFrameStatusDropdown=FriendsFrameStatusDropdown or FriendsFrameStatusDropDown
@@ -23,21 +28,20 @@ function FramePlusfun.Friends()
 	FriendsFrameStatusDropdown:SetWidth(wwwdd+6)
 	--好友列表
 	if FriendsFrameFriendsScrollFrame then
-		FriendsFrameFriendsScrollFrame:SetWidth(butWidth)
+		FriendsFrameFriendsScrollFrame:SetWidth(butWidth+6)
 		FriendsFrameFriendsScrollFrameTop:Hide()
 		FriendsFrameFriendsScrollFrameBottom:Hide()
 		FriendsFrameFriendsScrollFrameMiddle:Hide()
 		local buttons = FriendsFrameFriendsScrollFrame.buttons
 		for ix=1,#buttons do
 			local xuio = _G["FriendsFrameFriendsScrollFrameButton"..ix]
-			xuio:SetWidth(butWidth)
-			xuio.info:SetWidth(www-90)
+			xuio:SetWidth(butWidth+6)
 		end
 	else
 		FriendsListFrame.ScrollBox:SetWidth(butWidth)
 	end
     ---- 
-    WOW_PROJECT_WRATH_CLASSIC=WOW_PROJECT_WRATH_CLASSIC or 11
+    local PROJECT_WRATH=WOW_PROJECT_WRATH_CLASSIC or 11
     local function GetTisp_TXT(ProjectID,richPresence)
 		if richPresence:match("-") then
 			local ProjectName, realmName = strsplit("-", richPresence);
@@ -50,7 +54,7 @@ function FramePlusfun.Friends()
 				else
 					return "(经典60-"..realmName
 				end
-			elseif ProjectID==WOW_PROJECT_WRATH_CLASSIC then
+			elseif ProjectID==PROJECT_WRATH then
 				return "(巫妖王-"..realmName
 			elseif ProjectID==WOW_PROJECT_MAINLINE then
 				return "(正式服-"..realmName
@@ -104,10 +108,10 @@ function FramePlusfun.Friends()
 		button.status:SetPoint("LEFT",button,"LEFT",4,0);
 		button.name:ClearAllPoints();
 		button.name:SetPoint("LEFT",button,"LEFT",20,0);
-		button.name:SetSize(www-20,button:GetHeight())
+		button.name:SetSize(butWidth_2,button:GetHeight())
 		button.info:ClearAllPoints();
 		button.info:SetPoint("LEFT",button.name,"RIGHT",0,0);
-		button.info:SetSize(www-20,button:GetHeight())
+		button.info:SetSize(butWidth_2-60,button:GetHeight())
 		button.gameIcon:ClearAllPoints();
 		button.gameIcon:SetPoint("RIGHT",button,"RIGHT",-28,0);
 		button.gameIcon:SetSize(20,20);
@@ -243,19 +247,21 @@ function FramePlusfun.Friends()
 
 	--查询页
 	local WhohangH,WhoiconH=17.2,14
-	local WhoFrameHeaderP={24,24,24,190,188,200}
+	local WhoFrameHeaderP={26,26,26,180,168,178}
 	if PIG_MaxTocversion() then
 		if NDui then
-			WhoFrameHeaderP={26,26,26,190,180,200}
+			WhoFrameHeaderP={26,26,26,180,160,174}
 		else
-			WhoFrameHeaderP={26,26,26,190,180,200}
+			WhoFrameHeaderP={26,26,26,180,160,174}
 		end
 	end
-	WhoFrameEditBox:SetHeight(32);
-	WhoFrameEditBox:ClearAllPoints();
-	WhoFrameTotals:SetPoint("BOTTOM",WhoFrameListInset,"BOTTOM",-80,-39)
-	WhoFrameEditBox:SetPoint("BOTTOMLEFT",WhoFrame,"BOTTOMLEFT",10,20);
-	WhoFrameEditBox:SetPoint("BOTTOMRIGHT",WhoFrame,"BOTTOMRIGHT",-10,20);
+	if PIG_MaxTocversion() then
+		WhoFrameTotals:SetPoint("BOTTOM",WhoFrameListInset,"BOTTOM",-80,-19)
+		WhoFrameEditBox:SetHeight(32);
+		WhoFrameEditBox:ClearAllPoints();
+		WhoFrameEditBox:SetPoint("BOTTOMLEFT",WhoFrame,"BOTTOMLEFT",10,20);
+		WhoFrameEditBox:SetPoint("BOTTOMRIGHT",WhoFrame,"BOTTOMRIGHT",-10,20);
+	end
 	if ElvUI then
 		local E= unpack(ElvUI)
 		if E.private.skins.blizzard.enable and E.private.skins.blizzard.friends then
@@ -462,9 +468,9 @@ function FramePlusfun.Friends()
 			button.Level:SetWidth(WhoFrameHeaderP[3]-2)
 			button.Level:SetJustifyH("CENTER")
 			button.Name:ClearAllPoints();
-			button.Name:SetPoint("LEFT", button.Level, "RIGHT", 4, 0);
-			button.Name:SetWidth(WhoFrameHeaderP[4]-6)
-			button.Variable:SetWidth(WhoFrameHeaderP[5])
+			button.Name:SetPoint("LEFT", button.Level, "RIGHT", 2, 0);
+			button.Name:SetWidth(WhoFrameHeaderP[4]-10)
+			button.Variable:SetWidth(WhoFrameHeaderP[5]-6)
 			------
 			local HighlightTex = button:GetHighlightTexture()
 			HighlightTex:SetAllPoints(button)
@@ -483,13 +489,13 @@ function FramePlusfun.Friends()
 				button.tooltip1 = info.fullName.." - "..info.area;
 				button.tooltip2 = info.fullGuildName;
 			end
-			WhoFrame.senmsg.listUpdate(button)
+			if WhoFrame.senmsg then WhoFrame.senmsg.listUpdate(button) end
 		end)
 	end
 
 	--公会
 	if PIG_MaxTocversion() then
-		local GuildFrameHeaderP={24,24,24,120,140,90,150}
+		local GuildFrameHeaderP={24,24,24,120,140,70,112}
 		local function PIGGuildList_But(elvuiopen)
 			GuildFrameTotals:SetPoint("LEFT",GuildFrame,"LEFT",70,174);
 			GuildFrameGuildListToggleButton:Hide()
@@ -669,24 +675,29 @@ function FramePlusfun.Friends()
 	end
 
 	--团队==============
-	RaidFrameRaidDescription:SetWidth(butWidth+10)
-	local function SETRaidUIFrame()
+	local RaWidth = butWidthall-24
+	if PIG_MaxTocversion() then
+		RaWidth = butWidthall-14
+	end
+	local RaWidth_2 = RaWidth*0.5
+	if RaidFrameRaidDescription then RaidFrameRaidDescription:SetWidth(RaWidth-14) end
+	local function PIGRaidUIFrame()
 		for i=1,8 do
 			local uix = _G["RaidGroup"..i]
-			uix:SetWidth(www-6)
+			uix:SetWidth(RaWidth_2)
 			local regions = {uix:GetRegions()}
 			regions[1]:SetAllPoints(uix)
 			for ii=1,5 do
 				local Slots = _G["RaidGroup"..i.."Slot"..ii]
-				Slots:SetWidth(www-10)
+				Slots:SetWidth(RaWidth_2-6)
 			end
 		end
 		for i=1,40 do
 			local But = _G["RaidGroupButton"..i]
-			But:SetWidth(www-10)
+			But:SetWidth(RaWidth_2-6)
 			local Name = _G["RaidGroupButton"..i.."Name"]
-			Name:SetWidth(www*0.45)
-			Name:SetPoint("LEFT", But, "LEFT", 50, 0);
+			Name:SetWidth(RaWidth_2*0.45)
+			Name:SetPoint("LEFT", But, "LEFT", 40, 0);
 			_G["RaidGroupButton"..i.."Class"]:SetWidth(76)
 			if _G["RaidGroupButton"..i.."Class"].text then
 				_G["RaidGroupButton"..i.."Class"].text:SetWidth(76)
@@ -715,29 +726,16 @@ function FramePlusfun.Friends()
 			end
 		end
 	end
-	local RaidUIFRAME = CreateFrame("Frame")
-	if IsAddOnLoaded("Blizzard_RaidUI") then
-		if InCombatLockdown() then
-			RaidUIFRAME:RegisterEvent("PLAYER_REGEN_ENABLED")
-		else
-			SETRaidUIFrame()
+	UIParentLoadAddOn("Blizzard_RaidUI");
+	RaidFrame:UnregisterEvent("UNIT_NAME_UPDATE");
+	RaidFrame:UnregisterEvent("UNIT_PET");
+	Fun.IsAddOnLoaded("Blizzard_RaidUI",PIGRaidUIFrame)
+	RaidFrame:HookScript("OnEvent", function(self,event,arg1)
+		if event=="GROUP_ROSTER_UPDATE" then
+			if IsInRaid() then
+				RaidFrame:RegisterEvent("UNIT_NAME_UPDATE");
+				RaidFrame:RegisterEvent("UNIT_PET");
+			end
 		end
-    else
-        RaidUIFRAME:RegisterEvent("ADDON_LOADED")
-    end
-	RaidUIFRAME:SetScript("OnEvent", function(self, event, arg1)
-    	if event=="ADDON_LOADED" then
-    		if arg1=="Blizzard_RaidUI" then
-	    		self:UnregisterEvent("ADDON_LOADED")
-	    		if InCombatLockdown() then
-					self:RegisterEvent("PLAYER_REGEN_ENABLED")
-				else
-					SETRaidUIFrame()
-	    		end
-	    	end
-		elseif event=="PLAYER_REGEN_ENABLED" then
-			SETRaidUIFrame()
-			self:UnregisterEvent(event)
-		end
-    end)
+	end);
 end

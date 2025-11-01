@@ -23,7 +23,6 @@ local gsub = gsub;
 local GetRaidTargetIndex = GetRaidTargetIndex;
 local tonumber = tonumber;
 local pairs = pairs;
-local tostring = tostring;
 local twipe = table.wipe;
 local _;
 
@@ -42,14 +41,12 @@ local VUHDO_PANEL_SETUP;
 local VUHDO_getTargetBarRoleIcon;
 local VUHDO_POWER_TYPE_COLORS;
 local VUHDO_BUTTON_CACHE;
-local VUHDO_getUnitZoneName;
 local VUHDO_getDisplayUnit;
 local VUHDO_textColor;
-local VUHDO_isTargetInRange;
-
-local sOOROpacity;
+local VUHDO_isInRange;
 
 function VUHDO_customTargetInitLocalOverrides()
+
 	VUHDO_CUSTOM_INFO = _G["VUHDO_CUSTOM_INFO"];
 	VUHDO_CLASS_IDS = _G["VUHDO_CLASS_IDS"];
 
@@ -64,16 +61,10 @@ function VUHDO_customTargetInitLocalOverrides()
 	VUHDO_PANEL_SETUP = _G["VUHDO_PANEL_SETUP"];
 	VUHDO_getTargetBarRoleIcon = _G["VUHDO_getTargetBarRoleIcon"];
 	VUHDO_POWER_TYPE_COLORS =  _G["VUHDO_POWER_TYPE_COLORS"];
-	VUHDO_getUnitZoneName = _G["VUHDO_getUnitZoneName"];
 	VUHDO_getDisplayUnit = _G["VUHDO_getDisplayUnit"];
 	VUHDO_textColor = _G["VUHDO_textColor"];
-	VUHDO_isTargetInRange = _G["VUHDO_isTargetInRange"];
+	VUHDO_isInRange = _G["VUHDO_isInRange"];
 
-	if VUHDO_PANEL_SETUP["BAR_COLORS"]["OUTRANGED"]["useOpacity"] then
-		sOOROpacity = VUHDO_PANEL_SETUP["BAR_COLORS"]["OUTRANGED"]["O"];
-	else
-		sOOROpacity = 1;
-	end
 end
 ------------------------------------------------------------------
 
@@ -274,7 +265,7 @@ function VUHDO_updateTargetBars(aUnit)
 	for _, tButton in pairs(tAllButtons) do
 		if VUHDO_PANEL_SETUP[VUHDO_BUTTON_CACHE[tButton]]["SCALING"]["showTarget"] then
 			tTargetButton = VUHDO_getTargetButton(tButton);
-			VUHDO_customizeTargetBar(tTargetButton, tTarget, VUHDO_isTargetInRange(tTarget));
+			VUHDO_customizeTargetBar(tTargetButton, tTarget, VUHDO_isInRange(tTarget));
 			tTargetButton:SetAlpha(1);
 			VUHDO_rememberTargetButton(tTarget, tTargetButton);
 		end
@@ -293,7 +284,7 @@ function VUHDO_updateTargetBars(aUnit)
 	for _, tButton in pairs(tAllButtons) do
 		if VUHDO_PANEL_SETUP[VUHDO_BUTTON_CACHE[tButton]]["SCALING"]["showTot"] then
 			tTotButton = VUHDO_getTotButton(tButton);
-			VUHDO_customizeTargetBar(tTotButton, tTargetOfTarget, VUHDO_isTargetInRange(tTargetOfTarget));
+			VUHDO_customizeTargetBar(tTotButton, tTargetOfTarget, VUHDO_isInRange(tTargetOfTarget));
 			tTotButton:SetAlpha(1);
 			VUHDO_rememberTargetButton(tTargetOfTarget, tTotButton);
 		end
@@ -328,7 +319,7 @@ local function VUHDO_updateTargetHealth(aUnit, aTargetUnit)
 	if not VUHDO_IN_RAID_TARGETS[aTargetUnit] then
 		VUHDO_fillCustomInfo(aTargetUnit);
 		for _, tButton in pairs(tAllButtons) do
-			VUHDO_customizeTargetBar(VUHDO_getTargetButton(tButton), aTargetUnit, VUHDO_isTargetInRange(aTargetUnit));
+			VUHDO_customizeTargetBar(VUHDO_getTargetButton(tButton), aTargetUnit, VUHDO_isInRange(aTargetUnit));
 		end
 	end
 
@@ -344,7 +335,7 @@ local function VUHDO_updateTargetHealth(aUnit, aTargetUnit)
 	elseif VUHDO_IN_RAID_TARGETS[tTotUnit] == nil and UnitExists(tTotUnit) then
 		VUHDO_fillCustomInfo(tTotUnit);
 		for _, tButton in pairs(tAllButtons) do
-			VUHDO_customizeTargetBar(VUHDO_getTotButton(tButton), tTotUnit, VUHDO_isTargetInRange(tTotUnit));
+			VUHDO_customizeTargetBar(VUHDO_getTotButton(tButton), tTotUnit, VUHDO_isInRange(tTotUnit));
 		end
 	end
 end

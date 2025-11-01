@@ -3,9 +3,9 @@ local L = LibStub("AceLocale-3.0"):NewLocale(AddonName, "ruRU")
 if not L then return end
 
 -- timer formats
-L.DayFormat = "%dd"
-L.HourFormat = "%dч"
-L.MinuteFormat = "%dм"
+L.DaysFormat = "%dd"
+L.HoursFormat = "%dч"
+L.MinutesFormat = "%dм"
 L.MMSSFormat = "%d:%02d"
 L.SecondsFormat = "%d"
 L.TenthsFormat = "%0.1f"
@@ -21,7 +21,7 @@ L.Shine = "Сияние"
 -- effect tooltips
 L.ActivateTip = [[Применяет эффект срабатывания способности к значку перезарядки.]]
 L.AlertTip = [[Пульсирует значок завершенного восстановления в центре экрана.]]
-L.PulseTip = [[Пульсирует значок восстановления .]]
+L.PulseTip = [[Пульсирует значок восстановления.]]
 
 -- other
 L.ConfigMissing = "%s не удалось загрузить, поскольку этот аддон %s"

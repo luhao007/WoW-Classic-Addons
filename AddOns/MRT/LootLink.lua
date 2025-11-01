@@ -5,6 +5,10 @@ local ELib,L = ExRT.lib,ExRT.L
 
 local VMRT = nil
 
+local GetItemInfo, GetItemInfoInstant  = C_Item and C_Item.GetItemInfo or GetItemInfo,  C_Item and C_Item.GetItemInfoInstant or GetItemInfoInstant
+local SendChatMessage = C_ChatInfo and C_ChatInfo.SendChatMessage or SendChatMessage
+
+
 module.db.cache = {}
 
 function module.main:ADDON_LOADED()

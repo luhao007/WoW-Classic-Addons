@@ -44,9 +44,21 @@ fujiF.setF.HideShijiu:SetScript("OnClick", function (self)
 end)
 local function ActionBar_HideBarBG()
 	if PIGA["PigLayout"]["ActionBar"]["HideBarBG"] then
-		MainMenuBarTexture0:Hide();MainMenuBarTexture1:Hide();
+		MainMenuBarTexture0:SetAlpha(0);
+		MainMenuBarTexture1:SetAlpha(0);
+		StanceBarLeft:SetAlpha(0);
+		StanceBarRight:SetAlpha(0);
+		StanceBarMiddle:SetAlpha(0);
+		SlidingActionBarTexture0:SetAlpha(0);
+		SlidingActionBarTexture1:SetAlpha(0);
 	else
-		MainMenuBarTexture0:Show();MainMenuBarTexture1:Show();
+		MainMenuBarTexture0:SetAlpha(1);
+		MainMenuBarTexture1:SetAlpha(1);
+		StanceBarLeft:SetAlpha(1);
+		StanceBarRight:SetAlpha(1);
+		StanceBarMiddle:SetAlpha(1);
+		SlidingActionBarTexture0:SetAlpha(1);
+		SlidingActionBarTexture1:SetAlpha(1);
 	end
 end
 ActionBar_HideBarBG()
@@ -270,15 +282,22 @@ local function ActionBar_Layout()
 		end
 	end);
 	local function Update_BarPoint(BarUI)
+		--print(StanceBarFrame:IsVisible(),MultiCastSummonSpellButton:IsVisible())
 		local Xoffset= 10
-		if BarUI==PetActionButton1 and StanceBarFrame:IsShown() then
-			local sswww=StanceButton1:GetWidth()
-			Xoffset= Xoffset+sswww*3+20
+		if BarUI==PetActionButton1 then
+			if StanceBarFrame:IsVisible() then
+				local sswww=StanceButton1:GetWidth()
+				Xoffset= Xoffset+sswww*3+20
+			elseif MultiCastSummonSpellButton and MultiCastSummonSpellButton:IsVisible() then
+				local sswww=MultiCastSummonSpellButton:GetWidth()
+				Xoffset= Xoffset+sswww*6+20
+			end
 		end
 		local barOpen = IS_bar34Show()
 		if BarUI==MultiCastActionBarFrame then
 			MultiCastActionBarFrame:SetMovable(true)
 		end
+		BarUI:ClearAllPoints();
 		if PIGA["PigLayout"]["ActionBar"]["Layout"]==1 and barOpen[5] then
 			BarUI:SetPoint("BOTTOMLEFT", MultiBarLeftButton1,"TOPLEFT", Xoffset, 6)
 		elseif PIGA["PigLayout"]["ActionBar"]["Layout"]==2 or PIGA["PigLayout"]["ActionBar"]["Layout"]==5 and barOpen[3] then
@@ -429,12 +448,11 @@ fujiF.setF:HookScript("OnShow", function(self)
 	fujiF.setF.Update_Set()
 end)
 --=====
-local WWW=26
+local HHH=22
+local WWW=HHH*0.84
 local Old_MicroBut = PIGCopyTable(MICRO_BUTTONS)
-local Diy_MicroBut = {"MacroMicroButton","AddonsMicroButton","MainMenuBarBackpackButton"}
-if PIG_MaxTocversion(40000) then
-	table.insert(Diy_MicroBut,1,"EJMicroButton")
-end
+local Diy_MicroBut = {"MacroMicroButton","MainMenuBarBackpackButton"}
+
 --重建菜单列表
 local GameMenu = {}
 local PIG_MICRO_BUTTONS = {}
@@ -446,7 +464,19 @@ for i=1,#Old_MicroBut do
 		if Old_MicroBut[i]=="SocialsMicroButton" then
 			pigmname="FriendsMicroButton"
 		end
+		if PIG_MaxTocversion(40000) then
+			if Old_MicroBut[i]=="MainMenuMicroButton" then
+				table.insert(PIG_MICRO_BUTTONS,"PIG_EJMicroButton");
+				GameMenu["PIG_EJMicroButton"]="EJMicroButton";
+			end
+		end
 		table.insert(PIG_MICRO_BUTTONS,"PIG_"..pigmname)
+		if PIG_MaxTocversion(20000) then
+			if Old_MicroBut[i]=="GuildMicroButton" then
+				table.insert(PIG_MICRO_BUTTONS,"PIG_LFGMicroButton");
+				GameMenu["PIG_LFGMicroButton"]="LFGMicroButton"
+			end
+		end
 		GameMenu["PIG_"..pigmname]=pigmname
 		pigmname=nil
 	end	
@@ -468,11 +498,10 @@ local BlizzardIcon = {
 	["PIG_MainMenuMicroButton"]={Normal="hud-microbutton-MainMenu-Up",Pushed="hud-microbutton-MainMenu-Down",Disabled="hud-microbutton-MainMenu-Disabled"},
 	["PIG_EJMicroButton"]={Normal="hud-microbutton-EJ-Up",Pushed="hud-microbutton-EJ-Down",Disabled="hud-microbutton-EJ-Disabled"},
 	["PIG_StoreMicroButton"]={Normal="hud-microbutton-BStore-Up",Pushed="hud-microbutton-BStore-Down",Disabled="hud-microbutton-BStore-Disabled"},
-	["PIG_CharacterMicroButton"]={Normal="hud-microbutton-Character-Up",Pushed="hud-microbutton-Character-Down",Disabled="",icon={"MicroButtonPortrait",{WWW*0.17,-WWW*0.16,-WWW*0.162,WWW*0.16},nil,"groupfinder-waitdot"}},
-	["PIG_PVPMicroButton"]={Normal="hud-microbutton-Character-Up",Pushed="hud-microbutton-Character-Down",Disabled="",icon={"PVPMicroButtonTexture",{WWW*0.18,-WWW*0.23,-WWW*0.19,WWW*0.17},"communities-create-button-wow-alliance"}},
-	["PIG_MacroMicroButton"]={Normal="hud-microbutton-Character-Up",Pushed="hud-microbutton-Character-Down",Disabled="",icon={"diy",{WWW*0.18,-WWW*0.26,-WWW*0.16,WWW*0.18},136377}},
-	["PIG_AddonsMicroButton"]={Normal="hud-microbutton-Character-Up",Pushed="hud-microbutton-Character-Down",Disabled="",icon={"diy",{WWW*0.12,-WWW*0.18,-WWW*0.11,WWW*0.16},130781}},
-	["PIG_MainMenuBarBackpackButton"]={Normal="hud-microbutton-Character-Up",Pushed="hud-microbutton-Character-Down",Disabled="",icon={"MainMenuBarBackpackButtonIconTexture",{WWW*0.12,-WWW*0.11,-WWW*0.11,WWW*0.11}}},
+	["PIG_CharacterMicroButton"]={Normal="hud-microbutton-Character-Up",Pushed="hud-microbutton-Character-Down",Disabled="",icon={"MicroButtonPortrait",{WWW*0.17,-HHH*0.14,-WWW*0.162,HHH*0.14},nil,"groupfinder-waitdot"}},
+	["PIG_PVPMicroButton"]={Normal="hud-microbutton-Character-Up",Pushed="hud-microbutton-Character-Down",Disabled="",icon={"PVPMicroButtonTexture",{WWW*0.22,-HHH*0.18,-WWW*0.20,HHH*0.17},"communities-create-button-wow-alliance"}},
+	["PIG_MacroMicroButton"]={Normal="hud-microbutton-Character-Up",Pushed="hud-microbutton-Character-Down",Disabled="",icon={"diy",{WWW*0.22,-HHH*0.19,-WWW*0.19,HHH*0.18},136377}},
+	["PIG_MainMenuBarBackpackButton"]={Normal="hud-microbutton-Character-Up",Pushed="hud-microbutton-Character-Down",Disabled="",icon={"MainMenuBarBackpackButtonIconTexture",{WWW*0.12,-HHH*0.07,-WWW*0.11,HHH*0.09}}},
 }
 local BlizzardIconSet = {
 	["PIG_FriendsMicroButton"]="socialqueuing-icon-group",
@@ -547,10 +576,10 @@ function fujiF.setMicroF.AnchorPoint:PIGDownMenu_SetValue(value,arg1)
 	PIGA["PigLayout"]["MicroMenu"]["AnchorPoint"]=arg1
 	PIGA["PigLayout"]["MicroMenu"]["AnchorPointX"]=0
 	PIGA["PigLayout"]["MicroMenu"]["AnchorPointY"]=0
-	fujiF.UpdateUIScaleXY()
+	fujiF.UpdateUIScaleXY(true)
 	PIGCloseDropDownMenus()
 end
-fujiF.setMicroF.MoveTime = PIGCheckbutton(fujiF.setMicroF,{"LEFT",fujiF.setMicroF.AnchorPoint,"RIGHT",40,0},{"移动小地图时间到菜单中间"})
+fujiF.setMicroF.MoveTime = PIGCheckbutton(fujiF.setMicroF,{"LEFT",fujiF.setMicroF.AnchorPoint,"RIGHT",40,0},{"移动小地图时间","当微型菜单在顶部时移动小地图时间到菜单中间"})
 fujiF.setMicroF.MoveTime:SetScript("OnClick", function (self)
 	if self:GetChecked() then
 		PIGA["PigLayout"]["MicroMenu"]["MoveTime"]=true;
@@ -581,6 +610,7 @@ for i=1,Old_MicroButNum do
 	pindaol.icon:SetPoint("LEFT",pindaol,"RIGHT",0,0);
 	fujiF.setMicroF.ListBut[i]=pindaol
 	if i==1 then
+		table.insert(PigLayoutFun.JGUIlist,{PIG_MICRO_BUTTONS[i],"微型菜单"})
 		pindaol:SetPoint("TOPLEFT",fujiF.setMicroF,"TOPLEFT",20,-220);
 	elseif i==11 then
 		pindaol:SetPoint("TOPLEFT",fujiF.setMicroF.ListBut[1],"BOTTOMLEFT",0,-10);
@@ -631,9 +661,15 @@ end
 fujiF.setMicroF:HookScript("OnShow", function(self)
 	self.Scale:PIGSetValue(PIGA["PigLayout"]["MicroMenu"]["Scale"])
 	self.Interval:PIGSetValue(PIGA["PigLayout"]["MicroMenu"]["Interval"])
-	self.AnchorPoint:PIGDownMenu_SetText(xyListName[PIGA["PigLayout"]["MicroMenu"]["AnchorPoint"]])
-	self.AnchorPointX:PIGSetValue(PIGA["PigLayout"]["MicroMenu"]["AnchorPointX"])
-	self.AnchorPointY:PIGSetValue(PIGA["PigLayout"]["MicroMenu"]["AnchorPointY"])
+	if PIGA["PigLayout"]["TopBar"]["JG"] and PIGA["PigLayout"]["TopBar"]["JG"][New_PIG_MICRO_BUTTONS[1]] then
+		self.AnchorPoint:Disable()
+		self.AnchorPointX:Disable()
+		self.AnchorPointY:Disable()
+	else
+		self.AnchorPoint:PIGDownMenu_SetText(xyListName[PIGA["PigLayout"]["MicroMenu"]["AnchorPoint"]])
+		self.AnchorPointX:PIGSetValue(PIGA["PigLayout"]["MicroMenu"]["AnchorPointX"])
+		self.AnchorPointY:PIGSetValue(PIGA["PigLayout"]["MicroMenu"]["AnchorPointY"])
+	end
 	self.MoveTime:SetChecked(PIGA["PigLayout"]["MicroMenu"]["MoveTime"])
 	for i=1,Old_MicroButNum do
 		fujiF.setMicroF.ListBut[i]:SetChecked(not PIGA["PigLayout"]["MicroMenu"]["HideBut"][PIG_MICRO_BUTTONS[i]])
@@ -731,7 +767,7 @@ local UpdateMicroButFun = {
 local MicroButLoad = {
 	["PIG_FriendsMicroButton"]=function()
 		local bizbut = _G[GameMenu["PIG_FriendsMicroButton"]]
-		bizbut.TextureXY={-WWW*0.02,-WWW*0.05,WWW*0.1,WWW*0.05}
+		bizbut.TextureXY={-WWW*0.02,-HHH*0.05,WWW*0.1,HHH*0.05}
 		SetTextureXY(bizbut,bizbut:GetNormalTexture(),bizbut.TextureXY)
 		SetTextureXY(bizbut,bizbut:GetPushedTexture(),bizbut.TextureXY)
 		SetTextureXY(bizbut,bizbut:GetDisabledTexture(),bizbut.TextureXY)
@@ -754,6 +790,35 @@ local MicroButLoad = {
 				GameTooltip:Show();
 			end
 		end)
+	end,
+	["PIG_LFGMicroButton"]=function()
+		if PIG_MaxTocversion(20000) then
+			EventUtil.ContinueOnAddOnLoaded("Blizzard_GroupFinder_VanillaStyle", function()
+				local bizbut = _G[GameMenu["PIG_LFGMicroButton"]]
+				bizbut:RegisterForClicks("LeftButtonUp","RightButtonUp")
+				bizbut:HookScript("OnClick", function (self,button)
+					if self.LeftClickFun and button=="LeftButton" then
+						self.LeftClickFun(self,button,true)
+					else
+						ToggleLFGParentFrame();
+					end
+				end);
+				bizbut.tooltipText = MicroButtonTooltipText(LFG_BUTTON, "TOGGLEGROUPFINDER");
+				bizbut.newbieText = NEWBIE_TOOLTIP_LFGPARENT;
+				bizbut:HookScript("OnEnter", function(self)
+					GameTooltip_AddNewbieTip(self, self.tooltipText, 1.0, 1.0, 1.0, self.newbieText);
+				end)
+			end)
+		elseif IsAddOnLoaded("MeetingHorn") then
+			local bizbut = _G[GameMenu["PIG_LFGMicroButton"]]
+			local LeftClickFun = MeetingHornDataBroker:GetScript("OnClick")
+			bizbut:HookScript("OnMouseUp", function (self,button)
+				if button=="LeftButton" then
+					PVEFrame_ToggleFrame();
+					LeftClickFun()
+				end
+			end);
+		end
 	end,
 	["PIG_EJMicroButton"]=function()
 		local bizbut = _G[GameMenu["PIG_EJMicroButton"]]
@@ -792,27 +857,10 @@ local MicroButLoad = {
 		bizbut:SetAttribute("type", "macro")
 		bizbut:SetAttribute("macrotext", "/macro")
 	end,
-	["PIG_AddonsMicroButton"]=function()
-		local bizbut = _G[GameMenu["PIG_AddonsMicroButton"]]
-		bizbut.tooltipText = MicroButtonTooltipText(ADDONS..L["CONFIG_TABNAME"],"");
-		bizbut.newbieText = "载入你已保存的插件状态配置";
-		bizbut:HookScript("OnEnter", function(self)
-			GameTooltip_SetDefaultAnchor(GameTooltip, self);
-			GameTooltip_AddNewbieTip(self, self.tooltipText, 1.0, 1.0, 1.0, self.newbieText);
-		end)
-		bizbut:SetupMenu(function(dropdown, rootDescription)
-			rootDescription:SetTag("PIG_MENU_ADDONSMICROBUT");
-			for adi=1,#PIGA["FramePlus"]["AddonStatus"] do
-				rootDescription:CreateButton(string.format(GUILDBANK_NAME_CONFIG,LOAD_ADDON)..PIGA["FramePlus"]["AddonStatus"][adi][1],function() AddonList.PIG_loadAddon_(adi) end);
-			end
-			rootDescription:CreateButton(RELOADUI,function() ReloadUI(); end);
-			rootDescription:CreateButton(EDIT..ADDONS..L["CONFIG_TABNAME"],function() if InCombatLockdown() then PIGTopMsg:add(ERR_NOT_IN_COMBAT) return end ShowUIPanel(AddonList) end);
-		end);
-	end,
 }
 local factionGroup = UnitFactionGroup("player")
 if factionGroup=="Horde" then
-	BlizzardIcon.PIG_PVPMicroButton.icon[2],BlizzardIcon.PIG_PVPMicroButton.icon[3]={WWW*0.18,-WWW*0.23,-WWW*0.19,WWW*0.17},"communities-create-button-wow-horde"
+	BlizzardIcon.PIG_PVPMicroButton.icon[2],BlizzardIcon.PIG_PVPMicroButton.icon[3]={WWW*0.18,-HHH*0.23,-WWW*0.19,HHH*0.17},"communities-create-button-wow-horde"
 end
 function fujiF.add_MicroMenu()
 	if not PIGA["PigLayout"]["MicroMenu"]["Open"] then return end
@@ -821,11 +869,12 @@ function fujiF.add_MicroMenu()
 	--处理系统原生
 	if not PIGA["PigLayout"]["MicroMenu"]["HideBut"]["PIG_FriendsMicroButton"] then
 		FriendsMicroButtonCount:SetTextColor(0, 1, 0, 1);
-		FriendsMicroButtonCount:SetFont(ChatFontNormal:GetFont(), 14,"OUTLINE")
+		FriendsMicroButtonCount:SetFont(ChatFontNormal:GetFont(), 12,"OUTLINE")
 		FriendsMicroButtonCount:ClearAllPoints();
-		FriendsMicroButtonCount:SetPoint("BOTTOMRIGHT",FriendsMicroButton,"BOTTOMRIGHT",0,3);
+		FriendsMicroButtonCount:SetPoint("BOTTOMRIGHT",FriendsMicroButton,"BOTTOMRIGHT",1,1);
 	end
 	if not PIGA["PigLayout"]["MicroMenu"]["HideBut"]["PIG_MainMenuBarBackpackButton"] then
+		MainMenuBarBackpackButton.PigLayoutOpen=true
 		local regions = {MainMenuBarBackpackButton:GetRegions()}
 		for _,v1 in pairs(regions) do
 			if v1~=MainMenuBarBackpackButtonIconTexture and v1~=MainMenuBarBackpackButtonCount then
@@ -835,11 +884,12 @@ function fujiF.add_MicroMenu()
 		MainMenuBarBackpackButtonIconTexture:SetDrawLayer("OVERLAY", 5)
 		MainMenuBarBackpackButtonCount:SetDrawLayer("OVERLAY", 7)
 		MainMenuBarBackpackButtonCount:ClearAllPoints();
-		MainMenuBarBackpackButtonCount:SetPoint("BOTTOMRIGHT",MainMenuBarBackpackButton,"BOTTOMRIGHT",0,3);
+		MainMenuBarBackpackButtonCount:SetPoint("BOTTOMRIGHT",MainMenuBarBackpackButton,"BOTTOMRIGHT",1,1);
+		MainMenuBarBackpackButton.Count:SetText(MainMenuBarBackpackButton.freeSlots);
+		MainMenuBarBackpackButton.Count:SetFont(ChatFontNormal:GetFont(), 12,"OUTLINE")
 		hooksecurefunc("MainMenuBarBackpackButton_UpdateFreeSlots", function()
 			MainMenuBarBackpackButton.Count:SetText(MainMenuBarBackpackButton.freeSlots);
 		end)
-		MainMenuBarBackpackButton.Count:SetText(MainMenuBarBackpackButton.freeSlots);
 	else
 		MainMenuBarBackpackButton:SetParent(UIParent)
 		MainMenuBarBackpackButton:SetScale(PIGA["PigLayout"]["MicroMenu"]["Scale"])
@@ -874,8 +924,8 @@ function fujiF.add_MicroMenu()
 		_G[Old_MicroBut[i]]:ClearAllPoints();
 		if _G[Old_MicroBut[i].."Flash"] then
 			_G[Old_MicroBut[i].."Flash"]:ClearAllPoints();
-			_G[Old_MicroBut[i].."Flash"]:SetPoint("TOPLEFT",_G[Old_MicroBut[i]],"TOPLEFT",-WWW*0.11,WWW*0.12);
-			_G[Old_MicroBut[i].."Flash"]:SetPoint("BOTTOMRIGHT",_G[Old_MicroBut[i]],"BOTTOMRIGHT",WWW*1.23,-WWW*0.84);
+			_G[Old_MicroBut[i].."Flash"]:SetPoint("TOPLEFT",_G[Old_MicroBut[i]],"TOPLEFT",-WWW*0.11,HHH*0.12);
+			_G[Old_MicroBut[i].."Flash"]:SetPoint("BOTTOMRIGHT",_G[Old_MicroBut[i]],"BOTTOMRIGHT",WWW*1.23,-HHH*0.84);
 		end
 	end
 	hooksecurefunc("UpdateMicroButtons", function()
@@ -896,14 +946,18 @@ function fujiF.add_MicroMenu()
 	end
 	--移动小地图时间
 	local TimeManagerWWW = 50
-	if PIGA["PigLayout"]["MicroMenu"]["MoveTime"] then
-		local Butyiban=floor(#New_PIG_MICRO_BUTTONS*0.5)
-		table.insert(New_PIG_MICRO_BUTTONS,Butyiban+1,"TimeManagerClockButton")
-		EventUtil.ContinueOnAddOnLoaded("Blizzard_TimeManager", function()
+	local function Get_IsTimeManager()
+		for i=1,#New_PIG_MICRO_BUTTONS do
+			if New_PIG_MICRO_BUTTONS[i]=="TimeManagerClockButton" then
+				return true,i
+			end
+		end
+		return false
+	end
+	local function Update_TimeManager()
+		if PIGA["PigLayout"]["MicroMenu"]["MoveTime"] and PIGA["PigLayout"]["MicroMenu"]["AnchorPoint"]=="TOP" then
 			TimeManagerClockButton:SetParent(UIParent)
 			TimeManagerClockButton:SetFrameStrata("MEDIUM")
-			TimeManagerClockButton:ClearAllPoints()
-			TimeManagerClockButton:SetPoint("TOP", UIParent, "TOP", 0, 0)
 			local regions = {TimeManagerClockButton:GetRegions()}
 			for k,v in pairs(regions) do
 				if not v:GetName() then
@@ -914,11 +968,14 @@ function fujiF.add_MicroMenu()
 			Create.PIGSetFont(TimeManagerClockTicker,16,PIGA["PigLayout"]["TopBar"]["FontMiaobian"])
 			TimeManagerClockTicker:ClearAllPoints()
 			TimeManagerClockTicker:SetAllPoints(TimeManagerClockButton)
-		end)
+		end
 	end
+	EventUtil.ContinueOnAddOnLoaded("Blizzard_TimeManager", function()
+		Update_TimeManager()
+	end)
 	for i=1,#New_PIG_MICRO_BUTTONS do
 		local MicroBut=CreateFrame("Frame", New_PIG_MICRO_BUTTONS[i], UIParent);
-		MicroBut:SetSize(WWW,WWW*1.14);
+		MicroBut:SetSize(WWW,HHH);
 		local BlizzardName = GameMenu[New_PIG_MICRO_BUTTONS[i]]
 		local BlizzardBut = _G[BlizzardName]
 		if BlizzardBut then
@@ -928,8 +985,6 @@ function fujiF.add_MicroMenu()
 			local MicroButType = {"Button",nil}--"SecureHandlerClickTemplate"
 			if New_PIG_MICRO_BUTTONS[i]=="PIG_MacroMicroButton" then
 				MicroButType[2]="SecureActionButtonTemplate"
-			elseif New_PIG_MICRO_BUTTONS[i]=="PIG_AddonsMicroButton" then
-				MicroButType[1]="DropdownButton"
 			end
 			BlizzardBut = CreateFrame(MicroButType[1],BlizzardName,MicroBut, MicroButType[2]);
 			BlizzardBut:SetScript("OnLeave", function ()
@@ -1012,25 +1067,40 @@ function fujiF.add_MicroMenu()
 			end
 		end);
 	end
-	function fujiF.UpdateUIScaleXY()
+	function fujiF.UpdateUIScaleXY(set)
 		if InCombatLockdown() then PIG_OptionsUI:ErrorMsg(ERR_NOT_IN_COMBAT,"R") return end
+		local TimeOK,timeid = Get_IsTimeManager()
+		if PIGA["PigLayout"]["MicroMenu"]["MoveTime"] and PIGA["PigLayout"]["MicroMenu"]["AnchorPoint"]=="TOP" then
+			if not TimeOK then
+				table.insert(New_PIG_MICRO_BUTTONS,(#New_PIG_MICRO_BUTTONS*0.5)+1,"TimeManagerClockButton")
+			end
+		else
+			if TimeOK then table.remove(New_PIG_MICRO_BUTTONS,timeid) end
+		end
+		if set then Update_TimeManager() end
 		local New_num =#New_PIG_MICRO_BUTTONS
 		for i=1,New_num do
 			if not PIGA["PigLayout"]["MicroMenu"]["HideBut"][New_PIG_MICRO_BUTTONS[i]] then
 				local MicroBut = _G[New_PIG_MICRO_BUTTONS[i]]
-				MicroBut:ClearAllPoints();
+				
 				if i==1 then
 					local ewaixex=0
 					if PIGA["PigLayout"]["MicroMenu"]["AnchorPoint"]=="TOP" or PIGA["PigLayout"]["MicroMenu"]["AnchorPoint"]=="BOTTOM" then
 						ewaixex =-(New_num-1)*0.5*(WWW+PIGA["PigLayout"]["MicroMenu"]["Interval"])
-						if PIGA["PigLayout"]["MicroMenu"]["MoveTime"] then
+						if PIGA["PigLayout"]["MicroMenu"]["AnchorPoint"]=="TOP" and PIGA["PigLayout"]["MicroMenu"]["MoveTime"] then
 							ewaixex =ewaixex-(TimeManagerWWW-WWW)*0.5
 						end
 					elseif PIGA["PigLayout"]["MicroMenu"]["AnchorPoint"]=="TOPRIGHT" or PIGA["PigLayout"]["MicroMenu"]["AnchorPoint"]=="BOTTOMRIGHT" then
 						ewaixex =-(New_num-1)*(WWW+PIGA["PigLayout"]["MicroMenu"]["Interval"])
 					end
-					MicroBut:SetPoint(PIGA["PigLayout"]["MicroMenu"]["AnchorPoint"],UIParent,PIGA["PigLayout"]["MicroMenu"]["AnchorPoint"],ewaixex+PIGA["PigLayout"]["MicroMenu"]["AnchorPointX"],PIGA["PigLayout"]["MicroMenu"]["AnchorPointY"]);
+					if PIGA["PigLayout"]["TopBar"]["JG"] and PIGA["PigLayout"]["TopBar"]["JG"][New_PIG_MICRO_BUTTONS[1]] then
+						MicroBut.banW=ewaixex
+					else
+						MicroBut:ClearAllPoints();
+						MicroBut:SetPoint(PIGA["PigLayout"]["MicroMenu"]["AnchorPoint"],UIParent,PIGA["PigLayout"]["MicroMenu"]["AnchorPoint"],ewaixex+PIGA["PigLayout"]["MicroMenu"]["AnchorPointX"],PIGA["PigLayout"]["MicroMenu"]["AnchorPointY"]);
+					end
 				else
+					MicroBut:ClearAllPoints();
 					MicroBut:SetPoint("LEFT",_G[New_PIG_MICRO_BUTTONS[i-1]],"RIGHT",PIGA["PigLayout"]["MicroMenu"]["Interval"],0);
 				end
 				MicroBut:SetScale(PIGA["PigLayout"]["MicroMenu"]["Scale"])

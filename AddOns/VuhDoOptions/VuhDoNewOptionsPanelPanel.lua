@@ -47,11 +47,6 @@ local tActivePanel;
 local tRefreshModels;
 local tContentPane;
 local tAllPanels;
-local tSubModel;
-local tSubComps;
-local tSubSubComps;
-local tModel;
-local tSubPanels;
 local tValue;
 function VUHDO_newOptionsApplyToAllOnClick()
 	tActivePanel = nil;

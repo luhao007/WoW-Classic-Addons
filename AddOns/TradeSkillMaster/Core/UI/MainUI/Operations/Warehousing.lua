@@ -6,10 +6,43 @@
 
 local TSM = select(2, ...) ---@type TSM
 local Warehousing = TSM.MainUI.Operations:NewPackage("Warehousing")
-local L = TSM.Include("Locale").GetTable()
-local UIElements = TSM.Include("UI.UIElements")
-local UIUtils = TSM.Include("UI.UIUtils")
-local private = { currentOperationName = nil }
+local L = TSM.Locale.GetTable()
+local UIElements = TSM.LibTSMUI:Include("Util.UIElements")
+local UIUtils = TSM.LibTSMUI:Include("Util.UIUtils")
+local WarehousingOperation = TSM.LibTSMSystem:Include("WarehousingOperation")
+local private = {
+	currentOperationName = nil,
+}
+local MOVE_QUANTITY_VALIDATE_CONTEXT = {
+	isNumber = true,
+}
+local STACK_SIZE_VALIDATE_CONTEXT = {
+	isNumber = true,
+}
+local KEEP_BAG_QUANTITY_VALIDATE_CONTEXT = {
+	isNumber = true,
+}
+local KEEP_BANK_QUANTITY_VALIDATE_CONTEXT = {
+	isNumber = true,
+}
+local RESTOCK_QUANTITY_VALIDATE_CONTEXT = {
+	isNumber = true,
+}
+local RESTOCK_STACK_SIZE_VALIDATE_CONTEXT = {
+	isNumber = true,
+}
+local RESTOCK_KEEP_BANK_QUANTITY_VALIDATE_CONTEXT = {
+	isNumber = true,
+}
+local SETTING_TOOLTIPS = {
+	moveQuantity = L["The number of items to move in or out of the bank via the Bank UI."],
+	stackSize = L["Moves items in or out of the bank in the defined stack size. Set to 0 to disable."],
+	keepBagQuantity = L["The number of items to keep in the character's bags when moving items to the bank."],
+	keepBankQuantity = L["The number of items to keep in the bank when moving items to the character's bags."],
+	restockQuantity = L["The maximum number of items to restock to a character's bags. Set this to 0 in order to always move the set 'Move quantity' value."],
+	restockStackSize = L["Only move items in the defined stack size i.e stack of 5 for destroying. Set to 0 to disable."],
+	restockKeepBankQuantity = L["The number of items to keep in the bank when moving items to the characters bags."],
+}
 
 
 
@@ -18,6 +51,10 @@ local private = { currentOperationName = nil }
 -- ============================================================================
 
 function Warehousing.OnInitialize()
+	MOVE_QUANTITY_VALIDATE_CONTEXT.minValue, MOVE_QUANTITY_VALIDATE_CONTEXT.maxValue = WarehousingOperation.GetMinMaxValues("moveQuantity")
+	STACK_SIZE_VALIDATE_CONTEXT.minValue, STACK_SIZE_VALIDATE_CONTEXT.maxValue = WarehousingOperation.GetMinMaxValues("stackSize")
+	KEEP_BAG_QUANTITY_VALIDATE_CONTEXT.minValue, KEEP_BAG_QUANTITY_VALIDATE_CONTEXT.maxValue = WarehousingOperation.GetMinMaxValues("keepBagQuantity")
+	KEEP_BANK_QUANTITY_VALIDATE_CONTEXT.minValue, KEEP_BANK_QUANTITY_VALIDATE_CONTEXT.maxValue = WarehousingOperation.GetMinMaxValues("keepBankQuantity")
 	TSM.MainUI.Operations.RegisterModule("Warehousing", private.GetWarehousingOperationSettings)
 end
 
@@ -33,77 +70,29 @@ function private.GetWarehousingOperationSettings(operationName)
 	return UIElements.New("ScrollFrame", "settings")
 		:SetPadding(8, 8, 8, 0)
 		:AddChild(TSM.MainUI.Operations.CreateExpandableSection("Warehousing", "moveSettings", L["Move Quantity Options"], L["Set how items are moved out of the bank."])
-			:AddChild(private.CreateEnabledSettingLine("moveQuantity", L["Set move quantity"], L["Quantity to move"], 0, 50000, true))
-			:AddChild(private.CreateEnabledSettingLine("stackSize", L["Set stack size"], L["Stack size multiple"], 0, 200, true))
-			:AddChild(private.CreateEnabledSettingLine("keepBagQuantity", L["Set keep in bags quantity"], L["Keep in bags quantity"], 0, 50000, true))
-			:AddChild(private.CreateEnabledSettingLine("keepBankQuantity", L["Set keep in bank quantity"], L["Keep in bank quantity"], 0, 50000))
+			:AddChild(TSM.MainUI.Operations.CreateLinkedPriceInput("moveQuantity", L["Quantity to move"], MOVE_QUANTITY_VALIDATE_CONTEXT, nil, nil, SETTING_TOOLTIPS.moveQuantity)
+				:SetMargin(0, 0, 0, 12)
+			)
+			:AddChild(TSM.MainUI.Operations.CreateLinkedPriceInput("stackSize", L["Stack size multiple"], STACK_SIZE_VALIDATE_CONTEXT, nil, nil, SETTING_TOOLTIPS.stackSize)
+				:SetMargin(0, 0, 0, 12)
+			)
+			:AddChild(TSM.MainUI.Operations.CreateLinkedPriceInput("keepBagQuantity", L["Keep in bags quantity"], KEEP_BAG_QUANTITY_VALIDATE_CONTEXT, nil, nil, SETTING_TOOLTIPS.keepBagQuantity)
+				:SetMargin(0, 0, 0, 12)
+			)
+			:AddChild(TSM.MainUI.Operations.CreateLinkedPriceInput("keepBankQuantity", L["Keep in bank quantity"], KEEP_BANK_QUANTITY_VALIDATE_CONTEXT, nil, nil, SETTING_TOOLTIPS.keepBankQuantity)
+				:SetMargin(0, 0, 0, 4)
+			)
 		)
 		:AddChild(TSM.MainUI.Operations.CreateExpandableSection("Warehousing", "restockSettings", L["Restock Options"], L["Set how items are restocked from the bank."])
-			:AddChild(private.CreateEnabledSettingLine("restockQuantity", L["Enable restock"], L["Restock quantity"], 0, 50000, true))
-			:AddChild(private.CreateEnabledSettingLine("restockStackSize", L["Set stack size for restock"], L["Stack size multiple"], 0, 200, true))
-			:AddChild(private.CreateEnabledSettingLine("restockKeepBankQuantity", L["Set keep in bank quantity"], L["Keep in bank quantity"], 0, 50000))
+			:AddChild(TSM.MainUI.Operations.CreateLinkedPriceInput("restockQuantity", L["Restock quantity"], RESTOCK_QUANTITY_VALIDATE_CONTEXT, nil, nil, SETTING_TOOLTIPS.restockQuantity)
+				:SetMargin(0, 0, 0, 12)
+			)
+			:AddChild(TSM.MainUI.Operations.CreateLinkedPriceInput("restockStackSize", L["Stack size multiple"], RESTOCK_STACK_SIZE_VALIDATE_CONTEXT, nil, nil, SETTING_TOOLTIPS.restockStackSize)
+				:SetMargin(0, 0, 0, 12)
+			)
+			:AddChild(TSM.MainUI.Operations.CreateLinkedPriceInput("restockKeepBankQuantity", L["Keep in bank quantity"], RESTOCK_KEEP_BANK_QUANTITY_VALIDATE_CONTEXT, nil, nil, SETTING_TOOLTIPS.restockKeepBankQuantity)
+				:SetMargin(0, 0, 0, 4)
+			)
 		)
 		:AddChild(TSM.MainUI.Operations.GetOperationManagementElements("Warehousing", private.currentOperationName))
-end
-
-function private.CreateEnabledSettingLine(key, enableText, text, minValue, maxValue, margin)
-	local operation = TSM.Operations.GetSettings("Warehousing", private.currentOperationName)
-	local hasRelationship = TSM.Operations.HasRelationship("Warehousing", private.currentOperationName, key)
-	return UIElements.New("Frame", "content")
-			:SetLayout("VERTICAL")
-			:AddChild(TSM.MainUI.Operations.CreateLinkedSettingLine(key, text)
-				:SetLayout("VERTICAL")
-				:SetHeight(48)
-				:SetMargin(0, 0, 0, 12)
-				:AddChild(UIElements.New("ToggleYesNo", "toggle")
-					:SetHeight(18)
-					:SetValue(operation[key] ~= 0)
-					:SetDisabled(hasRelationship)
-					:SetContext(key)
-					:SetScript("OnValueChanged", private.EnabledSettingEnableOnValueChanged)
-				)
-			)
-			:AddChild(TSM.MainUI.Operations.CreateSettingLine("content", text, hasRelationship or operation[key] == 0)
-				:SetLayout("VERTICAL")
-				:SetHeight(48)
-				:SetMargin(0, 0, 0, margin and 12 or 4)
-				:AddChild(UIElements.New("Frame", "content")
-					:SetLayout("HORIZONTAL")
-					:SetHeight(24)
-					:AddChild(UIElements.New("Input", "input")
-						:SetMargin(0, 8, 0, 0)
-						:SetBackgroundColor("ACTIVE_BG")
-						:SetValidateFunc("NUMBER", minValue..":"..maxValue)
-						:SetSettingInfo(operation, key)
-						:SetDisabled(hasRelationship or operation[key] == 0)
-					)
-					:AddChild(UIElements.New("Text", "label")
-						:SetWidth("AUTO")
-						:SetFont("BODY_BODY3")
-						:SetTextColor((hasRelationship or operation[key] == 0) and "TEXT_DISABLED" or "TEXT")
-						:SetFormattedText(L["Enter a value from %d - %d"], minValue, maxValue)
-					)
-				)
-			)
-end
-
-
-
--- ============================================================================
--- Local Script Handlers
--- ============================================================================
-
-function private.EnabledSettingEnableOnValueChanged(toggle, value)
-	local key = toggle:GetContext()
-	local operation = TSM.Operations.GetSettings("Warehousing", private.currentOperationName)
-	operation[key] = value and 1 or 0
-	local settingFrame = toggle:GetElement("__parent.__parent.content")
-	settingFrame:GetElement("label")
-		:SetTextColor(value and "TEXT" or "TEXT_DISABLED")
-	settingFrame:GetElement("content.input")
-		:SetDisabled(not value)
-		:SetValue(operation[key])
-	settingFrame:GetElement("content.label")
-		:SetTextColor(value and "TEXT" or "TEXT_DISABLED")
-	settingFrame:Draw()
 end

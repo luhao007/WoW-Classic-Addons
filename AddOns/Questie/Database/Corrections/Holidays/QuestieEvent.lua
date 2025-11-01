@@ -302,13 +302,22 @@ _WithinDates = function(startDay, startMonth, endDay, endMonth)
     end
 end
 
+---@param questId QuestId
 ---@return string
-function QuestieEvent:GetEventNameFor(questId)
+function QuestieEvent.GetEventNameFor(questId)
     return _QuestieEvent.eventNamesForQuests[questId] or ""
 end
 
-function QuestieEvent:IsEventQuest(questId)
+---@param questId QuestId
+---@return boolean @True if the quest is part of an event, false otherwise
+function QuestieEvent.IsEventQuest(questId)
     return _QuestieEvent.eventNamesForQuests[questId] ~= nil
+end
+
+---@param questId QuestId
+---@return boolean @True if the quest is part of an event and the event is currently active, false otherwise
+function QuestieEvent.IsEventActiveForQuest(questId)
+    return QuestieEvent.activeQuests[questId] == true
 end
 
 local isChinaRegion = GetCurrentRegion() == 5
@@ -327,8 +336,8 @@ QuestieEvent.eventDates = {
     ["Midsummer"] = (isChinaRegion and Questie.IsWotlk) and {startDate = "21/6", endDate = "28/7"} or {startDate = "21/6", endDate = "4/7"},
     ["Brewfest"] = {startDate = "20/9", endDate = "5/10"}, -- TODO: This might be different (retail date)
     ["Harvest Festival"] = { -- WARNING THIS DATE VARIES!!!!
-        startDate = "13/9",
-        endDate = "19/9"
+        startDate = "2/10",
+        endDate = "8/10"
     },
     ["Pilgrim's Bounty"] = {startDate = "26/11", endDate = "2/12"},
     ["Hallow's End"] = {startDate = "18/10", endDate = "31/10"},

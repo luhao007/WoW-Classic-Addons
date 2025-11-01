@@ -8,11 +8,25 @@ category.__index = category;
 function category:New(id, name, canMerge)
     local instance = setmetatable({}, category);
 	instance.Id = id or -1;
-    instance.Name = name or "Unknown";
+    instance.Name = name or addon.L["Unknown"];
     instance.CanMerge = canMerge;
     instance.Level = 0;
     instance.NotHidden = true;
     return instance;
+end
+
+function category:SetIgnoreFactionFilter()
+	self.IgnoreFilters = self.IgnoreFilters or {};
+	self.IgnoreFilters.FactionFilter = true;
+end
+
+function category:SetIgnoreCollapsedChainFilter()
+	self.IgnoreFilters = self.IgnoreFilters or {};
+	self.IgnoreFilters.CollapsedChainFilter = true;
+end
+
+function category:SetTooltip(tooltip)
+	self.Tooltip = tooltip;
 end
 
 function category:AddCategory(cat)
@@ -116,12 +130,12 @@ function category:GetPath()
     return path;
 end
 
-local function GetFilteredAchievementNumbers(achievements, filters, numOfAch, numOfCompAch, numOfNotObtAch) -- , numOfIncompAch
+local function GetFilteredAchievementNumbers(achievements, filters, numOfAch, numOfCompAch, numOfNotObtAch, ignoreFilters) -- , numOfIncompAch
 	if not achievements then
 		return numOfAch, numOfCompAch, numOfNotObtAch;
 	end
 	for _, achievement in next, achievements do
-		numOfAch, numOfCompAch, numOfNotObtAch = addon.GetAchievementNumbers(filters, achievement, numOfAch, numOfCompAch, numOfNotObtAch); -- , numOfIncompAch
+		numOfAch, numOfCompAch, numOfNotObtAch = addon.GetAchievementNumbers(filters, achievement, numOfAch, numOfCompAch, numOfNotObtAch, ignoreFilters); -- , numOfIncompAch
 	end
 	return numOfAch, numOfCompAch, numOfNotObtAch;
 end
@@ -161,8 +175,8 @@ function category:GetAchievementNumbers()
 		filters2 = filters:GetFilters(self);
 	end
 
-	numOfAch, numOfCompAch, numOfNotObtAch = GetFilteredAchievementNumbers(self.Achievements, filters2, numOfAch, numOfCompAch, numOfNotObtAch); -- , numOfIncompAch
-	numOfAch, numOfCompAch, numOfNotObtAch = GetFilteredAchievementNumbers(self.MergedAchievements, filters2, numOfAch, numOfCompAch, numOfNotObtAch); -- , numOfIncompAch
+	numOfAch, numOfCompAch, numOfNotObtAch = GetFilteredAchievementNumbers(self.Achievements, filters2, numOfAch, numOfCompAch, numOfNotObtAch, self.IgnoreFilters); -- , numOfIncompAch
+	numOfAch, numOfCompAch, numOfNotObtAch = GetFilteredAchievementNumbers(self.MergedAchievements, filters2, numOfAch, numOfCompAch, numOfNotObtAch, self.IgnoreFilters); -- , numOfIncompAch
 
 	local mergeSmallCategories = false;
 	if filters then
@@ -208,6 +222,9 @@ end
 function category:SetTabName(tabName)
 	self.TabName = tabName;
 	self.Children = self.Children or {};
+	for _, child in next, self.Children do
+		child.NotHidden = self.TabName; -- Has parent so initially we are hidden
+	end
 end
 
 function category:SetAlwaysVisible(value)
@@ -216,8 +233,4 @@ end
 
 function category:SetFlexibleData(value)
 	self.HasFlexibleData = value;
-end
-
-function category:SetAsSummary(value)
-	self.IsSummary = value;
 end

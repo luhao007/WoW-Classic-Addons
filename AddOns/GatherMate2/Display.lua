@@ -2,9 +2,6 @@ local GatherMate = LibStub("AceAddon-3.0"):GetAddon("GatherMate2")
 local Display = GatherMate:NewModule("Display","AceEvent-3.0")
 local L = LibStub("AceLocale-3.0"):GetLocale("GatherMate2")
 
-local GetNumTrackingTypes = C_Minimap and C_Minimap.GetNumTrackingTypes or GetNumTrackingTypes
-local GetTrackingInfo = C_Minimap and C_Minimap.GetTrackingInfo or GetTrackingInfo
-
 -- Current minimap pin set
 local minimapPins, minimapPinCount = {}, 0
 -- Current worldmap pin set
@@ -21,27 +18,23 @@ local pinClickedOn
 -- our current zone
 local zone = -1
 -- cache of table insert functions
-local tinsert, tremove, next, pairs = tinsert, tremove, next, pairs
+local next, pairs = next, pairs
 -- minimap rotation
 local rotateMinimap = GetCVar("rotateMinimap") == "1"
 -- shape of the minimap
 local minimapShape
--- is the minimap indoors or outdoors
-local indoors = GetCVar("minimapZoom")+0 == Minimap:GetZoom() and "outdoor" or "indoor"
 -- diameter of the minimap
 local mapRadius, minimapWidth, minimapHeight, minimapScale, lastFacing, lastZoom
 local minimapStrata, minimapFrameLevel
 -- math function cache
-local math_sin, math_cos, abs, max = math.sin, math.cos, math.abs, math.max
+local math_sin, math_cos, max = math.sin, math.cos, math.max
 local sin, cos
 -- API function cache
-local GetRealZoneText = GetRealZoneText
 local GetProfessionInfo = GetProfessionInfo
-local strfind, format = string.find, string.format
+local format = string.format
 local trackingCircle, nodeTextures
 local db
 local Minimap = Minimap
-local inInstance
 local nodeRange = 2
 local forceNextUpdate
 local trackShow = {}
@@ -62,6 +55,9 @@ local continentZoneList = {
 	[619] = true, -- Broken Isles
 	[875] = true, -- Zandalar
 	[876] = true, -- Kul Tiras
+	[1550] = true, -- Shadowlands
+	[1978] = true, -- Dragon Isles
+	[2274] = true, -- Khaz Algar
 }
 
 --[[
@@ -262,9 +258,10 @@ function Display:OnEnable()
 	self:RegisterEvent("MINIMAP_UPDATE_TRACKING")
 	self:RegisterEvent("PLAYER_ENTERING_WORLD","UpdateMaps")
 	GatherMate.HBD.RegisterCallback(self, "PlayerZoneChanged")
-	ExpandSkillHeader(0)
+	self:SKILL_LINES_CHANGED()
 	self:MINIMAP_UPDATE_TRACKING()
 	self:PlayerZoneChanged()
+	self:DigsitesChanged()
 	--self:UpdateMaps()  -- already in DigsitesChanged()
 	fullInit = true
 end
@@ -319,38 +316,49 @@ function Display:SKILL_LINES_CHANGED()
 		have_prof_skill[k] = nil
 	end
 
-	local numSkills = GetNumSkillLines()
-	for i = 1, numSkills do
-		local skillName, header = GetSkillLineInfo(i)
-			if profession_to_skill[skillName] then
-				have_prof_skill[profession_to_skill[skillName]] = true
-			end
+	for index, key in pairs({GetProfessions()}) do
+		local name, icon, rank, maxrank, numspells, spelloffset, skillline = GetProfessionInfo(key)
+		if profession_to_skill[name] then
+			have_prof_skill[profession_to_skill[name]] = true
+		end
 	end
 	self:UpdateMaps()
 end
 
 function Display:MINIMAP_UPDATE_TRACKING()
-	if WOW_PROJECT_ID == WOW_PROJECT_CLASSIC then
-		table.wipe(active_tracking)
-		local texture = GetTrackingTexture()
-		if tracking_spells[texture] then
-			active_tracking[tracking_spells[texture]] = true
-		end
-	else
-		local count = GetNumTrackingTypes();
-		local info;
-		for id=1, count do
-			local name, texture, active, category  = GetTrackingInfo(id);
-			if tracking_spells[name] and active then
-				active_tracking[tracking_spells[name]] = true
-			else
-				if tracking_spells[name] and not active then
-					active_tracking[tracking_spells[name]] = false
-				end
+	local count = C_Minimap.GetNumTrackingTypes()
+	for id=1, count do
+		local info = C_Minimap.GetTrackingInfo(id)
+		if info.active and tracking_spells[info.name] then
+			active_tracking[tracking_spells[info.name]] = true
+		else
+			if tracking_spells[info.name] and not info.active then
+				active_tracking[tracking_spells[info.name]] = false
 			end
 		end
 	end
 	self:UpdateMaps()
+end
+
+local digSites = {}
+
+function Display:DigsitesChanged()
+	table.wipe(digSites)
+	for continent in pairs(continentZoneList) do
+		local digSitesOnMap = C_ResearchInfo.GetDigSitesForMap(continent)
+		for i, digSiteInfo in ipairs(digSitesOnMap) do
+			local positionMapInfo = C_Map.GetMapInfoAtPosition(continent, digSiteInfo.position.x, digSiteInfo.position.y)
+			if positionMapInfo and positionMapInfo.mapID ~= continent then
+				digSites[positionMapInfo.mapID] = true
+			end
+		end
+	end
+	self:UpdateMaps()
+end
+
+local function IsActiveDigSite()
+	local showDig = _G.GetCVarBool("digSites")
+	return digSites[zone] and showDig
 end
 
 function Display:UpdateVisibility()
@@ -363,6 +371,9 @@ function Display:UpdateVisibility()
 			visible = have_prof_skill[v]
 		elseif state == "active" then
 			visible = active_tracking[v] == true
+			if v == "Archaeology" then
+				visible = IsActiveDigSite()
+			end
 		end
 		GatherMate.Visible[v] = visible
 
@@ -375,19 +386,18 @@ function Display:UpdateVisibility()
 			visible = have_prof_skill[v]
 		elseif state == "active" then
 			visible = (active_tracking[v] == true)
+			if v == "Archaeology" then
+				visible = IsActiveDigSite()
+			end
 		end
 		trackShow[v] = visible
 	end
 end
 
 function Display:SetTrackingSpell(skill,spell)
-	local spellName, _, texture = GetSpellInfo(spell)
+	local spellName = C_Spell.GetSpellName(spell)
 	if not spellName then return end
-	if WOW_PROJECT_ID == WOW_PROJECT_CLASSIC then
-		tracking_spells[texture] = skill
-	else
-		tracking_spells[spellName] = skill
-	end
+	tracking_spells[spellName] = skill
 	if fullInit then self:MINIMAP_UPDATE_TRACKING() end
 end
 
@@ -481,10 +491,13 @@ function Display:addMiniPin(pin, refresh)
 		pin.texture:SetTexture(trackingCircle)
 		local t = db.trackColors[pin.nodeType]
 		pin.texture:SetVertexColor(t.Red, t.Green, t.Blue, t.Alpha)
-		pin:SetHeight(10 / minimapScale)
-		pin:SetWidth(10 / minimapScale)
+		pin:SetHeight(12 / minimapScale)
+		pin:SetWidth(12 / minimapScale)
 		pin.isCircle = true
 		pin.texture:SetTexCoord(0, 1, 0, 1)
+		pin.texture:ClearAllPoints()
+		pin.texture:SetPoint("TOPLEFT", -1, 1)
+		pin.texture:SetPoint("BOTTOMRIGHT", -1, 1)
 	-- if distance > 100, set back to the node texture
 	elseif (pin.isCircle or refresh) and dist_2 > db.trackDistance^2 then
 		pin:SetHeight(12 * db.miniscale / minimapScale)
@@ -492,6 +505,8 @@ function Display:addMiniPin(pin, refresh)
 		pin.texture:SetTexture(nodeTextures[pin.nodeType][pin.nodeID])
 		pin.texture:SetVertexColor(1, 1, 1, 1)
 		pin.texture:SetTexCoord(0, 1, 0, 1)
+		pin.texture:ClearAllPoints()
+		pin.texture:SetAllPoints()
 		pin.isCircle = false
 	end
 
@@ -550,23 +565,14 @@ end
 --[[
 	Minimap zoom changed
 ]]
-function Display:UpdateMiniMapZoom()
-	local zoom = Minimap:GetZoom()
-	if GetCVar("minimapZoom") == GetCVar("minimapInsideZoom") then
-		Minimap:SetZoom(zoom < 2 and zoom + 1 or zoom - 1)
-	end
-	indoors = GetCVar("minimapZoom")+0 == Minimap:GetZoom() and "outdoor" or "indoor"
-	Minimap:SetZoom(zoom)
-end
 function Display:MinimapZoom()
-	self:UpdateMiniMapZoom()
 	self:UpdateMiniMap()
 end
 --[[
 	Minimap rotation changed
 ]]
 function Display:ChangedVars(event,cvar,value)
-	if cvar == "ROTATE_MINIMAP" then
+	if cvar == "rotateMinimap" then
 		rotateMinimap = value == "1"
 	end
 	forceNextUpdate = true
@@ -574,8 +580,6 @@ end
 
 function Display:UpdateMaps()
 	clearpins(minimapPins)
-	-- recheck zoom on map update, as it seems on load you dont get the map zoom changed event
-	self:UpdateMiniMapZoom()
 	-- Ask to update the visiblity for archaeology updates to blobs
 	self:UpdateVisibility()
 	self:UpdateMiniMap(true)
@@ -624,7 +628,7 @@ function Display:UpdateIconPositions()
 	-- if the player moved, or changed the facing (rotating map) - update nodes
 	if x ~= lastXY or y ~= lastYY or facing ~= lastFacing or refresh then
 		-- update radius of the map
-		mapRadius = self.minimapSize[indoors][zoom] / 2
+		mapRadius = C_Minimap.GetViewRadius()
 		-- update upvalues for icon placement
 		lastXY, lastYY = x, y
 		lastFacing = facing
@@ -689,11 +693,11 @@ function Display:UpdateMiniMap(force)
 	if x ~= lastXY or y ~= lastYY or diffZoom or facing ~= lastFacing or force then
 		-- set upvalues to new settings
 		minimapShape = GetMinimapShape and self.minimapShapes[GetMinimapShape() or "ROUND"]
-		mapRadius = self.minimapSize[indoors][zoom] / 2
 		minimapWidth = Minimap:GetWidth() / 2
 		minimapHeight = Minimap:GetHeight() / 2
 		minimapStrata = Minimap:GetFrameStrata()
 		minimapFrameLevel = Minimap:GetFrameLevel() + 5
+		mapRadius = C_Minimap.GetViewRadius()
 
 		local x1, y1 = GatherMate.HBD:GetZoneCoordinatesFromWorld(x,y,zone)
 		if not x1 then
@@ -795,6 +799,11 @@ function GatherMate2WorldMapPinMixin:OnAcquired(coord, nodeID, nodeType, zone)
 	self.texture:SetTexCoord(0, 1, 0, 1)
 	self.texture:SetVertexColor(1, 1, 1, 1)
 	self:EnableMouse(db.worldMapIconsInteractive)
+
+	-- enable right-click interactivity
+	if db.worldMapIconsInteractive and self.SetPassThroughButtons then
+		self:SetPassThroughButtons("")
+	end
 end
 
 function GatherMate2WorldMapPinMixin:OnMouseEnter()
@@ -808,6 +817,9 @@ end
 function GatherMate2WorldMapPinMixin:OnClick(button)
 	return pinClick(self, button)
 end
+
+-- hack to avoid error in combat in 10.1.5
+GatherMate2WorldMapPinMixin.SetPassThroughButtons = function() end
 
 function Display:UpdateWorldMap()
 	self.WorldMapDataProvider:RefreshAllData()

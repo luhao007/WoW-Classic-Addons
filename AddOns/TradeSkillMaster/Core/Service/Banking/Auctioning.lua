@@ -5,22 +5,30 @@
 -- ------------------------------------------------------------------------------ --
 
 local TSM = select(2, ...) ---@type TSM
-local Auctioning = TSM.Banking:NewPackage("Auctioning")
-local Environment = TSM.Include("Environment")
-local TempTable = TSM.Include("Util.TempTable")
-local BagTracking = TSM.Include("Service.BagTracking")
-local AltTracking = TSM.Include("Service.AltTracking")
-local AuctionTracking = TSM.Include("Service.AuctionTracking")
-local MailTracking = TSM.Include("Service.MailTracking")
-local Settings = TSM.Include("Service.Settings")
-local ItemInfo = TSM.Include("Service.ItemInfo")
-local private = {}
+local Auctioning = TSM.Banking:NewPackage("Auctioning") ---@type AddonPackage
+local ClientInfo = TSM.LibTSMWoW:Include("Util.ClientInfo")
+local TempTable = TSM.LibTSMUtil:Include("BaseType.TempTable")
+local AuctioningOperation = TSM.LibTSMSystem:Include("AuctioningOperation")
+local Group = TSM.LibTSMTypes:Include("Group")
+local GroupOperation = TSM.LibTSMTypes:Include("GroupOperation")
+local Auction = TSM.LibTSMService:Include("Auction")
+local BagTracking = TSM.LibTSMService:Include("Inventory.BagTracking")
+local AltTracking = TSM.LibTSMApp:Include("Service.AltTracking")
+local Mail = TSM.LibTSMService:Include("Mail")
+local ItemInfo = TSM.LibTSMService:Include("Item.ItemInfo")
+local private = {
+	settingsDB = nil,
+}
 
 
 
 -- ============================================================================
 -- Module Functions
 -- ============================================================================
+
+function Auctioning.OnInitialize(settingsDB)
+	private.settingsDB = settingsDB
+end
 
 function Auctioning.MoveGroupsToBank(callback, groups)
 	local items = TempTable.Acquire()
@@ -65,22 +73,22 @@ function private.GetNumToMoveToBags(itemString, numHave, includeAH)
 	local totalNumToMove = 0
 	local numAvailable = numHave
 	local numInBags = BagTracking.CreateQueryBagsItem(itemString)
-		:VirtualField("autoBaseItemString", "string", TSM.Groups.TranslateItemString, "itemString")
+		:VirtualField("autoBaseItemString", "string", Group.TranslateItemString, "itemString")
 		:Equal("autoBaseItemString", itemString)
 		:SumAndRelease("quantity")
 	if includeAH then
-		numInBags = numInBags + AuctionTracking.GetQuantity(itemString) + MailTracking.GetQuantity(itemString)
+		numInBags = numInBags + Auction.GetQuantity(itemString) + Mail.GetQuantity(itemString)
 		-- include alt auctions on connected realms
 		local isCommodity = ItemInfo.IsCommodity(itemString)
-		for _, factionrealm, character, _, isConnected in Settings.ConnectedFactionrealmAltCharacterIterator() do
-			if isCommodity or isConnected then
+		for _, factionrealm in private.settingsDB:AccessibleRealmIterator("factionrealm", not isCommodity) do
+			for _, character in private.settingsDB:AccessibleCharacterIterator(nil, factionrealm, true) do
 				numInBags = numInBags + AltTracking.GetAuctionQuantity(itemString, character, factionrealm)
 			end
 		end
 	end
 
-	for _, _, operationSettings in TSM.Operations.GroupOperationIterator("Auctioning", TSM.Groups.GetPathByItem(itemString)) do
-		local maxExpires = TSM.Auctioning.Util.GetPrice("maxExpires", operationSettings, itemString)
+	for _, _, operationSettings in GroupOperation.OperationIterator(Group.GetPathByItem(itemString), "Auctioning") do
+		local maxExpires = AuctioningOperation.GetItemPrice(itemString, "maxExpires", operationSettings)
 		local operationHasExpired = false
 		if maxExpires and maxExpires > 0 then
 			local numExpires = TSM.Accounting.Auctions.GetNumExpiresSinceSale(itemString)
@@ -89,7 +97,7 @@ function private.GetNumToMoveToBags(itemString, numHave, includeAH)
 			end
 		end
 
-		local postCap = TSM.Auctioning.Util.GetPrice("postCap", operationSettings, itemString)
+		local postCap = AuctioningOperation.GetItemPrice(itemString, "postCap", operationSettings)
 		local stackSize = private.GetOperationStackSize(operationSettings, itemString)
 		if not operationHasExpired and postCap and stackSize then
 			local numNeeded = stackSize * postCap
@@ -116,8 +124,8 @@ end
 
 function private.MaxExpiresGetNumToMoveToBank(itemString, numHave)
 	local numToKeepInBags = 0
-	for _, _, operationSettings in TSM.Operations.GroupOperationIterator("Auctioning", TSM.Groups.GetPathByItem(itemString)) do
-		local maxExpires = TSM.Auctioning.Util.GetPrice("maxExpires", operationSettings, itemString)
+	for _, _, operationSettings in GroupOperation.OperationIterator(Group.GetPathByItem(itemString), "Auctioning") do
+		local maxExpires = AuctioningOperation.GetItemPrice(itemString, "maxExpires", operationSettings)
 		local operationHasExpired = false
 		if maxExpires and maxExpires > 0 then
 			local numExpires = TSM.Accounting.Auctions.GetNumExpiresSinceSale(itemString)
@@ -125,7 +133,7 @@ function private.MaxExpiresGetNumToMoveToBank(itemString, numHave)
 				operationHasExpired = true
 			end
 		end
-		local postCap = TSM.Auctioning.Util.GetPrice("postCap", operationSettings, itemString)
+		local postCap = AuctioningOperation.GetItemPrice(itemString, "postCap", operationSettings)
 		local stackSize = private.GetOperationStackSize(operationSettings, itemString)
 		if not operationHasExpired and postCap and stackSize then
 			numToKeepInBags = numToKeepInBags + stackSize * postCap
@@ -135,8 +143,8 @@ function private.MaxExpiresGetNumToMoveToBank(itemString, numHave)
 end
 
 function private.GetOperationStackSize(operationSettings, itemString)
-	if Environment.HasFeature(Environment.FEATURES.AH_STACKS) then
-		return TSM.Auctioning.Util.GetPrice("stackSize", operationSettings, itemString)
+	if ClientInfo.HasFeature(ClientInfo.FEATURES.AH_STACKS) then
+		return AuctioningOperation.GetItemPrice(itemString, "stackSize", operationSettings)
 	else
 		return 1
 	end

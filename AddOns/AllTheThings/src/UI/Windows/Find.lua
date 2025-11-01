@@ -11,95 +11,6 @@ local GetItemID = app.WOWAPI.GetItemID;
 local GetItemSpell = GetItemSpell;
 local C_Item_GetItemInventoryTypeByID = C_Item and C_Item.GetItemInventoryTypeByID;
 
--- Uncomment this section to also harvest tooltip data.
---[[
-local ItemHarvester = CreateFrame("GameTooltip", "ATTCItemHarvester", UIParent, "GameTooltipTemplate");
-ItemHarvester.AllTheThingsIgnored = true;
-CreateItemHarvester = app.ExtendClass("ItemHarvester", "ItemTooltipHarvester", "itemID", {
-	IsClassIsolated = true,
-	text = function(t)
-		local link = t.link;
-		if link then
-			ItemHarvester:SetOwner(UIParent,"ANCHOR_NONE")
-			ItemHarvester:SetHyperlink(link);
-			local lineCount = ItemHarvester:NumLines();
-			local str = ATTCItemHarvesterTextLeft1:GetText();
-			if not IsRetrieving(str) and lineCount > 0 then
-				local requirements = {};
-				for index=2,lineCount,1 do
-					local line = _G["ATTCItemHarvesterTextLeft" .. index] or _G["ATTCItemHarvesterText" .. index];
-					if line then
-						local text = line:GetText();
-						if text then
-							if text:find("Classes: ") then
-								local classes = {};
-								local _,list = (":"):split(text);
-								for i,className in ipairs({(","):split(list)}) do
-									tinsert(classes, app.ClassInfoByClassName[className:trim()].classID);
-								end
-								if #classes > 0 then
-									t.info.classes = classes;
-								end
-							elseif text:find("Races: ") then
-								local races = {};
-								local _,list = (":"):split(text);
-								for i,raceName in ipairs({(","):split(list)}) do
-									tinsert(races, app.RaceDB[raceName:trim()]);
-								end
-								if #races > 0 then
-									t.info.races = races;
-								end
-							elseif text:find("Requires") and not text:find("Level") and not text:find("Riding") then
-								local c = text:sub(1, 1);
-								if c ~= " " and c ~= "\t" and c ~= "\n" and c ~= "\r" then
-									text = text:trim():sub(9);
-									if text:find("-") then
-										t.info.minReputation = app.CreateFactionStandingFromText(text);
-									else
-										if text:find("%(") then
-											if t.info.requireSkill then
-												-- If non-specialization skill is already assigned, skip this part.
-												text = nil;
-											else
-												text = ("("):split(text);
-											end
-										end
-										if text then
-											local spellName = text:trim();
-											if spellName == "Herbalism" then spellName = "Herb Gathering"; end
-											local spellID = app.SpellNameToSpellID[spellName];
-											if spellID then
-												local skillID = app.SpellIDToSkillID[spellID];
-												if skillID then
-													t.info.requireSkill = skillID;
-												else
-													print("Unknown Skill '" .. spellName .. "'");
-													tinsert(requirements, spellName);
-												end
-											else
-												print("Unknown Spell '" .. spellName .. "'");
-												tinsert(requirements, spellName);
-											end
-										end
-									end
-								end
-							end
-						end
-					end
-				end
-				if #requirements > 0 then
-					t.info.otherRequirements = requirements;
-				end
-				rawset(t, "text", link);
-				rawset(t, "collected", true);
-			end
-			ItemHarvester:Hide();
-			return link;
-		end
-	end
-});
-]]--
-
 -- Implementation
 if app.GameBuildVersion > 30000 then
 local GetAchievementCategory, GetAchievementInfo, GetAchievementNumCriteria, GetAchievementCriteriaInfo
@@ -541,7 +452,7 @@ app:CreateWindow("ItemFinder", {
 																	if spellName == "Herbalism" then spellName = "Herb Gathering"; end
 																	local spellID = app.SpellNameToSpellID[spellName];
 																	if spellID then
-																		local skillID = app.SpellIDToSkillID[spellID];
+																		local skillID = app.SkillDB.SpellToSkill[spellID];
 																		if skillID then
 																			info.requireSkill = skillID;
 																		end

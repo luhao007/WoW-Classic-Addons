@@ -10,6 +10,23 @@ VUHDO_IS_DEFAULT_LAYOUT = false;
 
 
 --
+local function VUHDO_getKeyLayoutNameSafe(aName)
+
+	if not aName then
+		return;
+	end
+
+	if VUHDO_SPELL_LAYOUTS and VUHDO_SPELL_LAYOUTS[aName] then
+		return aName;
+	else
+		return strtrim(aName);
+	end
+
+end
+
+
+
+--
 function VUHDO_initKeyLayoutComboModel()
 	table.wipe(VUHDO_KEY_LAYOUT_COMBO_MODEL);
 
@@ -174,8 +191,12 @@ function VUHDO_saveKeyLayoutCallback(aDecision)
 				["I1U"] = VUHDO_SPELL_CONFIG["custom1Unit"],
 				["I2U"] = VUHDO_SPELL_CONFIG["custom2Unit"],
 			},
-			["HOTS"] = VUHDO_compressTable(VUHDO_PANEL_SETUP["HOTS"]),
+			["HOTS"] = { },
 		};
+
+		for tPanelNum = 1, VUHDO_MAX_PANELS do
+			VUHDO_SPELL_LAYOUTS[VUHDO_CURR_LAYOUT]["HOTS"][tPanelNum] = VUHDO_compressTable(VUHDO_PANEL_SETUP[tPanelNum]["HOTS"]);
+		end
 
 		VUHDO_SPEC_LAYOUTS["selected"] = VUHDO_CURR_LAYOUT;
 
@@ -197,7 +218,7 @@ end
 --
 function VUHDO_saveKeyLayoutOnClick(aButton)
 	local tEditBox = _G[aButton:GetParent():GetName() .. "SaveAsEditBox"];
-	VUHDO_CURR_LAYOUT = strtrim(tEditBox:GetText());
+	VUHDO_CURR_LAYOUT = VUHDO_getKeyLayoutNameSafe(tEditBox:GetText());
 
 	if #VUHDO_CURR_LAYOUT == 0 then
 		VUHDO_Msg(VUHDO_I18N_ENTER_KEY_LAYOUT_NAME, 1, 0.4, 0.4);
@@ -251,10 +272,9 @@ end
 --
 local tEditBox;
 local tSelectedKeyLayout;
-local tKeyLayout;
 function VUHDO_exportKeyLayoutOnClick(aButton)
 	tEditBox = _G[aButton:GetParent():GetName() .. "SaveAsEditBox"];
-	tSelectedKeyLayout = strtrim(tEditBox:GetText());
+	tSelectedKeyLayout = VUHDO_getKeyLayoutNameSafe(tEditBox:GetText());
 
 	if (#tSelectedKeyLayout == 0 or not VUHDO_SPELL_LAYOUTS[tSelectedKeyLayout]) then
 		VUHDO_Msg(VUHDO_I18N_SELECT_KEY_LAYOUT_FIRST, 1, 0.4, 0.4);
@@ -280,7 +300,7 @@ local tSelectedKeyLayout;
 local tKeyLayout;
 function VUHDO_keyLayoutExportButtonShown(aEditBox)
 	tEditBox = _G[aEditBox:GetParent():GetParent():GetParent():GetParent():GetName() .. "StorePanelSaveAsEditBox"];
-	tSelectedKeyLayout = strtrim(tEditBox:GetText());
+	tSelectedKeyLayout = VUHDO_getKeyLayoutNameSafe(tEditBox:GetText());
 
 	tKeyLayout = VUHDO_SPELL_LAYOUTS[tSelectedKeyLayout];
 
@@ -306,8 +326,8 @@ end
 --
 local tImportString;
 local tImportTable;
+local tKeyLayout;
 local tName;
-local tProfile;
 local tPos;
 function VUHDO_keyLayoutImport(aEditBoxName)
 	tImportString = _G[aEditBoxName]:GetText();
@@ -378,7 +398,7 @@ function VUHDO_shareCurrentKeyLayout(aUnitName, aKeyLayoutName)
 	end
 
 	local tQuestion = VUHDO_PLAYER_NAME .. " requests to transmit\nKey Layout " .. aKeyLayoutName .. " to you.\nProceed?"
-	VUHDO_startShare(aUnitName, { aKeyLayoutName, tLayout }, sCmdKeyLayoutDataChunk, sCmdKeyLayoutDataEnd, tQuestion);
+	VUHDO_startShare(aUnitName, { aKeyLayoutName, tLayout }, VUHDO_sCmdKeyLayoutDataChunk, VUHDO_sCmdKeyLayoutDataEnd, tQuestion);
 end
 
 
@@ -389,7 +409,7 @@ function VUHDO_keyLayoutDefaultLayoutCheckButtonClicked(aButton)
 
 	local tLayout = VUHDO_SPELL_LAYOUTS[VUHDO_CURR_LAYOUT];
 
-	if (tLayout ~= nil or (strtrim(tEditBox:GetText()) or "") ~= "") then
+	if (tLayout ~= nil or (VUHDO_getKeyLayoutNameSafe(tEditBox:GetText()) or "") ~= "") then
 		VUHDO_IS_DEFAULT_LAYOUT = VUHDO_forceBooleanValue(aButton:GetChecked());
 	else
 		VUHDO_Msg(VUHDO_I18N_SELECT_KEY_LAYOUT_FIRST, 1, 0.4, 0.4);

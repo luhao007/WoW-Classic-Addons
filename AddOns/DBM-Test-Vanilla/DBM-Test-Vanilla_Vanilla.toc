@@ -1,7 +1,11 @@
-## Interface: 30405
+## Interface: 50502
 
 ## Title: |cffffe00a<|r|cffff7d0aDBM Tests|r|cffffe00a>|r |cff69ccf0Tests for Vanilla and Season of Discovery mods|r
-## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r |cFFFFFFFF副本助手|r |cFF69CCF0测试功能|r |cFF22B14C经典旧世|r
+## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r|cFFFFFFFF副本助手|r |cFF69CCF0测试功能|r |cFF22B14C经典旧世|r
+
+## Category: DBM
+## Category-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r
+## Group: DBM-Test
 
 ## Dependencies: DBM-Test
 ## LoadOnDemand: 1
@@ -72,7 +76,7 @@ Season of Discovery/Blackwing Lair/Razorgore-Heroic-Kill.lua
 Season of Discovery/Blackwing Lair/Vaelastrasz-Normal-Kill.lua
 Season of Discovery/Blackwing Lair/Broodlord-Heroic-Kill.lua
 Season of Discovery/Blackwing Lair/Firemaw-Normal-Wipe.lua
-Season of Discovery/Blackwing Lair/EbonrocAndFlamegor-BlueGreenBronze-Kill.lua
+# Season of Discovery/Blackwing Lair/EbonrocAndFlamegor-BlueGreenBronze-Kill.lua
 Season of Discovery/Blackwing Lair/Chromaggus-BlueGreenBronze-Kill.lua
 Season of Discovery/Blackwing Lair/Chromaggus-Black-Synthetic.lua
 

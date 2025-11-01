@@ -30,16 +30,22 @@ end
 
 --
 function VUHDO_newOptionsToolsResetClassColorsClicked()
+
 	VuhDoYesNoFrameText:SetText(VUHDO_I18N_RESET_CLASS_COLORS);
+
 	VuhDoYesNoFrame:SetAttribute("callback",
 		function(aDecision)
 			if (VUHDO_YES == aDecision) then
 				VUHDO_USER_CLASS_COLORS = nil;
+				VUHDO_USER_CLASS_GRADIENT_COLORS = nil;
+
 				ReloadUI();
 			end
 		end
 	);
+
 	VuhDoYesNoFrame:Show();
+
 end
 
 
@@ -56,6 +62,10 @@ function VUHDO_newOptionsToolsResetDebuffColorsClicked()
 				VUHDO_PANEL_SETUP["BAR_COLORS"]["DEBUFF3"] = nil;
 				VUHDO_PANEL_SETUP["BAR_COLORS"]["DEBUFF4"] = nil;
 				VUHDO_PANEL_SETUP["BAR_COLORS"]["DEBUFF6"] = nil;
+				VUHDO_PANEL_SETUP["BAR_COLORS"]["DEBUFF8"] = nil;
+				VUHDO_PANEL_SETUP["BAR_COLORS"]["DEBUFF9"] = nil;
+				VUHDO_PANEL_SETUP["BAR_COLORS"]["DEBUFF_BAR_GLOW"] = nil;
+				VUHDO_PANEL_SETUP["BAR_COLORS"]["DEBUFF_ICON_GLOW"] = nil;
 				ReloadUI();
 			end
 		end
@@ -154,7 +164,9 @@ end
 
 --
 function VUHDO_newOptionsToolsResetEverythingClicked()
+
 	VuhDoYesNoFrameText:SetText(VUHDO_I18N_RESET_ALL);
+
 	VuhDoYesNoFrame:SetAttribute("callback",
 		function(aDecision)
 			if (VUHDO_YES == aDecision) then
@@ -181,6 +193,7 @@ function VUHDO_newOptionsToolsResetEverythingClicked()
 				VUHDO_MANUAL_ROLES = nil;
 				VUHDO_SPELL_LAYOUTS = nil;
 				VUHDO_USER_CLASS_COLORS = nil;
+				VUHDO_USER_CLASS_GRADIENT_COLORS = nil;
 				VUHDO_DEBUFF_BLACKLIST = nil;
 				VUHDO_BOUQUETS = nil;
 				VUHDO_GLOBAL_CONFIG = nil;
@@ -188,7 +201,9 @@ function VUHDO_newOptionsToolsResetEverythingClicked()
 			end
 		end
 	);
+
 	VuhDoYesNoFrame:Show();
+
 end
 
 
@@ -202,7 +217,11 @@ function VUHDO_newOptionsToolsResetLanguageClicked()
 				VUHDO_BOUQUETS = nil;
 				VUHDO_INDICATOR_CONFIG = nil;
 				VUHDO_CONFIG["CUSTOM_DEBUFF"] = nil;
-				VUHDO_PANEL_SETUP["HOTS"] = nil;
+
+				for tPanelNum = 1, VUHDO_MAX_PANELS do
+					VUHDO_PANEL_SETUP[tPanelNum]["HOTS"] = nil;
+				end
+
 				VUHDO_CONFIG["RANGE_SPELL"] = {
 					["HELPFUL"] = "",
 					["HARMFUL"] = "",

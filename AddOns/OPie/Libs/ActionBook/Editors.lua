@@ -24,9 +24,9 @@ local RegisterSimpleOptionsPanel do
 		local e = CreateFrame("CheckButton", nil, f, MODERN and "UICheckButtonTemplate" or "InterfaceOptionsCheckButtonTemplate")
 		if MODERN then
 			e:SetSize(24, 24)
-			e.Text:SetPoint("LEFT", e, "RIGHT", 2, 1)
-			e.Text:SetFontObject(GameFontHighlightLeft)
 		end
+		e.Text:SetPoint("LEFT", e, "RIGHT", MODERN and 2 or 0, 1)
+		e.Text:SetFontObject(GameFontHighlightLeft)
 		hooksecurefunc(e.Text, "SetText", updateCheckButtonHitRect)
 		e:SetMotionScriptsWhileDisabled(1)
 		e:SetScript("OnClick", callSave)

@@ -2,7 +2,7 @@
 This file contains the global variables and constants used throughout Titan Panel.
 
 Titan_Global is intended to reduce the global namespace through out Titan over time.
-All variables in Global_Titan should be declared here even if set elsewhere.
+All variables in Titan_Global should be declared here even if set elsewhere.
 --]===]
 
 ---@meta
@@ -14,6 +14,33 @@ Titan_Global = {}                -- begin the slow journey to a smaller _G footp
 
 Titan_Global.recent_changes = "" -- Titan_History.lua
 Titan_Global.config_notes = ""   -- Titan_History.lua
+
+Titan_Global.wowversion  = select(4, GetBuildInfo())
+
+Titan_Global.switch = {} -- reserved for flags needed because feature / function changed over WoW versions
+-- As much as possible, use something in the API to determine feature, not API version.
+-- Set defaults to retail feature / function
+
+Titan_Global.switch.can_edit_ui  = true -- if user can modify UI
+if C_EditMode then
+	Titan_Global.switch.can_edit_ui  = true -- User changes UI
+else
+	Titan_Global.switch.can_edit_ui  = false -- Have Titan adjust UI frame(s)
+end
+
+Titan_Global.switch.game_ammo  = false -- if bows and guns use actual ammo
+if Titan_Global.wowversion < 40000 then -- before Cata
+	Titan_Global.switch.game_ammo  = true
+else
+	Titan_Global.switch.game_ammo  = false
+end
+
+Titan_Global.switch.classic_era  = false -- Classic Era only
+if Titan_Global.wowversion < 20000 then 
+	Titan_Global.switch.classic_era  = true
+else
+	Titan_Global.switch.classic_era  = false
+end
 
 Titan_Global.AdjList = {         -- TODO : localize
 	["UIWidgetTopCenterContainerFrame"] = {
@@ -140,17 +167,6 @@ Titan_Global.SKIN = "skin"
 Titan_Global.COLOR = "color"
 Titan_Global.NONE = "none"
 
--- For debug across Titan Panel
-Titan_Global.debug = {}
-Titan_Global.debug.events = false
-Titan_Global.debug.ldb_setup = false
-Titan_Global.debug.menu = false
-Titan_Global.debug.tool_tips = false
-Titan_Global.debug.plugin_text = false
-Titan_Global.debug.plugin_register = false
-Titan_Global.debug.plugin_register_deep = false
-Titan_Global.debug.movable = false
-
 -- For WoW localized strings / literals we are using
 Titan_Global.literals = {
 	low = LOW,
@@ -211,12 +227,3 @@ function Titan_Global.NewRegistry(id)
 	local reg = { id = id } ---@type PluginRegistryType
 	return reg
 end
-
--- Set the debug topics for Titan itself - not any plugins
-Titan_Global.dbg = Titan_Debug:New("Titan")
-Titan_Global.dbg:AddTopic("Startup")
-Titan_Global.dbg:AddTopic("Vars")
-
-Titan_Global.dbg:EnableDebug(false)
-Titan_Global.dbg:EnableTopic("Tooltip", false)
-Titan_Global.dbg:EnableTopic("Menu", false)

@@ -2,7 +2,7 @@
 ..\FrameXML\UI.xsd">
     <Script file="LibTabbedFrame-1.0.lua"/>
 
-	<Button name="LibTabbedFrameTabTemplate" inherits="CharacterFrameTabButtonTemplate" virtual="true" hidden="true">
+	<Button name="LibTabbedFrameTabTemplate" inherits="PanelTabButtonTemplate" virtual="true" hidden="true">
 		<Scripts>
 			<OnLoad>
 				self:SetFrameLevel(self:GetFrameLevel() + 4);

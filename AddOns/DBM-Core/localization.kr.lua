@@ -36,6 +36,7 @@ L.TEXT_ONLY_RANGE					= "이 지역에서는 블리자드가 일부 기능을 �
 L.NO_RANGE					= "이 지역에서는 블리자드가 일부 기능을 막아서 거리 창을 사용할 수 없습니다."
 L.NO_ARROW					= "화살표 기능을 인스턴스 던전에서 사용할 수 없습니다"
 L.NO_HUD						= "HUD 기능을 인스턴스 던전에서 사용할 수 없습니다"
+L.NO_COMMS								= "보스전 또는 신화+ 던전에선 애드온 통신을 사용할 수 없습니다. 보스전 또는 던전을 끝낸 후 다시 해당 명령어를 사용하세요."--Midnight+
 
 L.DYNAMIC_DIFFICULTY_CLUMP	= "현재 공격대 규모에 맞는 필요한 플레이어 숫자 관련 정보가 부족하여" .. L.DBM .. "이 이 전투에서 동적 거리 창을 비활성화 했습니다."
 L.DYNAMIC_ADD_COUNT			= "현재 공격대 규모에 맞는 쫄 등장 정보가 부족하여" .. L.DBM .. "이 이 전투에서 쫄 마릿수 정보를 비활성화 했습니다."
@@ -68,7 +69,8 @@ L.SCENARIO_COMPLETE_L		= "%s|1을;를; %s만에 완료했습니다! 지난번 �
 L.SCENARIO_COMPLETE_NR		= "%s|1을;를; %s만에 완료했습니다! 신기록입니다! (이전 기록은 %s) 총 %d회 완료했습니다."
 L.COMBAT_ENDED_AT			= "%s (%s) 전투에서 %s만에 전멸했습니다."
 L.COMBAT_ENDED_AT_LONG		= "%s (%s) 전투에서 %s만에 전멸했습니다. 현재 난이도에서 총 %d회 전멸했습니다."
-L.GUILD_COMBAT_ENDED_AT		= "%s의 길드 그룹이 %s (%s)에서 %s만에 전멸했습니다."
+L.GUILD_COMBAT_ENDED_AT		= "%s의 길드 그룹이 %s (%s)에서 %s만에 전멸했습니다."--Health Included
+L.GUILD_COMBAT_ENDED					= "%s의 길드 그룹이 %s에서 %s만에 전멸했습니다."--No health (post midnight)
 L.SCENARIO_ENDED_AT			= "%s|1이;가; %s만에 끝났습니다."
 L.SCENARIO_ENDED_AT_LONG		= "%s|1이;가; %s만에 끝났습니다. 현재 난이도에서 총 %d회 실패했습니다."
 L.COMBAT_STATE_RECOVERED		= "%s 전투가 %s전에 시작됐습니다. 타이머 복구중..."
@@ -252,26 +254,29 @@ L.INFOFRAME_ALT				= "보조 자원:"--Alternate Power
 
 L.LFG_INVITE						= "파티찾기 입장"
 
-L.SLASHCMD_HELP				= {
-	"사용 가능 슬래시 명령어:",
-	"----------------",
-	"/dbm unlock: 움직일 수 있는 상태 바 타이머를 표시합니다. (단축 명령어: move)",
-	"/range <숫자> 또는 /distance <숫자>: 거리 창을 표시합니다. /rrange 또는 /rdistance는 색상을 반대로 표시합니다.",
-	"/hudar <number>: HUD 기반 거리 탐지기를 표시합니다.",
-	"/dbm timer: 사용자 지정 " .. L.DBM .. " 타이머를 시작합니다. 자세한 내용은 '/dbm timer'를 참고하세요.",
-	"/dbm arrow: " .. L.DBM .. " 화살표를 표시합니다. 자세한 내용은 '/dbm arrow help'를 참고하세요.",
-	"/dbm hud: " .. L.DBM .. " HUD를 표시합니다. 자세한 내용은 '/dbm hud'를 참고하세요.",
-	"/dbm help2: 공격대 관리와 관련된 슬래시 명령어를 표시합니다."
+--Common slash commands
+L.SLASHCMD_HELP							= {--AI translated (check me)
+	"사용 가능한 슬래시 명령어:",
+	"-----------------",
+	"/dbm unlock: 이동 가능한 상태 바 타이머를 표시합니다 (별칭: move).",
+	"/dbm pull <sec>: <sec> 초 동안의 풀링 타이머를 공격대에 전송합니다 (승급자 필요. 별칭: pull).",
+	"/dbm break <min>: <min> 분 동안의 쉬는 타이머를 공격대에 전송합니다 (승급자 필요. 별칭: break).",
+	"/dbm timer: 사용자 정의 " .. L.DBM .. " 타이머를 시작합니다. 자세한 내용은 '/dbm timer'를 참조하세요.",
+	"/dbm key: 파티/길드의 신화+ 쐐기돌 및 평점 확인과 던전 순간이동 스킬 모음을 사용합니다. (별칭: key, keys, keystone)",
+	"/dbm lag: 공격대 전체의 지연 시간을 확인합니다.",
+	"/dbm durability: 공격대 전체의 내구도를 확인합니다.",
+	"/dbm help2: 추가 슬래시 명령어를 표시합니다"
 }
-L.SLASHCMD_HELP2				= {
-	"사용 가능 슬래시 명령어:",
-	"----------------",
-	"/dbm pull <초>: 공격대에 <초> 만큼 풀링 타이머를 전송합니다. (승급 권한이 필요합니다. 단축 명령어: pull)",
-	"/dbm break <분>: 공격대에 <분> 만큼 지속되는 휴식 타이머를 전송합니다. (승급 권한이 필요합니다. 단축 명령어: break)",
-	"/dbm version: 공대원의 보스 모드 버전 검사를 실시합니다. (단축 명령어: ver)",
-	"/dbm version2: 공대원 보스 모드 버전 검사 및 구버전 사용자에게 귓속말을 보냅니다. (단축 명령어: ver2)",
-	"/dbm lag: 공격대 지연시간 검사 작업을 실행합니다.",
-	"/dbm durability: 공대원의 내구도 검사를 실시합니다."
+--덜 사용되는 슬래시 명령어
+L.SLASHCMD_HELP2						= {--AI translated (check me)
+	"사용 가능한 슬래시 명령어:",
+	"-----------------",
+	"/dbm version: 보스 모드 버전 확인을 수행합니다 (별칭: ver).",
+	"/dbm version2: 보스 모드 버전 확인을 수행하며 구버전 사용자에게 귓속말을 보냅니다 (별칭: ver2).",
+	"/range <number> 또는 /distance <number>: 범위 프레임을 표시합니다. /rrange 또는 /rdistance로 색상을 반전시킵니다.",
+	"/hudar <number>: HUD 기반 범위 탐지기를 표시합니다.",
+	"/dbm arrow: " .. L.DBM .. " 화살표를 표시합니다. 자세한 내용은 '/dbm arrow help'를 참조하세요.",
+	"/dbm hud: " .. L.DBM .. " HUD를 표시합니다. 자세한 내용은 '/dbm hud'를 참조하세요."
 }
 L.TIMER_USAGE	= {
 	L.DBM .. " 타이머 명령어:",
@@ -626,15 +631,9 @@ L.SPEED_CLEAR_TIMER_TEXT	= "최고 완료 기록"
 L.COMBAT_RES_TIMER_TEXT	= "다음 전투 부활 충전"
 L.TIMER_RESPAWN		= "%s 재생성"
 
-L.LAG_CHECKING				= "공격대의 지연시간 확인중..."
-L.LAG_HEADER					= L.DEADLY_BOSS_MODS .. " - 지연시간 확인 결과"
-L.LAG_ENTRY					= "%s: 서버 지연시간 [%d ms] / 개인 지연시간 [%d ms]"
-L.LAG_FOOTER					= "응답없음: %s"
-
-L.DUR_CHECKING				= "공격대 내구도 검사중..."
-L.DUR_HEADER					= L.DEADLY_BOSS_MODS .. " - 내구도 검사 결과"
-L.DUR_ENTRY					= "%s: 내구도 [%d 퍼센트] / 깨진 장비 [%s]"
-L.LAG_FOOTER					= "응답 없음: %s"
+L.LAG_HEADER					= L.DBM .. " - 지연시간 확인 결과"
+L.DUR_HEADER					= L.DBM .. " - 내구도 검사 결과"
+L.KEYSTONES_HEADER						= L.DBM.. " - 쐐기돌"
 
 L.OVERRIDE_ACTIVATED					= "이 전투에서 공대장에 의해 설정 강제 적용이 활성화되었습니다"
 
@@ -681,3 +680,28 @@ L.TOOLTIP_FASTEST				= "최단 처치 시간 (%s)"
 L.FOLLOWER						= "추종자"--i.e. the new dungeon type in 10.2.5. I haven't found a translated string yet
 L.STORY					    	= PLAYER_DIFFICULTY_STORY_RAID or "이야기"--i.e. the new dungeon type in 11.0.0. I haven't found a translated string yet
 L.DUOS							= "짝패"
+
+-- Keystone dungeon names (keep to a max of 6 characters)
+-- See https://wago.tools/db2/MapChallengeMode for ID => Dungeon Names
+L.KEYSTONE_NAMES[197] = '아즈눈' -- Eye of Azshara
+L.KEYSTONE_NAMES[198] = '어숲' -- Darkheart Thicket
+L.KEYSTONE_NAMES[199] = '검떼' -- Black Rook Hold
+L.KEYSTONE_NAMES[200] = '용맹' -- Halls of Valor
+L.KEYSTONE_NAMES[206] = '넬타' -- Neltharion's Lair
+L.KEYSTONE_NAMES[207] = '금고' -- Vault of the Wardens
+L.KEYSTONE_NAMES[208] = '아귀' -- Maw of Souls
+L.KEYSTONE_NAMES[209] = '비전로' -- The Arcway
+L.KEYSTONE_NAMES[210] = '별궁' -- Court of Stars
+L.KEYSTONE_NAMES[227] = '하층' -- Return to Karazhan: Lower
+L.KEYSTONE_NAMES[233] = '대성당' -- Cathedral of Eternal Night
+L.KEYSTONE_NAMES[234] = '상층' -- Return to Karazhan: Upper
+L.KEYSTONE_NAMES[239] = '삼두정' -- Seat of the Triumvirate
+
+L.KEYSTONE_NAMES[378] = '속죄' -- Halls of Atonement
+L.KEYSTONE_NAMES[391] = '경거' -- Tazavesh: Streets of Wonder
+L.KEYSTONE_NAMES[392] = '소레아' -- Tazavesh: So'leah's Gambit
+L.KEYSTONE_NAMES[499] = '수도원' -- Priority of the Sacred Flame
+L.KEYSTONE_NAMES[503] = '아라카라' -- Ara-Kara, City of Echoes
+L.KEYSTONE_NAMES[505] = '새인호' -- The Dawnbreaker
+L.KEYSTONE_NAMES[525] = '수문' -- Operation Floodgate
+L.KEYSTONE_NAMES[542] = '알다니' -- Eco-Dome Al'dani

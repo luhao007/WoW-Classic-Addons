@@ -1,6 +1,7 @@
 <Ui>
 	<Script file="Options.lua" />
-	<Script file="Mode.lua" />
+	<Script file="WowUIMove.lua" />
+	<Script file="General.lua" />
 	<Script file="ActionBar.lua" />
 	<Script file="ChatUI.lua" />
 	<Script file="TopBar.lua" />

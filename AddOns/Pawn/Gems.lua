@@ -1,6 +1,6 @@
 ﻿-- Pawn by Vger-Azjol-Nerub
 -- www.vgermods.com
--- © 2006-2024 Travis Spomer.  This mod is released under the Creative Commons Attribution-NonCommercial-NoDerivs 3.0 license.
+-- © 2006-2025 Travis Spomer.  This mod is released under the Creative Commons Attribution-NonCommercial-NoDerivs 3.0 license.
 -- See Readme.htm for more information.
 --
 -- Gem information
@@ -269,7 +269,7 @@ local PawnGemData52 =
 }
 
 
-local PawnGemData103 =
+local PawnGemData102 =
 {
 
 -- Requires ilvl 200
@@ -295,6 +295,35 @@ local PawnGemData103 =
 { ID = 192976, R = true, Y = true, B = true, Stats = { Stamina = 102, MasteryRating = 33 } }, -- Puissant Nozdorite
 { ID = 192979, R = true, Y = true, B = true, Stats = { Stamina = 102, Versatility = 33 } }, -- Steady Nozdorite
 
+}
+
+
+local PawnGemData196 =
+{
+
+-- Requires ilvl 200
+-- These are the tier-3 quality (ilvl 577) versions of the gems
+{ ID = 213455, R = true, Y = true, B = true, Stats = { CritRating = 147, HasteRating = 49 } }, -- Quick Ruby
+{ ID = 213458, R = true, Y = true, B = true, Stats = { CritRating = 147, MasteryRating = 49 } }, -- Masterful Ruby
+{ ID = 213461, R = true, Y = true, B = true, Stats = { CritRating = 147, Versatility = 49 } }, -- Versatile Ruby
+{ ID = 213464, R = true, Y = true, B = true, Stats = { CritRating = 176 } }, -- Deadly Ruby
+{ ID = 213467, R = true, Y = true, B = true, Stats = { Versatility = 147, CritRating = 49 } }, -- Deadly Sapphire
+{ ID = 213470, R = true, Y = true, B = true, Stats = { Versatility = 147, HasteRating = 49 } }, -- Quick Sapphire
+{ ID = 213473, R = true, Y = true, B = true, Stats = { Versatility = 147, MasteryRating = 49 } }, -- Masterful Sapphire
+{ ID = 213476, R = true, Y = true, B = true, Stats = { Versatility = 176 } }, -- Versatile Sapphire
+{ ID = 213479, R = true, Y = true, B = true, Stats = { HasteRating = 147, CritRating = 49 } }, -- Deadly Emerald
+{ ID = 213482, R = true, Y = true, B = true, Stats = { HasteRating = 147, MasteryRating = 49 } }, -- Masterful Emerald
+{ ID = 213485, R = true, Y = true, B = true, Stats = { HasteRating = 147, Versatility = 49 } }, -- Versatile Emerald
+{ ID = 213488, R = true, Y = true, B = true, Stats = { HasteRating = 176 } }, -- Quick Emerald
+{ ID = 213491, R = true, Y = true, B = true, Stats = { MasteryRating = 147, CritRating = 49 } }, -- Deadly Onyx
+{ ID = 213494, R = true, Y = true, B = true, Stats = { MasteryRating = 147, HasteRating = 49 } }, -- Quick Onyx
+{ ID = 213497, R = true, Y = true, B = true, Stats = { MasteryRating = 147, Versatility = 49 } }, -- Versatile Onyx
+{ ID = 213500, R = true, Y = true, B = true, Stats = { MasteryRating = 176 } }, -- Masterful Onyx
+{ ID = 213503, R = true, Y = true, B = true, Stats = { Stamina = 147, CritRating = 49 } }, -- Deadly Amber
+{ ID = 213506, R = true, Y = true, B = true, Stats = { Stamina = 147, HasteRating = 49 } }, -- Quick Amber
+{ ID = 213509, R = true, Y = true, B = true, Stats = { Stamina = 147, MasteryRating = 49 } }, -- Masterful Amber
+{ ID = 213512, R = true, Y = true, B = true, Stats = { Stamina = 147, Versatility = 49 } }, -- Versatile Amber
+{ ID = 213517, R = true, Y = true, B = true, Stats = { Stamina = 275 } }, -- Solid Amber
 
 }
 
@@ -313,7 +342,8 @@ local PawnGemData103 =
 
 PawnGemQualityLevels =
 {
-	{ 398, PawnGemData103 }, -- Vault of the Incarnates
+	{ 584, PawnGemData196 }, -- The War Within raid finder (593 for mythic dungeons)
+	{ 398, PawnGemData102 }, -- Vault of the Incarnates
 	{ 315, PawnGemData52 }, -- Mythic Fated Shadowlands epics are 311; tier-1 green Dragonflight gems are 385
 	{ 175, PawnGemData16 }, -- Rank 1 crafted Shadowlands legendaries (177 is rank 4 covenant armor)
 	{ 144, PawnGemData12 }, -- Mythic Ny'alotha is 140
@@ -324,11 +354,10 @@ PawnGemQualityLevels =
 	{ 0, PawnGemData1 },
 }
 
-PawnMetaGemQualityLevels =
-{
-	{0, {} }, -- There are no meta gems anymore.
-}
+PawnMetaGemQualityLevels = nil
+PawnCogwheelQualityLevels = nil
+PawnCrystalOfFearQualityLevels = nil
 
-PawnMinimumItemLevelToConsiderGems = 315 -- Sockets on items below this ilvl are ignored by default
+PawnMinimumItemLevelToConsiderGems = 571 -- Sockets on items below this ilvl are ignored by default
 
 end -- if VgerCore.IsMainline

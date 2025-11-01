@@ -1,14 +1,10 @@
 local GatherMate = LibStub("AceAddon-3.0"):GetAddon("GatherMate2")
 local Config = GatherMate:NewModule("Config","AceEvent-3.0")
-local Display = GatherMate:GetModule("Display")
 local L = LibStub("AceLocale-3.0"):GetLocale("GatherMate2", false)
 
 -- Databroker support
 local DataBroker = LibStub:GetLibrary("LibDataBroker-1.1",true)
 
-local WoWClassic = (WOW_PROJECT_ID == WOW_PROJECT_CLASSIC)
-local WoWBC = (WOW_PROJECT_ID == WOW_PROJECT_BURNING_CRUSADE_CLASSIC)
-local WoWWrath = (WOW_PROJECT_ID == WOW_PROJECT_WRATH_CLASSIC)
 local SaveBindings = SaveBindings or AttemptToSaveBindings
 
 --[[
@@ -108,7 +104,6 @@ local generalOptions = {
 			type = "select",
 			values = prof_options2,
 			arg = "Extract Gas",
-			hidden = WoWClassic,
 		},
 		showTreasure = {
 			order = 5,
@@ -117,6 +112,22 @@ local generalOptions = {
 			type = "select",
 			values = prof_options3,
 			arg = "Treasure"
+		},
+		showArchaeology = {
+			order = 6,
+			name = L["Show Archaeology Nodes"],
+			desc = L["Toggle showing archaeology nodes."],
+			type = "select",
+			values = prof_options4,
+			arg = "Archaeology",
+		},
+		showTimber = {
+			order = 7,
+			name = L["Show Timber Nodes"],
+			desc = L["Toggle showing timber nodes."],
+			type = "select",
+			values = prof_options3,
+			arg = "Logging",
 		},
 	},
 }
@@ -308,7 +319,6 @@ local minimapOptions = {
 					type = "color",
 					hasAlpha = true,
 					arg = "Extract Gas",
-					hidden = WoWClassic,
 				},
 				trackingColorTreasure = {
 					order = 6,
@@ -317,6 +327,14 @@ local minimapOptions = {
 					type = "color",
 					hasAlpha = true,
 					arg = "Treasure",
+				},
+				trackingColorArchaelogy = {
+					order = 7,
+					name = L["Archaeology"],
+					desc = L["Color of the tracking circle."],
+					type = "color",
+					hasAlpha = true,
+					arg = "Archaeology",
 				},
 				space = {
 					order = 10,
@@ -366,16 +384,8 @@ local sortedFilter = setmetatable({}, {__index = function(t, k)
 		local expansion = GatherMate.nodeExpansion[k]
 		local map = GatherMate.nodeIDs[k]
 		for name in pairs(map) do
-			if WoWClassic and expansion and expansion[map[name]] > 1 then
-				-- skip
-			elseif WoWBC and expansion and expansion[map[name]] > 2 then
-				-- skip
-			elseif WoWWrath and expansion and expansion[map[name]] > 3 then
-				-- skip
-			else
-				local idx = #new+1
-				new[idx] = name
-			end
+			local idx = #new+1
+			new[idx] = name
 			denormalizedNames[name] = name
 		end
 		if expansion then
@@ -578,7 +588,6 @@ filterOptions.args.fish = {
 filterOptions.args.gas = {
 	type = "group",
 	name = L["Gas Clouds"],
-	hidden = WoWClassic,
 	args = {
 		select_all = {
 			order = 1,
@@ -637,6 +646,38 @@ filterOptions.args.treasure = {
 			set = "SetState",
 			get = "GetState",
 			arg = "Treasure",
+		},
+	},
+}
+filterOptions.args.archaeology = {
+	type = "group",
+	name = L["Archaeology"],
+	args = {
+		select_all = {
+			order = 1,
+			name = L["Select All"],
+			desc = L["Select all nodes"],
+			type = "execute",
+			func = "SelectAll",
+			arg = "Archaeology",
+		},
+		select_none = {
+			order = 2,
+			name = L["Select None"],
+			desc = L["Clear node selections"],
+			type = "execute",
+			func = "SelectNone",
+			arg = "Archaeology",
+		},
+		diglist = {
+			order = 3,
+			name = L["Archaeology"],
+			desc = L["Select the archaeology nodes you wish to display."],
+			type = "multiselect",
+			values = sortedFilter["Archaeology"],
+			set = "SetState",
+			get = "GetState",
+			arg = "Archaeology",
 		},
 	},
 }
@@ -712,7 +753,6 @@ local maintenanceOptions = {
 					type = "range",
 					min = 0, max = 100, step = 1,
 					arg = "Extract Gas",
-					hidden = WoWClassic,
 				},
 				Treasure = {
 					order = 5,
@@ -721,6 +761,14 @@ local maintenanceOptions = {
 					type = "range",
 					min = 0, max = 30, step = 1,
 					arg = "Treasure",
+				},
+				Archaeology = {
+					order = 5,
+					name = L["Archaeology"],
+					desc = L["Cleanup radius"],
+					type = "range",
+					min = 0, max = 30, step = 1,
+					arg = "Archaeology",
 				}
 			},
 		},
@@ -841,7 +889,6 @@ local maintenanceOptions = {
 					arg = "Extract Gas",
 					confirm = true,
 					confirmText = L["Are you sure you want to delete all nodes from this database?"],
-					hidden = WoWClassic,
 				},
 				Treasure = {
 					order = 5,
@@ -849,6 +896,15 @@ local maintenanceOptions = {
 					desc = L["Delete Entire Database"],
 					type = "execute",
 					arg = "Treasure",
+					confirm = true,
+					confirmText = L["Are you sure you want to delete all nodes from this database?"],
+				},
+				Archaeology = {
+					order = 5,
+					name = L["Archaeology"],
+					desc = L["Delete Entire Database"],
+					type = "execute",
+					arg = "Archaeology",
 					confirm = true,
 					confirmText = L["Are you sure you want to delete all nodes from this database?"],
 				},
@@ -897,7 +953,6 @@ local maintenanceOptions = {
 					desc = L["Database locking"],
 					type = "toggle",
 					arg = "Extract Gas",
-					hidden = WoWClassic,
 				},
 				Treasure = {
 					order = 5,
@@ -905,6 +960,13 @@ local maintenanceOptions = {
 					desc = L["Database locking"],
 					type = "toggle",
 					arg = "Treasure",
+				},
+				Archaeology = {
+					order = 5,
+					name = L["Archaeology"],
+					desc = L["Database locking"],
+					type = "toggle",
+					arg = "Archaeology",
 				}
 			}
 		},
@@ -926,29 +988,26 @@ ImportHelper.db_options = {
 	["Merge"] = L["Merge"],
 	["Overwrite"] = L["Overwrite"]
 }
-ImportHelper.db_tables = WoWClassic and {
-	["Herbs"] = L["Herbalism"],
-	["Mines"] = L["Mining"],
-	["Fish"] = L["Fishing"],
-	["Treasure"] = L["Treasure"],
-}
-or
+ImportHelper.db_tables =
 {
 	["Herbs"] = L["Herbalism"],
 	["Mines"] = L["Mining"],
 	["Gases"] = L["Gas Clouds"],
 	["Fish"] = L["Fishing"],
 	["Treasure"] = L["Treasure"],
+	["Archaeology"] = L["Archaeology"],
 }
 ImportHelper.expac_data = {
 	["TBC"] = L["The Burning Crusades"],
 	["WRATH"] = L["Wrath of the Lich King"],
-	--[[
 	["CATACLYSM"] = L["Cataclysm"],
 	["MISTS"] = L["Mists of Pandaria"],
 	["WOD"] = L["Warlords of Draenor"],
 	["LEGION"] = L["Legion"],
-	]]
+	["BFA"] = L["Battle for Azeroth"],
+	["SL"] = L["Shadowlands"],
+	["DF"] = L["Dragonflight"],
+	["TWW"] = L["The War Within"],
 }
 imported["GatherMate2_Data"] = false
 importOptions.args.GatherMateData = {
@@ -956,8 +1015,8 @@ importOptions.args.GatherMateData = {
 	name = "GatherMate2Data", -- addon name to import from, don't localize
 	handler = ImportHelper,
 	disabled = function()
-		local name, title, notes, loadable, reason, security, newVersion = GetAddOnInfo("GatherMate2_Data")
-		local enabled = GetAddOnEnableState(UnitName("player"), "GatherMate2_Data") > 0
+		local name, title, notes, loadable, reason, security, newVersion = C_AddOns.GetAddOnInfo("GatherMate2_Data")
+		local enabled = C_AddOns.GetAddOnEnableState("GatherMate2_Data", UnitName("player")) > 0
 		-- disable if the addon is not enabled, or
 		-- disable if there is a reason why it can't be loaded ("MISSING" or "DISABLED")
 		return not enabled or (reason ~= nil and reason ~= "" and reason ~= "DEMAND_LOADED")
@@ -1029,7 +1088,7 @@ importOptions.args.GatherMateData = {
 			desc = L["Load GatherMate2Data and import the data to your database."],
 			type = "execute",
 			func = function()
-				local loaded, reason = LoadAddOn("GatherMate2_Data")
+				local loaded, reason = C_AddOns.LoadAddOn("GatherMate2_Data")
 				local GatherMateData = LibStub("AceAddon-3.0"):GetAddon("GatherMate2_Data")
 				if loaded and GatherMateData.generatedVersion then
 					local dataVersion = tonumber(GatherMateData.generatedVersion:match("%d+"))
@@ -1053,9 +1112,9 @@ importOptions.args.GatherMateData = {
 				if db["importers"]["GatherMate2_Data"].Databases["Mines"] then cm = 1 end
 				if db["importers"]["GatherMate2_Data"].Databases["Herbs"] then cm = 1 end
 				if db["importers"]["GatherMate2_Data"].Databases["Fish"] then cm = 1 end
-				if not WoWClassic then
-					if db["importers"]["GatherMate2_Data"].Databases["Gases"] then cm = 1 end
-				end
+				if db["importers"]["GatherMate2_Data"].Databases["Gases"] then cm = 1 end
+				if db["importers"]["GatherMate2_Data"].Databases["Treasure"] then cm = 1 end
+				if db["importers"]["GatherMate2_Data"].Databases["Archaeology"] then cm = 1 end
 				return imported["GatherMate2_Data"] or (cm == 0 and not imported["GatherMate2_Data"])
 			end,
 		}
@@ -1082,26 +1141,13 @@ local faqOptions = {
 local acr = LibStub("AceConfigRegistry-3.0")
 local acd = LibStub("AceConfigDialog-3.0")
 
-local function findPanel(name, parent)
-	for i, button in next, InterfaceOptionsFrameAddOns.buttons do
-		if button.element then
-			if name and button.element.name == name then return button
-			elseif parent and button.element.parent == parent then return button
-			end
-		end
-	end
-end
 function Config:OnInitialize()
 	db = GatherMate.db.profile
 
 	self.importHelper = ImportHelper
 
 	acr:RegisterOptionsTable("GatherMate 2", generalOptions)
-	local options = acd:AddToBlizOptions("GatherMate 2", "GatherMate 2")
-	options:HookScript("OnShow", function()
-		local p = findPanel("GatherMate 2")
-		if p and p.element.collapsed then OptionsListButtonToggle_OnClick(p.toggle) end
-	end)
+	acd:AddToBlizOptions("GatherMate 2", "GatherMate 2")
 
 	acr:RegisterOptionsTable("GM2/Minimap", minimapOptions)
 	acd:AddToBlizOptions("GM2/Minimap", "Minimap", "GatherMate 2")
@@ -1122,7 +1168,7 @@ function Config:OnInitialize()
 	acd:AddToBlizOptions("GM2/FAQ", "FAQ", "GatherMate 2")
 
 	local function openOptions()
-		InterfaceOptionsFrame_OpenToCategory("GatherMate 2")
+		Settings.OpenToCategory("GatherMate 2")
 	end
 
 	SLASH_GatherMate21 = "/gathermate"
@@ -1172,11 +1218,11 @@ end
 
 function Config:CheckAutoImport()
 	for k,v in pairs(db.importers) do
-		local verline = GetAddOnMetadata(k, "X-Generated-Version")
+		local verline = C_AddOns.GetAddOnMetadata(k, "X-Generated-Version")
 		if verline and v["autoImport"] then
 			local dataVersion = tonumber(verline:match("%d+"))
 			if dataVersion and dataVersion > v["lastImport"] then
-				local loaded, reason = LoadAddOn(k)
+				local loaded, reason = C_AddOns.LoadAddOn(k)
 				if loaded then
 					local addon = LibStub("AceAddon-3.0"):GetAddon(k)
 					local filter = nil

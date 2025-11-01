@@ -22,6 +22,7 @@ local TooltipF,Tooltiptabbut =PIGOptionsList_R(RTabFrame,L["TOOLTIP_TABNAME1"],9
 TooltipF:Show()
 Tooltiptabbut:Selected()
 ---
+if PIG_MaxTocversion(50000) then
 local ItemLeveltishi = {"显示物品等级","在鼠标提示上显示物品的物品等级"}
 TooltipF.ItemLevel = PIGCheckbutton_R(TooltipF,ItemLeveltishi)
 TooltipF.ItemLevel:SetScript("OnClick", function (self)
@@ -31,6 +32,7 @@ TooltipF.ItemLevel:SetScript("OnClick", function (self)
 		PIGA["Tooltip"]["ItemLevel"]=false;
 	end
 end);
+end
 TooltipF.ItemMaxCount = PIGCheckbutton_R(TooltipF,{"显示物品最大堆叠数","在鼠标提示上显示物品最大堆叠数"})
 TooltipF.ItemMaxCount:SetScript("OnClick", function (self)
 	if self:GetChecked() then
@@ -57,7 +59,7 @@ TooltipF.ItemSell:SetScript("OnClick", function (self)
 	TooltipPlusfun.Tooltip_ItemSell()
 end);
 TooltipF:HookScript("OnShow", function(self)
-	self.ItemLevel:SetChecked(PIGA["Tooltip"]["ItemLevel"])
+	if self.ItemLevel then self.ItemLevel:SetChecked(PIGA["Tooltip"]["ItemLevel"]) end
 	self.ItemMaxCount:SetChecked(PIGA["Tooltip"]["ItemMaxCount"])
 	self.IDinfo:SetChecked(PIGA["Tooltip"]["IDinfo"])
 	self.ItemSell:SetChecked(PIGA["Tooltip"]["ItemSell"])

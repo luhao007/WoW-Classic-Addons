@@ -1,11 +1,14 @@
-## Interface: 30405
+## Interface: 50502
 ## Author: luhao007
 
 ## Title: Libraries
 ## Notes: Libraries
-## Title-zhCN: |cFFFFE00A<|r|cFFC41F3B基础库|r|cFFFFE00A>|r |cFFFFFFFF|cFF7FFF7FAce核心库|r |cFFFF0000必须加载|r|r
+## Title-zhCN: |cFFFFE00A<|r|cFFC41F3B基础库|r|cFFFFE00A>|r |cFFFFFFFF|cFF7FFF7FACE核心库|r |cFFFF0000必须加载|r|r
 ## Notes-zhCN: 插件基础函数库|N|CFFFF0000必须加载|R
 
+## IconTexture: Interface\Icons\INV_Misc_Bag_10_Black
+
+## Category: |cFFFFE00A*<|r|cFFC41F3B基础库|r|cFFFFE00A>|r |cFFFF0000必须加载|r
 
 # Common Handler Libs
 Ace3\LibStub\LibStub.lua
@@ -56,37 +59,35 @@ LibBabble\LibBabble-ItemSet-3.0\lib.xml
 LibBabble\LibBabble-Race-3.0\lib.xml
 LibBabble\LibBabble-SubZone-3.0\lib.xml
 
+# DR Libs
+DRData-1.0\DRData-1.0.xml
+
 # Other Libs
 DF\load.xml
-Krowi_WorldMapButtons\Krowi_WorldMapButtons-1.4.xml
+Krowi_WorldMapButtons-1.4\Krowi_WorldMapButtons-1.4.xml
 LibAHTab\LibAHTab.xml
-LibAboutPanel\lib.xml
 LibAlts-1.0\lib.xml
-LibBase64-1.0\lib.xml
-LibCandyBar-3.0\lib.xml
 LibChatAnims\LibChatAnims.xml
-LibClassicCasterino\LibClassicCasterino.lua
-LibClassicDurations\LibClassicDurations.xml
-LibClassicItemSets-1.0\LibClassicItemSets-1.0.xml
-LibClassicSpellActionCount-1.0\LibClassicSpellActionCount-1.0.lua
+LibClass-2.0\LibClass-2.0.xml
 LibCustomGlow-1.0\LibCustomGlow-1.0.xml
 LibDBIcon-1.0\lib.xml
+LibDDI-1.0\lib.xml
+LibDFramework-1.0\load.xml
 LibDialog-1.0\lib.xml
 LibDropDownMenu\LibDropDownMenu.xml
 LibDualSpec-1.0\LibDualSpec-1.0.lua
-LibDurability\LibDurability\LibDurability.xml
-LibGetEnchant-1.0\LibGetEnchant-1.0.xml
+LibDurability\LibDurability.xml
 LibGetFrame-1.0\LibGetFrame-1.0.xml
 LibGraph-2.0\LibGraph-2.0.lua
-LibHealComm-4.0\LibHealComm-4.0.xml
-LibItemUpgradeInfo-1.0\LibItemUpgradeInfo-1.0.xml
-LibLatency\LibLatency\LibLatency.xml
+LibIconPath\Core.lua
+LibLatency\LibLatency.xml
 LibOpenRaid\lib.xml
+LibPetJournal-2.0\LibPetJournal-2.0.lua
 LibQTip-1.0\lib.xml
 LibRangeCheck-3.0\LibRangeCheck-3.0.lua
 LibRealmInfo\LibRealmInfo.lua
 LibSerialize\lib.xml
-LibSink-2.0\lib.xml
+LibSink-2.0\LibSink-2.0\LibSink-2.0.lua
 LibSpecialization\LibSpecialization.xml
 LibSpellRange-1.0\lib.xml
 LibTime-1.0\LibTime-1.0.xml

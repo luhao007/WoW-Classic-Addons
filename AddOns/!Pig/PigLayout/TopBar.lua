@@ -84,6 +84,7 @@ fujiF.setF.Alpha.Slider:HookScript("OnValueChanged", function(self, arg1)
 	PIGA["PigLayout"]["TopBar"]["Alpha"]=arg1;
 	fujiF.Update_XYUI()
 end)
+--
 fujiF.setF:HookScript("OnShow", function(self)
 	self.AnchorPoint:PIGDownMenu_SetText(xyListName[PIGA["PigLayout"]["TopBar"]["AnchorPoint"]])
 	self.Height:PIGSetValue(PIGA["PigLayout"]["TopBar"]["Height"])
@@ -91,7 +92,7 @@ fujiF.setF:HookScript("OnShow", function(self)
 	self.Alpha:PIGSetValue(PIGA["PigLayout"]["TopBar"]["Alpha"])
 end)
 -----
-
+PigLayoutFun.JGUIlist={}
 function PigLayoutFun.Options_TopBar()
 	if not PIGA["PigLayout"]["TopBar"]["Open"] then return end
 	if fujiF.TopBarOpen then return end
@@ -121,4 +122,110 @@ function PigLayoutFun.Options_TopBar()
 	hooksecurefunc("UpdateUIParentPosition", function()
 		fujiF.Update_XYUI()
 	end)
+	--接管
+	local function Update_UIPoint(name)
+		local pigui=_G[name]
+		if pigui then
+			PIGA["Pig_UI"][name]=nil
+			local uidata=PIGA["PigLayout"]["TopBar"]["JG"][name]
+			if pigui.yidong then pigui.yidong:ClearAllPoints() end
+			pigui:SetParent(topinfobar)
+			pigui:SetClampedToScreen(false)
+			pigui:ClearAllPoints()
+			pigui.zengjialiang=0
+			if pigui.banW then
+				if uidata[1]=="BOTTOM" then
+					pigui.zengjialiang=pigui.banW
+				elseif uidata[1]=="BOTTOMRIGHT" then
+					pigui.zengjialiang=pigui.banW*2
+				end
+			end
+			pigui:SetPoint(uidata[1],topinfobar,uidata[1],uidata[2]+pigui.zengjialiang,0.8)
+		end
+	end
+	local function add_Checkbut()
+		for i=1,#PigLayoutFun.JGUIlist do
+			PIGA["PigLayout"]["TopBar"]["JG"]=PIGA["PigLayout"]["TopBar"]["JG"] or {}
+			local gndata = PigLayoutFun.JGUIlist[i]
+			local gnname = gndata[1]
+			local CfV =PIGA["PigLayout"]["TopBar"]["JG"]
+			local WowWidth2=GetScreenWidth()
+			local ModeList={{"BOTTOMLEFT","左"},{"BOTTOM","中"},{"BOTTOMRIGHT","右"}}
+			local ModeListData={
+				["BOTTOMLEFT"]={"左",{0, WowWidth2}},
+				["BOTTOM"]={"中",{-WowWidth2*0.5, WowWidth2*0.5}},
+				["BOTTOMRIGHT"]={"右",{-WowWidth2, 0}},
+			}
+			local ckbutMenu = PIGCheckbutton(fujiF.setF,{"TOPLEFT", fujiF.setF, "TOPLEFT", 20, -180-40*i},{"接管:"..gndata[2]})
+			ckbutMenu:HookScript("OnClick", function (self)
+				if InCombatLockdown() then self:SetChecked(false) PIG_OptionsUI:ErrorMsg(ERR_NOT_IN_COMBAT,"R") return end
+				if self:GetChecked() then
+					CfV[gnname]={"BOTTOMLEFT",0}
+					Update_UIPoint(gndata[1])
+				else
+					CfV[gnname]=nil
+					PIG_OptionsUI.RLUI:Show()
+				end
+				self:Update_Checkbut(gndata[1])
+			end);
+			ckbutMenu.PointModeT = PIGFontString(ckbutMenu,{"LEFT", ckbutMenu, "RIGHT", 180, 0},"锚点")
+			ckbutMenu.PointMode=PIGDownMenu(ckbutMenu,{"LEFT", ckbutMenu.PointModeT, "RIGHT", 2, 0},{60,nil})
+			function ckbutMenu.PointMode:PIGDownMenu_Update_But()
+				local info = {}
+				info.func = self.PIGDownMenu_SetValue
+				for ix=1,#ModeList do
+				 	info.text, info.arg1 = ModeList[ix][2], ModeList[ix][1]
+				 	local saveV=CfV[gnname] and CfV[gnname][1]
+				 	info.checked = ModeList[ix][1] == saveV
+					self:PIGDownMenu_AddButton(info)
+				end 
+			end
+			function ckbutMenu.PointMode:PIGDownMenu_SetValue(value,arg1)
+				self:PIGDownMenu_SetText(value)
+				CfV[gnname][1]=arg1
+				CfV[gnname][2]=0
+				ckbutMenu.OffsetV.Slider:SetMinMaxValues(ModeListData[CfV[gnname][1]][2][1],ModeListData[CfV[gnname][1]][2][2]);
+				ckbutMenu.OffsetV:PIGSetValue(0)
+				Update_UIPoint(gndata[1])
+				PIGCloseDropDownMenus()
+			end
+			ckbutMenu.OffsetVT = PIGFontString(ckbutMenu,{"LEFT", ckbutMenu.PointMode, "RIGHT", 10, 0},"偏移")
+			local minvvv = CfV[gnname] and ModeListData[CfV[gnname][1]][2][1] or -200
+			local maxvvv = CfV[gnname] and ModeListData[CfV[gnname][1]][2][2] or 200
+			ckbutMenu.OffsetV = PIGSlider(ckbutMenu,{"LEFT", ckbutMenu.OffsetVT, "RIGHT", 0, 0},{minvvv,maxvvv,1},200)
+			ckbutMenu.OffsetV.Slider:HookScript("OnValueChanged", function(self, arg1)
+				CfV[gnname][2]=arg1;
+				Update_UIPoint(gndata[1])
+			end)
+			function ckbutMenu:Update_Checkbut()
+				if CfV[gnname] then
+					self.PointModeT:Show()
+					self.PointMode:Show()
+					self.OffsetVT:Show()
+					self.OffsetV:Show()
+					self.PointMode:PIGDownMenu_SetText(ModeListData[CfV[gnname][1]][1])
+					self.OffsetV:PIGSetValue(CfV[gnname][2])
+				else
+					self.PointModeT:Hide()
+					self.PointMode:Hide()
+					self.OffsetVT:Hide()
+					self.OffsetV:Hide()
+				end
+			end
+			ckbutMenu:HookScript("OnShow", function (self)
+				if CfV[gnname] then
+					self:SetChecked(true)
+				else
+					self:SetChecked(false)
+				end
+				self:Update_Checkbut(gnname)
+			end);
+		end
+	end
+	add_Checkbut()
+	for k,v in pairs(PigLayoutFun.JGUIlist) do
+		if PIGA["PigLayout"]["TopBar"]["JG"] and PIGA["PigLayout"]["TopBar"]["JG"][v[1]] then
+			Update_UIPoint(v[1])
+		end
+	end
 end

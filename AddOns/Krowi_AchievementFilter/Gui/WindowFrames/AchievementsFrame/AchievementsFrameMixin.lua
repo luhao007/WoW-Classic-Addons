@@ -134,13 +134,13 @@ function KrowiAF_AchievementsFrameMixin:OnHide()
     self:UnregisterEvent("ACHIEVEMENT_EARNED");
 end
 
-local function Validate(achievements, displayAchievements, defaultOrder)
+local function Validate(achievements, displayAchievements, defaultOrder, ignoreFilters)
 	if not achievements then
 		return;
 	end
 	local filters = addon.Filters;
 	for _, achievement in next, achievements do
-		if filters:AutoValidate(achievement) > 0 then -- Greater than 0 means it can be shown
+		if filters:AutoValidate(achievement, ignoreFilters) > 0 then -- Greater than 0 means it can be shown
 			tinsert(displayAchievements, achievement);
 		end
 		defaultOrder[achievement] = #displayAchievements;
@@ -151,8 +151,8 @@ local function GetFilteredAchievements(category)
 	local displayAchievements = {};
 	local defaultOrder = {};
 
-	Validate(category.Achievements, displayAchievements, defaultOrder);
-	Validate(category.MergedAchievements, displayAchievements, defaultOrder);
+	Validate(category.Achievements, displayAchievements, defaultOrder, category.IgnoreFilters);
+	Validate(category.MergedAchievements, displayAchievements, defaultOrder, category.IgnoreFilters);
 
 	if #displayAchievements == 0 then
 		return displayAchievements;
@@ -213,7 +213,7 @@ end
 function KrowiAF_AchievementsFrameMixin:ScrollToNearest(achievement)
 	local scrollBox = self.ScrollBox;
 	scrollBox:RecalculateDerivedExtent();
-	local dataIndex = scrollBox:FindIndex(achievement);
+	local dataIndex = scrollBox:FindFrameElementDataIndex(achievement);
 	if not dataIndex then
 		return;
 	end
@@ -244,7 +244,7 @@ function KrowiAF_AchievementsFrameMixin:ForceUpdate()
 	for _, tab in next, addon.Tabs do
 		tabButton = tab.Button;
 		if tabButton.SelectedAchievement then
-			if addon.Filters.Validate(tabButton.Filters, tabButton.SelectedAchievement) < 0 then
+			if addon.Filters.Validate(tabButton.Filters, tabButton.SelectedAchievement, tabButton.SelectedCategory.IgnoreFilters) < 0 then
 				tabButton.SelectedAchievement = nil;
 			end
 		end
@@ -269,7 +269,7 @@ function KrowiAF_AchievementsFrameMixin:ForceUpdate()
 	self:Update();
 
 	if selectedTab.SelectedAchievement then
-		self.ScrollBox:ScrollToElementData(selectedTab.SelectedAchievement, ScrollBoxConstants.AlignCenter, ScrollBoxConstants.NoScrollInterpolation);
+		self.ScrollBox:ScrollToElementData(selectedTab.SelectedAchievement, ScrollBoxConstants.AlignCenter, nil, ScrollBoxConstants.NoScrollInterpolation);
 		-- print("forceupdate select")
 		self.SelectionBehavior:SelectElementData(selectedTab.SelectedAchievement);
 		self:ScrollToNearest(selectedTab.SelectedAchievement);

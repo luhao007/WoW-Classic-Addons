@@ -72,7 +72,6 @@ L["CONFIG_DERIVE"] = "請複製下方字串，粘貼到需要導入位置";
 L["CONFIG_DERIVERL"] = "導入並重載";
 L["CONFIG_DERIVEERROR"] = "導入失敗，無法識別的字串";
 --常用
-L["COMMON_TABNAME"] = "常規";
 L["COMMON_TABNAME2"] = "交互";
 --Chat
 L["CHAT_TABNAME"] = "聊天";
@@ -98,7 +97,9 @@ L["CHAT_JILUTISHI"]="點擊上方頻道標籤瀏覽聊天記錄";
 L["CHAT_JILUTDEL"]="確定要清空%s聊天記錄嗎？";
 L["CHAT_WHISPERTIXING"]="新"..L["CHAT_WHISPER"].."提醒"
 L["CHAT_WHISPERTIXINGTOP"]="收到"..L["CHAT_WHISPER"].."時頻道切換按鈕裡面圖標會閃動"
-L["CHAT_TABNAME1"] = L["COMMON_TABNAME"];
+L["CHAT_WHISPERAUDIO"]="新"..L["CHAT_WHISPER"].."提示音"
+L["CHAT_WHISPERAUDIOTOP"]="收到"..L["CHAT_WHISPER"].."時會播放指定提示音"
+L["CHAT_TABNAME1"] = GENERAL;
 L["CHAT_QUKBUT"] = "快捷切換頻道按鈕";
 L["CHAT_QUKBUTTIPS"]="在聊天欄增加一排頻道快捷切換按鈕，可快速切換頻道"
 L["CHAT_QUKBUTNAME"] = {"說","喊","隊","會","團","通","戰","綜","交","組","世"};
@@ -154,7 +155,7 @@ L["CHAT_LOOTFADDERR2"]="創建失敗，系統允許最大聊天窗口數：10，
 L["BUSINESS_TABNAME"] = "商業";
 --动作条
 L["ACTION_TABNAME"] = ACTIONBARS_LABEL;
-L["ACTION_TABNAME1"] = L["COMMON_TABNAME"];
+L["ACTION_TABNAME1"] = GENERAL;
 L["ACTION_TABNAME2"] = "功能"..ACTIONBARS_LABEL;
 L["ACTION_ADDQUICKBUT"] = L["ACTION_TABNAME2"]..ADD.."<%s>";
 L["ACTION_ADDQUICKBUTTIS"] = L["ACTION_TABNAME2"]..ADD.."<%s>,以便快速打開。\n|cff00FF00注意：此功能需先在"..L["ACTION_TABNAME"].."選單打開"..L["ACTION_TABNAME2"].."|r";
@@ -182,7 +183,7 @@ L["COMBAT_TABNAME4"] = "新手保姆";
 --地图
 L["MAP_TABNAME"] = "地圖";
 L["MAP_TABNAME1"] = "小地圖";
-L["MAP_NIMIBUT"] = "顯示小地圖按鈕";
+L["MAP_NIMIBUT"] = "顯示本挿件小地圖按鈕";
 L["MAP_NIMIBUTTIPS"] = "顯示插件的小地圖按鈕";
 L["MAP_NIMIBUT_BS"] = "允許被收納";
 L["MAP_NIMIBUT_BSTIPS"] = "開啟後小地圖按鈕將可以被其他插件收納|cffFF0000(注意和下方收納小地圖按鈕功能只能選一)|r";
@@ -192,7 +193,7 @@ L["MAP_NIMIBUT_HANGNUM"]="每行按鈕數:"
 L["MAP_NIMIBUT_NOSN"]="點擊按鈕切換收納與否"
 L["MAP_NIMIBUT_TIPS1"]=KEY_BUTTON1.."-|cff00FFFF展開小地圖按鈕|r\r"..KEY_BUTTON2.."-|cff00FFFF設定|r\rShift+"..KEY_BUTTON1.."-|cff00FFFF重載界面|r\rCtrl+"..KEY_BUTTON1.."-|cff00FFFF打開錯誤日誌|r"
 L["MAP_NIMIBUT_TIPS2"]=KEY_BUTTON1.."-|cff00FFFF設定|r\rShift+"..KEY_BUTTON1.."-|cff00FFFF重載界面|r\rCtrl+"..KEY_BUTTON1.."-|cff00FFFF打開錯誤日誌|r"
-L["MAP_NIMIBUT_TIPS3"]="|cff00FF00此界面為其他插件按鈕收納筐,當前未啟用收納功能！\r|r|cff00FFFF"..KEY_BUTTON2.."打開插件-設定|r"
+L["MAP_NIMIBUT_TIPS3"]="|cff00FF00此介面收納其他挿件小地圖按鈕\r|r|cff00FFFF如需關閉"..KEY_BUTTON2.."設定-地圖|r"
 L["MAP_TABNAME2"] = "世界地圖";
 L["MAP_WORDXY"] = "顯示玩家坐標";
 L["MAP_WORDXYTIPS"] = "顯示玩家在地圖的坐標";
@@ -207,16 +208,16 @@ L["MAP_WORDMIWUTIPS"] = "去除世界地圖的戰爭迷霧";
 --Cvar
 L["CVAR_TABNAME"] = "遊戲設定(CVar)";
 L["CVAR_TABNAME0"] = "易用性";
-L["CVAR_TABNAME1"] = L["COMMON_TABNAME"];
+L["CVAR_TABNAME1"] = GENERAL;
 L["CVAR_TABNAME2"] = "姓名版";
 L["CVAR_TABNAME3"] = "自身高亮";
 L["CVAR_TABNAME4"] = "高級";
 --Invite
-L["TARDIS_TABNAME"] = "時空之門";
+L["TARDIS_TABNAME"] = "匯合石";
 L["TARDIS_CHEDUI"] = "車隊";
-L["TARDIS_CHETOU"] = "車頭";
-L["TARDIS_HOUCHE"] = "候車室";
-L["TARDIS_HOUCHE_1"] = "乘客";
+L["TARDIS_CHEDUI_1"] = "找車隊";
+L["TARDIS_CHEDUI_2"] = "找乘客";
+L["TARDIS_FARM"] = "坐車";
 L["TARDIS_PLANE"] = "位麵";
 L["TARDIS_YELL"] = "喊話";
 L["TARDIS_RECEIVEDATA"] = "正在接收數據...";

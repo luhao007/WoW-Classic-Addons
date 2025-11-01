@@ -54,18 +54,18 @@ VUHDO_I18N_BUFF_ALL = "alle";
 VUHDO_I18N_SHOW_BUFF_WATCH = "Buff Watch anzeigen";
 -- Chat messages
 -- @EXACT = false
-VUHDO_I18N_COMMAND_LIST = "\n|cffffe566 - [ VuhDo Kommandos ] -|r";
-VUHDO_I18N_COMMAND_LIST = VUHDO_I18N_COMMAND_LIST .. "|n|cffffe566opt|r[ions] - VuhDo Optionen";
-VUHDO_I18N_COMMAND_LIST = VUHDO_I18N_COMMAND_LIST .. "|n|cffffe566res|r[et] - Panel Positionen zurücksetzen";
-VUHDO_I18N_COMMAND_LIST = VUHDO_I18N_COMMAND_LIST .. "|n|cffffe566lock|r - Panelpositionen sperren/freigeben";
-VUHDO_I18N_COMMAND_LIST = VUHDO_I18N_COMMAND_LIST .. "|n|cffffe566mm, map, minimap|r - Minimap Icon an/aus";
-VUHDO_I18N_COMMAND_LIST = VUHDO_I18N_COMMAND_LIST .. "|n|cffffe566compart|r[ment] - Toggle AddOn Compartment Icon";
-VUHDO_I18N_COMMAND_LIST = VUHDO_I18N_COMMAND_LIST .. "|n|cffffe566show, hide, toggle|r - Panels anzeigen/verbergen";
-VUHDO_I18N_COMMAND_LIST = VUHDO_I18N_COMMAND_LIST .. "|n|cffffe566load|r - [Profile],[Key Layout]";
-VUHDO_I18N_COMMAND_LIST = VUHDO_I18N_COMMAND_LIST .. "|n[broad]|cffffe566cast, mt|r[s] - Main Tanks übertragen";
-VUHDO_I18N_COMMAND_LIST = VUHDO_I18N_COMMAND_LIST .. "|n|cffffe566role|r - Spielerrollen zuruecksetzen";
-VUHDO_I18N_COMMAND_LIST = VUHDO_I18N_COMMAND_LIST .. "|n|cffffe566ab|r[out] - About this add-on";
-VUHDO_I18N_COMMAND_LIST = VUHDO_I18N_COMMAND_LIST .. "|n|cffffe566help,?|r - Diese Befehlsliste\n";
+VUHDO_I18N_COMMAND_LIST = "\n|cffffe566 - [ VuhDo Kommandos ] -|r\n" ..
+"|cffffe566opt|r[ions] - VuhDo Optionen\n" ..
+"|cffffe566res|r[et] - Setze Panel Positionen zurück\n" ..
+"|cffffe566lock|r - Panelsperre umschalten\n" ..
+"|cffffe566mm, map, minimap|r - Minimap Icon umschalten\n" ..
+"|cffffe566compart|r[ment] - Addon-Leisten-Icon umschalten\n" ..
+"|cffffe566show, hide, toggle|r - Panels an/aus\n" ..
+"|cffffe566load|r - [Profil],[Tastenbelegung]\n" ..
+"[broad]|cffffe566cast, mt|r[s] - Maintanks im Raid bekanntgeben\n" ..
+"|cffffe566role|r - Spielerrollen zurücksetzen\n" ..
+"|cffffe566ab|r[out] - Über dieses Add-on\n" ..
+"|cffffe566help,?|r - Diese Kommandoliste\n";
 VUHDO_I18N_BAD_COMMAND = "Ungültiges Argument! '/vuhdo help' oder '/vd ?' für eine Liste der Kommandos.";
 VUHDO_I18N_CHAT_SHOWN = "|cffffe566sichtbar|r.";
 VUHDO_I18N_CHAT_HIDDEN = "|cffffe566versteckt|r.";
@@ -348,7 +348,8 @@ VUHDO_I18N_SPELL_LAYOUT_NOT_EXIST = "Spruch-Layout \"%s\" existiert nicht.";
 --VUHDO_I18N_ADDON_WARNING = "WARNUNG: Das möglicherweise problematische Addon |cffffffff\"%s\"|r ist mit VuhDo aktiv. Grund: %s";
 --VUHDO_I18N_MAY_CAUSE_LAGS = "Kann zu erheblichen Lags führen.";
 
-VUHDO_I18N_DISABLE_BY_VERSION = "!!! VUHDO IS DISABLED !!! This version is for client versions %d and above only !!!"
+VUHDO_I18N_DISABLE_BY_MIN_VERSION = "!!! VUHDO IS DISABLED !!! This version (%s) is for client versions %d and above only !!!"
+VUHDO_I18N_DISABLE_BY_MAX_VERSION = "!!! VUHDO IS DISABLED !!! This version (%s) is for client versions %d and below only !!!"
 
 VUHDO_I18N_BOUQUET_STATUS_ALTERNATE_POWERS = "Statusbar: Alt. Energie %"
 VUHDO_I18N_BOUQUET_ALTERNATE_POWERS_ABOVE = "Flag: Alt. Ernergie > %";
@@ -536,3 +537,30 @@ VUHDO_I18N_TEXT_PROVIDER_MANA_KILO_OF = "Mana: <#nk>/<#nk>";
 VUHDO_I18N_TEXT_PROVIDER_MANA = "Mana: <#n>";
 VUHDO_I18N_TEXT_PROVIDER_MANA_KILO = "Mana: <#nk>";
 VUHDO_I18N_BOUQUET_STATUS_HEALTH_IF_ACTIVE = "Statusbar: Health % if active";
+
+VUHDO_I18N_DEF_COUNTER_ACTIVE_AURAS = "Counter: Active Bouquet Auras #k";
+
+VUHDO_I18N_BOUQUET_EVOKER_REVERSION = "Evoker Reversion (non-echo)";
+VUHDO_I18N_BOUQUET_EVOKER_REVERSION_ECHO = "Evoker Reversion (echo)";
+VUHDO_I18N_BOUQUET_EVOKER_DREAM_BREATH = "Evoker Dream Breath (non-echo)";
+VUHDO_I18N_BOUQUET_EVOKER_DREAM_BREATH_ECHO = "Evoker Dream Breath (echo)";
+VUHDO_I18N_BOUQUET_EVOKER_ALL_ECHO = "Evoker All HoT Echoes";
+
+VUHDO_I18N_TRAIL_OF_LIGHT_NEXT = "Flag: Trail of Light (Next)";
+VUHDO_I18N_DEF_TRAIL_OF_LIGHT_NEXT = "Trail of Light (Next)";
+VUHDO_I18N_BOUQUET_DEBUFF_BLEED = "Flag: Debuff Bleed";
+
+VUHDO_I18N_DEF_SPELL_TRACE_INCOMING = "Spell Trace (Incoming)";
+
+VUHDO_I18N_BOUQUET_CHI_HARMONY_ICON_MINE = "Icon: Chi Harmony (Mine)";
+VUHDO_I18N_DEF_BOUQUET_CHI_HARMONY_ICON_MINE = "Chi Harmony (Mine)";
+VUHDO_I18N_BOUQUET_CHI_HARMONY_ICON_OTHERS = "Icon: Chi Harmony (Others)";
+VUHDO_I18N_DEF_BOUQUET_CHI_HARMONY_ICON_OTHERS = "Chi Harmony (Others)";
+VUHDO_I18N_BOUQUET_CHI_HARMONY_ICON_BOTH = "Icon: Chi Harmony (Both)";
+VUHDO_I18N_DEF_BOUQUET_CHI_HARMONY_ICON_BOTH = "Chi Harmony (Both)";
+
+VUHDO_I18N_BOUQUET_DEBUFF_ENRAGE = "Flag: Debuff Enrage";
+
+-- Cata Classic
+
+VUHDO_I18N_BUFFC_AURA = "Aura";

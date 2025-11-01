@@ -251,7 +251,7 @@
 	</Layers>
 	<Scripts>
 		<OnShow>VUHDO_lnfPatchFont(self, "TitleString"); VUHDO_lnfColorSwatchInitFromModel(self)</OnShow>
-		<OnMouseDown>VUHDO_lnfColorSwatchShowColorPicker(self, arg1)</OnMouseDown>
+		<OnMouseDown>VUHDO_lnfColorSwatchShowColorPicker(self, button)</OnMouseDown>
 		<OnEnter>VUHDO_lnfShowTooltip(self)</OnEnter>
 		<OnLeave>VUHDO_lnfHideTooltip(self)</OnLeave>
 	</Scripts>
@@ -1202,20 +1202,6 @@
 	<Scripts>
 		<OnClick>
 			VUHDO_lnfShareButtonClicked(self);
-		</OnClick>
-	</Scripts>
-</Button>
-
-<Button name="VuhDoSoundButtonTemplate" text="" inherits="VuhDoIconButtonTemplate" virtual="true">
-	<Layers>
-		<Layer level="OVERLAY">
-			<Texture name="$parentIcon" inherits="VuhDoButtonIconTemplate" file="Interface\AddOns\VuhDoOptions\Images\Sound">
-			</Texture>
-		</Layer>
-	</Layers>
-	<Scripts>
-		<OnClick>
-			VUHDO_lnfSoundButtonClicked(self);
 		</OnClick>
 	</Scripts>
 </Button>

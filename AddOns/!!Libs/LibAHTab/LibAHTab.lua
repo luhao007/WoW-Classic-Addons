@@ -1,9 +1,13 @@
-local lib = LibStub:NewLibrary("LibAHTab-1-0", 2)
+local lib = LibStub:NewLibrary("LibAHTab-1-0", 4)
 
 if not lib or lib.internalState then return end
 
 local MIN_TAB_WIDTH = 70
 local TAB_PADDING = 20
+local OFFSET_X = 3
+if WOW_PROJECT_ID ~= WOW_PROJECT_MAINLINE then
+  OFFSET_X = -14
+end
 
 local tabIDErrorMessage = "tabID should be a string"
 
@@ -12,11 +16,12 @@ function lib:DoesIDExist(tabID)
   return lib.internalState and lib.internalState.usedIDs[tabID] ~= nil
 end
 
-function lib:CreateTab(tabID, attachedFrame, displayText)
+function lib:CreateTab(tabID, attachedFrame, displayText, tabHeader)
   assert(AuctionHouseFrame, "Wait for the AH to open before creating your tab")
   assert(type(tabID) == "string", tabIDErrorMessage)
   assert(type(attachedFrame) == "table" and attachedFrame.IsObjectType and attachedFrame:IsObjectType("Frame"), "attachedFrame should be a frame")
   assert(type(displayText) == "string", "displayText should be a string")
+  assert(tabHeader == nil or type(tabHeader) == "string", "tabHeader should be a string")
 
   if not lib.internalState then
     lib.internalState = {
@@ -42,7 +47,7 @@ function lib:CreateTab(tabID, attachedFrame, displayText)
     error("The tab id already exists")
   end
 
-  local newTab = CreateFrame("Button", nil, lib.internalState.rootFrame, "AuctionHouseFrameDisplayModeTabTemplate")
+  local newTab = CreateFrame("Button", "LibAHFrame-1.0-" .. tabID, lib.internalState.rootFrame, "AuctionHouseFrameDisplayModeTabTemplate")
   table.insert(lib.internalState.Tabs, newTab)
 
   newTab:SetText(displayText)
@@ -52,14 +57,16 @@ function lib:CreateTab(tabID, attachedFrame, displayText)
   PanelTemplates_TabResize(newTab, TAB_PADDING, nil, MIN_TAB_WIDTH)
 
   if #lib.internalState.Tabs > 1 then
-    newTab:SetPoint("TOPLEFT", lib.internalState.Tabs[#lib.internalState.Tabs - 1], "TOPRIGHT", 3, 0)
+    newTab:SetPoint("TOPLEFT", lib.internalState.Tabs[#lib.internalState.Tabs - 1], "TOPRIGHT", OFFSET_X, 0)
   else
-    newTab:SetPoint("TOPLEFT", lib.internalState.rootFrame, "TOPLEFT", 3, 0)
+    newTab:SetPoint("TOPLEFT", lib.internalState.rootFrame, "TOPLEFT", OFFSET_X, 0)
   end
+  newTab:SetHitRectInsets((math.abs(OFFSET_X) - 3) / 2, (math.abs(OFFSET_X) - 3) / 2, 0, 0)
 
   PanelTemplates_DeselectTab(newTab)
 
   newTab.frameRef = attachedFrame
+  newTab.tabHeader = tabHeader or displayText
 
   attachedFrame:Hide()
 
@@ -94,5 +101,6 @@ function lib:SetSelected(tabID)
   local selectedTab = lib:GetButton(tabID)
   PanelTemplates_SelectTab(selectedTab)
 
+  AuctionHouseFrame:SetTitle(selectedTab.tabHeader)
   selectedTab.frameRef:Show()
 end

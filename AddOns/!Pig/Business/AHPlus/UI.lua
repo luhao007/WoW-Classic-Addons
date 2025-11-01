@@ -176,7 +176,7 @@ local function zhixingdianjiFUn(framef)
 	end);
 end
 function BusinessInfo.QuicAuc()
-	if PIG_MaxTocversion() then
+	if PIG_MaxTocversion(40000) then
 		if PIGA["AHPlus"]["QuicAuc"] then
 			if NDui then
 				local NDui_BagName,slotnum = Data.NDui_BagName[1],Data.NDui_BagName[2]
@@ -208,19 +208,6 @@ function BusinessInfo.QuicAuc()
 		end
 	end
 end
---
-local AuctionFramejiazai = CreateFrame("Frame")
-AuctionFramejiazai:SetScript("OnEvent", function(self, event, arg1)
-	if event=="ADDON_LOADED" then
-		if arg1 == "Blizzard_AuctionHouseUI" then
-			BusinessInfo.AHPlus_Mainline()
-			self:UnregisterEvent("ADDON_LOADED")
-		elseif arg1 == "Blizzard_AuctionUI" then
-			BusinessInfo.AHPlus_Vanilla()
-			self:UnregisterEvent("ADDON_LOADED")
-		end
-	end
-end)
 ------------
 function BusinessInfo.AHPlus_ADDUI()
 	if PIGA["AHPlus"]["Open"] then
@@ -228,12 +215,7 @@ function BusinessInfo.AHPlus_ADDUI()
 		if PIG_MaxTocversion(90000) then--9.2.7暗影国度跨服务器包括宝石、草药、合剂、消耗品等。不过，武器和盔甲这类非商品类物品仍然只能在单个服务器内交易，并不会跨服共享
 			PIGA["AHPlus"]["CacheData"][PIG_OptionsUI.Realm]=PIGA["AHPlus"]["CacheData"][PIG_OptionsUI.Realm] or {}
 		end
-		if IsAddOnLoaded("Blizzard_AuctionHouseUI") then
-			BusinessInfo.AHPlus_Mainline()
-		elseif IsAddOnLoaded("Blizzard_AuctionUI") then
-			BusinessInfo.AHPlus_Vanilla()
-		else
-			AuctionFramejiazai:RegisterEvent("ADDON_LOADED")
-		end
+		Fun.IsAddOnLoaded("Blizzard_AuctionHouseUI",BusinessInfo.AHPlus_Mainline)
+		Fun.IsAddOnLoaded("Blizzard_AuctionUI",BusinessInfo.AHPlus_Vanilla)
 	end
 end

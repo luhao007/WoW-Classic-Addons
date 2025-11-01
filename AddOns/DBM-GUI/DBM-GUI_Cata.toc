@@ -1,13 +1,17 @@
-## Interface: 30405
+## Interface: 50502
 ## Author: MysticalOS, QartemisT
-## Version: 11.2.2
+## Version: 12.0.2
 
 ## Title: |cffffe00a<|r|cffff7d0aDBM Core|r|cffffe00a>|r |cff69ccf0Options GUI|r
 ## Notes: GUI for Deadly Boss Mods
-## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r |cFFFFFFFF副本助手|r |cFF0055FF设置|r
+## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r|cFFFFFFFF副本助手|r |cFF0055FF设置|r
 ## Notes-zhCN: Deadly Boss Mods的设置界面
 
 ## IconTexture: Interface\AddOns\DBM-Core\textures\dbm_airhorn
+
+## Category: DBM
+## Category-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r
+## Group: DBM-Core
 
 ## Dependencies: DBM-Core
 ## LoadOnDemand: 1
@@ -68,7 +72,8 @@ modules\options\filters\Privacy.lua
 
 modules\options\frames\Frames.lua
 modules\options\frames\InfoFrame.lua
-modules\options\frames\Range.lua
 modules\options\frames\Nameplate.lua
 
 modules\options\dev\Dev.lua
+
+modules\options\tools.lua

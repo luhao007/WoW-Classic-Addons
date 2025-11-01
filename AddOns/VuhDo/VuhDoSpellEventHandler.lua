@@ -3,12 +3,11 @@ local _;
 local smatch = string.match;
 
 local InCombatLockdown = InCombatLockdown;
-local HasLFGRestrictions = VUHDO_hasLFGRestrictions;
+local GetSpellName = C_Spell.GetSpellName or VUHDO_getSpellName;
 
 local VUHDO_initGcd;
 local VUHDO_strempty;
 
-local VUHDO_ACTIVE_HOTS;
 local VUHDO_RAID_NAMES;
 local VUHDO_CONFIG = { };
 
@@ -22,7 +21,6 @@ function VUHDO_spellEventHandlerInitLocalOverrides()
 	VUHDO_initGcd = _G["VUHDO_initGcd"];
 	VUHDO_strempty = _G["VUHDO_strempty"];
 
-	VUHDO_ACTIVE_HOTS = _G["VUHDO_ACTIVE_HOTS"];
 	VUHDO_RAID_NAMES = _G["VUHDO_RAID_NAMES"];
 	VUHDO_CONFIG = _G["VUHDO_CONFIG"];
 
@@ -74,7 +72,7 @@ function VUHDO_spellcastSent(aUnit, aTargetName, aSpellId)
 	end
 
 	if aSpellId then
-		tSpellName = GetSpellInfo(aSpellId);
+		tSpellName = GetSpellName(aSpellId);
 	end
 
 	if not tSpellName then

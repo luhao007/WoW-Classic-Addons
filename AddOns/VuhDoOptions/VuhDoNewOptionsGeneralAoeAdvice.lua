@@ -6,7 +6,7 @@ function VUHDO_newOptionsAoeAdvicePopulate(aParent)
 	local tX, tY;
 	local tIndex = 0;
 
-	for tName, tSettings in pairs(VUHDO_CONFIG["AOE_ADVISOR"]["config"]) do
+	for tName, _ in pairs(VUHDO_CONFIG["AOE_ADVISOR"]["config"]) do
 		if (VUHDO_AOE_SPELLS[tName] ~= nil) then
 			tFrameName = aParent:GetName() .. tName;
 			if (_G[tFrameName] == nil) then

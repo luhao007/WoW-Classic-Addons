@@ -9,7 +9,6 @@ local sMaxDragDistance = 60;
 --
 function VUHDO_positionAllGroupConfigPanels(aPanelNum)
 	local tIsShowOrder;
-	local tModel;
 	local tXPos, tYPos;
 	local tOrderPanel, tSelectPanel;
 
@@ -30,7 +29,6 @@ function VUHDO_positionAllGroupConfigPanels(aPanelNum)
 		tOrderPanel:SetScale(tScale);
 		tXPos, tYPos = VUHDO_getHealButtonPos(tCnt, 1, aPanelNum);
 
-		tModel = VUHDO_PANEL_MODELS[aPanelNum][tCnt];
 		tIsShowOrder = true;
 
 		tOrderPanel:ClearAllPoints(); -- parent könnte gewechselt haben
@@ -175,7 +173,6 @@ local tCurrentDistance, tLowestDistance;
 local tLowPanelNum, tLowOrderNum;
 local tIsLeft;
 local tMaxOrderPanels;
-local tPanel;
 local tPanelX;
 local tPanelY;
 local tDragX;
@@ -301,6 +298,7 @@ end
 
 
 --
+local tModelType;
 function VUHDO_getGuessedModel(aPanelNum)
 
 	local tTypeCount = {
@@ -309,7 +307,7 @@ function VUHDO_getGuessedModel(aPanelNum)
 		[VUHDO_ID_TYPE_SPECIAL] = 0,
 	};
 
-	for tIndex, tModelId in ipairs(VUHDO_PANEL_MODELS[aPanelNum]) do
+	for _, tModelId in ipairs(VUHDO_PANEL_MODELS[aPanelNum]) do
 		tModelType = VUHDO_getModelType(tModelId);
 		tTypeCount[tModelType] = tTypeCount[tModelType] + 1;
 	end

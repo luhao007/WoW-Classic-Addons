@@ -2,55 +2,52 @@ local GatherMate = LibStub("AceAddon-3.0"):GetAddon("GatherMate2")
 local Collector = GatherMate:NewModule("Collector", "AceEvent-3.0")
 local L = LibStub("AceLocale-3.0"):GetLocale("GatherMate2",true)
 local NL = LibStub("AceLocale-3.0"):GetLocale("GatherMate2Nodes")   -- for get the local name of Gas Cloud´s
-local Display = nil
+
 -- prevSpell, curSpell are markers for what has been cast now and the lastcast
 -- gatherevents if a flag for wether we are listening to events
-local prevSpell, curSpell, foundTarget, gatherEvents, ga
+local prevSpell, curSpell, foundTarget, ga
 
-local WoWClassic = (WOW_PROJECT_ID == WOW_PROJECT_CLASSIC)
+local GetSpellName = C_Spell.GetSpellName
 
 --[[
 Convert for 2.4 spell IDs
 ]]
-local miningSpell = (GetSpellInfo(2575))
-local miningSpell2 = (GetSpellInfo(195122))
-local herbSpell = (GetSpellInfo(2366))
-local herbSkill = (GetSpellInfo(9134))
-local fishSpell = (GetSpellInfo(7620)) or (GetSpellInfo(131476))
-local gasSpell = (GetSpellInfo(30427))
---local gasSpell = (GetSpellInfo(48929))  --other gasspell
-local openSpell = (GetSpellInfo(3365))
-local openNoTextSpell = (GetSpellInfo(22810))
-local pickSpell = (GetSpellInfo(1804))
-local archSpell = (GetSpellInfo(73979)) -- Searching for Artifacts spell
-local sandStormSpell = (GetSpellInfo(93473)) -- Sandstorm spell cast by the camel
-local loggingSpell = (GetSpellInfo(167895))
+local miningSpell = (GetSpellName(2575))
+local miningSpell2 = (GetSpellName(195122))
+local miningSpell3 = (GetSpellName(423341)) -- Khaz Algar
+local herbSpell = (GetSpellName(2366))
+local herbSkill = ((GetSpellName(170691)) or (string.gsub((GetSpellName(9134)),"%A","")))
+local fishSpell = (GetSpellName(7620)) or (GetSpellName(131476))
+local gasSpell = (GetSpellName(30427))
+--local gasSpell = (GetSpellName(48929))  --other gasspell
+local openSpell = (GetSpellName(3365))
+local openNoTextSpell = (GetSpellName(22810))
+local pickSpell = (GetSpellName(1804))
+local archSpell = (GetSpellName(73979)) -- Searching for Artifacts spell
+local sandStormSpell = (GetSpellName(93473)) -- Sandstorm spell cast by the camel
+local loggingSpell = (GetSpellName(167895))
 
-local spells = WoWClassic and {
-	[miningSpell] = "Mining",
-	[herbSpell] = "Herb Gathering",
-	[fishSpell] = "Fishing",
-	[openSpell] = "Treasure",
-	[openNoTextSpell] = "Treasure",
-	[pickSpell] = "Treasure",
-}
-or
+local spells =
 { -- spellname to "database name"
 	[miningSpell] = "Mining",
+	[miningSpell2] = "Mining",
+	[miningSpell3] = "Mining",
 	[herbSpell] = "Herb Gathering",
 	[fishSpell] = "Fishing",
 	[gasSpell] = "Extract Gas",
 	[openSpell] = "Treasure",
 	[openNoTextSpell] = "Treasure",
 	[pickSpell] = "Treasure",
+	[archSpell] = "Archaeology",
+	[sandStormSpell] = "Treasure",
+	[loggingSpell] = "Logging",
+	[205243] = "Treasure", -- skinning ground warts
 }
 local tooltipLeftText1 = _G["GameTooltipTextLeft1"]
-local strfind, stringmatch = string.find, string.match
+local strfind = string.find
 local pii = math.pi
 local sin = math.sin
 local cos = math.cos
-local gsub = gsub
-local strtrim = strtrim
 --[[
 	This search string code no longer needed since we use CombatEvent to detect gas clouds harvesting
 ]]
@@ -79,7 +76,6 @@ function Collector:RegisterGatherEvents()
 	--self:RegisterEvent("LOOT_CLOSED","GatherCompleted")
 	self:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED", "GasBuffDetector")
 	self:RegisterEvent("CHAT_MSG_LOOT","SecondaryGasCheck") -- for Storm Clouds
-	gatherEvents = true
 end
 
 --[[
@@ -91,15 +87,14 @@ function Collector:UnregisterGatherEvents()
 	self:UnregisterEvent("UNIT_SPELLCAST_STOP")
 	self:UnregisterEvent("UNIT_SPELLCAST_FAILED")
 	self:UnregisterEvent("UNIT_SPELLCAST_INTERRUPTED")
-	self:UnregisterEvent("CURSOR_CHANGED","CursorChange")
+	self:UnregisterEvent("CURSOR_CHANGED")
 	self:UnregisterEvent("UI_ERROR_MESSAGE")
 	--self:UnregisterEvent("LOOT_CLOSED")
 	self:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
-	gatherEvents = false
 end
 
-local CrystalizedWater = (GetItemInfo(37705)) or ""
-local MoteOfAir = (GetItemInfo(22572)) or ""
+local CrystalizedWater = (C_Item.GetItemNameByID(37705)) or ""
+local MoteOfAir = (C_Item.GetItemNameByID(22572)) or ""
 
 function Collector:SecondaryGasCheck(event,msg)
 	if ga ~= gasSpell then return end
@@ -188,7 +183,7 @@ end
 function Collector:UIError(event,token,msg)
 	local what = tooltipLeftText1:GetText();
 	if not what then return end
-	if strfind(msg, miningSpell) or (miningSpell2 and strfind(msg, miningSpell2)) then
+	if strfind(msg, miningSpell) or (miningSpell2 and strfind(msg, miningSpell2) or (miningSpell3 and strfind(msg, miningSpell3))) then
 		self:addItem(miningSpell,what)
 	elseif strfind(msg, herbSkill) then
 		self:addItem(herbSpell,what)
@@ -206,10 +201,15 @@ function Collector:SpellStarted(event,unit,target,guid,spellcast)
 	if unit ~= "player" then return end
 	foundTarget = false
 	ga ="No"
-	spellcast = GetSpellInfo(spellcast)
-	if spellcast and spells[spellcast] then
-		curSpell = spellcast
-		prevSpell = spellcast
+	local spellname = GetSpellName(spellcast)
+	if spellname and (spells[spellname] or spells[spellcast]) then
+		if spells[spellname] then
+			curSpell = spellname
+			prevSpell = spellname
+		else
+			curSpell = spellcast
+			prevSpell = spellcast
+		end
 		local nodeID = GatherMate:GetIDForNode(spells[prevSpell], target)
 		if nodeID then -- seem 2.4 has the node name now as the target
 			self:addItem(prevSpell,target)

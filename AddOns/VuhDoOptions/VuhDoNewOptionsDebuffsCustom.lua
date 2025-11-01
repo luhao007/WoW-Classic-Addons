@@ -4,8 +4,6 @@ local VUHDO_DEBUFFS_SORTABLE = { };
 
 
 --
-local tStoredName;
-local tIndex;
 local tSpellNameById;
 function VUHDO_initCustomDebuffComboModel()
   -- Nicht die saved variables direkt sortieren, wird sonst inkonsistent
@@ -78,7 +76,6 @@ local tPanelName;
 local tCheckButton;
 local tComboBox;
 local tColorSwatch;
-
 function VUHDO_customDebuffUpdateEditBox(anEditBox)
 	tValue = anEditBox:GetText();
 	tIndex = VUHDO_tableGetKeyFromValue(VUHDO_CONFIG["CUSTOM_DEBUFF"]["STORED"], tValue);
@@ -125,6 +122,9 @@ function VUHDO_customDebuffUpdateEditBox(anEditBox)
 		if (VUHDO_CONFIG["CUSTOM_DEBUFF"]["STORED_SETTINGS"][tValue].color == nil) then
 			VUHDO_CONFIG["CUSTOM_DEBUFF"]["STORED_SETTINGS"][tValue].color
 				= VUHDO_deepCopyTable(VUHDO_PANEL_SETUP.BAR_COLORS["DEBUFF" .. VUHDO_DEBUFF_TYPE_CUSTOM]);
+
+			VUHDO_CONFIG["CUSTOM_DEBUFF"]["STORED_SETTINGS"][tValue].color.useBackground = true;
+			VUHDO_CONFIG["CUSTOM_DEBUFF"]["STORED_SETTINGS"][tValue].color.useText = true;
 		end
 
 		tColorSwatch = _G[tPanelName .. "ColorTexture"];
@@ -208,7 +208,11 @@ function VUHDO_customDebuffUpdateEditBox(anEditBox)
 		VUHDO_OTHERS_MODEL = true;
 		VUHDO_BAR_GLOW_MODEL = VUHDO_CONFIG.CUSTOM_DEBUFF.isBarGlow;
 		VUHDO_ICON_GLOW_MODEL = VUHDO_CONFIG.CUSTOM_DEBUFF.isIconGlow;
+
 		VUHDO_COLOR_SWATCH_MODEL = VUHDO_deepCopyTable(VUHDO_PANEL_SETUP.BAR_COLORS["DEBUFF" .. VUHDO_DEBUFF_TYPE_CUSTOM]);
+		VUHDO_COLOR_SWATCH_MODEL.useBackground = true;
+		VUHDO_COLOR_SWATCH_MODEL.useText = true;
+
 		VUHDO_BAR_GLOW_SWATCH_MODEL = VUHDO_deepCopyTable(VUHDO_PANEL_SETUP.BAR_COLORS["DEBUFF_BAR_GLOW"]);
 		VUHDO_ICON_GLOW_SWATCH_MODEL = VUHDO_deepCopyTable(VUHDO_PANEL_SETUP.BAR_COLORS["DEBUFF_ICON_GLOW"]);
 		VUHDO_SOUND_MODEL = VUHDO_CONFIG.CUSTOM_DEBUFF.SOUND;
@@ -303,7 +307,6 @@ local tCheckButton;
 local tPanelName;
 local tComboBox;
 local tSoundName;
-local tColor;
 function VUHDO_saveCustomDebuffOnClick(aButton)
 	tEditBox = _G[aButton:GetParent():GetName() .. "EditBox"];
 	tValue = strtrim(tEditBox:GetText());
@@ -432,7 +435,7 @@ end
 
 --
 function VUHDO_applyToAllCustomDebuffOnClick()
-	for tName, tSettings in pairs(VUHDO_CONFIG["CUSTOM_DEBUFF"]["STORED_SETTINGS"]) do
+	for _, tSettings in pairs(VUHDO_CONFIG["CUSTOM_DEBUFF"]["STORED_SETTINGS"]) do
 		tSettings["isIcon"] = VUHDO_CONFIG.CUSTOM_DEBUFF.isIcon;
 		tSettings["isColor"] = VUHDO_CONFIG.CUSTOM_DEBUFF.isColor;
 		tSettings["SOUND"] = VUHDO_CONFIG.CUSTOM_DEBUFF.SOUND;

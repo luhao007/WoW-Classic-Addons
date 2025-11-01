@@ -6,13 +6,18 @@
 
 local TSM = select(2, ...) ---@type TSM
 local GroupSearch = TSM.Shopping:NewPackage("GroupSearch")
-local L = TSM.Include("Locale").GetTable()
-local Log = TSM.Include("Util.Log")
-local TempTable = TSM.Include("Util.TempTable")
-local ItemString = TSM.Include("Util.ItemString")
-local Threading = TSM.Include("Service.Threading")
-local ItemInfo = TSM.Include("Service.ItemInfo")
-local GroupSearchContext = TSM.Include("LibTSMClass").DefineClass("GroupSearchContext", TSM.Shopping.ShoppingSearchContext)
+local L = TSM.Locale.GetTable()
+local TempTable = TSM.LibTSMUtil:Include("BaseType.TempTable")
+local ItemString = TSM.LibTSMTypes:Include("Item.ItemString")
+local Group = TSM.LibTSMTypes:Include("Group")
+local ChatMessage = TSM.LibTSMService:Include("UI.ChatMessage")
+local Threading = TSM.LibTSMTypes:Include("Threading")
+local ItemInfo = TSM.LibTSMService:Include("Item.ItemInfo")
+local ShoppingOperation = TSM.LibTSMSystem:Include("ShoppingOperation")
+local CustomPrice = TSM.LibTSMApp:Include("Service.CustomPrice")
+local AuctionSearchContext = TSM.LibTSMService:IncludeClassType("AuctionSearchContext")
+local LibTSMClass = LibStub("LibTSMClass")
+local GroupSearchContext = LibTSMClass.DefineClass("GroupSearchContext", AuctionSearchContext)
 local private = {
 	groups = {},
 	itemList = {},
@@ -54,13 +59,11 @@ function private.ScanThread(auctionScan, groupList)
 	wipe(private.queries)
 	for _, groupPath in ipairs(groupList) do
 		private.groups[groupPath] = true
-		for _, itemString in TSM.Groups.ItemIterator(groupPath) do
-			local isValid, maxQuantityOrErr = TSM.Operations.Shopping.ValidateAndGetRestockQuantity(itemString)
+		for _, itemString in Group.ItemIterator(groupPath) do
+			local isValid, maxQuantity = private.GetRestockQuantity(itemString)
 			if isValid then
-				private.maxQuantity[itemString] = maxQuantityOrErr
+				private.maxQuantity[itemString] = maxQuantity
 				tinsert(private.itemList, itemString)
-			elseif maxQuantityOrErr then
-				Log.PrintfUser(L["Invalid custom price source for %s. %s"], ItemInfo.GetLink(itemString), maxQuantityOrErr)
 			end
 		end
 		Threading.Yield()
@@ -78,7 +81,7 @@ function private.ScanThread(auctionScan, groupList)
 
 	-- run the scan
 	if not auctionScan:ScanQueriesThreaded() then
-		Log.PrintUser(L["TSM failed to scan some auctions. Please rerun the scan."])
+		ChatMessage.PrintUser(L["TSM failed to scan some auctions. Please rerun the scan."])
 	end
 	return true
 end
@@ -131,7 +134,7 @@ end
 function private.QueryIsBrowseDoneFunction(query)
 	local isDone = true
 	for itemString in query:ItemIterator() do
-		if TSM.Operations.Shopping.ShouldShowAboveMaxPrice(itemString) then
+		if ShoppingOperation.ShouldShowAboveMaxPrice(itemString) then
 			-- need to scan all the auctions
 			isDone = false
 		elseif not private.seenMaxPrice[itemString] then
@@ -153,13 +156,13 @@ function private.QueryFilter(query, row)
 		return true
 	end
 	if itemString then
-		local isFiltered, aboveMax = TSM.Operations.Shopping.IsFiltered(itemString, itemBuyout)
+		local isFiltered, aboveMax = ShoppingOperation.IsFiltered(itemString, itemBuyout)
 		private.seenMaxPrice[itemString] = private.seenMaxPrice[itemString] or aboveMax
 		return isFiltered
 	else
 		local allFiltered = true
 		for queryItemString in query:ItemIterator() do
-			if ItemString.GetBaseFast(queryItemString) == baseItemString and not TSM.Operations.Shopping.IsFiltered(queryItemString, itemBuyout) then
+			if ItemString.GetBaseFast(queryItemString) == baseItemString and not ShoppingOperation.IsFiltered(queryItemString, itemBuyout) then
 				allFiltered = false
 			end
 		end
@@ -169,5 +172,24 @@ end
 
 function private.MarketValueFunction(row)
 	local itemString = row:GetItemString()
-	return itemString and TSM.Operations.Shopping.GetMaxPrice(itemString) or nil
+	return itemString and ShoppingOperation.GetMaxPrice(itemString) or nil
+end
+
+function private.GetRestockQuantity(itemString)
+	local isValid, maxQuantityOrErrType, errArg = ShoppingOperation.ValidateAndGetRestockQuantity(itemString)
+	if isValid then
+		return true, maxQuantityOrErrType
+	end
+	if maxQuantityOrErrType == ShoppingOperation.ERROR.MAX_PRICE_INVALID then
+		local _, errStr = CustomPrice.GetValue(errArg, itemString, true)
+		ChatMessage.PrintfUser(L["Your max price (%s) is invalid for %s."].." "..errStr, errArg, ItemInfo.GetLink(itemString))
+	elseif maxQuantityOrErrType == ShoppingOperation.ERROR.RESTOCK_INVALID then
+		local _, errStr = CustomPrice.GetValue(errArg, itemString, true)
+		ChatMessage.PrintfUser(L["Your min restock (%s) is invalid for %s."].." "..errStr, errArg, ItemInfo.GetLink(itemString))
+	elseif maxQuantityOrErrType == ShoppingOperation.ERROR.RESTOCK_INVALID_RANGE then
+		ChatMessage.PrintfUser(L["Your restock quantity (%s) is invalid for %s."].." "..L["Must be between %d and %d."], errArg, ItemInfo.GetLink(itemString), ShoppingOperation.GetRestockRange())
+	elseif maxQuantityOrErrType ~= nil then
+		error("Invalid error type: "..tostring(maxQuantityOrErrType))
+	end
+	return false, nil
 end

@@ -36,6 +36,7 @@ L.TEXT_ONLY_RANGE			= "El marco de distancia está limitado a texto únicamente 
 L.NO_RANGE					= "No se puede usar el radar de distancia en estancias. Se procederá a usar el marco de distancia por texto."
 L.NO_ARROW					= "No se puede usar la flecha en estancias."
 L.NO_HUD					= "No se puede usar el indicador en pantalla en estancias."
+L.NO_COMMS					= "La comunicación de addons no se puede usar durante encuentros o mazmorras M+ activas. Usa este comando nuevamente después de que termine el encuentro o la mazmorras."
 
 L.DYNAMIC_DIFFICULTY_CLUMP	= L.DBM .. " ha desactivado el marco de distancia dinámico para este combate debido a la falta de información sobre las diferencias según el número de jugadores."
 L.DYNAMIC_ADD_COUNT			= L.DBM .. " ha desactivado los anuncios de esbirros para este combate debido a la falta de información sobre las diferencias según el número de jugadores."
@@ -53,7 +54,7 @@ L.COMBAT_STARTED				= "Encuentro de %s iniciado. ¡Buena suerte!"
 L.COMBAT_STARTED_IN_PROGRESS	= "Te has unido al encuentro de %s mientras estaba en curso. ¡Buena suerte!"
 L.GUILD_COMBAT_STARTED			= "El encuentro de %s has sido iniciado por el grupo de hermandad de %s."
 L.SCENARIO_STARTED				= "%s iniciado. ¡Buena suerte!"
-L.SCENARIO_STARTED_IN_PROGRESS	= "Te has unido al escenario de %s mientras estaba en curso. ¡Buena suerte!"
+L.SCENARIO_STARTED_IN_PROGRESS	= "Te has unido a %s mientras estaba en curso. ¡Buena suerte!"
 L.BOSS_DOWN						= "¡%s ha sido derrotado en %s!"
 L.BOSS_DOWN_I					= "¡%s ha sido derrotado! Tienes %d victorias en total."
 L.BOSS_DOWN_L					= "¡%s ha sido derrotado en %s! Tu última victoria fue en %s, y tu récord actual es %s. Tienes %d victorias en total."
@@ -259,26 +260,29 @@ L.INFOFRAME_ALT				= "Secundario:"	--Alternate Power
 
 L.LFG_INVITE				= "Invitación del buscador"
 
-L.SLASHCMD_HELP				= {
-	"Comandos disponibles:",
+--Common slash commands
+L.SLASHCMD_HELP							= {--AI translated (check me)
+	"Comandos de barra disponibles:",
 	"-----------------",
-	"/dbm unlock: Muestra un temporizador de ejemplo desplazable (alias: move).",
-	"/range <número> o /distance <número>: Muestra el marco de distancia. /rrange y /rdistance invierten el color.",
-	"/hudar <número>: Muestra el indicador de distancia en pantalla.",
-	"/dbm timer: Inicia un temporizador personalizado de DBM. Escribe '/dbm timer' para más detalles.",
-	"/dbm arrow: Muestra la flecha de DBM. Escribe '/dbm arrow help' para más detalles.",
-	"/dbm hud: Muestra el indicador en pantalla de DBM. Escribe '/dbm hud' para más detalles.",
-	"/dbm help2: Lista los comandos de banda de DBM."
+	"/dbm unlock: Muestra un temporizador de barra de estado movible (alias: move).",
+	"/dbm pull <sec>: Envía un temporizador de inicio por <sec> segundos a la banda (requiere ser promovido. alias: pull).",
+	"/dbm break <min>: Envía un temporizador de descanso por <min> minutos a la banda (requiere ser promovido. alias: break).",
+	"/dbm timer: Inicia un temporizador personalizado de " .. L.DBM .. ", consulta '/dbm timer' para más detalles.",
+	"/dbm key: Realiza comprobaciones de piedra angular y calificación de M+ en el grupo/gremio y accesos directos a teletransportes de mazmorras. (alias: key, keys, keystone)",
+	"/dbm lag: Realiza una comprobación de latencia en toda la banda.",
+	"/dbm durability: Realiza una comprobación de durabilidad en toda la banda.",
+	"/dbm help2: Muestra comandos de barra adicionales"
 }
-L.SLASHCMD_HELP2				= {
-	"Comandos disponibles:",
+--Comandos de barra menos utilizados
+L.SLASHCMD_HELP2						= {--AI translated (check me)
+	"Comandos de barra disponibles:",
 	"-----------------",
-	"/dbm pull <seg>: Inicia un temporizador de inicio de encuentro para toda la banda (requiere líder o ayudante) (alias: pull).",
-	"/dbm break <min>: Inicia un temporizador de descanso para toda la banda (requiere líder o ayudante) (alias: break).",
-	"/dbm version: Realiza una comprobación de versión de DBM a toda la banda (alias: ver).",
-	"/dbm version2: Realiza una comprobación de versión de DBM que también susurra a los jugadores con versiones desactualizadas (alias: ver2).",
-	"/dbm lag: Realiza una comprobación de latencia a toda la banda.",
-	"/dbm durability: Realiza una comprobación de durabilidad a toda la banda."
+	"/dbm version: Realiza una comprobación de versión del mod de jefe (alias: ver).",
+	"/dbm version2: Realiza una comprobación de versión del mod de jefe que también susurra a los usuarios desactualizados (alias: ver2).",
+	"/range <número> o /distance <número>: Muestra el marco de rango. /rrange o /rdistance para invertir colores.",
+	"/hudar <número>: Muestra un buscador de rango basado en HUD.",
+	"/dbm arrow: Muestra la flecha de " .. L.DBM .. ", consulta '/dbm arrow help' para más detalles.",
+	"/dbm hud: Muestra el HUD de " .. L.DBM .. ", consulta '/dbm hud' para más detalles."
 }
 L.TIMER_USAGE	= {
 	L.DBM .. " Comandos de temporizador:",
@@ -296,8 +300,8 @@ L.PULL_TIME_TOO_LONG			= "El temporizador de inicio no puede durar más de 60 se
 
 L.BREAK_USAGE				= "El temporizador de descanso no puede durar más de 60 minutos. Asegúrate de que has escrito el tiempo en minutos y no en segundos."
 L.BREAK_START				= "El descanso inicia ahora. ¡Tienes %s! (Enviado por %s)"
-L.BREAK_MIN					= "¡El descanso termina en %s minuto(s)!"
-L.BREAK_SEC					= "¡El descanso termina en %s segundo(s)!"
+L.BREAK_MIN					= "¡El descanso termina en %s |4minuto:minutos;!"
+L.BREAK_SEC					= "¡El descanso termina en %s |4segundo:segundos;!"
 L.TIMER_BREAK				= "¡Toca descanso!"
 L.ANNOUNCE_BREAK_OVER		= "El descanso ha terminado."
 
@@ -321,8 +325,8 @@ L.AUTO_ANNOUNCE_TEXTS.spell			= "%s"
 L.AUTO_ANNOUNCE_TEXTS.incoming		= "%s perjuicio entrate"
 L.AUTO_ANNOUNCE_TEXTS.incomingcount	= "%s perjuicio entrante (%%s)"
 L.AUTO_ANNOUNCE_TEXTS.ends 			= "%s ha terminado"
-L.AUTO_ANNOUNCE_TEXTS.endtarget		= "%s ha terminado en >%%s<"
-L.AUTO_ANNOUNCE_TEXTS.fades			= "%s ha terminado"
+L.AUTO_ANNOUNCE_TEXTS.endtarget		= "%s ha terminado: >%%s<"
+L.AUTO_ANNOUNCE_TEXTS.fades			= "%s se ha desvanecido"
 L.AUTO_ANNOUNCE_TEXTS.addsleft		= "%s restantes: %%d"
 L.AUTO_ANNOUNCE_TEXTS.cast			= "Lanzando %s en %.1f s"
 L.AUTO_ANNOUNCE_TEXTS.soon			= "%s en breve"
@@ -379,7 +383,7 @@ L.AUTO_SPEC_WARN_TEXTS.youpos		= "%s (posición: %%s) en ti"
 L.AUTO_SPEC_WARN_TEXTS.youposcount	= "%s (%%s) (posición: %%s) en ti"
 L.AUTO_SPEC_WARN_TEXTS.soakpos		= "%s (posición: %%s)"
 L.AUTO_SPEC_WARN_TEXTS.target		= "%s en >%%s<"
-L.AUTO_SPEC_WARN_TEXTS.targetcount	= "%s (%%s) en >%%s< "
+L.AUTO_SPEC_WARN_TEXTS.targetcount	= "%s (%%s) en >%%s<"
 L.AUTO_SPEC_WARN_TEXTS.link			= "%s vinculado con >%%s<"
 L.AUTO_SPEC_WARN_TEXTS.defensive	= "%s - ¡Facultad defensiva ahora!"
 L.AUTO_SPEC_WARN_TEXTS.taunt		= "%s en >%%s< - ¡Provoca ahora!"
@@ -578,17 +582,18 @@ L.AUTO_YELL_OPTION_TEXT.combo			= "Gritar (con texto personalizado) cuando te af
 L.AUTO_YELL_OPTION_TEXT.repeatplayer	= "Gritar repetidamente (con tu nombre) cuando te afecte $spell:%s"
 L.AUTO_YELL_OPTION_TEXT.repeaticon		= "Gritar repetidamente (con icono) cuando te afecte $spell:%s"
 
-L.AUTO_YELL_ANNOUNCE_TEXT.shortyell	= "%s"
-L.AUTO_YELL_ANNOUNCE_TEXT.yell		= "¡%s en " .. UnitName("player") .. "!"
-L.AUTO_YELL_ANNOUNCE_TEXT.count		= "¡%s en " .. UnitName("player") .. "! (%%d)"
-L.AUTO_YELL_ANNOUNCE_TEXT.fade		= "%s expirando en %%d"
-L.AUTO_YELL_ANNOUNCE_TEXT.shortfade	= "%%d"
-L.AUTO_YELL_ANNOUNCE_TEXT.iconfade	= "{rt%%2$d}%%1$d"
-L.AUTO_YELL_ANNOUNCE_TEXT.position 	= "%s %%s en {rt%%d}"..UnitName("player").."{rt%%d}"
+L.AUTO_YELL_ANNOUNCE_TEXT.shortyell			= "%s"
+L.AUTO_YELL_ANNOUNCE_TEXT.yell				= "¡%s en " .. UnitName("player") .. "!"
+L.AUTO_YELL_ANNOUNCE_TEXT.count				= "¡%s en " .. UnitName("player") .. "! (%%d)"
+L.AUTO_YELL_ANNOUNCE_TEXT.fade				= "%s expirando en %%d"
+L.AUTO_YELL_ANNOUNCE_TEXT.shortfade			= "%%d"
+L.AUTO_YELL_ANNOUNCE_TEXT.iconfade			= "{rt%%2$d}%%1$d"
+L.AUTO_YELL_ANNOUNCE_TEXT.position 			= "%s %%s en {rt%%d}"..UnitName("player").."{rt%%d}"
+L.AUTO_YELL_ANNOUNCE_TEXT.positionnoIcon	= "%s %%s en " ..UnitName("player")
 L.AUTO_YELL_ANNOUNCE_TEXT.shortposition 	= "{rt%%1$d}%s"--Icon, Spellname
-L.AUTO_YELL_ANNOUNCE_TEXT.combo			= "%s y %%s"--Spell name (from option, plus spellname given in arg)
-L.AUTO_YELL_ANNOUNCE_TEXT.repeatplayer	= UnitName("player")--Doesn't need translation, it's just player name spam
-L.AUTO_YELL_ANNOUNCE_TEXT.repeaticon	= "{rt%%1$d}"--Doesn't need translation. It's just icon spam
+L.AUTO_YELL_ANNOUNCE_TEXT.combo				= "%s y %%s"--Spell name (from option, plus spellname given in arg)
+L.AUTO_YELL_ANNOUNCE_TEXT.repeatplayer		= UnitName("player")--Doesn't need translation, it's just player name spam
+L.AUTO_YELL_ANNOUNCE_TEXT.repeaticon		= "{rt%%1$d}"--Doesn't need translation. It's just icon spam
 
 L.AUTO_YELL_CUSTOM_POSITION			= "{rt%d}%s"--Doesn't need translating. Has no strings (Used in niche situations such as icon repeat yells)
 L.AUTO_YELL_CUSTOM_FADE				= "%s ha expirado"
@@ -646,14 +651,9 @@ L.SPEED_CLEAR_TIMER_TEXT	= "Récord actual"
 L.COMBAT_RES_TIMER_TEXT		= "Siguiente resurrección"
 L.TIMER_RESPAWN				= "%s reaparece"
 
-L.LAG_CHECKING				= "Comprobando latencia de la banda..."
-L.LAG_HEADER				= L.DEADLY_BOSS_MODS.. " - Resultados de latencia"
-L.LAG_ENTRY					= "%s: Latencia de mundo [%d ms] / Latencia de hogar [%d ms]"
-L.LAG_FOOTER				= "Sin respuesta: %s"
-
-L.DUR_CHECKING				= "Comprobando durabilidad de la banda..."
-L.DUR_HEADER				= L.DEADLY_BOSS_MODS.. " - Resultados de durabilidad"
-L.DUR_ENTRY					= "%s: Durabilidad [%d%%] / Piezas rotas [%s]"
+L.LAG_HEADER				= L.DBM.. " - Resultados de latencia"
+L.DUR_HEADER				= L.DBM.. " - Resultados de durabilidad"
+--L.KEYSTONES_HEADER		= L.DBM.. " - Piedras angulares"
 
 L.OVERRIDE_ACTIVATED		= "Líder de banda ha activado las anulaciones de configuración para este encuentro"
 
@@ -673,22 +673,22 @@ L.WORLD_BUFFS.rendHead			= "¡El falso Jefe de Guerra Rend Puño Negro ha caído
 L.WORLD_BUFFS.blackfathomBoon	= "Favor de Brazanegra"
 
 -- Annoying popup, especially for classic players
-L.DBM_INSTALL_REMINDER_HEADER = "¡Se ha detectado una instalación incompleta de DBM!"
-L.DBM_INSTALL_REMINDER_EXPLAIN = "Bienvenido a %s. Los módulos de DBM para los jefes aquí están en el %s que no tienes instalado. ¡DBM no mostrará temporizadores ni advertencias en esta zona a menos que instales el %s!"
-L.DBM_INSTALL_REMINDER_DISABLE = "Desactiva todos los anuncios y temporizadores de DBM en esta zona."  -- Used when we believe it's a user error that the mod isn't installed (i.e., current raids)
+L.DBM_INSTALL_REMINDER_HEADER 	= "¡Se ha detectado una instalación incompleta de DBM!"
+L.DBM_INSTALL_REMINDER_EXPLAIN 	= "Bienvenido a %s. Los módulos de DBM para los jefes aquí están en el %s que no tienes instalado. ¡DBM no mostrará temporizadores ni advertencias en esta zona a menos que instales el %s!"
+L.DBM_INSTALL_REMINDER_DISABLE 	= "Desactiva todos los anuncios y temporizadores de DBM en esta zona."  -- Used when we believe it's a user error that the mod isn't installed (i.e., current raids)
 L.DBM_INSTALL_REMINDER_DISABLE2 = "No mostrar este mensaje nuevamente para este paquete." -- Used for unimportant mods, i.e., dungeons
-L.DBM_INSTALL_REMINDER_DL_WAGO = "Presiona " .. (IsMacClient() and "Cmd-C" or "Ctrl-C") .. " para copiar el enlace de Wago.io en tu portapapeles."
+L.DBM_INSTALL_REMINDER_DL_WAGO 	= "Presiona " .. (IsMacClient() and "Cmd-C" or "Ctrl-C") .. " para copiar el enlace de Wago.io en tu portapapeles."
 L.DBM_INSTALL_REMINDER_DL_CURSE = "Presiona " .. (IsMacClient() and "Cmd-C" or "Ctrl-C") .. " para copiar el enlace de Curseforge en tu portapapeles."
 
-L.DBM_INSTALL_PACKAGE_VANILLA = "Paquete de Era y Temporada de descubrimiento"
+L.DBM_INSTALL_PACKAGE_VANILLA 	= "Paquete de Era y Temporada de descubrimiento"
 L.DBM_INSTALL_PACKAGE_BCC		= "Paquete de Burning Crusade"
-L.DBM_INSTALL_PACKAGE_WRATH = "Paquete de Wrath"
-L.DBM_INSTALL_PACKAGE_CATA = "Paquete de Cataclysm"
+L.DBM_INSTALL_PACKAGE_WRATH 	= "Paquete de Wrath"
+L.DBM_INSTALL_PACKAGE_CATA 		= "Paquete de Cataclysm"
 L.DBM_INSTALL_PACKAGE_MOP		= "Paquete de Mist of Pandaria"
-L.DBM_INSTALL_PACKAGE_DUNGEON = "Paquete de Mazmorras, Abismos y Eventos"
+L.DBM_INSTALL_PACKAGE_DUNGEON 	= "Paquete de Mazmorras, Abismos y Eventos"
 
 -- Tests
-L.DBM_TAINTED_BY_TESTS = "DBM se utilizó en modo de prueba con distorsión temporal en la sesión actual, se recomienda recargar tu interfaz antes de usar DBM en un combate de jefe real. Todo debería funcionar como se espera, ¡pero no hay garantías!"
+L.DBM_TAINTED_BY_TESTS 			= "DBM se utilizó en modo de prueba con distorsión temporal en la sesión actual, se recomienda recargar tu interfaz antes de usar DBM en un combate de jefe real. Todo debería funcionar como se espera, ¡pero no hay garantías!"
 
 -- Boss tooltip
 L.TOOLTIP_DBM                 = L.DBM .. " información"
@@ -701,3 +701,14 @@ L.TOOLTIP_FASTEST             = "Victoria más rápida (%s)"
 L.FOLLOWER						= "Seguidor"--i.e. the new dungeon type in 10.2.5. I haven't found a translated string yet
 L.STORY					    	= PLAYER_DIFFICULTY_STORY_RAID or "Historia"--i.e. the new dungeon type in 11.0.0. I haven't found a translated string yet
 L.DUOS							= "Dúos"
+
+-- Keystone dungeon names (keep to a max of 6 characters)
+-- See https://wago.tools/db2/MapChallengeMode for ID => Dungeon Names
+L.KEYSTONE_NAMES[378] = 'SALÓN' -- Halls of Atonement
+L.KEYSTONE_NAMES[391] = 'CALLE' -- Tazavesh: Streets of Wonder
+L.KEYSTONE_NAMES[392] = 'GAMBIT' -- Tazavesh: So'leah's Gambit
+L.KEYSTONE_NAMES[499] = 'PRIOR' -- Priority of the Sacred Flame
+L.KEYSTONE_NAMES[503] = 'ARA' -- Ara-Kara, City of Echoes
+L.KEYSTONE_NAMES[505] = 'ALBA' -- The Dawnbreaker
+L.KEYSTONE_NAMES[525] = 'OPER' -- Operation Floodgate
+L.KEYSTONE_NAMES[542] = 'ECO' -- Eco-Dome Al'dani

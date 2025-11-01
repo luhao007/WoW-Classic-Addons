@@ -1,5 +1,5 @@
 local _, app = ...;
-local L, settings = app.L.SETTINGS_MENU, app.Settings;
+local L, settings = app.L, app.Settings;
 
 -- This settings page relies on the 'Fill' Module
 local Fill = app.Modules.Fill
@@ -59,6 +59,7 @@ app.AddEventHandler("Fill.DefinedSettings", function(fillSettings)
 			local usersettings = settings:GetRawSettings(fillSettings.Container)
 			usersettings["TOOLTIP:NPC"] = true
 			usersettings["LIST:NPC"] = true
+			usersettings["POPOUT:NPC"] = true
 			-- TODO: some way to cleanup deprecated settings from user cache
 			app.Settings:SetTooltipSetting("NPCData:Nested", false)
 		end

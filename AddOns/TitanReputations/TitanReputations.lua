@@ -4,6 +4,7 @@
 --]]
 
 local ADDON_NAME, L = ...;
+local GetAddOnMetadata = C_AddOns and C_AddOns.GetAddOnMetadata or GetAddOnMetadata
 local VERSION = GetAddOnMetadata(ADDON_NAME, "Version")
 local PLUGIN_ID = "TITAN_REPUTATION_XP"
 local ICON = "Interface\\Icons\\INV_MISC_NOTE_02"
@@ -35,9 +36,41 @@ end
 GetFriendshipReputation = GetFriendshipReputation or nop
 
 local IsMajorFaction = C_Reputation.IsMajorFaction or nop
+local IsFactionParagon = C_Reputation.IsFactionParagon or nop
 local GetMajorFactionData = C_MajorFactions and C_MajorFactions.GetMajorFactionData and C_MajorFactions.GetMajorFactionData or nop
 local HasMaximumRenown = C_MajorFactions and C_MajorFactions.HasMaximumRenown and C_MajorFactions.HasMaximumRenown or nop
 local GetCurrentRenownLevel = C_MajorFactions and C_MajorFactions.GetCurrentRenownLevel or nop
+local GetNumFactions = GetNumFactions or C_Reputation.GetNumFactions
+
+local IsFactionInactive = IsFactionInactive or function(...)
+	return not C_Reputation.IsFactionActive(...)
+end
+
+local function unwrapFactionData(data)
+	if not data then return nil end
+	return data.name, data.description, data.reaction, data.currentReactionThreshold, data.nextReactionThreshold,
+	data.currentStanding, data.atWarWith, data.canToggleAtWar, data.isHeader, data.isCollapsed, data.isHeaderWithRep,
+	data.isWatched, data.isChild, data.factionID, data.hasBonusRepGain
+end
+
+--name, description, standingID, barMin, barMax, barValue, atWarWith, canToggleAtWar, isHeader, isCollapsed, hasRep, isWatched, isChild, factionID, hasBonusRepGain
+local GetFactionInfo = GetFactionInfo or function(factionIndex)
+	local data = C_Reputation.GetFactionDataByIndex(factionIndex)
+	return unwrapFactionData(data)
+end
+local GetFactionInfoByID = GetFactionInfoByID or function(factionID)
+	local data = C_Reputation.GetFactionDataByID(factionID)
+	return unwrapFactionData(data)
+end
+
+local GetWatchedFactionID = function()
+	if (GetWatchedFactionInfo) then
+		local _, _, _, _, _, factionID = GetWatchedFactionInfo()
+		return factionID
+	end
+	local data = C_Reputation.GetWatchedFactionData()
+	return data and data.factionID
+end
 
 local sessionStart = {}
 local sessionStartMajorFaction = {}
@@ -85,18 +118,36 @@ local function GetFactionLabel(standingId)
 	return GetText("FACTION_STANDING_LABEL" .. standingId, SEX)
 end
 
-local function GetBalanceForMajorFaction(factionId, currentXp, currentLvl)
+local function MajorFactionTexture(majorFactionData)
+	local kit = majorFactionData.textureKit
+	if (not kit) then return nil end
+
+	if (majorFactionData.expansionID >= 10) then
+		-- yes, the new ones are in plural "MajorFaction[s]" ¯\_(ツ)_/¯
+		return ([[Interface\Icons\UI_MajorFactions_%s]]):format(kit)
+	end
+	return ([[Interface\Icons\UI_MajorFaction_%s]]):format(kit)
+end
+
+local function GetSessionStartTable(factionId)
 	if (not sessionStartMajorFaction[factionId]) then
 		local data = GetMajorFactionData(factionId)
+		if not data then return nil end
 		sessionStartMajorFaction[factionId] = {
 			startLvl = data.renownLevel,
 			[data.renownLevel] = { start = 0, max = data.renownLevelThreshold }
 		}
 	end
+	return sessionStartMajorFaction[factionId]
+end
+
+local function GetBalanceForMajorFaction(factionId, currentXp, currentLvl)
+	local sessionTable = GetSessionStartTable(factionId)
+	if not sessionTable then return 0 end
 	local balance = 0
-	local start = sessionStartMajorFaction[factionId].startLvl
+	local start = sessionTable.startLvl
 	for i = start, currentLvl do
-		local data = sessionStartMajorFaction[factionId][i]
+		local data = sessionTable[i]
 		-- we might not have data yet if we just leveled and UPDATE_FACTION run before MAJOR_FACTION_RENOWN_LEVEL_CHANGED
 		if (data) then
 			local endXp = (currentLvl == i) and currentXp or data.max
@@ -106,7 +157,19 @@ local function GetBalanceForMajorFaction(factionId, currentXp, currentLvl)
 	return balance
 end
 
--- @return current, maximun, color, standingText, hasRewardPending, session, texture
+local function GetParagonValues(barValue, factionId, colors, texture)
+	local color = colors.paragon
+	local currentValue, threshold, _, hasRewardPending = C_Reputation.GetFactionParagonInfo(factionId);
+	local standingText = " (" .. GetFactionLabel("paragon") .. ")"
+	if hasRewardPending then
+		standingText = " (" .. GetFactionLabel("paragon") .. " |A:ParagonReputation_Bag:0:0|a" .. ")"
+	end
+	sessionStart[factionId] = sessionStart[factionId] or barValue
+	local session = barValue - sessionStart[factionId]
+	return mod(currentValue, threshold), threshold, color, standingText, hasRewardPending, session, texture
+end
+
+-- @return current, maximum, color, standingText, hasRewardPending, session, texture
 local function GetValueAndMaximum(standingId, barValue, bottomValue, topValue, factionId, colors)
 	if (IsMajorFaction(factionId)) then
 		local data = GetMajorFactionData(factionId)
@@ -114,7 +177,10 @@ local function GetValueAndMaximum(standingId, barValue, bottomValue, topValue, f
 		local current = isCapped and data.renownLevelThreshold or data.renownReputationEarned or 0
 		local standingText = " (" .. (RENOWN_LEVEL_LABEL .. data.renownLevel) .. ")"
 		local session = GetBalanceForMajorFaction(factionId, current, data.renownLevel)
-		local texture = data.textureKit and ([[Interface\Icons\UI_MajorFaction_%s]]):format(data.textureKit)
+		local texture = MajorFactionTexture(data)
+		if (IsFactionParagon(factionId)) then
+			return GetParagonValues(barValue, factionId, colors, texture)
+		end
 		return current, data.renownLevelThreshold, colors.renown, standingText, nil, session, texture
 	end
 
@@ -122,38 +188,30 @@ local function GetValueAndMaximum(standingId, barValue, bottomValue, topValue, f
 		return "0", "0", "|cFFFF0000", "??? - " .. (factionId .. "?")
 	end
 
-	if (C_Reputation.IsFactionParagon(factionId)) then
-		local color = colors.paragon
-		local currentValue, threshold, _, hasRewardPending = C_Reputation.GetFactionParagonInfo(factionId);
-		local standingText = " (" .. GetFactionLabel("paragon") .. ")"
-		if hasRewardPending then
-			standingText = " (" .. GetFactionLabel("paragon") .. " |A:ParagonReputation_Bag:0:0|a" .. ")"
-		end
-		sessionStart[factionId] = sessionStart[factionId] or barValue
-		local session = barValue - sessionStart[factionId]
-		return mod(currentValue, threshold), threshold, color, standingText, hasRewardPending, session
+	if (IsFactionParagon(factionId)) then
+		return GetParagonValues(barValue, factionId, colors)
 	end
 
 	local friendID, friendRep, _, _, _, friendTexture, friendTextLevel, friendThreshold, nextFriendThreshold = GetFriendshipReputation(factionId)
 	if (friendID) then
 		local standingText = " (" .. friendTextLevel .. ")"
 		local color = colors[standingId] or colors[5]
-		local maximun, current = 1, 1
+		local maximum, current = 1, 1
 		if (nextFriendThreshold) then
-			maximun, current = nextFriendThreshold - friendThreshold, friendRep - friendThreshold
+			maximum, current = nextFriendThreshold - friendThreshold, friendRep - friendThreshold
 		end
 		sessionStart[factionId] = sessionStart[factionId] or friendRep
 		local session = friendRep - sessionStart[factionId]
-		return current, maximun, color, standingText, nil, session, friendTexture
+		return current, maximum, color, standingText, nil, session, friendTexture
 	end
 
 	local current = barValue - bottomValue
-	local maximun = topValue - bottomValue
+	local maximum = topValue - bottomValue
 	local color = colors[standingId] or colors[5]
 	local standingText = " (" .. GetFactionLabel(standingId) .. ")"
 	sessionStart[factionId] = sessionStart[factionId] or barValue
 	local session = barValue - sessionStart[factionId]
-	return current, maximun, color, standingText, nil, session
+	return current, maximum, color, standingText, nil, session
 end
 
 local function GetButtonMainRepInfo(self)
@@ -162,9 +220,9 @@ local function GetButtonMainRepInfo(self)
 	if (factionId and factionId ~= 0 and TitanGetVar(PLUGIN_ID, "SmartReputation") == 1) then
 		name, _, standingId, bottomValue, topValue, barValue, atWarWith = GetFactionInfoByID(factionId)
 	else
-		name, standingId, bottomValue, topValue, barValue, factionId = GetWatchedFactionInfo()
+		factionId = GetWatchedFactionID()
 		if (factionId) then
-			atWarWith = select(7, GetFactionInfoByID(factionId))
+			name, _, standingId, bottomValue, topValue, barValue, atWarWith = GetFactionInfoByID(factionId)
 		end
 	end
 	return {
@@ -212,7 +270,7 @@ local function GetButtonText(self, id)
 		end
 
 		if hasRewardPending then
-			text = "*" + text
+			text = "*" .. text
 		end
 	end
 
@@ -320,7 +378,7 @@ local function GetTooltipText(self, id)
 					show = false
 				end
 
-				if (alwaysShowParagon and C_Reputation.IsFactionParagon(factionId)) then
+				if (alwaysShowParagon and IsFactionParagon(factionId)) then
 					show = true
 				end
 
@@ -453,7 +511,8 @@ local eventsTable = {
 if (C_Reputation.IsMajorFaction) then
 	eventsTable.MAJOR_FACTION_RENOWN_LEVEL_CHANGED = function(self, factionId, newRenownLevel, oldRenownLevel)
 		local data = GetMajorFactionData(factionId)
-		sessionStartMajorFaction[factionId][newRenownLevel] = { start = 0, max = data.renownLevelThreshold }
+		if not data then return end
+		GetSessionStartTable(factionId)[newRenownLevel] = { start = 0, max = data.renownLevelThreshold }
 		TitanPanelButton_UpdateButton(self.registry.id)
 	end
 end

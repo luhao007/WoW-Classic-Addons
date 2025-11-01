@@ -5,17 +5,19 @@
 -- ------------------------------------------------------------------------------ --
 
 local TSM = select(2, ...) ---@type TSM
-local CraftingUI = TSM.UI:NewPackage("CraftingUI")
-local Environment = TSM.Include("Environment")
-local L = TSM.Include("Locale").GetTable()
-local FSM = TSM.Include("Util.FSM")
-local Event = TSM.Include("Util.Event")
-local Log = TSM.Include("Util.Log")
-local ScriptWrapper = TSM.Include("Util.ScriptWrapper")
-local Settings = TSM.Include("Service.Settings")
-local Profession = TSM.Include("Service.Profession")
-local UIElements = TSM.Include("UI.UIElements")
-local UIUtils = TSM.Include("UI.UIUtils")
+local CraftingUI = TSM.UI:NewPackage("CraftingUI") ---@type AddonPackage
+local ClientInfo = TSM.LibTSMWoW:Include("Util.ClientInfo")
+local Spell = TSM.LibTSMWoW:Include("API.Spell")
+local L = TSM.Locale.GetTable()
+local FSM = TSM.LibTSMUtil:Include("FSM")
+local Event = TSM.LibTSMWoW:Include("Service.Event")
+local Log = TSM.LibTSMUtil:Include("Util.Log")
+local ScriptWrapper = TSM.LibTSMWoW:Include("API.ScriptWrapper")
+local TradeSkill = TSM.LibTSMWoW:Include("API.TradeSkill")
+local Profession = TSM.LibTSMService:Include("Profession")
+local UIElements = TSM.LibTSMUI:Include("Util.UIElements")
+local UIUtils = TSM.LibTSMUI:Include("Util.UIUtils")
+local AppHelper = TSM.LibTSMApp:Include("Service.AppHelper")
 local private = {
 	settings = nil,
 	topLevelPages = {},
@@ -39,8 +41,11 @@ local IGNORED_PROFESSIONS = {
 	[278910] = true, -- Archaeology
 }
 do
-	if not IsAddOnLoaded("Blizzard_Professions") then
-		LoadAddOn("Blizzard_Professions")
+	if not C_AddOns.IsAddOnLoaded("Blizzard_Professions") then
+		C_AddOns.LoadAddOn("Blizzard_Professions")
+	end
+	if ClientInfo.IsRetail() and not C_AddOns.IsAddOnLoaded("Blizzard_ProfessionsBook") then
+		C_AddOns.LoadAddOn("Blizzard_ProfessionsBook")
 	end
 end
 
@@ -50,10 +55,14 @@ end
 -- Module Functions
 -- ============================================================================
 
-function CraftingUI.OnInitialize()
-	private.settings = Settings.NewView()
+function CraftingUI.OnInitialize(settingsDB)
+	private.settings = settingsDB:NewView()
 		:AddKey("global", "craftingUIContext", "showDefault")
 		:AddKey("global", "craftingUIContext", "frame")
+		:AddKey("global", "coreOptions", "regionWide")
+		:AddKey("global", "appearanceOptions", "showTotalMoney")
+		:AddKey("global", "internalData", "warbankMoney")
+		:AddKey("sync", "internalData", "money")
 	private.FSMCreate()
 	Profession.SetScannerDisabled(private.settings.showDefault)
 end
@@ -77,19 +86,19 @@ function CraftingUI.Toggle()
 end
 
 function CraftingUI.IsProfessionIgnored(name, skillId)
-	if not Environment.IsRetail() then
-		if name == GetSpellInfo(5149) or name == BEAST_TRAINING_DE or name == BEAST_TRAINING_ES or name == BEAST_TRAINING_RUS then -- Beast Training
+	if not ClientInfo.IsRetail() then
+		if name == Spell.GetInfo(5149) or name == BEAST_TRAINING_DE or name == BEAST_TRAINING_ES or name == BEAST_TRAINING_RUS then -- Beast Training
 			return true
-		elseif name == GetSpellInfo(7620) then -- Fishing
+		elseif name == Spell.GetInfo(7620) then -- Fishing
 			return true
-		elseif name == GetSpellInfo(2366) then -- Herb Gathering
+		elseif name == Spell.GetInfo(2366) then -- Herb Gathering
 			return true
-		elseif name == GetSpellInfo(8613) then -- Skinning
+		elseif name == Spell.GetInfo(8613) then -- Skinning
 			return true
 		end
 	end
 	for i in pairs(IGNORED_PROFESSIONS) do
-		local ignoredName = GetSpellInfo(i)
+		local ignoredName = Spell.GetInfo(i)
 		if ignoredName == name or IGNORED_PROFESSIONS[skillId] then
 			return true
 		end
@@ -120,8 +129,8 @@ function private.CreateMainFrame()
 		:SetSettingsContext(private.settings, "frame")
 		:SetMinResize(MIN_FRAME_SIZE.width, MIN_FRAME_SIZE.height)
 		:SetStrata("HIGH")
-		:AddPlayerGold()
-		:AddAppStatusIcon()
+		:AddPlayerGold(private.settings)
+		:AddAppStatusIcon(AppHelper.GetRegion(), AppHelper.GetLastSync(), TSM.AuctionDB.GetAppDataUpdateTimes())
 		:AddSwitchButton(private.SwitchBtnOnClick)
 		:SetScript("OnHide", private.BaseFrameOnHide)
 
@@ -149,8 +158,8 @@ end
 
 function private.SwitchBtnOnClick(button)
 	private.settings.showDefault = button ~= private.defaultUISwitchBtn
-	if Environment.IsRetail() and private.settings.showDefault then
-		Professions.SetDefaultFilters()
+	if not private.settings.showDefault then
+		TradeSkill.SetDefaultFilters()
 	end
 	Profession.SetScannerDisabled(private.settings.showDefault)
 	private.fsm:ProcessEvent("EV_SWITCH_BTN_CLICKED")
@@ -173,7 +182,7 @@ end
 -- ============================================================================
 
 function private.FSMCreate()
-	if not Environment.HasFeature(Environment.FEATURES.C_TRADE_SKILL_UI) then
+	if not ClientInfo.HasFeature(ClientInfo.FEATURES.C_TRADE_SKILL_UI) then
 		Event.Register("CRAFT_SHOW", function()
 			CloseTradeSkill()
 			private.craftOpen = true
@@ -189,7 +198,7 @@ function private.FSMCreate()
 		end)
 	end
 	Event.Register("TRADE_SKILL_SHOW", function()
-		if not Environment.HasFeature(Environment.FEATURES.C_TRADE_SKILL_UI) then
+		if not ClientInfo.HasFeature(ClientInfo.FEATURES.C_TRADE_SKILL_UI) then
 			CloseCraft()
 		end
 		private.tradeSkillOpen = true
@@ -202,7 +211,7 @@ function private.FSMCreate()
 		end
 	end)
 	-- we'll implement UIParent's event handler directly when necessary for TRADE_SKILL_SHOW
-	if not Environment.HasFeature(Environment.FEATURES.C_TRADE_SKILL_UI) then
+	if not ClientInfo.HasFeature(ClientInfo.FEATURES.C_TRADE_SKILL_UI) then
 		UIParent:UnregisterEvent("CRAFT_SHOW")
 	end
 	UIParent:UnregisterEvent("TRADE_SKILL_SHOW")
@@ -234,7 +243,7 @@ function private.FSMCreate()
 			end)
 			:AddEvent("EV_TRADE_SKILL_SHOW", function(context)
 				Profession.SetScannerDisabled(private.settings.showDefault)
-				if CraftingUI.IsProfessionIgnored(Profession.GetSkillLine()) then
+				if CraftingUI.IsProfessionIgnored(TradeSkill.GetName()) then
 					return "ST_DEFAULT_OPEN", true
 				elseif private.settings.showDefault then
 					return "ST_DEFAULT_OPEN"
@@ -251,13 +260,13 @@ function private.FSMCreate()
 				else
 					UIParent_OnEvent(UIParent, "TRADE_SKILL_SHOW")
 				end
-				local defaultFrame = Environment.IsRetail() and ProfessionsFrame or TradeSkillFrame
+				local defaultFrame = ClientInfo.IsRetail() and ProfessionsFrame or TradeSkillFrame
 				if not private.defaultUISwitchBtn then
 					private.defaultUISwitchBtn = UIElements.New("ActionButton", "switchBtn")
-						:SetSize(60, Environment.IsRetail() and 15 or 16)
+						:SetSize(60, ClientInfo.IsRetail() and 15 or 16)
 						:SetFont("BODY_BODY3_MEDIUM")
-						:AddAnchor("TOPRIGHT", Environment.IsRetail() and -50 or -60, Environment.IsRetail() and -4 or -16)
-						:SetRelativeLevel(Environment.IsRetail() and 600 or 3)
+						:AddAnchor("TOPRIGHT", ClientInfo.IsRetail() and -50 or -60, ClientInfo.IsRetail() and -4 or -16)
+						:SetRelativeLevel(ClientInfo.IsRetail() and 600 or 3)
 						:DisableClickCooldown()
 						:SetText(L["TSM4"])
 						:SetScript("OnClick", private.SwitchBtnOnClick)
@@ -280,7 +289,7 @@ function private.FSMCreate()
 				end
 			end)
 			:SetOnExit(function(context)
-				local defaultFrame = Environment.IsRetail() and ProfessionsFrame or TradeSkillFrame
+				local defaultFrame = ClientInfo.IsRetail() and ProfessionsFrame or TradeSkillFrame
 				if private.craftOpen then
 					if CraftFrame then
 						ScriptWrapper.Clear(CraftFrame, "OnHide")
@@ -297,11 +306,11 @@ function private.FSMCreate()
 			:AddTransition("ST_FRAME_OPEN")
 			:AddTransition("ST_DEFAULT_OPEN")
 			:AddEvent("EV_FRAME_HIDE", function(context)
-				Profession.CloseTradeSkill(false)
+				TradeSkill.CloseUI(false)
 				return "ST_CLOSED"
 			end)
 			:AddEvent("EV_TRADE_SKILL_SHOW", function(context)
-				if CraftingUI.IsProfessionIgnored(Profession.GetSkillLine()) then
+				if CraftingUI.IsProfessionIgnored(TradeSkill.GetName()) then
 					return "ST_DEFAULT_OPEN", true
 				else
 					if private.settings.showDefault then
@@ -320,7 +329,7 @@ function private.FSMCreate()
 				assert(not context.frame)
 				context.frame = private.CreateMainFrame()
 				context.frame:Show()
-				if Profession.GetSkillLine() then
+				if TradeSkill.GetName() then
 					context.frame:GetElement("titleFrame.switchBtn"):Show()
 				else
 					context.frame:GetElement("titleFrame.switchBtn"):Hide()
@@ -338,7 +347,7 @@ function private.FSMCreate()
 				context.frame:Release()
 				context.frame = nil
 				private.isVisible = false
-				if not Environment.IsRetail() then
+				if not ClientInfo.IsRetail() then
 					UpdateDefaultCraftButton()
 				end
 				for addonTag, func in pairs(private.apiCallbacks) do
@@ -350,11 +359,11 @@ function private.FSMCreate()
 			:AddTransition("ST_CLOSED")
 			:AddTransition("ST_DEFAULT_OPEN")
 			:AddEvent("EV_FRAME_HIDE", function(context)
-				Profession.CloseTradeSkill(true)
+				TradeSkill.CloseUI(true)
 				return "ST_CLOSED"
 			end)
 			:AddEvent("EV_TRADE_SKILL_SHOW", function(context)
-				if CraftingUI.IsProfessionIgnored(Profession.GetSkillLine()) then
+				if CraftingUI.IsProfessionIgnored(TradeSkill.GetName()) then
 					return "ST_DEFAULT_OPEN", true
 				end
 				context.frame:GetElement("titleFrame.switchBtn"):Show()

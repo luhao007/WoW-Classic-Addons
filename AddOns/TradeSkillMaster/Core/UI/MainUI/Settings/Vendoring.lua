@@ -5,19 +5,27 @@
 -- ------------------------------------------------------------------------------ --
 
 local TSM = select(2, ...) ---@type TSM
-local Vendoring = TSM.MainUI.Settings:NewPackage("Vendoring")
-local L = TSM.Include("Locale").GetTable()
-local ItemInfo = TSM.Include("Service.ItemInfo")
-local UIElements = TSM.Include("UI.UIElements")
-local UIUtils = TSM.Include("UI.UIUtils")
-local private = {}
+local Vendoring = TSM.MainUI.Settings:NewPackage("Vendoring") ---@type AddonPackage
+local L = TSM.Locale.GetTable()
+local UIElements = TSM.LibTSMUI:Include("Util.UIElements")
+local UIUtils = TSM.LibTSMUI:Include("Util.UIUtils")
+local private = {
+	settings = nil,
+}
+local SETTING_TOOLTIPS = {
+	displayMoneyCollected = L["If enables, the total amount of money earned from selling items to the vendor will be displayed in chat."],
+	qsMarketValue = L["How TSM determines the market value for the purpose of displaying in the 'Sell' tab of the Vendor UI."],
+}
 
 
 -- ============================================================================
 -- Module Functions
 -- ============================================================================
 
-function Vendoring.OnInitialize()
+function Vendoring.OnInitialize(settingsDB)
+	private.settings = settingsDB:NewView()
+		:AddKey("global", "vendoringOptions", "displayMoneyCollected")
+		:AddKey("global", "vendoringOptions", "qsMarketValue")
 	TSM.MainUI.Settings.RegisterSettingPage(L["Vendoring"], "middle", private.GetVendoringSettingsFrame)
 end
 
@@ -39,33 +47,19 @@ function private.GetVendoringSettingsFrame()
 				:AddChild(UIElements.New("Checkbox", "checkbox")
 					:SetWidth("AUTO")
 					:SetFont("BODY_BODY2_MEDIUM")
-					:SetSettingInfo(TSM.db.global.vendoringOptions, "displayMoneyCollected")
+					:SetSettingInfo(private.settings, "displayMoneyCollected")
 					:SetText(L["Display total money received in chat"])
+					:SetTooltip(SETTING_TOOLTIPS.displayMoneyCollected)
 				)
 				:AddChild(UIElements.New("Spacer", "spacer"))
 			)
-			:AddChild(TSM.MainUI.Settings.CreateInputWithReset("qsMarketValueSourceField", L["Market Value Price Source"], "global.vendoringOptions.qsMarketValue"))
+			:AddChild(TSM.MainUI.Settings.CreateInputWithReset("qsMarketValueSourceField", L["Market Value Price Source"], private.settings, "qsMarketValue", nil, nil, SETTING_TOOLTIPS.qsMarketValue))
 		)
-		:AddChild(TSM.MainUI.Settings.CreateExpandableSection("Vendoring", "ignore", L["Ignored Items"], "Use this list to manage what items you'd like TSM to ignore from vendoring.")
-			:AddChild(UIElements.New("QueryScrollingTable", "items")
+		:AddChild(TSM.MainUI.Settings.CreateExpandableSection("Vendoring", "ignore", L["Ignored Items"], L["Click on an item below to unignore it for vendoring."])
+			:AddChild(UIElements.New("SimpleItemList", "items")
 				:SetHeight(326)
-				:GetScrollingTableInfo()
-					:NewColumn("item")
-						:SetTitle(L["Item"])
-						:SetFont("ITEM_BODY3")
-						:SetJustifyH("LEFT")
-						:SetIconSize(12)
-						:SetTextInfo("itemString", UIUtils.GetDisplayItemName)
-						:SetIconInfo("itemString", ItemInfo.GetTexture)
-						:SetTooltipInfo("itemString")
-						:SetSortInfo("name")
-						:DisableHiding()
-						:Commit()
-					:Commit()
 				:SetQuery(TSM.Vendoring.Sell.CreateIgnoreQuery())
-				:SetAutoReleaseQuery(true)
-				:SetSelectionDisabled(true)
-				:SetScript("OnRowClick", private.IgnoredItemsOnRowClick)
+				:SetScript("OnItemClick", private.RemoveIgnoredItem)
 			)
 		)
 end
@@ -76,9 +70,6 @@ end
 -- Local Script Handlers
 -- ============================================================================
 
-function private.IgnoredItemsOnRowClick(_, row, mouseButton)
-	if mouseButton ~= "LeftButton" then
-		return
-	end
-	TSM.Vendoring.Sell.ForgetIgnoreItemPermanent(row:GetField("itemString"))
+function private.RemoveIgnoredItem(_, itemString)
+	TSM.Vendoring.Sell.ForgetIgnoreItemPermanent(itemString)
 end

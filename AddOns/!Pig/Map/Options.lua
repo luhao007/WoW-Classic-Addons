@@ -23,70 +23,69 @@ local fuFrame = PIGOptionsList(L["MAP_TABNAME"],"TOP")
 --
 local RTabFrame =Create.PIGOptionsList_RF(fuFrame)
 --
-local MiniMapF,MiniMaptabbut =PIGOptionsList_R(RTabFrame,L["MAP_TABNAME1"],70)
-MiniMapF:Show()
-MiniMaptabbut:Selected()
-----------------------
-function MiniMapF.PIGChecked()
-	MiniMapF.Minimap_but:SetChecked(PIGA["Map"]["MinimapBut"])
-	MiniMapF.Minimap_but_BS:SetEnabled(PIGA["Map"]["MinimapBut"])
-	MiniMapF.Minimap_but_SN:SetEnabled(PIGA["Map"]["MinimapBut"])
-	MiniMapF.Minimap_but_SN.Smeihangshu:SetEnabled(PIGA["Map"]["MinimapBut"])
+local GeneralF,Generaltabbut =PIGOptionsList_R(RTabFrame,GENERAL,70)
+GeneralF:Show()
+Generaltabbut:Selected()
+function GeneralF.PIGChecked()
+	GeneralF.Minimap_but:SetChecked(PIGA["Map"]["MinimapBut"])
+	GeneralF.Minimap_but_BS:SetEnabled(PIGA["Map"]["MinimapBut"])
+	GeneralF.Minimap_but_SN:SetEnabled(PIGA["Map"]["MinimapBut"])
+	GeneralF.Minimap_but_SN.Smeihangshu:SetEnabled(PIGA["Map"]["MinimapBut"])
 	if PIGA["Map"]["MiniButShouNa_YN"]==1 then
-		MiniMapF.Minimap_but_BS:SetChecked(false)
-		MiniMapF.Minimap_but_SN:SetChecked(true)
-		MiniMapF.Minimap_but_SN.Smeihangshu:SetEnabled(true)
+		GeneralF.Minimap_but_BS:SetChecked(false)
+		GeneralF.Minimap_but_SN:SetChecked(true)
+		GeneralF.Minimap_but_SN.Smeihangshu:SetEnabled(true)
 	elseif PIGA["Map"]["MiniButShouNa_YN"]==2 then
-		MiniMapF.Minimap_but_BS:SetChecked(true)
-		MiniMapF.Minimap_but_SN:SetChecked(false)
-		MiniMapF.Minimap_but_SN.Smeihangshu:SetEnabled(false)
+		GeneralF.Minimap_but_BS:SetChecked(true)
+		GeneralF.Minimap_but_SN:SetChecked(false)
+		GeneralF.Minimap_but_SN.Smeihangshu:SetEnabled(false)
 	end
 end
-MiniMapF.Minimap_but = PIGCheckbutton_R(MiniMapF,{L["MAP_NIMIBUT"],L["MAP_NIMIBUTTIPS"]})
-MiniMapF.Minimap_but:SetScript("OnClick", function (self)
+GeneralF.Minimap_but = PIGCheckbutton_R(GeneralF,{L["MAP_NIMIBUT"],L["MAP_NIMIBUTTIPS"]},true)
+GeneralF.Minimap_but:SetScript("OnClick", function (self)
 	if self:GetChecked() then
 		PIGA["Map"]["MinimapBut"]=true;
 	else
 		PIGA["Map"]["MinimapBut"]=false;
 	end
 	PIG_OptionsUI.RLUI:Show()
-	MiniMapF.PIGChecked()
+	GeneralF.PIGChecked()
 end)
 -----------
-MiniMapF.Minimap_but_BS = PIGCheckbutton_R(MiniMapF,{L["MAP_NIMIBUT_BS"],L["MAP_NIMIBUT_BSTIPS"]},true)
-MiniMapF.Minimap_but_BS:SetScript("OnClick", function (self)
+GeneralF.Minimap_but_BS = PIGCheckbutton_R(GeneralF,{L["MAP_NIMIBUT_BS"],L["MAP_NIMIBUT_BSTIPS"]},true)
+GeneralF.Minimap_but_BS:SetScript("OnClick", function (self)
 	if self:GetChecked() then
 		PIGA["Map"]["MiniButShouNa_YN"]=2;
 	else
 		PIGA["Map"]["MiniButShouNa_YN"]=1;
 	end
 	PIG_OptionsUI.RLUI:Show()
-	MiniMapF.PIGChecked()
+	GeneralF.PIGChecked()
 end);
 --收纳功能
-MiniMapF.Minimap_but_SN = PIGCheckbutton_R(MiniMapF,{L["MAP_NIMIBUT_SN"],L["MAP_NIMIBUT_SNTIPS"]},true)
-MiniMapF.Minimap_but_SN:SetScript("OnClick", function (self)
+GeneralF.Minimap_but_SN = PIGCheckbutton_R(GeneralF,{L["MAP_NIMIBUT_SN"],L["MAP_NIMIBUT_SNTIPS"]},true)
+GeneralF.Minimap_but_SN:SetScript("OnClick", function (self)
 	if self:GetChecked() then
 		PIGA["Map"]["MiniButShouNa_YN"]=1;
 	else
 		PIGA["Map"]["MiniButShouNa_YN"]=2;
 	end
 	PIG_OptionsUI.RLUI:Show()
-	MiniMapF.PIGChecked()
+	GeneralF.PIGChecked()
 end);
 --收纳小地图按钮每行数目
-MiniMapF.Minimap_but_SN.SmeihangshuTXT = PIGFontString(MiniMapF.Minimap_but_SN,{"TOPLEFT",MiniMapF.Minimap_but_SN,"BOTTOMLEFT",20,-16},L["MAP_NIMIBUT_HANGNUM"])
+GeneralF.Minimap_but_SN.SmeihangshuTXT = PIGFontString(GeneralF.Minimap_but_SN,{"TOPLEFT",GeneralF.Minimap_but_SN,"BOTTOMLEFT",20,-16},L["MAP_NIMIBUT_HANGNUM"])
 local meihangshuxiala = {1,10,1}
-MiniMapF.Minimap_but_SN.Smeihangshu = PIGSlider(MiniMapF.Minimap_but_SN,{"LEFT", MiniMapF.Minimap_but_SN.SmeihangshuTXT,"RIGHT",4,0},meihangshuxiala)	
-MiniMapF.Minimap_but_SN.Smeihangshu.Slider:HookScript("OnValueChanged", function(self, arg1)
+GeneralF.Minimap_but_SN.Smeihangshu = PIGSlider(GeneralF.Minimap_but_SN,{"LEFT", GeneralF.Minimap_but_SN.SmeihangshuTXT,"RIGHT",4,0},meihangshuxiala)	
+GeneralF.Minimap_but_SN.Smeihangshu.Slider:HookScript("OnValueChanged", function(self, arg1)
 	PIGA["Map"]["MiniButShouNa_hang"]=arg1
-	MiniMapF.PIGChecked()
+	addonTable.CollectMiniMapBut()
 end)
 --按钮位置
-MiniMapF.Minimap_but_Pointbiaoti=PIGFontString(MiniMapF,{"TOPLEFT",MiniMapF,"TOPLEFT",20,-200},"小地图按钮位置:")
+GeneralF.Minimap_but_Pointbiaoti=PIGFontString(GeneralF,{"TOPLEFT",GeneralF,"TOPLEFT",20,-200},"小地图按钮位置:")
 local mapPointList = {"附着于小地图","附着于聊天框","自由模式(可随意拖动)"};
-MiniMapF.Minimap_but_Point=PIGDownMenu(MiniMapF,{"TOPLEFT",MiniMapF.Minimap_but_Pointbiaoti,"BOTTOMLEFT",30,-6},{180,24})
-function MiniMapF.Minimap_but_Point:PIGDownMenu_Update_But()
+GeneralF.Minimap_but_Point=PIGDownMenu(GeneralF,{"TOPLEFT",GeneralF.Minimap_but_Pointbiaoti,"BOTTOMLEFT",20,-6},{250})
+function GeneralF.Minimap_but_Point:PIGDownMenu_Update_But()
 	local info = {}
 	info.func = self.PIGDownMenu_SetValue
 	for i=1,#mapPointList,1 do
@@ -95,52 +94,42 @@ function MiniMapF.Minimap_but_Point:PIGDownMenu_Update_But()
 		self:PIGDownMenu_AddButton(info)
 	end 
 end
-function MiniMapF.Minimap_but_Point:PIGDownMenu_SetValue(value,arg1,arg2)
+function GeneralF.Minimap_but_Point:PIGDownMenu_SetValue(value,arg1,arg2)
 	self:PIGDownMenu_SetText(value)
 	PIGA["Map"]["MinimapPointMode"]=arg1
-	MiniMapF.PIGChecked()
-	PIG_OptionsUI.MiniMapBut:ButPoint()
+	GeneralF.PIGChecked()
+	addonTable.UpdateMiniButPoint()
 	PIGCloseDropDownMenus()
 end
-MiniMapF.CZinfo = PIGButton(MiniMapF,{"TOPLEFT",MiniMapF.Minimap_but_Point,"BOTTOMLEFT",10,-6},{100,24},"重置位置")
-MiniMapF.CZinfo:SetScript("OnClick", function()
-	PIG_OptionsUI.MiniMapBut:CZMinimapInfo()
+GeneralF.CZinfo = PIGButton(GeneralF,{"TOPLEFT",GeneralF.Minimap_but_Point,"BOTTOMLEFT",10,-6},{100,24},"重置位置")
+GeneralF.CZinfo:SetScript("OnClick", function()
+	Mapfun.MiniMapBut:CZMinimapInfo()
 end);
 --=======================================
-MiniMapF.MinimapButF = PIGFrame(MiniMapF)
-MiniMapF.MinimapButF:PIGSetBackdrop()
-MiniMapF.MinimapButF:SetPoint("TOPLEFT", MiniMapF, "TOPLEFT", 306, -38)
-MiniMapF.MinimapButF:SetPoint("BOTTOMRIGHT", MiniMapF, "BOTTOMRIGHT", -6, 6)
-MiniMapF.MinimapButF.biaoti=PIGFontString(MiniMapF.MinimapButF,{"BOTTOMLEFT",MiniMapF.MinimapButF,"TOPLEFT",10,10},L["MAP_NIMIBUT_NOSN"])
-MiniMapF.MinimapButF.biaoti:SetTextColor(0.7, 1, 0, 1);
+GeneralF.MinimapButF = PIGFrame(GeneralF)
+GeneralF.MinimapButF:PIGSetBackdrop()
+GeneralF.MinimapButF:SetPoint("TOPLEFT", GeneralF, "TOPLEFT", 306, -38)
+GeneralF.MinimapButF:SetPoint("BOTTOMRIGHT", GeneralF, "BOTTOMRIGHT", -6, 6)
+GeneralF.MinimapButF.biaoti=PIGFontString(GeneralF.MinimapButF,{"BOTTOMLEFT",GeneralF.MinimapButF,"TOPLEFT",10,10},L["MAP_NIMIBUT_NOSN"])
+GeneralF.MinimapButF.biaoti:SetTextColor(0.7, 1, 0, 1);
 --
+GeneralF.MinimapButF.butlist={}
 local zongshuV,butWWHH,hang_NUM  = 150, 25, 10;
 local hangshuV = math.ceil(zongshuV/hang_NUM)
-MiniMapF.MinimapButF.butlist={}
-local function IsNoDIYpaichu(uiname)
-	local datax = PIGA["Map"]["MinimapBpaichu"]
-	for x=1,#datax do
-		if uiname:match(datax[x]) then
-			return true;
-		end
-	end
-	return false
-end
-Mapfun.IsNoDIYpaichu=IsNoDIYpaichu
 local function UpdatePaichuButLsit()
-	for i=1,#MiniMapF.MinimapButF.butlist do
-		local butx = MiniMapF.MinimapButF.butlist[i]
+	for i=1,#GeneralF.MinimapButF.butlist do
+		local butx = GeneralF.MinimapButF.butlist[i]
 		butx:Hide()
 		PIGEnter(butx,"")
 	end
-	for i=1,#PIG_OptionsUI.MiniMapBut.MiniList do
-		local butx = MiniMapF.MinimapButF.butlist[i]
+	for i=1,#Mapfun.MiniBoxList do
+		local butx = GeneralF.MinimapButF.butlist[i]
 		butx:Show()
-		butx.uiname=PIG_OptionsUI.MiniMapBut.MiniList[i]
-		local iconx = _G[PIG_OptionsUI.MiniMapBut.MiniList[i]].icon and _G[PIG_OptionsUI.MiniMapBut.MiniList[i]].icon:GetTexture() or _G[PIG_OptionsUI.MiniMapBut.MiniList[i]].Icon and _G[PIG_OptionsUI.MiniMapBut.MiniList[i]].Icon:GetTexture() or 134400
+		butx.uiname=Mapfun.MiniBoxList[i]
+		local iconx = _G[Mapfun.MiniBoxList[i]].icon and _G[Mapfun.MiniBoxList[i]].icon:GetTexture() or _G[Mapfun.MiniBoxList[i]].Icon and _G[Mapfun.MiniBoxList[i]].Icon:GetTexture() or 134400
 		butx:SetNormalTexture(iconx)
 		PIGEnter(butx,butx.uiname)
-		if IsNoDIYpaichu(butx.uiname) then
+		if Mapfun.IsNoDIYExclude(butx.uiname) then
 			butx.x:Show()
 		else
 			butx.x:Hide()
@@ -148,11 +137,11 @@ local function UpdatePaichuButLsit()
 	end
 end
 for id = 1, zongshuV do
-	local but = CreateFrame("Button", nil, MiniMapF.MinimapButF);
+	local but = CreateFrame("Button", nil, GeneralF.MinimapButF);
 	but:SetSize(butWWHH, butWWHH);
 	but:SetHighlightTexture("Interface/Buttons/ButtonHilight-Square")
 	but:SetNormalTexture(132311)
-	MiniMapF.MinimapButF.butlist[id]=but
+	GeneralF.MinimapButF.butlist[id]=but
 	but.Down = but:CreateTexture(nil, "OVERLAY");
 	but.Down:SetTexture(130839);
 	but.Down:SetAllPoints(but)
@@ -184,31 +173,31 @@ for hangID=1, hangshuV,1 do
 	if hangID==1 then
 		for xxxx=1, hangID*hang_NUM, 1 do
 			if xxxx==1 then
-				MiniMapF.MinimapButF.butlist[xxxx]:SetPoint("TOPLEFT",MiniMapF.MinimapButF, "TOPLEFT", 8, -8)
+				GeneralF.MinimapButF.butlist[xxxx]:SetPoint("TOPLEFT",GeneralF.MinimapButF, "TOPLEFT", 8, -8)
 			else
-				MiniMapF.MinimapButF.butlist[xxxx]:SetPoint("TOPLEFT",MiniMapF.MinimapButF, "TOPLEFT", (butWWHH+4)*(xxxx-1)+8, -8)
+				GeneralF.MinimapButF.butlist[xxxx]:SetPoint("TOPLEFT",GeneralF.MinimapButF, "TOPLEFT", (butWWHH+4)*(xxxx-1)+8, -8)
 			end
 		end
 	else
 		for xxxx=(hangID-1)*hang_NUM+1, hangID*hang_NUM, 1 do
 			if xxxx-(hangID-1)*hang_NUM==1 then
-				MiniMapF.MinimapButF.butlist[xxxx]:SetPoint("TOPLEFT",MiniMapF.MinimapButF, "TOPLEFT", 8, -(butWWHH+4)*(hangID-1)-8)
+				GeneralF.MinimapButF.butlist[xxxx]:SetPoint("TOPLEFT",GeneralF.MinimapButF, "TOPLEFT", 8, -(butWWHH+4)*(hangID-1)-8)
 			else
-				if MiniMapF.MinimapButF.butlist[xxxx] then
-					MiniMapF.MinimapButF.butlist[xxxx]:SetPoint("TOPLEFT",MiniMapF.MinimapButF, "TOPLEFT", (butWWHH+4)*(xxxx-(hangID-1)*hang_NUM-1)+8, -(butWWHH+4)*(hangID-1)-8)
+				if GeneralF.MinimapButF.butlist[xxxx] then
+					GeneralF.MinimapButF.butlist[xxxx]:SetPoint("TOPLEFT",GeneralF.MinimapButF, "TOPLEFT", (butWWHH+4)*(xxxx-(hangID-1)*hang_NUM-1)+8, -(butWWHH+4)*(hangID-1)-8)
 				end
 			end
 		end
 	end
 end
 ----
-MiniMapF:HookScript("OnShow", function (self)
+GeneralF:HookScript("OnShow", function (self)
 	UpdatePaichuButLsit();
 	self.Minimap_but_SN.Smeihangshu:PIGSetValue(PIGA["Map"]["MiniButShouNa_hang"])
-	if PIG_OptionsUI.MiniMapBut.DiyMiniMap then
+	if Mapfun.MiniMapBut.DiyMiniMapFun then
 		self.Minimap_but_Point:Disable();
 		self.CZinfo:Disable();
-		self.Minimap_but_Point:PIGDownMenu_SetText("被外部插件控制")
+		self.Minimap_but_Point:PIGDownMenu_SetText("被外部插件"..Mapfun.MiniMapBut.EXaddonName.."控制")
 	elseif PIG_OptionsUI.IsOpen_ElvUI() then
 		self.Minimap_but_Point:Disable();
 		self.CZinfo:Disable();
@@ -219,10 +208,90 @@ MiniMapF:HookScript("OnShow", function (self)
 	self.PIGChecked()
 end);
 
+---minimap
+local MiniMapF,MiniMaptabbut =PIGOptionsList_R(RTabFrame,L["MAP_TABNAME1"],70)
+MiniMapF.MinimapXY = PIGCheckbutton_R(MiniMapF,{L["MAP_WORDXY"],L["MAP_WORDXYTIPS"]},true)
+MiniMapF.MinimapXY:SetScript("OnClick", function (self)
+	if self:GetChecked() then
+		PIGA["Map"]["MinimapXY"]=true;
+	else
+		PIGA["Map"]["MinimapXY"]=false;
+	end
+	Mapfun.Minimap_XY()
+end);
+MiniMapF.MinimapHide = PIGCheckbutton_R(MiniMapF,{HIDE..MINIMAP_LABEL},true)
+MiniMapF.MinimapHide:SetScript("OnClick", function (self)
+	if self:GetChecked() then
+		PIGA["Map"]["MinimapHide"]=true;
+	else
+		PIGA["Map"]["MinimapHide"]=false;
+	end
+	PIG_OptionsUI.RLUI:Show()
+end);
+MiniMapF.MinimapMove = PIGCheckbutton_R(MiniMapF,{NPE_MOVE..MINIMAP_LABEL},true)
+MiniMapF.MinimapMove:SetScript("OnClick", function (self)
+	if self:GetChecked() then
+		PIGA["Map"]["MinimapMove"]=true;
+		Mapfun.Minimap_Move()
+	else
+		PIGA["Map"]["MinimapMove"]=false;
+		PIG_OptionsUI.RLUI:Show()
+	end
+	MiniMapF:Update_Checked()
+end);
+MiniMapF.AnchorPointT = PIGFontString(MiniMapF,{"LEFT", MiniMapF.MinimapMove.Text, "RIGHT", 4, 0},"定位锚点")
+MiniMapF.AnchorPoint=PIGDownMenu(MiniMapF,{"LEFT", MiniMapF.AnchorPointT, "RIGHT", 4, 0},{120,nil})
+local xyList = {"TOP","BOTTOM","TOPLEFT","TOPRIGHT","BOTTOMLEFT","BOTTOMRIGHT"}
+local xyListName = {["TOP"]="顶部",["BOTTOM"]="底部",["TOPLEFT"]="左上角",["TOPRIGHT"]="右上角",["BOTTOMLEFT"]="左下角",["BOTTOMRIGHT"]="右下角"}
+function MiniMapF.AnchorPoint:PIGDownMenu_Update_But()
+	local info = {}
+	info.func = self.PIGDownMenu_SetValue
+	for i=1,#xyList do
+	 	info.text, info.arg1 = xyListName[xyList[i]], xyList[i]
+	 	info.checked = xyList[i] == PIGA["Map"]["MinimapAnchor"]
+		self:PIGDownMenu_AddButton(info)
+	end 
+end
+function MiniMapF.AnchorPoint:PIGDownMenu_SetValue(value,arg1)
+	self:PIGDownMenu_SetText(value)
+	PIGA["Map"]["MinimapAnchor"]=arg1
+	PIGA["Map"]["MinimapPointX"]=0
+	PIGA["Map"]["MinimapPointY"]=0
+	MiniMapF:Update_Checked()
+	Mapfun.Minimap_MoveUpdate()
+	PIGCloseDropDownMenus()
+end
+MiniMapF.AnchorPointXT = PIGFontString(MiniMapF,{"TOPLEFT", MiniMapF.MinimapMove.Text, "BOTTOMLEFT", 10, -22},"定位坐标X")
+MiniMapF.AnchorPointX = PIGSlider(MiniMapF,{"LEFT", MiniMapF.AnchorPointXT, "LEFT", 100, 0},{-800, 800, 1},300)
+MiniMapF.AnchorPointX.Slider:HookScript("OnValueChanged", function(self, arg1)
+	PIGA["Map"]["MinimapPointX"]=arg1;
+	Mapfun.Minimap_MoveUpdate()
+end)
+MiniMapF.AnchorPointYT = PIGFontString(MiniMapF,{"TOPLEFT", MiniMapF.AnchorPointXT, "BOTTOMLEFT", 0, -22},"定位坐标Y")
+MiniMapF.AnchorPointY = PIGSlider(MiniMapF,{"LEFT", MiniMapF.AnchorPointYT, "LEFT", 100, 0},{-600, 600, 1},300)
+MiniMapF.AnchorPointY.Slider:HookScript("OnValueChanged", function(self, arg1)
+	PIGA["Map"]["MinimapPointY"]=arg1;
+	Mapfun.Minimap_MoveUpdate()
+end)
+----
+function MiniMapF:Update_Checked()
+	self.AnchorPoint:SetEnabled(PIGA["Map"]["MinimapMove"] and not PIGA["Map"]["MinimapHide"])
+	self.AnchorPointX:SetEnabled(PIGA["Map"]["MinimapMove"] and not PIGA["Map"]["MinimapHide"])
+	self.AnchorPointY:SetEnabled(PIGA["Map"]["MinimapMove"] and not PIGA["Map"]["MinimapHide"])
+	self.AnchorPoint:PIGDownMenu_SetText(xyListName[PIGA["Map"]["MinimapAnchor"]])
+	self.AnchorPointX:PIGSetValue(PIGA["Map"]["MinimapPointX"])
+	self.AnchorPointY:PIGSetValue(PIGA["Map"]["MinimapPointY"])
+end
+MiniMapF:HookScript("OnShow", function (self)
+	self.MinimapXY:SetChecked(PIGA["Map"]["MinimapXY"])
+	self.MinimapHide:SetChecked(PIGA["Map"]["MinimapHide"])
+	self.MinimapMove:SetChecked(PIGA["Map"]["MinimapMove"])
+	self.MinimapMove:SetEnabled(not PIGA["Map"]["MinimapHide"])
+	MiniMapF:Update_Checked()
+end);
 
 --WorldMap================
 local WorldMapF =PIGOptionsList_R(RTabFrame,L["MAP_TABNAME2"],90)
---
 WorldMapF.WorldMapXY = PIGCheckbutton_R(WorldMapF,{L["MAP_WORDXY"],L["MAP_WORDXYTIPS"]},true)
 WorldMapF.WorldMapXY:SetScript("OnClick", function (self)
 	if self:GetChecked() then
@@ -298,10 +367,14 @@ WorldMapF:HookScript("OnShow", function (self)
 end);
 --==================================
 addonTable.Map = function()
+	Mapfun.Minimap_Hide()
+	Mapfun.Minimap_XY()
+	Mapfun.Minimap_Move()
 	Mapfun.WorldMap_XY()
 	if PIG_MaxTocversion() then
 		Mapfun.WorldMap_Wind()
 		Mapfun.WorldMap_LVSkill()
 		Mapfun.WorldMap_Miwu()
 	end
+	if Mapfun.MiniMapBut.DiyMiniMapFun then Mapfun.MiniMapBut.DiyMiniMapFun(Mapfun.MiniMapBut) end
 end

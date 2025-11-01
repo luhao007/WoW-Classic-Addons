@@ -20,6 +20,7 @@ local test = private:GetPrototype("DBMTest")
 local yellPrototype = private:GetPrototype("Yell")
 local mt = {__index = yellPrototype}
 local voidForm = DBM:GetSpellName(194249)
+local SendChatMessage = C_ChatInfo.SendChatMessage or SendChatMessage
 
 ---@param self DBMMod
 local function newYell(self, yellType, spellId, yellText, optionDefault, optionName, chatType)
@@ -95,6 +96,10 @@ function yellPrototype:Yell(...)
 	end
 	local text = stringUtils.pformat(alteredText or self.text, ...)
 	test:Trace(self.mod, "ShowYell", self, text) -- Trace before actually showing to not run into the IsInInstance() filter while testing
+	if DBM:IsPostMidnight() then
+		--Post midnight yell restrictions in instances
+		return
+	end
 	if not IsInInstance() then--as of 8.2.5+, forbidden in outdoor world
 		DBM:Debug("WARNING: A mod is still trying to call chat SAY/YELL messages outdoors, FIXME")
 		return
@@ -117,6 +122,10 @@ function yellPrototype:Say(...)
 	end
 	local text = stringUtils.pformat(self.text, ...)
 	test:Trace(self.mod, "ShowYell", self, text) -- Trace before actually showing to not run into the IsInInstance() filter while testing
+	if DBM:IsPostMidnight() then
+		--Post midnight yell restrictions in instances
+		return
+	end
 	if not IsInInstance() then--as of 8.2.5+, forbidden in outdoor world
 		DBM:Debug("WARNING: A mod is still trying to call chat SAY/YELL messages outdoors, FIXME")
 		return

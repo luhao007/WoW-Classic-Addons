@@ -350,14 +350,14 @@ end)
 local linshicuowuxinxi = {}
 local function errottishi()
 	if PIGA and PIGA["Error"]["ErrorTishi"] then
-		if #linshicuowuxinxi>0 then	
-			if PIG_OptionsUI.MiniMapBut then
-				PIG_OptionsUI.MiniMapBut.error:Show();
+		if #linshicuowuxinxi>0 then
+			if PIG_MiniMapBut then
+				PIG_MiniMapBut.error:Show();
 			end
 			for i=1,#linshicuowuxinxi do
-				print(linshicuowuxinxi[i])
+				--print(linshicuowuxinxi[i])
 			end
-			linshicuowuxinxi = {}
+			wipe(linshicuowuxinxi)
 		end
 	end
 end
@@ -374,7 +374,7 @@ local function SaveErrorInfo(databc, Newmsg)
 end
 ----
 local PIGerrotFUN=function() end
-local PIG_ERR_OR_NUM,PIG_ERR_OR_SSS = 6,3--错误阈值/冷却
+local PIG_ERR_OR_NUM,PIG_ERR_OR_SSS = 20,3--错误阈值/冷却
 local PIG_LAST_TIME = 0
 local HAVE_PASSED_NUM = 0
 function PIGerrotFUN(event,msg1,msg2)
@@ -389,11 +389,12 @@ function PIGerrotFUN(event,msg1,msg2)
 		return
 	end
 	if event=="LUA_WARNING" then
-		--
+		table.insert(linshicuowuxinxi,"LUA_WARNING")
 	elseif event=="ADDON_ACTION_FORBIDDEN" or event=="ADDON_ACTION_BLOCKED" then
 		local msg1 = tostring(msg1)
 		local msg2 = tostring(msg2)
 		local newmsg = "["..event.."] "..L["ERROR_ADDON"].."< "..msg1.." >"..L["ERROR_ERROR1"].."< "..msg2.." >"
+		table.insert(linshicuowuxinxi,newmsg)
 		local cunzai = SaveErrorInfo(bencierrinfo, newmsg)
 		if not cunzai then
 			local time = GetServerTime()
@@ -410,6 +411,7 @@ function PIGerrotFUN(event,msg1,msg2)
 		end
 	elseif event=="MACRO_ACTION_FORBIDDEN" or event=="MACRO_ACTION_BLOCKED" then
 		local newmsg = "["..event.."] "..L["ERROR_ERROR2"].."<"..msg1..">"
+		table.insert(linshicuowuxinxi,newmsg)
 		local cunzai = SaveErrorInfo(bencierrinfo, newmsg)
 		if not cunzai then
 			local time = GetServerTime()
@@ -427,7 +429,6 @@ function PIGerrotFUN(event,msg1,msg2)
 	else
 		local newmsg = tostring(event)
 		table.insert(linshicuowuxinxi,newmsg)
-		errottishi()
 		local cunzai = SaveErrorInfo(bencierrinfo, newmsg)
 		if not cunzai then
 			local time = GetServerTime()
@@ -443,25 +444,14 @@ function PIGerrotFUN(event,msg1,msg2)
 			bencierrinfo[#bencierrinfo + 1] = errorindo	
 		end
 	end
+	errottishi()
 	xianshixinxi(#bencierrinfo)
 end
 UIParent:UnregisterEvent("LUA_WARNING")
 local Pig_seterrorhandler=seterrorhandler
 Pig_seterrorhandler(PIGerrotFUN);
 function seterrorhandler() end
---========================================================
-local function del_ErrorInfo()			
-	PIGA["Error"]=PIGA["Error"] or addonTable.Default["Error"]
-	local cuowuNum = #PIGA["Error"]["ErrorDB"]
-	if cuowuNum>0 then
-		if cuowuNum>10 then
-			for i=(cuowuNum-10),1,-1 do
-				table.remove(PIGA["Error"]["ErrorDB"],i)
-			end
-		end
-	end
-end
---
+--=========================================
 Bugcollect:RegisterEvent("LUA_WARNING")
 Bugcollect:RegisterEvent("ADDON_ACTION_FORBIDDEN");
 Bugcollect:RegisterEvent("ADDON_ACTION_BLOCKED");
@@ -472,8 +462,18 @@ Bugcollect:RegisterEvent("PLAYER_LOGOUT");
 Bugcollect:RegisterEvent("ADDON_LOADED")
 Bugcollect:SetScript("OnEvent", function(self,event,arg1,arg2)
 	if event=="ADDON_LOADED" then
-		C_Timer.After(3,del_ErrorInfo)
-		Bugcollect:UnregisterEvent("ADDON_LOADED")
+		self:UnregisterEvent("ADDON_LOADED")
+		C_Timer.After(3,function()
+			PIGA["Error"]=PIGA["Error"] or addonTable.Default["Error"]
+			local cuowuNum = #PIGA["Error"]["ErrorDB"]
+			if cuowuNum>0 then
+				if cuowuNum>10 then
+					for i=(cuowuNum-10),1,-1 do
+						table.remove(PIGA["Error"]["ErrorDB"],i)
+					end
+				end
+			end
+		end)	
 	elseif event=="PLAYER_ENTERING_WORLD" then
 		Bugcollect.yijiazai=true
 		errottishi()
@@ -487,7 +487,7 @@ Bugcollect:SetScript("OnEvent", function(self,event,arg1,arg2)
 	elseif event=="MACRO_ACTION_FORBIDDEN" or event=="MACRO_ACTION_BLOCKED" then
 		PIGerrotFUN(event,arg1)
 	elseif event=="LUA_WARNING" then
-		PIGerrotFUN(arg2)
+		PIGerrotFUN(event,arg2)
 	end
 end)
 --==================================

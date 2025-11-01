@@ -1,6 +1,6 @@
 ﻿-- Pawn by Vger-Azjol-Nerub
 -- www.vgermods.com
--- © 2006-2024 Travis Spomer.  This mod is released under the Creative Commons Attribution-NonCommercial-NoDerivs 3.0 license.
+-- © 2006-2025 Travis Spomer.  This mod is released under the Creative Commons Attribution-NonCommercial-NoDerivs 3.0 license.
 -- See Readme.htm for more information.
 --
 -- User interface code
@@ -35,6 +35,9 @@ local PawnUITotalGemLines = 0
 -- Index n is the quest advisor overlay image for the reward with index n
 local PawnQuestAdvisorOverlays = {}
 
+-- PlayerGetTimerunningSeasonID() returns nil when first executing this on a full load (not a /reload), so it gets set in PawnUI_EnsureLoaded instead.
+local StandardGemsUnavailable = nil
+
 -- Don't taint the global variable "_".
 local _
 
@@ -66,16 +69,21 @@ local PawnUIFrameNeedsScaleSelector = { true, true, true, true, false, false, fa
 function PawnUI_InventoryPawnButton_Move()
 	if PawnCommon.ButtonPosition == PawnButtonPositionRight then
 		PawnUI_InventoryPawnButton:ClearAllPoints()
-		if PaperDollFrame.ExpandButton then
+		if VgerCore.IsCataclysm or VgerCore.IsMists or PaperDollFrame.ExpandButton then
 			-- DejaCharacterStats compatibility
-			PawnUI_InventoryPawnButton:SetPoint("TOPRIGHT", "CharacterTrinket1Slot", "BOTTOMRIGHT", -31, -8)
+			PawnUI_InventoryPawnButton:SetPoint("TOPRIGHT", "CharacterTrinket1Slot", "BOTTOMRIGHT", -25, -8)
 		else
 			PawnUI_InventoryPawnButton:SetPoint("TOPRIGHT", "CharacterTrinket1Slot", "BOTTOMRIGHT", -1, -8)
 		end
 		PawnUI_InventoryPawnButton:Show()
 		if PawnUI_InspectPawnButton then
 			PawnUI_InspectPawnButton:ClearAllPoints()
-			PawnUI_InspectPawnButton:SetPoint("TOPRIGHT", "InspectTrinket1Slot", "BOTTOMRIGHT", -1, -8)
+			if VgerCore.IsMainline then
+				-- In The War Within, a Talents button was added where the Pawn button would normally be, so force Pawn to the left.
+				PawnUI_InspectPawnButton:SetPoint("TOPLEFT", "InspectWristSlot", "BOTTOMLEFT", 1, -8)
+			else
+				PawnUI_InspectPawnButton:SetPoint("TOPRIGHT", "InspectTrinket1Slot", "BOTTOMRIGHT", -1, -8)
+			end
 			PawnUI_InspectPawnButton:Show()
 		end
 		if PawnUI_SocketingPawnButton then
@@ -147,7 +155,7 @@ function PawnUI_SocketingPawnButton_OnClick(this)
 	-- Set the suggested gem quality level to the level of the current item so relevant gems will be displayed.
 	local ItemLevel
 	local _, ItemLink = ItemSocketingDescription:GetItem()
-	_, _, _, ItemLevel = GetItemInfo(ItemLink)
+	_, _, _, ItemLevel = C_Item.GetItemInfo(ItemLink)
 	PawnUI_SetGemQualityLevel(ItemLevel)
 	-- Show the Gems tab.
 	PawnUIShowTab(PawnUIGemsTabPage, true)
@@ -160,12 +168,12 @@ function PawnUI_AddInventoryTotalsToTooltip(Tooltip, Unit)
 		if Count and Count > 0 then
 			Tooltip:AddLine(" ")
 			Tooltip:AddLine(PawnLocal.UI.InventoryButtonTotalsHeader, 1, 1, 1, 1)
-			PawnAddValuesToTooltip(Tooltip, ItemValues, nil, nil, nil, nil, nil, true)
+			PawnAddValuesToTooltip(Tooltip, ItemValues, nil, nil, nil, nil, true)
 		end
 	end
-	-- Add average item level information to the inspect window.  (It's not necessary for the current player's
+	-- Add average item level information to the inspect window. (On Mainline it's not necessary for the current player's
 	-- character sheet because that's part of the default UI now.)
-	if AverageItemLevel and AverageItemLevel > 0 and Unit ~= "player" then
+	if AverageItemLevel and AverageItemLevel > 0 and (not VgerCore.IsMainline or Unit ~= "player") then
 		if PawnCommon.AlignNumbersRight then
 			Tooltip:AddDoubleLine(PawnLocal.AverageItemLevelIgnoringRarityTooltipLine,  AverageItemLevel, VgerCore.Color.OrangeR, VgerCore.Color.OrangeG, VgerCore.Color.OrangeB, VgerCore.Color.OrangeR, VgerCore.Color.OrangeG, VgerCore.Color.OrangeB)
 		else
@@ -182,6 +190,9 @@ function PawnUI_InspectPawnButton_Attach()
 end
 
 function PawnUI_SocketingPawnButton_Attach()
+	PawnUI_EnsureLoaded()
+	if StandardGemsUnavailable then return end
+
 	-- Attach the socketing button.
 	VgerCore.Assert(ItemSocketingFrame ~= nil, "ItemSocketingFrame should be loaded by now!")
 	CreateFrame("Button", "PawnUI_SocketingPawnButton", ItemSocketingFrame, "PawnUI_SocketingPawnButtonTemplate")
@@ -1016,7 +1027,7 @@ function PawnUI_CompareTab_Refresh()
 	-- Then, update the best in slot shortcuts.
 	local Item = PawnUIComparisonItems[2]
 	local ItemEquipLoc, _
-	if Item then _, _, _, _, _, _, _, _, ItemEquipLoc = GetItemInfo(Item.Link) end
+	if Item then _, _, _, _, _, _, _, _, ItemEquipLoc = C_Item.GetItemInfo(Item.Link) end
 	PawnUI_SetShortcutBestItem(3, ItemEquipLoc)
 	PawnUI_SetShortcutBestItem(4, ItemEquipLoc)
 end
@@ -1066,7 +1077,7 @@ function PawnUI_SetCompareItem(Index, ItemLink)
 	local ItemName, ItemRarity, ItemEquipLoc, ItemTexture, _
 	local SlotID1, SlotID2
 	if ItemLink then
-		ItemName, _, ItemRarity, _, _, _, _, _, ItemEquipLoc, ItemTexture = GetItemInfo(ItemLink)
+		ItemName, _, ItemRarity, _, _, _, _, _, ItemEquipLoc, ItemTexture = C_Item.GetItemInfo(ItemLink)
 		SlotID1, SlotID2 = PawnGetSlotsForItemType(ItemEquipLoc)
 	else
 		ItemName = PawnUIFrame_VersusHeader_NoItem
@@ -1092,7 +1103,7 @@ function PawnUI_SetCompareItem(Index, ItemLink)
 		local OtherIndex
 		if Index == 1 then OtherIndex = 2 else OtherIndex = 1 end
 		if PawnUIComparisonItems[OtherIndex] then
-			_, _, _, _, _, _, _, _, OtherItemEquipLoc = GetItemInfo(PawnUIComparisonItems[OtherIndex].Link)
+			_, _, _, _, _, _, _, _, OtherItemEquipLoc = C_Item.GetItemInfo(PawnUIComparisonItems[OtherIndex].Link)
 			local OtherSlotID1, OtherSlotID2 = PawnGetSlotsForItemType(OtherItemEquipLoc)
 			if not (
 				(SlotID1 == nil and SlotID2 == nil and OtherSlotID1 == nil and OtherSlotID2 == nil) or
@@ -1214,7 +1225,7 @@ function PawnUI_SetShortcutButtonItem(ShortcutIndex)
 	local Item = PawnUIShortcutItems[ShortcutIndex]
 	if Item then
 		local Texture = getglobal(ButtonName .. "NormalTexture")
-		local _, _, _, _, _, _, _, _, _, ItemTexture = GetItemInfo(Item.Link)
+		local _, _, _, _, _, _, _, _, _, ItemTexture = C_Item.GetItemInfo(Item.Link)
 		Texture:SetTexture(ItemTexture)
 		ShortcutButton:Show()
 	else
@@ -1344,6 +1355,8 @@ function PawnUI_CompareItems(IsAutomatedRefresh)
 	AddSockets("YellowSocket", YELLOW_GEM)
 	AddSockets("BlueSocket", BLUE_GEM)
 	AddSockets("MetaSocket", META_GEM)
+	AddSockets("CogwheelSocket", EMPTY_SOCKET_COGWHEEL)
+	AddSockets("ShaTouchedSocket", EMPTY_SOCKET_HYDRAULIC)
 
 	local _, TotalSocketValue1, SocketBonusValue1 = PawnGetItemValue(ItemStats1, Item1.Level, ItemSocketBonusStats1, PawnUICurrentScale, false, true)
 	local _, TotalSocketValue2, SocketBonusValue2 = PawnGetItemValue(ItemStats2, Item2.Level, ItemSocketBonusStats2, PawnUICurrentScale, false, true)
@@ -1386,7 +1399,22 @@ function PawnUI_CompareItems(IsAutomatedRefresh)
 		PawnUI_AddComparisonStatLineNumbers(PawnLocal.ItemLevelTooltipLine, Level1, Level2, false) -- hide differential
 	end
 
-	-- Add asterisk indicator.
+	-- Add reforge potential.
+	local ReforgePotential1 = PawnFindOptimalReforging(Item1, PawnUICurrentScale, true)
+	if ReforgePotential1 and ReforgePotential1 <= 0 then ReforgePotential1 = nil end
+	local ReforgePotential2 = PawnFindOptimalReforging(Item2, PawnUICurrentScale, true)
+	if ReforgePotential2 and ReforgePotential2 <= 0 then ReforgePotential2 = nil end
+	if ReforgePotential1 or ReforgePotential2 then
+		if ReforgePotential1 then ReforgePotential1 = format("+%.1f", ReforgePotential1) end
+		if ReforgePotential2 then ReforgePotential2 = format("+%.1f", ReforgePotential2) end
+		if LastFoundHeader then
+			PawnUI_AddComparisonHeaderLine(LastFoundHeader)
+			LastFoundHeader = nil
+		end
+		PawnUI_AddComparisonStatLineStrings(REFORGED, ReforgePotential1, ReforgePotential2)
+	end
+
+	-- Add special effects ("asterisk") indicator.
 	local Asterisk1, Asterisk2
 	if Item1.UnknownLines then Asterisk1 = YES end
 	if Item2.UnknownLines then Asterisk2 = YES end
@@ -1455,7 +1483,7 @@ function PawnUI_CompareItems(IsAutomatedRefresh)
 
 	-- Hack for WoW Classic: after a moment, refresh the whole thing, because we might have gotten
 	-- incomplete data from the tooltip the first time.
-	if not IsAutomatedRefresh and (VgerCore.IsClassic or VgerCore.IsBurningCrusade or VgerCore.IsWrath) then
+	if not IsAutomatedRefresh and (VgerCore.IsClassic or VgerCore.IsBurningCrusade or VgerCore.IsWrath or VgerCore.IsCataclysm) then
 		local AutomatedRefresh = function()
 			if PawnUIComparisonItems[1] then PawnUIComparisonItems[1] = PawnGetItemData(PawnUIComparisonItems[1].Link) end
 			if PawnUIComparisonItems[2] then PawnUIComparisonItems[2] = PawnGetItemData(PawnUIComparisonItems[2].Link) end
@@ -1587,20 +1615,25 @@ function PawnUIGetAllTextForItem(Item)
 	Tooltip:SetHyperlink(ItemLink)
 
 	local NumLines = Tooltip:NumLines()
-	local i
 	local AllText = ""
 	for i = 1, NumLines do
 		local LeftLine = _G[PawnPrivateTooltipName .. "TextLeft" .. i]
-		AllText = AllText .. LeftLine:GetText() .. "\n"
+		AllText = AllText .. PawnEscapeString(LeftLine:GetText() or "") .. "\n"
 		local RightLine = _G[PawnPrivateTooltipName .. "TextRight" .. i]
 		if RightLine then
-			local RightText = RightLine:GetText()
+			local RightText = PawnEscapeString(RightLine:GetText() or "")
 			if RightText and RightText ~= "" then
 				AllText = AllText .. "    " .. RightText .. "\n"
 			end
 		end
 	end
-	AllText = AllText .. "\n" .. GetLocale() .. "\n/pawn compare " .. PawnGetItemIDsForDisplay(ItemLink, false)
+
+	local DisplayIDs = PawnGetItemIDsForDisplay(ItemLink, false)
+	if DisplayIDs then
+		AllText = AllText .. "\n" .. GetBuildInfo() .. " " .. GetLocale() .. "\n/pawn compare " .. DisplayIDs
+	else
+		VgerCore.Fail("Failed to find the item IDs in " .. PawnEscapeString(ItemLink))
+	end
 
 	local ItemName
 	if Item then
@@ -1738,38 +1771,41 @@ function PawnUI_ShowBestGems()
 	local _
 
 	local GemQualityLevel = PawnGetGemQualityForItem(PawnGemQualityLevels, PawnUIGemQualityLevel)
+	if GemQualityLevel then
 
-	if not VgerCore.IsClassic and not VgerCore.IsMainline then
-		-- Burning Crusade Classic and Wrath Classic: Divide by color
-		if #(PawnScaleBestGems[PawnUICurrentScale].RedSocket[GemQualityLevel]) > 0 then
-			PawnUI_AddGemHeaderLine(format(PawnLocal.UI.GemsColorHeader, RED_GEM))
-			for _, GemData in pairs(PawnScaleBestGems[PawnUICurrentScale].RedSocket[GemQualityLevel]) do
-				PawnUI_AddGemLine(GemData.Name, GemData.Texture, GemData.ID)
+		if not VgerCore.IsClassic and not VgerCore.IsMainline then
+			-- Classic starting in Burning Crusade: Divide by color
+			if #(PawnScaleBestGems[PawnUICurrentScale].RedSocket[GemQualityLevel]) > 0 then
+				PawnUI_AddGemHeaderLine(format(PawnLocal.UI.GemsColorHeader, RED_GEM))
+				for _, GemData in pairs(PawnScaleBestGems[PawnUICurrentScale].RedSocket[GemQualityLevel]) do
+					PawnUI_AddGemLine(GemData.Name, GemData.Texture, GemData.ID)
+				end
+				ShownGems = true
 			end
-			ShownGems = true
-		end
-		if #(PawnScaleBestGems[PawnUICurrentScale].YellowSocket[GemQualityLevel]) > 0 then
-			PawnUI_AddGemHeaderLine(format(PawnLocal.UI.GemsColorHeader, YELLOW_GEM))
-			for _, GemData in pairs(PawnScaleBestGems[PawnUICurrentScale].YellowSocket[GemQualityLevel]) do
-				PawnUI_AddGemLine(GemData.Name, GemData.Texture, GemData.ID)
+			if #(PawnScaleBestGems[PawnUICurrentScale].YellowSocket[GemQualityLevel]) > 0 then
+				PawnUI_AddGemHeaderLine(format(PawnLocal.UI.GemsColorHeader, YELLOW_GEM))
+				for _, GemData in pairs(PawnScaleBestGems[PawnUICurrentScale].YellowSocket[GemQualityLevel]) do
+					PawnUI_AddGemLine(GemData.Name, GemData.Texture, GemData.ID)
+				end
+				ShownGems = true
 			end
-			ShownGems = true
-		end
-		if #(PawnScaleBestGems[PawnUICurrentScale].BlueSocket[GemQualityLevel]) > 0 then
-			PawnUI_AddGemHeaderLine(format(PawnLocal.UI.GemsColorHeader, BLUE_GEM))
-			for _, GemData in pairs(PawnScaleBestGems[PawnUICurrentScale].BlueSocket[GemQualityLevel]) do
-				PawnUI_AddGemLine(GemData.Name, GemData.Texture, GemData.ID)
+			if #(PawnScaleBestGems[PawnUICurrentScale].BlueSocket[GemQualityLevel]) > 0 then
+				PawnUI_AddGemHeaderLine(format(PawnLocal.UI.GemsColorHeader, BLUE_GEM))
+				for _, GemData in pairs(PawnScaleBestGems[PawnUICurrentScale].BlueSocket[GemQualityLevel]) do
+					PawnUI_AddGemLine(GemData.Name, GemData.Texture, GemData.ID)
+				end
+				ShownGems = true
 			end
-			ShownGems = true
-		end
-	else
-		-- Non-Classic WoW: All sockets are prismatic
-		if #(PawnScaleBestGems[PawnUICurrentScale].PrismaticSocket[GemQualityLevel]) > 0 then
-			for _, GemData in pairs(PawnScaleBestGems[PawnUICurrentScale].PrismaticSocket[GemQualityLevel]) do
-				PawnUI_AddGemLine(GemData.Name, GemData.Texture, GemData.ID)
+		else
+			-- Non-Classic WoW: All sockets are prismatic
+			if #(PawnScaleBestGems[PawnUICurrentScale].PrismaticSocket[GemQualityLevel]) > 0 then
+				for _, GemData in pairs(PawnScaleBestGems[PawnUICurrentScale].PrismaticSocket[GemQualityLevel]) do
+					PawnUI_AddGemLine(GemData.Name, GemData.Texture, GemData.ID)
+				end
+				ShownGems = true
 			end
-			ShownGems = true
 		end
+
 	end
 
 	if not ShownGems then
@@ -1931,6 +1967,7 @@ function PawnUIOptionsTabPage_OnShow()
 	PawnUIFrame_ShowLootUpgradeAdvisorCheck:SetChecked(PawnCommon.ShowLootUpgradeAdvisor)
 	PawnUIFrame_ShowQuestUpgradeAdvisorCheck:SetChecked(PawnCommon.ShowQuestUpgradeAdvisor)
 	PawnUIFrame_ShowSocketingAdvisorCheck:SetChecked(PawnCommon.ShowSocketingAdvisor)
+	PawnUIFrame_ShowReforgingAdvisorCheck:SetChecked(PawnCommon.ShowReforgingAdvisor)
 	PawnUIFrame_ShowItemLevelUpgradesCheck:SetChecked(PawnCommon.ShowItemLevelUpgrades)
 
 	-- Other options
@@ -2029,6 +2066,10 @@ function PawnUIFrame_ShowSocketingAdvisorCheck_OnClick()
 	PawnCommon.ShowSocketingAdvisor = PawnUIFrame_ShowSocketingAdvisorCheck:GetChecked()
 end
 
+function PawnUIFrame_ShowReforgingAdvisorCheck_OnClick()
+	PawnCommon.ShowReforgingAdvisor = PawnUIFrame_ShowReforgingAdvisorCheck:GetChecked()
+end
+
 function PawnUIFrame_ShowItemLevelUpgradesCheck_OnClick()
 	PawnCommon.ShowItemLevelUpgrades = PawnUIFrame_ShowItemLevelUpgradesCheck:GetChecked()
 end
@@ -2069,7 +2110,7 @@ end
 ------------------------------------------------------------
 
 function PawnUIAboutTabPage_OnShow()
-	local Version = (C_AddOns and C_AddOns.GetAddOnMetadata or GetAddOnMetadata)("Pawn", "Version")
+	local Version = C_AddOns.GetAddOnMetadata("Pawn", "Version")
 	if Version then
 		PawnUIFrame_AboutVersionLabel:SetText(format(PawnUIFrame_AboutVersionLabel_Text, Version))
 	end
@@ -2077,7 +2118,13 @@ function PawnUIAboutTabPage_OnShow()
 		-- WoW Classic doesn't use the Mr. Robot scales, so hide that logo and information.
 		PawnUIFrame_MrRobotLogo:Hide()
 		PawnUIFrame_MrRobotLabel:SetPoint("TOPLEFT", 25, -210)
-		PawnUIFrame_MrRobotLabel:SetText("Special thanks to HawsJon for collecting the stat weights used in the starter scales.")
+		if VgerCore.IsMists then
+			PawnUIFrame_MrRobotLabel:SetText("Special thanks to Wowhead for providing the stat weights used in the starter scales.")
+		elseif VgerCore.IsCataclysm then
+			PawnUIFrame_MrRobotLabel:SetText("Default stat weights are based on the work of the WoWSims team. You can get more accurate, customized stat weights for your character by using the simulator at wowsims.github.io.")
+		else
+			PawnUIFrame_MrRobotLabel:SetText("Special thanks to HawsJon for collecting the stat weights used in the starter scales.")
+		end
 	end
 end
 
@@ -2087,6 +2134,8 @@ end
 
 function PawnUI_OnSocketUpdate()
 	if PawnSocketingTooltip then PawnSocketingTooltip:Hide() end
+	PawnUI_EnsureLoaded()
+	if StandardGemsUnavailable then return end
 	if not PawnCommon.ShowSocketingAdvisor then return end
 
 	-- Find out what item it is.
@@ -2108,6 +2157,7 @@ function PawnUI_OnSocketUpdate()
 		+ (ItemStats.RedSocket or 0)
 		+ (ItemStats.YellowSocket or 0)
 		+ (ItemStats.BlueSocket or 0)
+		+ (ItemStats.CogwheelSocket or 0)
 	-- We intentionally ignore meta sockets, because meta gems should be selected for their non-stat effects.
 	-- If there are no supported gems in the item, don't add our advisor tooltip to the window.
 	if SocketCount == 0 then return end
@@ -2175,19 +2225,111 @@ function PawnUI_OnSocketUpdate()
 end
 
 ------------------------------------------------------------
+-- Reforging Advisor
+------------------------------------------------------------
+
+function PawnUI_ReforgingAdvisor_Initialize()
+	hooksecurefunc("ReforgingFrame_Update", PawnUI_OnReforgingUpdate)
+end
+
+function PawnUI_OnReforgingUpdate()
+	-- Hide the existing reforging tooltip if there is one.
+	if PawnReforgingTooltip then PawnReforgingTooltip:Hide() end
+
+	if not PawnCommon.ShowReforgingAdvisor then return end
+
+	-- Find out what item it is.
+	local Tooltip = _G[PawnPrivateTooltipName]
+	Tooltip:ClearLines()
+	Tooltip:SetOwner(UIParent, "ANCHOR_NONE")
+	Tooltip:SetReforgeItem()
+	local _, ItemLink = Tooltip:GetItem()
+	if not ItemLink then return end
+
+	local Item = PawnGetItemData(ItemLink)
+	if not Item or not Item.Values then
+		VgerCore.Fail("Failed to update the reforging UI because we didn't know what item was in it.")
+		return
+	end
+	if not Item.UnenchantedStats then return end -- Can't do anything interesting if we couldn't get unenchanted item data
+	local IsUpgradeNotTracked = (Item.InvType == "INVTYPE_TRINKET") -- Don't grey out reforge instructions for trinkets
+	local UpgradeInfo, BestItemFor, SecondBestItemFor = PawnIsItemAnUpgrade(Item)
+
+	-- Now, find out what to do for each scale.
+	local ScaleName
+	local InstructionsList = { }
+	local SuggestedAnyCappedStats
+	for ScaleName, _ in pairs(PawnCommon.Scales) do
+		if PawnIsScaleVisible(ScaleName) then
+			local StatDelta, Instructions, SuggestedCappedStat = PawnFindOptimalReforging(Item, ScaleName)
+			if StatDelta == nil then
+				-- This item can't be reforged.
+				return
+			end
+			SuggestedAnyCappedStats = SuggestedAnyCappedStats or SuggestedCappedStat
+			local TextColor = PawnGetScaleColor(ScaleName)
+			local LocalizedName = PawnGetScaleLocalizedName(ScaleName)
+			local Color = ""
+			if IsUpgradeNotTracked then
+				-- We don't track upgrades for this type of item, so don't grey it out.
+			elseif (BestItemFor and BestItemFor[ScaleName]) or (SecondBestItemFor and SecondBestItemFor[ScaleName]) then
+				-- This is one of our best items for this scale.
+			elseif UpgradeInfo then
+				-- Is this an upgrade for this scale?
+				local WasUpgrade = nil
+				local UpgradeData
+				for _, UpgradeData in pairs(UpgradeInfo) do
+					if UpgradeData[1] == ScaleName then
+						WasUpgrade = true
+						break
+					end
+				end
+				if not WasUpgrade then Color = VgerCore.Color.Grey end
+			else
+				-- This item isn't good for this scale, so grey out the instructions.
+				Color = VgerCore.Color.Grey
+			end
+
+			tinsert(InstructionsList, format("%s%s:|r  %s%s", TextColor, LocalizedName, Color, Instructions))
+		end
+	end
+	sort(InstructionsList, PawnColoredStringCompare)
+
+	-- Add the annotation lines to the tooltip.
+	if not PawnReforgingTooltip then CreateFrame("GameTooltip", "PawnReforgingTooltip", ReforgingFrame, "PawnUI_HintTooltip_PointsUp") end
+	PawnReforgingTooltip:SetOwner(ReforgingFrame, "ANCHOR_NONE")
+	PawnReforgingTooltip:SetPoint("TOPLEFT", ReforgingFrame, "BOTTOMLEFT", 12, -12)
+	PawnReforgingTooltip:SetText(PawnLocal.UI.ReforgeTitle, 1, 1, 1)
+
+	local Instructions
+	for _, Instructions in pairs(InstructionsList) do
+		PawnReforgingTooltip:AddLine(Instructions, 1, 1, 1)
+	end
+
+	if SuggestedAnyCappedStats then
+		PawnReforgingTooltip:AddLine(PawnLocal.ReforgeCappedStatWarning, VgerCore.Color.BlueR, VgerCore.Color.BlueG, VgerCore.Color.BlueB)
+	end
+
+	-- Show our annotations tooltip.
+	PawnReforgingTooltip:Show()
+end
+
+------------------------------------------------------------
 -- Loot Upgrade Advisor
 ------------------------------------------------------------
 
 function PawnUI_LootUpgradeAdvisor_OnLoad(self)
 	self:SetFrameLevel(self:GetParent():GetFrameLevel() + 8)
 
+	-- WoW 11.5.0 changed the capitalization of Arrow and Glow so we have to be able to handle both
+	local Arrow = self.arrow.Arrow or self.arrow.arrow or _G[self.arrow:GetName() .. "Arrow"]
+	local Glow = self.arrow.Glow or self.arrow.glow or _G[self.arrow:GetName() .. "Glow"]
+
 	self.arrow:SetSize(21, 53)
-	self.arrow.arrow = _G[self.arrow:GetName() .. "Arrow"]
-	self.arrow.glow = _G[self.arrow:GetName() .. "Glow"]
-	self.arrow.arrow:SetAllPoints(true)
-	self.arrow.glow:SetAllPoints(true)
-	self.arrow.arrow:SetTexCoord(0.78515625, 0.58789063, 0.99218750, 0.58789063, 0.78515625, 0.54687500, 0.99218750, 0.54687500)
-	self.arrow.glow:SetTexCoord(0.40625000, 0.82812500, 0.66015625, 0.82812500, 0.40625000, 0.77343750, 0.66015625, 0.77343750)
+	Arrow:SetAllPoints(true)
+	Glow:SetAllPoints(true)
+	Arrow:SetTexCoord(0.78515625, 0.58789063, 0.99218750, 0.58789063, 0.78515625, 0.54687500, 0.99218750, 0.54687500)
+	Glow:SetTexCoord(0.40625000, 0.82812500, 0.66015625, 0.82812500, 0.40625000, 0.77343750, 0.66015625, 0.77343750)
 end
 
 function PawnUI_GroupLootFrame_OnShow(self)
@@ -2233,10 +2375,10 @@ function PawnUI_GroupLootFrame_OnShow(self)
 								ThisText = format(PawnLocal.TooltipUpgradeAnnotation, format("|n%s%s:", PawnGetScaleColor(ScaleName), ThisUpgradeData.LocalizedScaleName), ThisUpgradeData.PercentUpgrade * 100, SetAnnotation)
 							end
 							if ShowOldItems and ThisUpgradeData.ExistingItemLink then
-								local ExistingItemName, _, Quality = GetItemInfo(ThisUpgradeData.ExistingItemLink)
+								local ExistingItemName, _, Quality = C_Item.GetItemInfo(ThisUpgradeData.ExistingItemLink)
 								if ExistingItemName then
 									-- It's possible (though rare) that the existing item isn't in the user's cache, so we can't get its quality color.  In that case, don't display it in the tooltip.
-									local _, _, _, QualityColor =  GetItemQualityColor(Quality)
+									local _, _, _, QualityColor =  C_Item.GetItemQualityColor(Quality)
 									ThisText = format(PawnLocal.TooltipVersusLine, ThisText, QualityColor, ExistingItemName)
 								end
 							end
@@ -2360,13 +2502,11 @@ function PawnUI_OnQuestInfo_ShowRewards()
 	-- Now, get information about this quest.
 	local QuestID
 	if C_QuestLog.GetSelectedQuest then QuestID = C_QuestLog.GetSelectedQuest() end
-	local IsInMap = WorldMapFrame:IsShown()
+	local IsInMap = VgerCore.IsMainline and WorldMapFrame:IsShown() -- we only care about the Shadowlands+ map (or maybe Legion+)
 	local StaticRewards, RewardChoices
 	local SetQuestRewardFunctionName, GetRewardInfoFunction, GetChoiceInfoFunction
 	if QuestInfoFrame.questLog then
 		StaticRewards = GetNumQuestLogRewards()
-		-- Ignore this warning: it's incorrect; GetNumQuestLogChoices does indeed take two parameters.
-		---@diagnostic disable-next-line: redundant-parameter
 		RewardChoices = GetNumQuestLogChoices(QuestID, false)
 		SetQuestRewardFunctionName = "SetQuestLogItem"
 		GetRewardInfoFunction = GetQuestLogRewardInfo
@@ -2391,13 +2531,25 @@ function PawnUI_OnQuestInfo_ShowRewards()
 	for i = 1, StaticRewards do
 		-- BUG: In 9.0, the "get the item link for a quest reward" functions return incorrect data for some Shadowlands quests, so
 		-- we work around this by calling the "show this quest reward on a tooltip" method and then getting the item link from THAT, which is correct.
+		local ItemName, _, _, _, Usable, ItemID = GetRewardInfoFunction(i)
 		Tooltip[SetQuestRewardFunctionName](Tooltip, "reward", i)
 		local _, ItemLink = Tooltip:GetItem()
+		-- Workaround for bug in Mists of Pandaria Classic
+		if ItemName and ItemLink and ItemName ~= strsub(ItemLink, (strfind(ItemLink, "%[") or 0) + 1, (strfind(ItemLink, "%[") or 0) + strlen(ItemName)) then
+			VgerCore.Message("Pawn thinks static reward #" .. i .. " is:\n" .. tostring(ItemName) .. " " .. tostring(ItemID or "") .. "\n" .. tostring(ItemLink) .. " " .. PawnGetItemIDsForDisplay(ItemLink))
+			Tooltip:ClearLines()
+			Tooltip[SetQuestRewardFunctionName](Tooltip, "reward", i)
+			_, ItemLink = Tooltip:GetItem()
+			if ItemName == strsub(ItemLink, (strfind(ItemLink, "%[") or 0) + 1, (strfind(ItemLink, "%[") or 0) + strlen(ItemName)) then
+				VgerCore.Message(VgerCore.Color.Green .. "WRONG ITEM but Pawn worked around the problem")
+			else
+				VgerCore.Message(VgerCore.Color.Salmon .. "WRONG ITEM and unable to work around it")
+			end
+		end
 		local Item = PawnGetItemData(ItemLink)
 
 		if Item then
-			local _, _, _, _, Usable = GetRewardInfoFunction(i)
-			tinsert(QuestRewards, { ["Item"] = Item, ["RewardType"] = "reward", ["Usable"] = Usable, ["Index"] = i + RewardChoices })
+			tinsert(QuestRewards, { Item = Item, RewardType = "reward", Usable = Usable, Index = i + RewardChoices })
 		else
 			--VgerCore.Fail("Pawn can't display upgrade information because the server hasn't given us item stats for fixed rewards yet.")
 			-- TODO: Queue this up and retry these calculations later...
@@ -2406,13 +2558,25 @@ function PawnUI_OnQuestInfo_ShowRewards()
 		end
 	end
 	for i = 1, RewardChoices do
+		local ItemName, _, _, _, Usable, ItemID = GetChoiceInfoFunction(i)
 		Tooltip[SetQuestRewardFunctionName](Tooltip, "choice", i)
 		local _, ItemLink = Tooltip:GetItem()
+		-- Workaround for bug in Mists of Pandaria Classic
+		if ItemName and ItemLink and ItemName ~= strsub(ItemLink, (strfind(ItemLink, "%[") or 0) + 1, (strfind(ItemLink, "%[") or 0) + strlen(ItemName)) then
+			VgerCore.Message("Pawn thinks choice reward #" .. i .. " is:\n" .. tostring(ItemName) .. " " .. tostring(ItemID or "") .. "\n" .. tostring(ItemLink) .. " " .. PawnGetItemIDsForDisplay(ItemLink))
+			Tooltip:ClearLines()
+			Tooltip[SetQuestRewardFunctionName](Tooltip, "choice", i)
+			_, ItemLink = Tooltip:GetItem()
+			if ItemName == strsub(ItemLink, (strfind(ItemLink, "%[") or 0) + 1, (strfind(ItemLink, "%[") or 0) + strlen(ItemName)) then
+				VgerCore.Message(VgerCore.Color.Green .. "WRONG ITEM but Pawn worked around the problem")
+			else
+				VgerCore.Message(VgerCore.Color.Salmon .. "WRONG ITEM and unable to work around it")
+			end
+		end
 		local Item = PawnGetItemData(ItemLink)
 
 		if Item then
-			local _, _, _, _, Usable = GetChoiceInfoFunction(i)
-			tinsert(QuestRewards, { ["Item"] = Item, ["RewardType"] = "choice", ["Usable"] = Usable, ["Index"] = i })
+			tinsert(QuestRewards, { Item = Item, RewardType = "choice", Usable = Usable, Index = i })
 		else
 			--VgerCore.Fail("Pawn can't display upgrade information because the server hasn't given us item stats for reward choices yet.")
 			-- TODO: Queue this up and retry these calculations later...
@@ -2462,11 +2626,11 @@ end
 ------------------------------------------------------------
 
 function PawnInterfaceOptionsFrame_OnLoad()
-	-- Register the Interface Options page.
-	PawnInterfaceOptionsFrame.name = "Pawn"
-	if InterfaceOptionsFrame_OpenToCategory then
-		InterfaceOptionsFrame_OpenToCategory(PawnInterfaceOptionsFrame)
+	if Settings and Settings.RegisterCanvasLayoutCategory then
+		local Category = Settings.RegisterCanvasLayoutCategory(PawnInterfaceOptionsFrame, "Pawn")
+		Settings.RegisterAddOnCategory(Category)
 	elseif InterfaceOptions_AddCategory then
+		PawnInterfaceOptionsFrame.name = "Pawn"
 		InterfaceOptions_AddCategory(PawnInterfaceOptionsFrame)
 	end
 end
@@ -2521,6 +2685,7 @@ function PawnUISwitchToTab(Tab)
 		VgerCore.Fail("You must specify a valid Pawn tab.")
 		return
 	end
+	PawnUI_EnsureLoaded()
 
 	-- Loop through all tab frames, showing all but the current one.
 	local TabNumber
@@ -2601,16 +2766,21 @@ end
 function PawnUI_EnsureLoaded()
 	if not PawnUIOpenedYet then
 		PawnUIOpenedYet = true
+		StandardGemsUnavailable = not not (VgerCore.IsClassic or (PlayerGetTimerunningSeasonID and PlayerGetTimerunningSeasonID()))
 		PawnUIFrame_ScaleSelector_Refresh()
 		PawnUIFrame_ShowScaleCheck_Label:SetText(format(PawnUIFrame_ShowScaleCheck_Label_Text, UnitName("player")))
-		if VgerCore.IsClassic then
+		if StandardGemsUnavailable then
 			-- WoW Classic Era doesn't have gems.
+			-- Timerunning season 1 (Mists of Pandaria Remix) didn't use standard gems, though future seasons may.
 			PawnUIFrameTab4:Hide()
 			PawnUIFrame_IgnoreGemsWhileLevelingCheck:Hide()
 			PawnUIFrame_ShowSocketingAdvisorCheck:Hide()
 		end
 		if not VgerCore.HasSpecs then
 			PawnUIFrame_ShowSpecIconsCheck:Hide()
+		end
+		if not VgerCore.ReforgingExists then
+			PawnUIFrame_ShowReforgingAdvisorCheck:Hide()
 		end
 		if not PawnCommon then
 			VgerCore.Fail("Pawn UI OnShow handler was called before PawnCommon was initialized.")
@@ -2645,7 +2815,7 @@ function PawnUIFrame_TooltipOn(self)
 			GameTooltip:ClearLines()
 			GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT")
 			GameTooltip:AddLine(Label, 1, 1, 1, 1)
-			GameTooltip:AddLine(TooltipText, nil, nil, nil, 1, 1)
+			GameTooltip:AddLine(TooltipText, nil, nil, nil, 1)
 			GameTooltip:Show()
 		end
 	end

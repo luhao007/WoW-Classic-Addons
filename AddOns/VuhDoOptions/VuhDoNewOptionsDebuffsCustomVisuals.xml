@@ -152,14 +152,14 @@
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
-									<AbsDimension x="200" y="-25q" />
+									<AbsDimension x="200" y="-25" />
 								</Offset>
 							</Anchor>
 						</Anchors>
 						<Scripts>
 							<OnLoad>
 								VUHDO_lnfSetModel(self, "VUHDO_CONFIG.CUSTOM_DEBUFF.yAdjust");
-								VUHDO_lnfSliderOnLoad(self, VUHDO_I18N_Y, -100, 100, "%", 1);
+								VUHDO_lnfSliderOnLoad(self, VUHDO_I18N_Y, -250, 250, "%", 1);
 								VUHDO_lnfSetTooltip(self, VUHDO_I18N_TT.K355);
 							</OnLoad>
 						</Scripts>
@@ -179,7 +179,7 @@
 						<Scripts>
 							<OnLoad>
 								VUHDO_lnfSetModel(self, "VUHDO_CONFIG.CUSTOM_DEBUFF.xAdjust");
-								VUHDO_lnfSliderOnLoad(self, VUHDO_I18N_X, -100, 100, "%", 1);
+								VUHDO_lnfSliderOnLoad(self, VUHDO_I18N_X, -250, 250, "%", 1);
 								VUHDO_lnfSetTooltip(self, VUHDO_I18N_TT.K356);
 							</OnLoad>
 						</Scripts>

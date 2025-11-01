@@ -101,7 +101,7 @@
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								VUHDO_lnfSetModel(self, "VUHDO_PANEL_SETUP.HOTS.BARS.width");
+								VUHDO_lnfSetModel(self, "VUHDO_PANEL_SETUP.#PNUM#.HOTS.BARS.width");
 								VUHDO_lnfSliderOnLoad(self, VUHDO_I18N_SIZE, 1, 100, "%", 0.5);
 								VUHDO_lnfSetTooltip(self, VUHDO_I18N_TT.K318);
 							</OnLoad>
@@ -161,7 +161,7 @@
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								VUHDO_lnfSetRadioModel(self, "VUHDO_PANEL_SETUP.HOTS.BARS.radioValue", 1);
+								VUHDO_lnfSetRadioModel(self, "VUHDO_PANEL_SETUP.#PNUM#.HOTS.BARS.radioValue", 1);
 							</OnLoad>
 						</Scripts>
 					</CheckButton>
@@ -220,7 +220,7 @@
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								VUHDO_lnfSetRadioModel(self, "VUHDO_PANEL_SETUP.HOTS.BARS.radioValue", 2);
+								VUHDO_lnfSetRadioModel(self, "VUHDO_PANEL_SETUP.#PNUM#.HOTS.BARS.radioValue", 2);
 							</OnLoad>
 						</Scripts>
 					</CheckButton>
@@ -277,7 +277,7 @@
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								VUHDO_lnfSetRadioModel(self, "VUHDO_PANEL_SETUP.HOTS.BARS.radioValue", 3);
+								VUHDO_lnfSetRadioModel(self, "VUHDO_PANEL_SETUP.#PNUM#.HOTS.BARS.radioValue", 3);
 							</OnLoad>
 						</Scripts>
 					</CheckButton>
@@ -334,7 +334,7 @@
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								VUHDO_lnfSetRadioModel(self, "VUHDO_PANEL_SETUP.HOTS.BARS.radioValue", 4);
+								VUHDO_lnfSetRadioModel(self, "VUHDO_PANEL_SETUP.#PNUM#.HOTS.BARS.radioValue", 4);
 							</OnLoad>
 						</Scripts>
 					</CheckButton>

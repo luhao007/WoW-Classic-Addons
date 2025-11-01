@@ -275,7 +275,7 @@ local function VUHDO_buildBuffSetupGenericPanel(aCategoryName, someCategoryBuffs
 
 	local tKnownVariants = VUHDO_getAllBuffNamesAvail(someCategoryBuffs);
 
-	local tVariant = nil;
+	tVariant = nil;
 	if (#tKnownVariants > 0) then
 		tVariant = VUHDO_getBuffInfoForName(tKnownVariants[1], aCategoryName);
 		tIsPresent = true;
@@ -401,7 +401,7 @@ function VUHDO_buffUpButtonClicked(aButton)
 	local tIndex = nil;
 	local tPreIndex = nil;
 
-	for tCategSpec, tNumber in pairs(VUHDO_BUFF_ORDER) do
+	for tCategSpec, _ in pairs(VUHDO_BUFF_ORDER) do
 		if (strfind(tCategSpec, tCategName, 1, true)) then
 			tIndex = tCategSpec;
 			break;
@@ -436,7 +436,7 @@ function VUHDO_buffDownButtonClicked(aButton)
 	local tIndex = nil;
 	local tPreIndex = nil;
 
-	for tCategSpec, tNumber in pairs(VUHDO_BUFF_ORDER) do
+	for tCategSpec, _ in pairs(VUHDO_BUFF_ORDER) do
 		if (strfind(tCategSpec, tCategName, 1, true)) then
 			tIndex = tCategSpec;
 			break;

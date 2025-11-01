@@ -1,6 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<Frame name="VuhDoNewOptionsSpellFireTemplate" virtual="true">
 		<Frames>
+
 			<Frame name="$parentTriggerWhatPanel" inherits="VuhDoPanelTemplate">
 				<Size>
 					<AbsDimension x="365" y="202" />
@@ -176,7 +177,7 @@
 										{ "@player", VUHDO_I18N_PLAYER },
 										{ "@target", VUHDO_I18N_TARGET },
 										{ "@targettarget", VUHDO_I18N_TARGET_TARGET },
-										{ "@focus", VUHDO_I18N_FOCUS },
+										{ "@focus", VUHDO_I18N_FOCUS_UNIT },
 										{ "@vuhdo", VUHDO_I18N_MOUSEOVER },
 										{ "@vdtarget", VUHDO_I18N_MOUSEOVER_TARGET },
 										{ "@vdtargettarget", VUHDO_I18N_MOUSEOVER_TARGET_TARGET },
@@ -213,7 +214,7 @@
 										{ "@player", VUHDO_I18N_PLAYER },
 										{ "@target", VUHDO_I18N_TARGET },
 										{ "@targettarget", VUHDO_I18N_TARGET_TARGET },
-										{ "@focus", VUHDO_I18N_FOCUS },
+										{ "@focus", VUHDO_I18N_FOCUS_UNIT },
 										{ "@vuhdo", VUHDO_I18N_MOUSEOVER },
 										{ "@vdtarget", VUHDO_I18N_MOUSEOVER_TARGET },
 										{ "@vdtargettarget", VUHDO_I18N_MOUSEOVER_TARGET_TARGET },

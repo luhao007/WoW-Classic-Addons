@@ -1,9 +1,6 @@
 # Quartz
 
-## [3.7.14](https://github.com/Nevcairiel/Quartz/tree/3.7.14) (2025-01-10)
-[Full Changelog](https://github.com/Nevcairiel/Quartz/compare/3.7.13...3.7.14) [Previous Releases](https://github.com/Nevcairiel/Quartz/releases)
+## [3.7.16a](https://github.com/Nevcairiel/Quartz/tree/3.7.16a) (2025-09-09)
+[Full Changelog](https://github.com/Nevcairiel/Quartz/compare/3.7.16...3.7.16a) [Previous Releases](https://github.com/Nevcairiel/Quartz/releases)
 
-- Re-introduce channeling spells for Classic  
-    The list is likely incomplete and taken from an older version as-is  
-- Update TOC  
-- Replace OptionsButtonTemplate on all flavors  
+- Update TOC for 11.2 and 11.2.5  

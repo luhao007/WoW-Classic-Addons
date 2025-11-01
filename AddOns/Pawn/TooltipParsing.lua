@@ -1,6 +1,6 @@
 ﻿-- Pawn by Vger-Azjol-Nerub
 -- www.vgermods.com
--- © 2006-2024 Travis Spomer.  This mod is released under the Creative Commons Attribution-NonCommercial-NoDerivs 3.0 license.
+-- © 2006-2025 Travis Spomer.  This mod is released under the Creative Commons Attribution-NonCommercial-NoDerivs 3.0 license.
 -- See Readme.htm for more information.
 --
 -- Tooltip parsing strings
@@ -11,8 +11,14 @@ local L = PawnLocal.TooltipParsing
 
 if PawnLocal.ThousandsSeparator == "NBSP" then PawnLocal.ThousandsSeparator = "\194\160" end
 local Key, Value
+local NumberExpandedPattern = "(-?[%%d%%., ]+)"
+if LARGE_NUMBER_SEPERATOR == "-" then
+	-- French Cataclysm Classic uses a hyphen as the thousands separator, which is insane. We only include that as a valid component
+	-- of a number in this specific case to limit the risk to other versions.
+	NumberExpandedPattern = "(-?[%%d%%., %-]+)"
+end
 for Key, Value in pairs(L) do
-	L[Key] = gsub(Value, "#", "(-?[%%d%%., ]+)")
+	L[Key] = gsub(Value, "#", NumberExpandedPattern)
 end
 
 ------------------------------------------------------------
@@ -138,6 +144,11 @@ PawnRegexes =
 	{PawnGameConstant(INVTYPE_LEGS)}, -- Legs
 	{PawnGameConstant(INVTYPE_FINGER)}, -- Finger
 	{PawnGameConstant(INVTYPE_TRINKET)}, -- Trinket
+	{PawnGameConstant(INVTYPE_RELIC or "UNUSED")}, -- Relic
+	{PawnGameConstant(MAJOR_GLYPH)}, -- Major Glyph
+	{PawnGameConstant(MINOR_GLYPH)}, -- Minor Glyph
+	{PawnGameConstant(PRIME_GLYPH)}, -- Prime Glyph
+	{PawnGameConstant(REFORGED or "UNUSED")}, -- Reforged
 	{PawnGameConstant(MOUNT)}, -- Cenarion War Hippogryph
 	{PawnGameConstantIgnoredPlaceholder(ITEM_CLASSES_ALLOWED)}, -- Classes:
 	{PawnGameConstantIgnoredPlaceholder(ITEM_RACES_ALLOWED)}, -- Races:
@@ -238,12 +249,15 @@ PawnRegexes =
 	{L.HitRating2, "HitRating"}, -- Burning Crusade, /pawn compare 18500
 	{L.HitRating3, "HitRating"}, -- Burning Crusade in Spanish, /pawn compare 32570
 	{L.HitRatingShort, "HitRating"}, -- Burning Crusade, https://tbc.wowhead.com/item=24051/rigid-dawnstone
+	{L.HitRatingShorter, "HitRating"}, -- Mists of Pandaria, /pawn compare 77108
 	{L.SpellHit, "SpellHitRating"}, -- /pawn compare 16795
 	{L.SpellHitRating, "SpellHitRating"}, -- Burning Crusade, /pawn compare 16795
 	{L.SpellHitRating2, "SpellHitRating"}, -- Burning Crusade, /pawn compare 24266
 	{L.SpellHitRatingShort, "SpellHitRating"}, -- Burning Crusade, https://tbc.wowhead.com/item=31861/great-dawnstone
+	{L.Expertise, "ExpertiseRating"}, -- Mists of Pandaria, /pawn compare 19351
 	{L.ExpertiseRating, "ExpertiseRating"}, -- Burning Crusade, /pawn compare 19351
 	{L.ExpertiseRatingShort, "ExpertiseRating"}, -- Wrath, Precise Bloodstone
+	{L.ExpertiseClassic, "ExpertiseRating"}, -- Classic SoD, /pawn compare 236019
 	{L.ArmorPenetration, "ArmorPenetration"},
 	{L.ArmorPenetrationRating, "ArmorPenetration"}, -- Burning Crusade, /pawn compare 34703
 	{L.ArmorPenetrationRating2, "ArmorPenetration"}, -- Burning Crusade, /pawn compare 41592 or 42642 or 44303 depending on locale
@@ -252,20 +266,23 @@ PawnRegexes =
 	{L.Resilience2, "ResilienceRating"}, -- unused in English
 	{L.ResilienceRating, "ResilienceRating"}, -- /pawn compare 29181
 	{L.ResilienceRatingShort, "ResilienceRating"}, -- Burning Crusade, https://tbc.wowhead.com/item=24053/mystic-dawnstone
-	{L.PvPPower, "Stamina"}, -- Stormy Chalcedony
+	{L.PvPPower, "SpellPenetration"}, -- Stormy Chalcedony, /pawn tooltip 39932
 	{L.EnchantmentCounterweight, "HasteRating"}, -- won't work on classic since the live string includes the word "haste" and it's worded differently in classic
 	{L.Haste, "HasteRating"}, -- Leggings of the Betrayed
 	{L.Haste2, "HasteRating"}, -- unused in English
 	{L.HasteRating, "HasteRating"}, -- Burning Crusade, /pawn compare 32570
 	{L.HasteRating2, "HasteRating"}, -- Burning Crusade esES, /pawn compare 32570
 	{L.HasteRatingShort, "HasteRating"}, -- Wrath, Quick Sun Crystal / Burning Crusade, random-stat items only
+	{L.HasteClassic, "HasteRating"}, -- Classic SoD, /pawn compare 236019
 	{L.SpellHasteRating, "SpellHasteRating"}, -- /pawn compare 34360
 	{L.SpellHasteRatingShort, "SpellHasteRating"}, -- https://tbc.wowhead.com/item=35315/quick-dawnstone
+	{L.SpellHasteClassic, "SpellHasteRating"}, -- Classic SoD, /pawn compare 236062
 	{L.SpellPenetration, "SpellPenetration"}, -- Burning Crusade, /pawn compare 21563
 	{L.SpellPenetrationClassic, "SpellPenetration"}, -- Classic (pre-TBC), /pawn compare 21338
 	{L.SpellPenetrationShort, "SpellPenetration"}, -- Burning Crusade, https://tbc.wowhead.com/item=24039/stormy-star-of-elune
 	{L.Mastery, "MasteryRating"}, -- Zen Dream Emerald
 	{L.Mastery2, "MasteryRating"}, -- unused in English
+	{L.Multistrike, "Multistrike"},
 	{L.Versatility, "Versatility"}, -- http://wod.wowhead.com/item=100945
 	{L.Leech, "Leech"}, -- http://wod.wowhead.com/item=100945
 	{L.Avoidance, "Avoidance"}, -- http://wod.wowhead.com/item=100945
@@ -340,8 +357,9 @@ PawnRegexes =
 	{PawnGameConstant(EMPTY_SOCKET_BLUE), "BlueSocket", 1, PawnMultipleStatsFixed},
 	{PawnGameConstant(EMPTY_SOCKET_META), "MetaSocket", 1, PawnMultipleStatsFixed},
 	{PawnGameConstant(EMPTY_SOCKET_COGWHEEL), "CogwheelSocket", 1, PawnMultipleStatsFixed},
+	{PawnGameConstant(EMPTY_SOCKET_HYDRAULIC), "ShaTouchedSocket", 1, PawnMultipleStatsFixed}, -- /pawn tooltip 86227
 	{PawnGameConstant(EMPTY_SOCKET_PRISMATIC), "PrismaticSocket", 1, PawnMultipleStatsFixed},
-	{PawnGameConstant(EMPTY_SOCKET_DOMINATION or "UNUSED")}, -- domination sockets are now ignored
+	{PawnGameConstant(EMPTY_SOCKET_DOMINATION)}, -- only relevant in Shadowlands
 
 	-- In WoW Classic, crossbows, guns, and wands don't show "Ranged" and instead show the weapon type on the left.
 	{L.Bow, "IsBow", 1, PawnMultipleStatsFixed, "IsRanged", 1, PawnMultipleStatsFixed},
@@ -375,6 +393,7 @@ PawnRightHandRegexes =
 	{L.Gun, "IsGun", 1, PawnMultipleStatsFixed},
 	{L.Mace, "IsMace", 1, PawnMultipleStatsFixed},
 	{L.Polearm, "IsPolearm", 1, PawnMultipleStatsFixed},
+	{INVTYPE_RELIC, "IsRelic", 1, PawnMultipleStatsFixed},
 	{L.Staff, "IsStaff", 1, PawnMultipleStatsFixed},
 	{L.Sword, "IsSword", 1, PawnMultipleStatsFixed},
 	{L.Warglaives, "IsWarglaive", 1, PawnMultipleStatsFixed},

@@ -88,7 +88,7 @@ TitanPanelXPButtonIcon = {}
 
 --====== Libs that may exist or adjusting for libs
 AceLibrary = {}
-Tablet20Frame = {}
+
 ---@class AceAddon
 
 AceHook = {}
@@ -128,6 +128,18 @@ C_Bank = {} -- 11.0.0 New Warbank - Hopefully WoW API extension will catch up so
 -- Lua allows table updates but the IDE complains about 'injecting' a field it does not know about.
 -- Adding a function or variable to a frame in this case.
 
+---@class UIParent WoW frame
+---@field GetScale function WoW region routine
+
+---@class Frame frame for a Titan template
+---@field showTimer number time to close in seconds
+---@field isCounting number | nil 1 or nil
+---@field parent table | nil Anchor tooltip
+
+--====== Plugin frames from Template XML
+-- These fields are used by Titan to store plugin info.
+-- This can avoid 'convoluted' lookups and be faster.
+--
 ---@class Button Plugin frame from a Titan template
 ---@field TitanLDBSetOwnerPosition function Anchor tooltip
 ---@field TitanLDBSetTooltip function Fill tooltip
@@ -142,14 +154,10 @@ C_Bank = {} -- 11.0.0 New Warbank - Hopefully WoW API extension will catch up so
 ---@field bar_name string Used by auto hide built-in
 ---@field registry table Any Titan plugin (built-in; third party; or LDB)
 ---@field tooltipText string Titan text for the tool tip
-
----@class UIParent WoW frame
----@field GetScale function WoW region routine
-
----@class Button Plugin frame
 ---@field RequestTimePlayed table Override default - XP
 ---@field TIME_PLAYED_MSG table Override default - XP
 ---@field short_name string Placeholder for short bar name
+---@field RegisterForClicks function Variable params missed by VS Code plugin
 
 -- Ace references
 AceGUIWidgetLSMlists = {}
@@ -161,7 +169,7 @@ L_UIDROPDOWNMENU_MENU_VALUE = 1
 --====== WoW Drop down menu
 UIDROPDOWNMENU_MENU_VALUE = 1
 
----@class LibUIDropDownMenu-4.0
+---@class LibUIDropDownMenu
 ---@field UIDropDownMenu_InitializeHelper function
 ---@field Create_UIDropDownMenu function
 ---@field UIDropDownMenu_Initialize function

@@ -5,9 +5,9 @@ local EXPANSION_ID = BtWQuests.Constant.Expansions.TheBurningCrusade;
 local CATEGORY_ID = BtWQuests.Constant.Category.TheBurningCrusade.Zangarmarsh;
 local Chain = BtWQuests.Constant.Chain.TheBurningCrusade.Zangarmarsh;
 local ALLIANCE_RESTRICTIONS, HORDE_RESTRICTIONS = BtWQuests.Constant.Restrictions.Alliance, BtWQuests.Constant.Restrictions.Horde;
-local MAP_ID = 1946
+local MAP_ID = 102
 local ACHIEVEMENT_ID = 1190
-local CONTINENT_ID = 1945
+local CONTINENT_ID = 1467
 local LEVEL_RANGE = {10, 30}
 local LEVEL_PREREQUISITES = {
     {

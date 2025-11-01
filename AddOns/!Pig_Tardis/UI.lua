@@ -29,7 +29,7 @@ function TardisInfo.ADD_UI()
 	if not C_ChatInfo.IsAddonMessagePrefixRegistered(InvF.Biaotou) then
 		C_ChatInfo.RegisterAddonMessagePrefix(InvF.Biaotou)
 	end
-	InvF.biaoti = PIGFontString(InvF,{"TOP", InvF, "TOP", 0, -4},GnName)
+	InvF.biaoti = PIGFontString(InvF,{"TOP", InvF, "TOP", 0, -3},GnName)
 	--必须加入PIG频道获取
 	local function gengxinbut1()
 		local PIGxulieID =GetPIGID(InvF.pindao)
@@ -97,14 +97,7 @@ function TardisInfo.ADD_UI()
 		end
 	end);
 	--内容显示
-	InvF.F=PIGOptionsList_RF(InvF,21,"Bot",{0,0,0})
-	----
-	-- TardisInfo.Houche()
-	-- TardisInfo.Chedui()
-	TardisInfo.Farm(true)
-	TardisInfo.Plane()
-	TardisInfo.Yell()
-	
+	InvF.F=PIGOptionsList_RF(InvF,21,"Bot",{0,0,0})	
 end
 -----
 function TardisInfo.GetInfoBut(fuF,Point,daojiCDtime,jinduS,butTXT,jindutiaoW,GetButW)
@@ -196,7 +189,7 @@ function TardisInfo.GetInfoBut(fuF,Point,daojiCDtime,jinduS,butTXT,jindutiaoW,Ge
 			self:Show();
 		else
 			self:Hide()
-			GetBut:gengxin_hang(GetBut)
+			GetBut:Update_DataHang()
 		end
 	end);
 	------

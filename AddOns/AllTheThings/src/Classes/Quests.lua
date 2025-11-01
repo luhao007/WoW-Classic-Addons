@@ -21,11 +21,9 @@ local C_QuestLog_ReadyForTurnIn = C_QuestLog.ReadyForTurnIn or IsQuestComplete;
 local C_QuestLog_IsOnQuest = C_QuestLog.IsOnQuest;
 local GetQuestLogRewardInfo =
 	  GetQuestLogRewardInfo;
-local HORDE_FACTION_ID = Enum.FlightPathFaction.Horde;
 
 -- WoW API Cache
 local GetFactionName = app.WOWAPI.GetFactionName;
-local GetFactionCurrentReputation = app.WOWAPI.GetFactionCurrentReputation;
 local GetSpellName = app.WOWAPI.GetSpellName;
 local GetSpellIcon = app.WOWAPI.GetSpellIcon;
 local IsQuestFlaggedCompletedOnAccount = app.WOWAPI.IsQuestFlaggedCompletedOnAccount;
@@ -62,6 +60,10 @@ end
 -- Load Quest Lib
 local RequestLoadQuestByID, ResetQuestName, QuestNameFromID;
 local RefreshQuestIDs = {}
+local function QuestAsyncRefreshFunc(t)
+	RefreshQuestIDs[t.questID] = t
+	return true
+end
 local C_QuestLog_RequestLoadQuestByID = C_QuestLog.RequestLoadQuestByID;
 if C_QuestLog_RequestLoadQuestByID and pcall(app.RegisterEvent, app, "QUEST_DATA_LOAD_RESULT") then
 	local QuestsRequested = {};
@@ -105,6 +107,11 @@ if C_QuestLog_RequestLoadQuestByID and pcall(app.RegisterEvent, app, "QUEST_DATA
 	-- will be called with the QuestID and Success of the data lookup event. Additional params will be provided as a
 	-- 3rd parameter table to the callback
 	RequestLoadQuestByID = function(questID, questObjectRef, ...)
+		if type(questID) ~= "number" then
+			app.PrintDebug("RequestLoadQuestByID: NON-NUMBER QUESTID",questID, questObjectRef, ...)
+			app.PrintDebug(debugstack())
+			return
+		end
 		-- only allow requests once per frame until received
 		if QuestsRequested[questID] then return end
 
@@ -153,6 +160,7 @@ if C_QuestLog_RequestLoadQuestByID and pcall(app.RegisterEvent, app, "QUEST_DATA
 			-- app.PrintDebug("No Server QuestData",questID)
 			QuestNameFromServer[questID] = false;
 		end
+		app.ReshowGametooltip()
 
 		-- see if this Quest is awaiting Reward population & Updates
 		local questObject = QuestsToPopulate[questID];
@@ -275,11 +283,14 @@ local PrintQuestInfo
 local DoQuestPrints
 local IgnoreErrorQuests = {}
 do
-	local function UpdateDoQuestPrints()
-		DoQuestPrints = app.IsReady and app.Settings:GetTooltipSetting("Report:CompletedQuests")
-	end
-	app.AddEventHandler("OnSettingsRefreshed", UpdateDoQuestPrints)
-	app.AddEventHandler("OnReady", UpdateDoQuestPrints)
+	app.AddEventHandler("Settings.OnSet", function(container, key, value)
+		if container == "Tooltips" and key == "Report:CompletedQuests" then
+			DoQuestPrints = value or nil
+		end
+	end)
+	app.AddEventHandler("OnReady", function()
+		DoQuestPrints = app.Settings:GetTooltipSetting("Report:CompletedQuests")
+	end)
 end
 local function PrintQuestInfoCallback(questID, success, params)
 	-- app.PrintDebug("PrintQuestInfoCallback",questID,success,params and unpack(params))
@@ -563,8 +574,13 @@ local function CollectibleAsLocked(t, locked)
 end
 local function CollectibleAsQuestOrAsLocked(t)
 	local locked = t.locked
-	return (not locked and CollectibleAsQuest(t))
+	return (not locked and (t.CollectibleAsQuest or CollectibleAsQuest)(t))
 		or CollectibleAsLocked(t, locked);
+end
+local function CollectibleAsReputationQuest(t)
+	if app.Settings.Collectibles.Quests then
+		return app.Settings.Collectibles.Reputations or CollectibleAsQuest(t);
+	end
 end
 -- Returns whether the provided Quest group is expected to be available to the current character or another character when in debug/account mode
 app.IsQuestAvailable = function(t)
@@ -624,55 +640,6 @@ local function GetQuestIndicator(t)
 		end
 	end
 end
-local NonQuestDataKeys = {
-	aqd = 1,
-	hqd = 1,
-	otherQuestData = 1,
-	g = 1,
-}
-local function ResolveQuestData(t)
-	local aqd, hqd = t.aqd, t.hqd;
-	if aqd and hqd then
-		local questData, otherQuestData;
-		if app.FactionID == HORDE_FACTION_ID then
-			questData = hqd;
-			otherQuestData = aqd;
-		else
-			questData = aqd;
-			otherQuestData = hqd;
-		end
-
-		-- Move over the quest data's groups.
-		if questData.g then
-			if not t.g then
-				t.g = questData.g;
-			else
-				for _,o in ipairs(questData.g) do
-					tinsert(t.g, 1, o);
-				end
-			end
-			questData.g = nil;
-		end
-		app.AssignChildren(otherQuestData)
-		otherQuestData.parent = t.parent
-
-		-- Apply this quest's current data into the other faction's quest. (this is for tooltip caching and source quest resolution)
-		for key,value in pairs(t) do
-			if not NonQuestDataKeys[key] then
-				otherQuestData[key] = value;
-			end
-		end
-
-		-- Apply the faction specific quest data to this object.
-		for key,value in pairs(questData) do t[key] = value; end
-		t.otherQuestData = otherQuestData;
-		t.aqd = nil
-		t.hqd = nil
-		otherQuestData.nmr = 1;
-	else
-		error("Missing AQD / HQD: " .. (aqd and true or false) .. " " .. (hqd and true or false));
-	end
-end
 
 -- Quest Debugging and Reporting
 local function GenerateSourceQuestString(quest)
@@ -704,10 +671,8 @@ end
 local function BuildDiscordQuestInfoTable(id, infoText, questChange, questRef, checks)
 	-- Builds a table to be used in the SetupReportDialog to display text which is copied into Discord for player reports
 	local info = {
-		"### "..(infoText or "quest-info")..":"..id,
-		"```elixir",	-- discord fancy box start
-		questChange.." '"..(QuestNameFromID[id] or "???").."'",
-		"L:"..app.Level.." R:"..app.RaceID.." ("..app.Race..") C:"..app.ClassIndex.." ("..app.Class..")",
+		infoText,
+		questChange..": \""..(QuestNameFromID[id] or "???").."\"",
 	};
 	if checks then
 		for k,v in pairs(checks) do
@@ -732,24 +697,24 @@ local function BuildDiscordQuestInfoTable(id, infoText, questChange, questRef, c
 		else
 			covInfo = covInfo .. "N/A";
 		end
-		if C_MajorFactions then
-			local MajorFactionIDs, majorFactionInfo, data = C_MajorFactions.GetMajorFactionIDs(10), {}, nil;
-			if MajorFactionIDs then
-				for _,factionID in ipairs(MajorFactionIDs) do
-					tinsert(majorFactionInfo, "|");
-					tinsert(majorFactionInfo, factionID);
-					data = C_MajorFactions.GetMajorFactionData(factionID);
-					if data then
-						tinsert(majorFactionInfo, ":");
-						tinsert(majorFactionInfo, data.name:sub(1,4));
-						tinsert(majorFactionInfo, ":");
-						tinsert(majorFactionInfo, data.renownLevel);
-					end
+		tinsert(info, covInfo);
+	end
+	if C_MajorFactions then
+		local MajorFactionIDs, majorFactionInfo, data = C_MajorFactions.GetMajorFactionIDs(10), {}, nil;
+		if MajorFactionIDs then
+			for _,factionID in ipairs(MajorFactionIDs) do
+				tinsert(majorFactionInfo, "|");
+				tinsert(majorFactionInfo, factionID);
+				data = C_MajorFactions.GetMajorFactionData(factionID);
+				if data then
+					tinsert(majorFactionInfo, ":");
+					tinsert(majorFactionInfo, data.name:sub(1,4));
+					tinsert(majorFactionInfo, ":");
+					tinsert(majorFactionInfo, data.renownLevel);
 				end
 			end
-			covInfo = covInfo .. " renown"..(app.TableConcat(majorFactionInfo))
+			tinsert(info, "renown:"..app.TableConcat(majorFactionInfo));
 		end
-		tinsert(info, covInfo);
 	end
 
 	if app.CurrentCharacter.Professions and #app.CurrentCharacter.Professions > 0 then
@@ -773,20 +738,6 @@ local function BuildDiscordQuestInfoTable(id, infoText, questChange, questRef, c
 	end
 	tinsert(info, "sq:"..GenerateSourceQuestString(questRef or id));
 	tinsert(info, "lq:"..(app.TableConcat(MostRecentQuestTurnIns, nil, nil, "<") or ""));
-
-	local mapID = app.CurrentMapID;
-	tinsert(info, mapID and ("mapID:"..mapID.." ("..(app.GetMapName(mapID) or "??")..")") or "mapID:??");
-
-	local position, coord = mapID and C_Map.GetPlayerMapPosition(mapID, "player"), nil;
-	if position then
-		local x,y = position:GetXY();
-		coord = (math_floor(x * 1000) / 10) .. ", " .. (math_floor(y * 1000) / 10);
-	end
-	tinsert(info, coord and ("coord:"..coord) or "coord:??");
-
-	tinsert(info, "ver:"..app.Version);
-	tinsert(info, "build:"..app.GameBuildVersion);
-	tinsert(info, "```");	-- discord fancy box end
 	return info;
 end
 local function SearchForQuestData(questID)
@@ -832,35 +783,30 @@ PrintQuestInfo = function(questID, new)
 		if nmc then text = text .. "[C]"; end
 		if nmr then text = text .. "[R]"; end
 		-- only check to report when accepting a quest, quests flag complete all the time without being filtered
-		if new == true then
+		-- contributor quest info is checked when viewed so no need to check after accepting as well
+		if new == true and (not app.Contributor or app.Modules.Contributor.LastQUEST_DETAIL ~= questID) then
 			app.CheckInaccurateQuestInfo(questRef, questChange);
 		end
 
 		-- give a chat output if the user has just interacted with a quest flagged as NYI
 		if nyi then
-			-- Play a sound when a reportable error is found, if any sound setting is enabled
-			app.Audio:PlayReportSound();
-
-			-- Linkify the output
-			local popupID = "quest-" .. questID .. questChange;
-			app:SetupReportDialog(popupID, "NYI Quest: " .. questID,
-				BuildDiscordQuestInfoTable(questID, "nyi-quest", questChange)
-			);
-			app.print("Quest", questChange, app:Linkify(text .. " [NYI] ATT " .. app.Version, app.Colors.ChatLinkError, "dialog:" .. popupID));
+			-- Report the output
+			app.Modules.Contributor.AddReportData(
+				questRef.__type,
+				questID,
+				BuildDiscordQuestInfoTable(questID, "nyi-quest", questChange),
+				"Quest "..questChange.." "..text.." [NYI] ATT "..app.Version)
 			return
 		end
 
 		-- give a chat output if the user has just interacted with a quest flagged as Unsorted
 		if unsorted then
-			-- Play a sound when a reportable error is found, if any sound setting is enabled
-			app.Audio:PlayReportSound();
-
-			-- Linkify the output
-			local popupID = "quest-" .. questID .. questChange;
-			app:SetupReportDialog(popupID, "Unsorted Quest: " .. questID,
-				BuildDiscordQuestInfoTable(questID, "unsorted-quest", questChange)
-			);
-			app.print("Quest", questChange, app:Linkify(text .. " [UNS] ATT " .. app.Version, app.Colors.ChatLinkError, "dialog:" .. popupID));
+			-- Report the output
+			app.Modules.Contributor.AddReportData(
+				questRef.__type,
+				questID,
+				BuildDiscordQuestInfoTable(questID, "unsorted-quest", questChange),
+				"Quest "..questChange.." "..text.." [UNS] ATT "..app.Version)
 			return
 		end
 
@@ -876,15 +822,12 @@ PrintQuestInfo = function(questID, new)
 	else
 		text = (QuestNameFromID[questID] or UNKNOWN) .. " (" .. questID .. ")";
 
-		-- Play a sound when a reportable error is found, if any sound setting is enabled
-		app.Audio:PlayReportSound();
-
-		-- Linkify the output
-		local popupID = "quest-" .. questID .. questChange;
-		app:SetupReportDialog(popupID, "Missing Quest: " .. questID,
-			BuildDiscordQuestInfoTable(questID, "missing-quest", questChange)
-		);
-		app.print("Quest", questChange, app:Linkify(text .. " (Not in ATT " .. app.Version .. ")", app.Colors.ChatLinkError, "dialog:" .. popupID), GetQuestFrequency(questID) or "");
+		-- Report the output
+		app.Modules.Contributor.AddReportData(
+			"Quest",
+			questID,
+			BuildDiscordQuestInfoTable(questID, "missing-quest", questChange),
+			"Quest "..questChange.." "..text.." (Not in ATT "..app.Version..")"..(GetQuestFrequency(questID) or ""))
 	end
 end
 local function NotInGame(ref)
@@ -894,7 +837,6 @@ app.CheckInaccurateQuestInfo = function(questRef, questChange, forceShow)
 	-- Checks a given quest reference against the current character info to see if something is inaccurate
 	-- accepted quests from old removed items shouldn't trigger a notification to report as inaccurate, non-removed items should still validate
 	if questRef and questRef.questID and (not questRef.itemID or not questRef.u) then
-		-- app.PrintDebug("CheckInaccurateQuestInfo",questRef.questID,questChange)
 		local id = questRef.questID;
 		local completed = app.CurrentCharacter.Quests[id];
 		-- expectations for accurate quest data
@@ -906,9 +848,10 @@ app.CheckInaccurateQuestInfo = function(questRef, questChange, forceShow)
 		-- This now checks recursively outwards to ensure that an in-game quest isn't buried inside a removed header
 		local inGame = not GetRelativeByFunc(questRef, NotInGame)
 		-- repeatable or not previously completed or the accepted quest was immediately completed prior to the check, or character in party sync
-		local incomplete = (questRef.repeatable or not completed or LastQuestTurnedIn == completed or IsPartySyncActive);
+		local incomplete = (questRef.repeatable or not completed or LastQuestTurnedIn == completed or IsPartySyncActive) or app.IsClassic;
 		-- not missing pre-requisites
 		local metPrereq = not questRef.missingReqs;
+		-- app.PrintDebug("CheckInaccurateQuestInfo",questRef.questID,questChange,filter,inGame,incomplete,metPrereq)
 		if forceShow or not (
 			filter
 			and inGame
@@ -918,27 +861,32 @@ app.CheckInaccurateQuestInfo = function(questRef, questChange, forceShow)
 			-- and false
 			)
 		then
-			-- Play a sound when a reportable error is found, if any sound setting is enabled
-			app.Audio:PlayReportSound();
-
-			local popupID = "quest-filter-" .. id;
 			local checks = {
 				Filter = filter and true or false,
 				InGame = inGame and true or false,
 				Incomplete = incomplete and true or false,
 				PreReq = metPrereq and true or false,
 			};
-			if app:SetupReportDialog(popupID, "Inaccurate Quest Info: " .. id,
-				BuildDiscordQuestInfoTable(id, "inaccurate-quest", questChange, questRef, checks))
-			then
-				app.print(app:Linkify(L.REPORT_INACCURATE_QUEST, app.Colors.ChatLinkError, "dialog:" .. popupID));
-			end
+			app.Modules.Contributor.AddReportData(
+				questRef.__type,
+				id,
+				BuildDiscordQuestInfoTable(id, "inaccurate-quest", questChange, questRef, checks),
+				L.REPORT_INACCURATE_QUEST)
 		end
 	end
 end
--- /run ATTC.CheckQuestInfo(12345,1)
-app.CheckQuestInfo = function(questID, isTest)
-	app.CheckInaccurateQuestInfo(Search("questID",questID), "test-show", isTest)
+if app.Debugging then
+	-- testing
+	-- missing quest /run ATTC.PrintQuestInfo(99999)
+	-- NYI quest /run ATTC.PrintQuestInfo(28902)
+	-- UNS quest /run ATTC.PrintQuestInfo(24444)
+	-- HQT quest /run ATTC.PrintQuestInfo(49813)
+	-- REG quest /run ATTC.PrintQuestInfo(83083)
+	app.PrintQuestInfo = PrintQuestInfo
+	-- /run ATTC.CheckQuestInfo(12345,1)
+	app.CheckQuestInfo = function(questID, isTest)
+		app.CheckInaccurateQuestInfo(Search("questID",questID), "test-show", isTest)
+	end
 end
 
 local RefreshAllQuestInfo, RefreshQuestInfo;
@@ -1321,9 +1269,7 @@ local criteriaFuncs = {
         return ("[%d] %s"):format(questID, questName or RETRIEVING_DATA);
     end,
 
-    spellID = function(spellID)
-        return app.CurrentCharacter.Spells[spellID] or app.CurrentCharacter.ActiveSkills[spellID];
-    end,
+    -- spellID = app.IsSpellKnownHelper,	-- defined in OnLoad event
 	label_spellID = L.LOCK_CRITERIA_SPELL_LABEL,
     -- text_spellID = app.GetSpellName,	-- defined in OnLoad event
 
@@ -1381,6 +1327,7 @@ local criteriaFuncs = {
 };
 app.AddEventHandler("OnLoad", function()
 	criteriaFuncs.text_spellID = app.GetSpellName
+	criteriaFuncs.spellID = app.IsSpellKnownHelper
 end)
 local AWQuestLockers = setmetatable({
 	-- sourceID is account-wide, so any lock via that will lock account-wide
@@ -1612,7 +1559,17 @@ if IsQuestReplayable then
 end
 
 -- Quest Lib
+local FactionCache = setmetatable({}, {
+	__index = function(t, factionID)
+		local faction = app.CreateFaction(factionID);
+		t[factionID] = faction;
+		return faction;
+	end,
+});
 local createQuest = app.CreateClass("Quest", "questID", {
+	AsyncRefreshFunc = function()
+		return QuestAsyncRefreshFunc
+	end,
 	CollectibleType = function() return "Quests" end,
 	text = app.IsClassic and function(t)
 		if t.repeatable then return "|cff0070DD" .. t.name .. "|r"; end
@@ -1620,13 +1577,7 @@ local createQuest = app.CreateClass("Quest", "questID", {
 	end or nil,
 	name = function(t)
 		-- TODO: need app.GetAutomaticHeaderData to provide name if not returned from server prior to using QuestNameDefault
-		local questID = t.questID
-		local name = QuestNameFromID[questID]
-		if name then return name end
-
-		-- hook the current group into a cache so that when its name is retrieved it can refresh automatically
-		RefreshQuestIDs[questID] = t
-		return RETRIEVING_DATA
+		return QuestNameFromID[t.questID] or RETRIEVING_DATA
 	end,
 	icon = function(t)
 		-- TODO: need app.GetAutomaticHeaderData to provide icon
@@ -1659,7 +1610,12 @@ local createQuest = app.CreateClass("Quest", "questID", {
 		return "quest:"..t.questID
 	end,
 	RefreshCollectionOnly = true,
-	collectible = CollectibleAsQuest,
+	CollectibleAsQuest = function()
+		return CollectibleAsQuest;
+	end,
+	collectible = function(t)
+		return t:CollectibleAsQuest();
+	end,
 	collected = IsQuestFlaggedCompletedForObject,
 	altcollected = function(t)
 		local altQuests = t.altQuests;
@@ -1688,7 +1644,7 @@ local createQuest = app.CreateClass("Quest", "questID", {
 		local parent = t.parent
 		if not parent then return end
 
-		local qg = parent.creatureID or parent.npcID;
+		local qg = parent.npcID
 		if qg and qg > 0 then return qg; end
 	end,
 	coords = function(t)
@@ -1761,10 +1717,8 @@ local createQuest = app.CreateClass("Quest", "questID", {
 },
 "WithReputation", {
 	-- Classic: Quests which give Reputation are always collectible if tracking Quests & Reputations
-	collectible = app.IsClassic and function(t)
-		if app.Settings.Collectibles.Quests then
-			return app.Settings.Collectibles.Reputations or CollectibleAsQuest(t);
-		end
+	CollectibleAsQuest = app.IsClassic and function()
+		return CollectibleAsReputationQuest;
 	end or nil,
 	-- Classic: Quests which give Reputation are considered collected if tracking Reputations
 	-- and the corresponding Faction is not collected. Even if the Quest itself is not complete.
@@ -1775,7 +1729,7 @@ local createQuest = app.CreateClass("Quest", "questID", {
 		local flag = IsQuestFlaggedCompletedForObject(t);
 		if flag then return flag; end
 		local maxReputation = t.maxReputation;
-		if GetFactionCurrentReputation(maxReputation[1]) >= maxReputation[2] then
+		if FactionCache[t.maxReputation[1]]:CompareReputation(maxReputation[2]) then
 			return t.repeatable and 1 or 2;
 		end
 		if app.Settings.AccountWide.Reputations then
@@ -1851,10 +1805,6 @@ local createQuest = app.CreateClass("Quest", "questID", {
 );
 
 app.CreateQuest = createQuest;
-app.CreateQuestWithFactionData = function(t)
-	ResolveQuestData(t);
-	return createQuest(t.questID, t);
-end
 app.CreateQuestObjective = app.CreateClass("Objective", "objectiveID", {
 	text = function(t)
 		return t.name;
@@ -2057,7 +2007,6 @@ else
 	app.AddEventRegistration("CRITERIA_UPDATE", RefreshAllQuestInfo)
 end
 app.AddEventRegistration("BAG_NEW_ITEMS_UPDATED", softRefresh)
-app.AddEventRegistration("QUEST_REMOVED", softRefresh)
 app.AddEventRegistration("QUEST_WATCH_UPDATE", softRefresh)
 app.AddEventRegistration("QUEST_ACCEPTED", function(questLogIndex, questID)
 	if not questID then questID = questLogIndex; end	-- NOTE: In Classic there's an extra parameter.
@@ -2068,14 +2017,14 @@ app.AddEventRegistration("QUEST_ACCEPTED", function(questLogIndex, questID)
 	PrintQuestInfoViaCallback(questID, true);
 	CheckFollowupQuests(questID);
 	-- TODO: could figure a way to basically do UpdateRawID but simply DirectGroupRefresh the results instead
-	app.HandleEvent("OnRefreshWindows")
+	app.CallbackEvent("OnRefreshWindows")
 end)
 app.AddEventRegistration("QUEST_REMOVED", function(questID)
 	if not questID then return end
 	softRefresh();
 	-- app.PrintDebug("QUEST_REMOVED",questID)
 	-- TODO: could figure a way to basically do UpdateRawID but simply DirectGroupRefresh the results instead
-	app.HandleEvent("OnRefreshWindows")
+	app.CallbackEvent("OnRefreshWindows")
 end)
 app.AddEventRegistration("QUEST_TURNED_IN", function(questID)
 	if not questID then return end
@@ -2269,7 +2218,7 @@ if app.IsRetail then
 			for i,sourceQuestID in ipairs(sourceQuests) do
 				if not addedQuests[sourceQuestID] then
 					addedQuests[sourceQuestID] = true;
-					local qs = sourceQuestID < 1 and SearchForField("creatureID", math.abs(sourceQuestID)) or SearchForField("questID", sourceQuestID);
+					local qs = sourceQuestID < 1 and SearchForField("npcID", math.abs(sourceQuestID)) or SearchForField("questID", sourceQuestID);
 					if qs and #qs > 0 then
 						local i, sq = #qs,nil;
 						while not sq and i > 0 do
@@ -2503,15 +2452,24 @@ if app.IsRetail then
 	-- and are often readily available
 	local SuperSpammyWorldQuestDrops = {
 		-- Items
+		-- LEG
 		[151568] = true,	-- Primal Sargerite
+		-- SL
 		[190189] = true,	-- Sandworn Relic
 
 		-- Currencies
+		-- LEG
 		[1220] = true,	-- Order Resources
-		[1533] = true,	-- Wakening Essence
 		[1508] = true,	-- Veiled Argunite
+		[1533] = true,	-- Wakening Essence
+		-- BFA
+		[1560] = true,	-- War Resources
+		-- SL
 		[1885] = true, 	-- Grateful Offering
+		-- DF
 		[2003] = true,	-- Dragon Isles Supplies
+		-- TWW
+		[2815] = true,	-- Resonance Crystals
 	};
 
 	-- Quest Harvesting Lib (http://www.wowinterface.com/forums/showthread.php?t=46934)
@@ -2544,8 +2502,8 @@ if app.IsRetail then
 		local numQuestRewards = GetNumQuestLogRewards(questID);
 		local skipCollectibleCurrencies = not app.Settings:GetTooltipSetting("WorldQuestsList:Currencies");
 		for j=1,numQuestRewards,1 do
-			-- app.PrintDebug("TPQR:REWARDINFO",questID,j,HaveQuestData(questID),GetQuestLogRewardInfo(j, questID))
 			local itemID = select(6, GetQuestLogRewardInfo(j, questID));
+			-- app.PrintDebug("TPQR:REWARDINFO",questID,j,HaveQuestData(questID),GetQuestLogRewardInfo(j, questID),"=>",itemID)
 			if itemID then
 				---@diagnostic disable-next-line: inject-field
 				QuestHarvester.AllTheThingsProcessing = true;
@@ -2590,9 +2548,9 @@ if app.IsRetail then
 
 						-- don't let cached groups pollute potentially inaccurate raw Data
 						item.link = nil;
-						-- block the group from being collectible as a cost if the option is not enabled for various 'currency' items
+						-- block the group from being filling if the option is not enabled and for various 'currency' items
 						if skipCollectibleCurrencies or SuperSpammyWorldQuestDrops[itemID] then
-							item.skipFill = true
+							item.skipFull = true
 						end
 						app.NestObject(questObject, item, true);
 					end
@@ -2613,9 +2571,9 @@ if app.IsRetail then
 				local item = app.CreateCurrencyClass(currencyID);
 				cachedCurrency = Search("currencyID", currencyID, "key");
 				app.MergeProperties(item, cachedCurrency, true);
-				-- block the group from being collectible as a cost if the option is not enabled
+				-- block the group from being filling if the option is not enabled and for various currencies
 				if skipCollectibleCurrencies or SuperSpammyWorldQuestDrops[currencyID] then
-					item.skipFill = true
+					item.skipFull = true
 				end
 				app.NestObject(questObject, item, true);
 			end
@@ -2731,5 +2689,4 @@ app.IsQuestFlaggedCompleted = IsQuestFlaggedCompleted;
 app.IsQuestFlaggedCompletedForObject = IsQuestFlaggedCompletedForObject;
 app.IsQuestReadyForTurnIn = C_QuestLog_ReadyForTurnIn;
 app.IsQuestSaved = IsQuestSaved;
-app.ResolveQuestData = ResolveQuestData;
 end

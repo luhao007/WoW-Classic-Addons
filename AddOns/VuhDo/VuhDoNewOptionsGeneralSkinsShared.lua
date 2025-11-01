@@ -30,7 +30,7 @@ local VUHDO_DEFAULT_PROFILES = {
 			["HIDE_EMPTY_BUTTONS"] = false,
 			["LOCK_CLICKS_THROUGH"] = false,
 			["CUSTOM_DEBUFF"] = {
-				["animate"] = true,
+				["animate"] = false,
 				["scale"] = 0.8,
 				["isIcon"] = true,
 				["SELECTED"] = "",
@@ -59,7 +59,7 @@ local VUHDO_DEFAULT_PROFILES = {
 				},
 				["yAdjust"] = -34,
 				["isColor"] = false,
-				["isStacks"] = false,
+				["isStacks"] = true,
 				["COUNTER_TEXT"] = {
 					["X_ADJUST"] = -10,
 					["USE_MONO"] = false,
@@ -86,7 +86,10 @@ local VUHDO_DEFAULT_PROFILES = {
 				["point"] = "TOPRIGHT",
 				["timer"] = true,
 				["isName"] = false, 
-				["isShowOnlyForFriendly"] = false, 
+				["isShowFriendly"] = true,
+				["isShowHostile"] = true,
+				["isHostileMine"] = true,
+				["isHostileOthers"] = true,
 				["xAdjust"] = -2,
 				["max_num"] = 3,
 				["blacklistModi"] = "ALT-CTRL-SHIFT",
@@ -378,7 +381,7 @@ local VUHDO_DEFAULT_PROFILES = {
 			},
 			["HOTS"] = {
 				["SLOTS"] = {
-					[10] = "BOUQUET_" .. VUHDO_I18N_DEF_AOE_ADVICE,
+					["firstFlood"] = true,
 				},
 				["BARS"] = {
 					["radioValue"] = 1,
@@ -547,8 +550,8 @@ local VUHDO_DEFAULT_PROFILES = {
 					["useText"] = true,
 				},
 				["HOTS"] = {
-					["useColorText"] = true,
-					["useColorBack"] = true,
+					["useColorText"] = false,
+					["useColorBack"] = false,
 					["isPumpDivineAegis"] = false,
 					["isFadeOut"] = false,
 					["isFlashWhenLow"] = false,
@@ -697,6 +700,34 @@ local VUHDO_DEFAULT_PROFILES = {
 					["TR"] = 0.6,
 					["TO"] = 1,
 					["B"] = 0.3,
+					["O"] = 1,
+					["useBackground"] = true,
+					["isFullDuration"] = false,
+					["useText"] = true,
+				},
+				["HOT11"] = {
+					["TG"] = 0.443,
+					["countdownMode"] = 0,
+					["R"] = 0.890,
+					["TB"] = 0.063,
+					["G"] = 0.408,
+					["TR"] = 0.992,
+					["TO"] = 1,
+					["B"] = 0.133,
+					["O"] = 1,
+					["useBackground"] = true,
+					["isFullDuration"] = false,
+					["useText"] = true,
+				},
+				["HOT12"] = {
+					["TG"] = 0.676,
+					["countdownMode"] = 0,
+					["R"] = 0.2,
+					["TB"] = 0.598,
+					["G"] = 0.576,
+					["TR"] = 0.3,
+					["TO"] = 1,
+					["B"] = 0.498,
 					["O"] = 1,
 					["useBackground"] = true,
 					["isFullDuration"] = false,
@@ -1626,7 +1657,7 @@ local VUHDO_DEFAULT_PROFILES = {
 			},
 			["HOTS"] = {
 				["SLOTS"] = {
-					[10] = "BOUQUET_" .. VUHDO_I18N_DEF_AOE_ADVICE,
+					["firstFlood"] = true,
 				},
 				["BARS"] = {
 					["radioValue"] = 1,
@@ -1820,8 +1851,8 @@ local VUHDO_DEFAULT_PROFILES = {
 					["useText"] = true,
 				},
 				["HOTS"] = {
-					["useColorText"] = true,
-					["useColorBack"] = true,
+					["useColorText"] = false,
+					["useColorBack"] = false,
 					["isPumpDivineAegis"] = false,
 					["isFadeOut"] = false,
 					["isFlashWhenLow"] = false,
@@ -1975,6 +2006,34 @@ local VUHDO_DEFAULT_PROFILES = {
 					["isFullDuration"] = false,
 					["useText"] = true,
 				},
+				["HOT11"] = {
+					["TG"] = 0.443,
+					["countdownMode"] = 1,
+					["R"] = 0.890,
+					["TB"] = 0.063,
+					["G"] = 0.408,
+					["TR"] = 0.992,
+					["TO"] = 1,
+					["B"] = 0.133,
+					["O"] = 1,
+					["useBackground"] = true,
+					["isFullDuration"] = false,
+					["useText"] = true,
+				},
+				["HOT12"] = {
+					["TG"] = 0.676,
+					["countdownMode"] = 1,
+					["R"] = 0.2,
+					["TB"] = 0.598,
+					["G"] = 0.576,
+					["TR"] = 0.3,
+					["TO"] = 1,
+					["B"] = 0.498,
+					["O"] = 1,
+					["useBackground"] = true,
+					["isFullDuration"] = false,
+					["useText"] = true,
+				},
 				["HOT_CHARGE_4"] = {
 					["TG"] = 1,
 					["R"] = 0.8,
@@ -2094,8 +2153,6 @@ end
 --
 VUHDO_DEBUG_AUTO_PROFILE = nil;
 VUHDO_IS_SHOWN_BY_GROUP = true;
-local tIndex;
-local VUHDO_PROFILE_CFG;
 
 
 
@@ -2261,6 +2318,7 @@ function VUHDO_createNewProfileName(aName, aUnitName)
 	local tIdx = 1;
 	local tProfile = { };
 	local tPrefix = aUnitName .. ": ";
+	local tNewName;
 
 	while tProfile do
 		tNewName = tPrefix .. aName;
@@ -2277,9 +2335,11 @@ end
 
 --
 function VUHDO_createNewLayoutName(aName, aUnitName)
+
 	local tIdx = 1;
 	local tLayout = { };
 	local tPrefix = aUnitName .. ": ";
+	local tNewName;
 
 	while tLayout do
 		tNewName = tPrefix .. aName;
@@ -2289,7 +2349,12 @@ function VUHDO_createNewLayoutName(aName, aUnitName)
 		tPrefix = aUnitName .. "(" .. tIdx .. "): ";
 	end
 
+	if VUHDO_strempty(aName) then
+		tNewName = strtrim(tNewName);
+	end
+
 	return tNewName;
+
 end
 
 
@@ -2354,7 +2419,7 @@ end
 
 --
 function VUHDO_saveProfile(aName)
-	local tExistingIndex, tExistingProfile = VUHDO_getProfileNamedCompressed(aName);
+	local _, tExistingProfile = VUHDO_getProfileNamedCompressed(aName);
 	if tExistingProfile then
 		VUHDO_TARGET_PROFILE_NAME = aName;
 
@@ -2425,6 +2490,18 @@ end
 
 local VUHDO_PER_PANEL_PROFILE_MODEL = {
 	["-root-"] = VUHDO_PROFILE_MODEL_MATCH_ALL,
+
+	["HOTS"] = {
+		["-root-"] = VUHDO_PROFILE_MODEL_MATCH_ALL,
+
+		["SLOTS"] = {
+			["-root-"] = VUHDO_PROFILE_MODEL_MATCH_CLASS,
+		},
+
+		["SLOTCFG"] = {
+			["-root-"] = VUHDO_PROFILE_MODEL_MATCH_CLASS,
+		},
+	},
 }
 
 
@@ -2481,6 +2558,7 @@ local VUHDO_PROFILE_MODEL = {
 
 	["SPELL_CONFIG"] = {
 		["-root-"] = VUHDO_PROFILE_MODEL_MATCH_TOON,
+		["IS_TOOLTIP_INFO"] = VUHDO_PROFILE_MODEL_MATCH_ALL,
 	},
 
 	["BUFF_SETTINGS"] = {
@@ -2587,6 +2665,7 @@ end
 function VUHDO_loadProfileNoInit(aName)
 	local tIndex, tProfile = VUHDO_getProfileNamed(aName);
 	local tPanelPositions;
+
 	if not tIndex then
 		VUHDO_Msg(VUHDO_I18N_ERROR_NO_PROFILE .. "\"" .. aName .. "\" !", 1, 0.4, 0.4);
 		return;
@@ -2604,12 +2683,19 @@ function VUHDO_loadProfileNoInit(aName)
 	VUHDO_INDICATOR_CONFIG  = VUHDO_smartLoadFromProfile(VUHDO_INDICATOR_CONFIG,  tProfile["INDICATOR_CONFIG"],  VUHDO_PROFILE_MODEL["INDICATOR_CONFIG"],  VUHDO_PROFILE_MODEL_MATCH_ALL);
 
 	tPanelPositions = tProfile["PANEL_POSITIONS"];
-	if tPanelPositions then
-		for tCnt = 1, 10 do -- VUHDO_MAX_PANELS
-			if tPanelPositions[tCnt] then
-				VUHDO_PANEL_SETUP[tCnt]["POSITION"] = VUHDO_deepCopyTable(tPanelPositions[tCnt]);
-			end
+
+	local tLayoutName;
+
+	if VUHDO_SPEC_LAYOUTS then
+		tLayoutName = VUHDO_SPEC_LAYOUTS["selected"];
+	end
+
+	for tPanelNum = 1, VUHDO_MAX_PANELS do
+		if tPanelPositions and tPanelPositions[tPanelNum] then
+			VUHDO_PANEL_SETUP[tPanelNum]["POSITION"] = VUHDO_deepCopyTable(tPanelPositions[tPanelNum]);
 		end
+
+		VUHDO_activateLayoutLoadHotsForPanel(tLayoutName, tPanelNum);
 	end
 
 	-- @TODO: Warum werden die nicht direkt geladen (ipairs-Problem?)
@@ -2621,6 +2707,25 @@ function VUHDO_loadProfileNoInit(aName)
 		VUHDO_CONFIG["SPELL_TRACE"] = VUHDO_deepCopyTable(tProfile["CONFIG"]["SPELL_TRACE"]);
 	end
 
+	-- if old profile hasn't been migrated then force migration
+	if tProfile["INDICATOR_CONFIG"] and not tProfile["INDICATOR_CONFIG"]["VERSION"] and tProfile["INDICATOR_CONFIG"]["BOUQUETS"]
+		and tProfile["INDICATOR_CONFIG"]["CUSTOM"] and tProfile["INDICATOR_CONFIG"]["TEXT_INDICATORS"] then
+		-- migrated destination config model won't contain the keys need from the old profile
+		VUHDO_INDICATOR_CONFIG["BOUQUETS"] = VUHDO_deepCopyTable(tProfile["INDICATOR_CONFIG"]["BOUQUETS"]);
+		VUHDO_INDICATOR_CONFIG["CUSTOM"] = VUHDO_deepCopyTable(tProfile["INDICATOR_CONFIG"]["CUSTOM"]);
+		VUHDO_INDICATOR_CONFIG["TEXT_INDICATORS"] = VUHDO_deepCopyTable(tProfile["INDICATOR_CONFIG"]["TEXT_INDICATORS"]);
+
+		VUHDO_INDICATOR_CONFIG["VERSION"] = nil;
+	end
+
+	-- if old profile hasn't been migrated then force migration
+	if tProfile["PANEL_SETUP"] and tProfile["PANEL_SETUP"]["HOTS"] and not tProfile["PANEL_SETUP"]["HOTS"]["VERSION"] then
+		-- migrated destination config model won't contain the keys needed from old profile
+		VUHDO_PANEL_SETUP["HOTS"] = VUHDO_deepCopyTable(tProfile["PANEL_SETUP"]["HOTS"]);
+
+		VUHDO_PANEL_SETUP["HOTS"]["VERSION"] = nil;
+	end
+
 	VUHDO_fixDominantProfileSettings(tProfile);
 	VUHDO_CONFIG["CURRENT_PROFILE"] = aName;
 	VUHDO_Msg(VUHDO_I18N_PROFILE_LOADED .. aName);
@@ -2630,6 +2735,7 @@ end
 
 --
 function VUHDO_loadProfile(aName)
+
 	VUHDO_loadProfileNoInit(aName);
 	VUHDO_initAllBurstCaches();
 	VUHDO_loadVariables();
@@ -2657,7 +2763,8 @@ function VUHDO_loadProfile(aName)
 		VUHDO_spellTraceUpdateEditBox(VuhDoNewOptionsGeneralSpellTraceStorePanelEditBox);
 	end
 
-	collectgarbage('collect');
+	collectgarbage("collect");
+
 end
 
 

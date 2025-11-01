@@ -6,8 +6,9 @@
 
 local TSM = select(2, ...) ---@type TSM
 local Shopping = TSM.Tooltip:NewPackage("Shopping")
-local L = TSM.Include("Locale").GetTable()
-local ItemString = TSM.Include("Util.ItemString")
+local L = TSM.Locale.GetTable()
+local ItemString = TSM.LibTSMTypes:Include("Item.ItemString")
+local ShoppingOperation = TSM.LibTSMSystem:Include("ShoppingOperation")
 local private = {}
 
 
@@ -16,7 +17,7 @@ local private = {}
 -- Module Functions
 -- ============================================================================
 
-function Shopping.OnInitialize()
+function Shopping.OnEnable()
 	TSM.Tooltip.Register(TSM.Tooltip.CreateInfo()
 		:SetHeadings(L["TSM Shopping"])
 		:SetSettingsModule("Shopping")
@@ -36,7 +37,7 @@ function private.PopulateMaxPriceLine(tooltip, itemString)
 		-- example tooltip
 		maxPrice = 37
 	else
-		maxPrice = TSM.Operations.Shopping.GetMaxPrice(itemString)
+		maxPrice = ShoppingOperation.GetMaxPrice(itemString)
 	end
 	if maxPrice then
 		tooltip:AddItemValueLine(L["Max Shopping Price"], maxPrice)

@@ -55,18 +55,18 @@ VUHDO_I18N_BUFF_ALL = "모두";
 VUHDO_I18N_SHOW_BUFF_WATCH = "버프 주시기 보이기";
 -- Chat messages
 -- @EXACT = false
-VUHDO_I18N_COMMAND_LIST = "\n|cffffe566 - [ VuhDo Commands ] -|r";
-VUHDO_I18N_COMMAND_LIST = VUHDO_I18N_COMMAND_LIST .. "§|cffffe566opt|r[ions] - VuhDo 옵션";
-VUHDO_I18N_COMMAND_LIST = VUHDO_I18N_COMMAND_LIST .. "§|cffffe566res|r[et] - 패널 위치 초기화";
-VUHDO_I18N_COMMAND_LIST = VUHDO_I18N_COMMAND_LIST .. "§|cffffe566lock|r - 패널 위치 잠금 토글";
-VUHDO_I18N_COMMAND_LIST = VUHDO_I18N_COMMAND_LIST .. "§|cffffe566mm, map, minimap|r - 미니맵 아이콘 토글";
-VUHDO_I18N_COMMAND_LIST = VUHDO_I18N_COMMAND_LIST .. "|n|cffffe566compart|r[ment] - Toggle AddOn Compartment Icon";
-VUHDO_I18N_COMMAND_LIST = VUHDO_I18N_COMMAND_LIST .. "§|cffffe566show, hide, toggle|r - 패널 켜기/끄기 전환";
-VUHDO_I18N_COMMAND_LIST = VUHDO_I18N_COMMAND_LIST .. "§|cffffe566load|r - [Profile],[Key Layout]";
-VUHDO_I18N_COMMAND_LIST = VUHDO_I18N_COMMAND_LIST .. "§[broad]|cffffe566cast, mt|r[s] - 메인 탱커 알림";
-VUHDO_I18N_COMMAND_LIST = VUHDO_I18N_COMMAND_LIST .. "§|cffffe566role|r - 플레이어 역할 재설정";
-VUHDO_I18N_COMMAND_LIST = VUHDO_I18N_COMMAND_LIST .. "|n|cffffe566ab|r[out] - 이 애드온에 관하여";
-VUHDO_I18N_COMMAND_LIST = VUHDO_I18N_COMMAND_LIST .. "§|cffffe566help,?|r - 이 명령어들을 보임\n";
+VUHDO_I18N_COMMAND_LIST = "\n|cffffe566 - [ VuhDo 명령어 ] -|r\n" ..
+"|cffffe566opt|r[ions] - VuhDo 설정\n" ..
+"|cffffe566res|r[et] - 패널 위치 초기화\n" ..
+"|cffffe566lock|r - 패널 잠금/해제\n" ..
+"|cffffe566mm, map, minimap|r - 미니맵 아이콘 표시/숨김\n" ..
+"|cffffe566compart|r[ment] - 애드온 구획 아이콘 토글\n" ..
+"|cffffe566show, hide, toggle|r - 패널 표시/숨김\n" ..
+"|cffffe566load|r - [프로필],[단축키 설정]\n" ..
+"[broad]|cffffe566cast, mt|r[s] - 주 탱커 알림\n" ..
+"|cffffe566role|r - 플레이어 역할 초기화\n" ..
+"|cffffe566ab|r[out] - 애드온 정보\n" ..
+"|cffffe566help,?|r - 명령어 목록\n";
 VUHDO_I18N_BAD_COMMAND = "잘못된 명령어입니다! '/vuhdo help' 또는 '/vd ?' 를 입력하여 명령어를 참고하세요.";
 VUHDO_I18N_CHAT_SHOWN = "|cffffe566보임|r.";
 VUHDO_I18N_CHAT_HIDDEN = "|cffffe566숨김|r.";
@@ -351,7 +351,8 @@ VUHDO_I18N_SPELL_LAYOUT_NOT_EXIST = "주문 레이아웃 \"%s\"은 존재하지 
 --VUHDO_I18N_ADDON_WARNING = "경고: VuhDo와 함께 애드온 |cffffffff\"%s\"|r |1이;가; 활성화 되어있어 문제가 될 수 있습니다. 원인: %s";
 --VUHDO_I18N_MAY_CAUSE_LAGS = "심각한 지연을 초래할 수 있습니다.";
 
-VUHDO_I18N_DISABLE_BY_VERSION = "!!! VUHDO 사용불가 !!! 이 버전은 %d 이상의 클라이언트 버전에만 사용됩니다!!!";
+VUHDO_I18N_DISABLE_BY_MIN_VERSION = "!!! VUHDO IS DISABLED !!! This version (%s) is for client versions %d and above only !!!"
+VUHDO_I18N_DISABLE_BY_MAX_VERSION = "!!! VUHDO IS DISABLED !!! This version (%s) is for client versions %d and below only !!!"
 
 VUHDO_I18N_BOUQUET_STATUS_ALTERNATE_POWERS = "Statusbar: Altern. Power %";
 VUHDO_I18N_BOUQUET_ALTERNATE_POWERS_ABOVE = "Flag: 대체 능력 > %";
@@ -541,3 +542,30 @@ VUHDO_I18N_TEXT_PROVIDER_MANA_KILO_OF = "Mana: <#nk>/<#nk>";
 VUHDO_I18N_TEXT_PROVIDER_MANA = "Mana: <#n>";
 VUHDO_I18N_TEXT_PROVIDER_MANA_KILO = "Mana: <#nk>";
 VUHDO_I18N_BOUQUET_STATUS_HEALTH_IF_ACTIVE = "Statusbar: Health % if active";
+
+VUHDO_I18N_DEF_COUNTER_ACTIVE_AURAS = "Counter: Active Bouquet Auras #k";
+
+VUHDO_I18N_BOUQUET_EVOKER_REVERSION = "Evoker Reversion (non-echo)";
+VUHDO_I18N_BOUQUET_EVOKER_REVERSION_ECHO = "Evoker Reversion (echo)";
+VUHDO_I18N_BOUQUET_EVOKER_DREAM_BREATH = "Evoker Dream Breath (non-echo)";
+VUHDO_I18N_BOUQUET_EVOKER_DREAM_BREATH_ECHO = "Evoker Dream Breath (echo)";
+VUHDO_I18N_BOUQUET_EVOKER_ALL_ECHO = "Evoker All HoT Echoes";
+
+VUHDO_I18N_TRAIL_OF_LIGHT_NEXT = "Flag: Trail of Light (Next)";
+VUHDO_I18N_DEF_TRAIL_OF_LIGHT_NEXT = "Trail of Light (Next)";
+VUHDO_I18N_BOUQUET_DEBUFF_BLEED = "Flag: Debuff Bleed";
+
+VUHDO_I18N_DEF_SPELL_TRACE_INCOMING = "Spell Trace (Incoming)";
+
+VUHDO_I18N_BOUQUET_CHI_HARMONY_ICON_MINE = "Icon: Chi Harmony (Mine)";
+VUHDO_I18N_DEF_BOUQUET_CHI_HARMONY_ICON_MINE = "Chi Harmony (Mine)";
+VUHDO_I18N_BOUQUET_CHI_HARMONY_ICON_OTHERS = "Icon: Chi Harmony (Others)";
+VUHDO_I18N_DEF_BOUQUET_CHI_HARMONY_ICON_OTHERS = "Chi Harmony (Others)";
+VUHDO_I18N_BOUQUET_CHI_HARMONY_ICON_BOTH = "Icon: Chi Harmony (Both)";
+VUHDO_I18N_DEF_BOUQUET_CHI_HARMONY_ICON_BOTH = "Chi Harmony (Both)";
+
+VUHDO_I18N_BOUQUET_DEBUFF_ENRAGE = "Flag: Debuff Enrage";
+
+-- Cata Classic
+
+VUHDO_I18N_BUFFC_AURA = "Aura";

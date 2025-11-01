@@ -20,7 +20,7 @@ local YCinfo_GET_MSG = {"!GETALL","!GETT-","!GETG-","!GETR-","!GETI-"};
 C_ChatInfo.RegisterAddonMessagePrefix(pig_PREFIX)
 local UIname="PIG_LongInspectUI"
 Data.LongInspectUIUIname=UIname
-Data.UILayout[UIname]={"TOPLEFT","TOPLEFT",0, -104}
+Data.UILayout[UIname]={"TOPLEFT","TOPLEFT",0, -116}
 ---------------
 local function Update_ShowItem(itemstxt,laiyuan)
 	local zbData = {}
@@ -38,6 +38,7 @@ local function Update_ShowItem(itemstxt,laiyuan)
 end
 Fun.Update_ShowItem=Update_ShowItem
 local function Update_ShowPlayer(Player,lyfrome)
+	--				print(Player,lyfrome)
 	local class,race,level,itemLV,gender = unpack(Player)
 	if HardcoreDeaths_UI then HardcoreDeaths_UI.Save_playerdata(_G[UIname].fullnameX,class,race,gender) end
 	local className, classFile = PIGGetClassInfo(class)
@@ -111,7 +112,7 @@ local function PIG_tiquMsg(msgx,nameX)
 			end
 		end
 	end
-	if InspectFrame and InspectFrame:IsShown() and InspectNameText:GetText()==nameX or Tardis_UI and Tardis_UI:IsShown() or Pig_playerStatsUI and Pig_playerStatsUI:IsShown() then--观察/时空
+	if InspectFrame and InspectFrame:IsShown() and InspectNameText:GetText()==nameX or _G[Data.TardisUI] and _G[Data.TardisUI]:IsShown() or Pig_playerStatsUI and Pig_playerStatsUI:IsShown() then--观察/时空
 		local qianzhui = msgx:sub(1, 3)
 		if qianzhui == "!T-" or qianzhui == "!G-" or qianzhui == "!R-" or qianzhui == "!I-" then
 			local leixing = msgx:sub(2, 2)	

@@ -7,16 +7,6 @@ local ipairs, pairs, floor, tinsert, tremove =
 
 -- App locals
 local GetRelativeValue, GetDeepestRelativeFunc = app.GetRelativeValue, app.GetDeepestRelativeFunc;
-local function OnLoad(self, settings)
-	if settings.Progress then
-		self.data.progress = settings.Progress;
-		self.data.total = settings.Total;
-	end
-end
-local function OnSave(self, settings)
-	settings.Progress = self.data.progress;
-	settings.Total = self.data.total;
-end
 
 -- Implementation
 function app:CreateDynamicProfessionCategory(name, commands, professionID, specializationProfessionIDs)
@@ -29,7 +19,7 @@ function app:CreateDynamicProfessionCategory(name, commands, professionID, speci
 		OnInit = function(self, handlers)
 			local function ProfessionFilter(group)
 				local v = group.requireSkill;
-				if v and (v == professionID or app.SpellIDToSkillID[app.SpecializationSpellIDs[v] or 0] == professionID) and group.spellID and not group.g and (not group.f or group.f == 200) then
+				if v and (v == professionID or app.SkillDB.SpellToSkill[app.SkillDB.SpecializationSpells[v] or 0] == professionID) and group.spellID and not group.g and (not group.f or group.f == 200) then
 					return true;
 				end
 			end
@@ -140,7 +130,7 @@ function app:CreateDynamicProfessionCategory(name, commands, professionID, speci
 													if headerID then
 														local event = events[e];
 														if not event then
-															event = app.CreateNPC(headerID);
+															event = app.CreateCustomHeader(headerID);
 															events[e] = event;
 															event.SortType = "name";
 															event.parent = data;
@@ -172,8 +162,6 @@ function app:CreateDynamicProfessionCategory(name, commands, professionID, speci
 				end
 			});
 		end,
-		OnLoad = OnLoad,
-		OnSave = OnSave,
 	});
 end
 

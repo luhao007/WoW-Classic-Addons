@@ -1,98 +1,58 @@
 -- code to drive the addon
-local ADDON, Addon = ...
-local CONFIG_ADDON = ADDON .. '_Config'
-local L = LibStub('AceLocale-3.0'):GetLocale(ADDON)
+local AddonName, Addon = ...
+local CONFIG_ADDON = AddonName .. '_Config'
+local L = LibStub('AceLocale-3.0'):GetLocale(AddonName)
 
-function Addon:OnLoad()
-    -- create and setup options frame and event loader
-    local frame = self:CreateHiddenFrame('Frame')
+EventUtil.ContinueOnAddOnLoaded(AddonName, function(addonName)
+    Addon:InitializeDB()
+    Addon.Cooldown:SetupHooks()
 
-    -- setup an event handler
-    frame:SetScript(
-        'OnEvent',
-        function(_, event, ...)
-            local func = self[event]
-            if type(func) == 'function' then
-                func(self, event, ...)
-            end
-        end
-    )
-
-    frame:RegisterEvent('ADDON_LOADED')
-    frame:RegisterEvent('PLAYER_ENTERING_WORLD')
-    frame:RegisterEvent('PLAYER_LOGIN')
-    frame:RegisterEvent('PLAYER_LOGOUT')
-
-    self.frame = frame
+    -- setup addon compartment button
+	if AddonCompartmentFrame then
+		AddonCompartmentFrame:RegisterAddon{
+			text = C_AddOns.GetAddOnMetadata(addonName, "Title"),
+			icon = C_AddOns.GetAddOnMetadata(addonName, "IconTexture"),
+			func = function() Addon:ShowOptionsFrame() end,
+		}
+	end
 
     -- setup slash commands
-    _G[('SLASH_%s1'):format(ADDON)] = ('/%s'):format(ADDON:lower())
-    _G[('SLASH_%s2'):format(ADDON)] = '/occ'
-
-    SlashCmdList[ADDON] = function(cmd, ...)
+    SlashCmdList[AddonName] = function(cmd, ...)
         if cmd == 'version' then
-            print(L.Version:format(self.db.global.addonVersion))
+            print(L.Version:format(Addon.db.global.addonVersion))
+        elseif cmd == 'blizzard' then
+            if Addon.db.global.disableBlizzardCooldownText then
+                Addon.db.global.disableBlizzardCooldownText = false
+            else
+                Addon.db.global.disableBlizzardCooldownText = true
+            end
+            C_UI.Reload()
+        elseif cmd == 'config' then
+            Addon:ShowOptionsFrame()
         else
-            self:ShowOptionsFrame()
+            Addon:ShowOptionsFrame()
         end
     end
 
-    self.OnLoad= nil
-end
+    SLASH_OmniCC1 = '/omnicc'
+    SLASH_OmniCC2 = '/occ'
 
--- events
-function Addon:ADDON_LOADED(event, addonName)
-    if ADDON ~= addonName then
-        return
-    end
-
-    self.frame:UnregisterEvent(event)
-
-    self:InitializeDB()
-    self.Cooldown:SetupHooks()
-end
+    -- watch for subsequent events
+    EventRegistry:RegisterFrameEventAndCallback("PLAYER_ENTERING_WORLD", Addon.PLAYER_ENTERING_WORLD, Addon)
+end)
 
 function Addon:PLAYER_ENTERING_WORLD()
     self.Timer:ForActive('Update')
 end
 
-function Addon:PLAYER_LOGIN()
-    if not self.db.global.disableBlizzardCooldownText then return end
-
-    -- disable and preserve the user's blizzard cooldown count setting
-    self.countdownForCooldowns = GetCVar('countdownForCooldowns')
-    if self.countdownForCooldowns ~= '0' then
-        SetCVar('countdownForCooldowns', '0')
-    end
-end
-
-function Addon:PLAYER_LOGOUT()
-    if not self.db.global.disableBlizzardCooldownText then return end
-
-    -- return the setting to whatever it was originally on logout
-    -- so that the user can uninstall omnicc and go back to what they had
-    local countdownForCooldowns = GetCVar('countdownForCooldowns')
-    if self.countdownForCooldowns ~= countdownForCooldowns then
-        SetCVar('countdownForCooldowns', self.countdownForCooldowns)
-    end
-end
-
 -- utility methods
 function Addon:ShowOptionsFrame()
-    if self:IsConfigAddonEnabled() and LoadAddOn(CONFIG_ADDON) then
+    if C_AddOns.LoadAddOn(CONFIG_ADDON) then
         local dialog = LibStub('AceConfigDialog-3.0')
 
-        dialog:Open(ADDON)
-        dialog:SelectGroup(ADDON, "themes", DEFAULT)
+        dialog:Open(AddonName)
+        dialog:SelectGroup(AddonName, "themes", DEFAULT)
 
-        return true
-    end
-
-    return false
-end
-
-function Addon:IsConfigAddonEnabled()
-    if GetAddOnEnableState(UnitName('player'), CONFIG_ADDON) >= 1 then
         return true
     end
 
@@ -125,8 +85,5 @@ function Addon:GetButtonIcon(frame)
     end
 end
 
-Addon:OnLoad()
-
 -- exports
-_G[ADDON] = Addon
-_G[ADDON .. '_Launch'] = function() Addon:ShowOptionsFrame() end
+_G[AddonName] = Addon

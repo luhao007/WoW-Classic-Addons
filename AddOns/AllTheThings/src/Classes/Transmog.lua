@@ -112,9 +112,9 @@ local function GetSourceID(itemLink, quick)
 		if sourceID then return sourceID, true; end
 	end
 
+	-- app.PrintDebug("Failed to directly retrieve SourceID",itemLink)
 	if quick then return end
 
-	-- app.PrintDebug("Failed to directly retrieve SourceID",itemLink)
 	local itemID, _, _, slotName = GetItemInfoInstant(itemLink);
 	if slotName then
 		local slots = inventorySlotsMap[slotName];
@@ -166,8 +166,8 @@ app.DetermineItemLink = function(sourceID)
 	local itemFormat = "item:"..itemID;
 	-- Check Raw Item
 	link = itemFormat;
-	-- if quality is Artifact / Unmodified Item / Category 'Paired' just return the basic Item string
-	if sourceInfo.quality == 6 or sourceInfo.itemModID == 0 or sourceInfo.categoryID == 29 then
+	-- if quality is Unmodified Item / Category 'Paired' just return the basic Item string
+	if sourceInfo.itemModID == 0 or sourceInfo.categoryID == 29 then
 		-- app.PrintDebug("DetermineItemLink:Good",link,sourceID,"(Basic Item Data)");
 		-- app.PrintTable(sourceInfo)
 		return link;
@@ -187,14 +187,34 @@ app.DetermineItemLink = function(sourceID)
 	local checkID, found = GetSourceID(link);
 	if found and checkID == sourceID then return link; end
 
-	-- Only try to manually scan for a sourceID if we are Debugging (save regular users from unnecessary lookups)
-	if not app.Debugging then return end
+	-- Artifact quality Items, try making an Artifact-style link....
+	if sourceInfo.quality == 6 then
+		-- Main hand first
+		-- itemFormat = "item:"..itemID.."::::::::"..app.Level..":::9::1:8:%d:";
+		itemFormat = "item:"..itemID.."::::::::"..app.Level..":::::1:8:%d:";
+		for m=1,999,1 do
+			---@diagnostic disable-next-line: undefined-field
+			link = itemFormat:format(m);
+			checkID, found = GetSourceID(link);
+			-- app.PrintDebug(link,checkID,found)
+			if found and checkID == sourceID then return link; end
+		end
+		-- Off hand after
+		-- itemFormat = "item:"..itemID.."::::::::"..app.Level..":::::1:8:%d:";
+		-- for m=1,999,1 do
+		-- 	---@diagnostic disable-next-line: undefined-field
+		-- 	link = itemFormat:format(m);
+		-- 	checkID, found = GetSourceID(link);
+		-- 	app.PrintDebug(link,checkID,found)
+		-- 	if found and checkID == sourceID then return link; end
+		-- end
+	end
 
 	-- Check ModIDs
 	-- bonusID 3524 seems to imply "use ModID to determine SourceID" since without it, everything with ModID resolves as the base SourceID from links
 	itemFormat = "item:"..itemID..":::::::::::%d:1:3524";
 	-- /dump AllTheThings.GetSourceID("item:188859:::::::::::5:1:3524")
-	for m=1,199,1 do
+	for m=1,299,1 do
 		---@diagnostic disable-next-line: undefined-field
 		link = itemFormat:format(m);
 		checkID, found = GetSourceID(link);
@@ -202,9 +222,13 @@ app.DetermineItemLink = function(sourceID)
 		if found and checkID == sourceID then return link; end
 	end
 
+	-- Only try to manually scan for a bonusID-based sourceID if we are Debugging (save regular users from unnecessary lookups)
+	-- since this takes quite a bit more checking than the other steps
+	if not app.Debugging then return end
+
 	-- Check BonusIDs
 	itemFormat = "item:"..itemID.."::::::::::::1:%d";
-	for b=1,13999,1 do
+	for b=1,15999,1 do
 		---@diagnostic disable-next-line: undefined-field
 		link = itemFormat:format(b);
 		checkID, found = GetSourceID(link);
@@ -458,12 +482,12 @@ end})
 local CurrentCharacterFilterIDSet
 local ArmorTypeMogs = {
 	[2] = true,	-- Cosmetic
-	[3] = true, -- Cloaks
+	[3] = true,	-- Cloaks
 	[4] = true,	-- Cloth
-	[5] = true, -- Leather
-	[6] = true, -- Mail
-	[7] = true, -- Plate
-	[10] = true, -- Shirts
+	[5] = true,	-- Leather
+	[6] = true,	-- Mail
+	[7] = true,	-- Plate
+	[10] = true,	-- Shirts
 }
 local function MainOnlyCanTransmogAppearanceItem(knownItem)
 	return not knownItem.nmr and not knownItem.nmc and ArmorTypeMogs[knownItem.f] and CurrentCharacterFilterIDSet[knownItem.f]
@@ -838,6 +862,7 @@ do
 
 	local AndAppearance = {
 		__name = "AndAppearance",
+		CACHE = function() return CACHE end,
 		collectible = function(t) return app.Settings.Collectibles.Transmog end,
 		collected = collected_Completionist,
 		visualID = function(t)
@@ -1197,7 +1222,7 @@ local function BuildSourceInformationForPopout(group)
 	end
 	local appearanceGroup;
 	if #g > 0 then
-		appearanceGroup = app.CreateNPC(app.HeaderConstants.SHARED_APPEARANCES, {
+		appearanceGroup = app.CreateCustomHeader(app.HeaderConstants.SHARED_APPEARANCES, {
 			OnUpdate = app.AlwaysShowUpdate,
 			OnClick = app.UI.OnClick.IgnoreRightClick,
 			sourceIgnored = true,
@@ -1206,7 +1231,7 @@ local function BuildSourceInformationForPopout(group)
 			g = g,
 		});
 	else
-		appearanceGroup = app.CreateNPC(app.HeaderConstants.UNIQUE_APPEARANCE, {
+		appearanceGroup = app.CreateCustomHeader(app.HeaderConstants.UNIQUE_APPEARANCE, {
 			OnUpdate = app.AlwaysShowUpdate,
 			OnClick = app.UI.OnClick.IgnoreRightClick,
 			sourceIgnored = true,
@@ -1333,7 +1358,7 @@ if app.IsRetail then
 	app.AddEventHandler("OnStartup", function()
 		app.CallbackHandlers.DelayedCallback(CheckForBoundSourceItems, 5)
 		-- Add information type once ATT starts up
-		app.Settings.CreateInformationType("collectedwarband", { priority = 11001, HideCheckBox = true, ForceActive = true,
+		app.Settings.CreateInformationType("collectedwarband", { text = "collectedwarband", priority = 11001, HideCheckBox = true, ForceActive = true,
 			Process = function(t, reference, tooltipInfo)
 				local collectedGuid = t:GetValue(reference)
 				if not collectedGuid then return end

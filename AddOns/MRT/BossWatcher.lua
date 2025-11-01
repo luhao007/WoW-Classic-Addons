@@ -5,12 +5,12 @@ local ceil = ceil
 local UnitCombatlogname = ExRT.F.UnitCombatlogname
 local UnitHealth = UnitHealth
 local UnitHealthMax = UnitHealthMax
-local UnitGetTotalAbsorbs = ExRT.isClassic and ExRT.NULLfunc or UnitGetTotalAbsorbs
+local UnitGetTotalAbsorbs = UnitGetTotalAbsorbs or ExRT.NULLfunc
 local UnitPower = UnitPower
 local UnitPowerMax = UnitPowerMax
 local UnitGUID = UnitGUID
 local UnitName = UnitName
-local UnitAura = UnitAura
+local C_UnitAuras = C_UnitAuras
 local AntiSpam = ExRT.F.AntiSpam
 local GetUnitInfoByUnitFlag = ExRT.F.GetUnitInfoByUnitFlag
 local UnitInRaid = UnitInRaid
@@ -25,7 +25,9 @@ local bit_band = bit.band
 local tremove = tremove
 local strsplit = strsplit
 local type = type
-local UnitGroupRolesAssigned = ExRT.isClassic and ExRT.NULLfunc or UnitGroupRolesAssigned
+local GetSpellTexture = C_Spell and C_Spell.GetSpellTexture or GetSpellTexture
+local COMBATLOG_OBJECT_RAIDTARGET_MASK = COMBATLOG_OBJECT_RAIDTARGET_MASK
+local SendChatMessage = C_ChatInfo and C_ChatInfo.SendChatMessage or SendChatMessage
 
 local VMRT = nil
 
@@ -476,12 +478,12 @@ local SLTReductionSourceGUID = nil
 local SLTReductionFrame = CreateFrame("Frame")
 SLTReductionFrame:SetScript("OnEvent",function(_,_,unit)
 	local findEm = nil
-	for i=1,40 do
-		local name,icon,count,dispelType,duration,expires,caster,isStealable,_,spellId = UnitAura(unit, i, "HELPFUL")
-		if spellId == SLTReductionAuraSpellID then 
-			findEm = true
+	for i=1,60 do
+		local auraData = C_UnitAuras.GetAuraDataByIndex(unit, i, "HELPFUL")
+		if not auraData then
 			break
-		elseif not name then
+		elseif auraData.spellId == SLTReductionAuraSpellID then 
+			findEm = true
 			break
 		end
 	end    
@@ -610,19 +612,19 @@ local function addReductionOnPull(unit,destGUID)
 
 
 	--------------> Add active reductions from current auras
-	for i=1,40 do
-		local _,_,stacksCount,_,_,_,casterUnit,_,_,spellID,_,_,_,_,_,val1,val2,val3,val4,val5 = UnitAura(unit,i)
+	for i=1,60 do
+		local auraData = C_UnitAuras.GetAuraDataByIndex(unit,i)
 
-		if not spellID then
+		if not auraData then
 			return
 		end
 
 		--------------> Add reduction
-		local reduction = var_reductionAuras[spellID]
+		local reduction = var_reductionAuras[auraData.spellId]
 		if reduction then
 			local sourceGUID = nil
-			if casterUnit then
-				sourceGUID = UnitGUID(casterUnit)
+			if auraData.sourceUnit then
+				sourceGUID = UnitGUID(auraData.sourceUnit)
 			end
 			sourceGUID = sourceGUID or ""
 
@@ -642,8 +644,8 @@ local function addReductionOnPull(unit,destGUID)
 			end
 
 			if funcAura then
-				if val1 then
-					reduction, func = funcAura(val1 or 0,val2 or 0,val3 or 0,val4 or 0,val5 or 0)
+				if auraData.points then
+					reduction, func = funcAura(auraData.points[1] or 0,auraData.points[2] or 0,auraData.points[3] or 0,auraData.points[4] or 0,auraData.points[5] or 0)
 					if not reduction then
 						reduction = reductionTable[1]
 						func = reductionTable[2]
@@ -677,15 +679,15 @@ local function addReductionOnPull(unit,destGUID)
 
 				local currReduction = 1 / (1 - (from - from * reduction))
 				destData[destCount + 1] = {
-					s = spellID,
+					s = auraData.spellId,
 					r = reduction,
 					c = (currReduction - 1),
 					g = sourceGUID,
 					f = func,
 				}
 
-				if not spellsSchool[spellID] then
-					spellsSchool[spellID] = 0x1
+				if not spellsSchool[auraData.spellId] then
+					spellsSchool[auraData.spellId] = 0x1
 				end
 			end
 		end
@@ -1897,11 +1899,13 @@ function module.main.SPELL_AURA_APPLIED(timestamp,event,hideCaster,sourceGUID,so
 		end
 
 		if funcAura then
-			for i=1,40 do
-				local auraName,_,count,_,_,_,_,_,_,_,_,_,_,_,_,val1,val2,val3,val4,val5 = UnitAura(destName or "?",i)
-				if auraName == spellName then
-					if val1 then
-						reduction, func = funcAura(val1 or 0,val2 or 0,val3 or 0,val4 or 0,val5 or 0)
+			for i=1,60 do
+				local auraData = C_UnitAuras.GetAuraDataByIndex(destName or "?",i)
+				if not auraData then
+					break
+				elseif auraData.spellId == spellID then
+					if auraData.points then
+						reduction, func = funcAura(auraData.points[1] or 0,auraData.points[2] or 0,auraData.points[3] or 0,auraData.points[4] or 0,auraData.points[5] or 0)
 						if not reduction then
 							reduction = reductionTable[1]
 							func = reductionTable[2]
@@ -1911,8 +1915,6 @@ function module.main.SPELL_AURA_APPLIED(timestamp,event,hideCaster,sourceGUID,so
 					else
 						funcAura = nil
 					end
-					break
-				elseif not auraName then
 					break
 				end
 			end
@@ -2448,6 +2450,9 @@ CLEUParser = function(timestamp,event,hideCaster,sourceGUID,sourceName,sourceFla
 	reactionData[sourceGUID] = sourceFlags
 	reactionData[destGUID] = destFlags
 
+	sourceFlags2 = bit_band(sourceFlags2, COMBATLOG_OBJECT_RAIDTARGET_MASK)
+	destFlags2 = bit_band(destFlags2, COMBATLOG_OBJECT_RAIDTARGET_MASK)
+
 	local func = CLEU[event]
 	if func then
 		return func(timestamp,event,hideCaster,sourceGUID,sourceName,sourceFlags,sourceFlags2,destGUID,destName,destFlags,destFlags2,val1,val2,val3,val4,val5,val6,val7,val8,val9,val10,val11,val12,val13)
@@ -2461,7 +2466,7 @@ CLEUParser = function(timestamp,event,hideCaster,sourceGUID,sourceName,sourceFla
 	-- SPELL_BUILDING_DAMAGE
 	-- SPELL_BUILDING_HEAL
 end
-if ExRT.isClassic then
+if ExRT.isClassic and not ExRT.isCata then
 	CLEUParser = function(timestamp,event,hideCaster,sourceGUID,sourceName,sourceFlags,sourceFlags2,destGUID,destName,destFlags,destFlags2,val1,val2,val3,val4,val5,val6,val7,val8,val9,val10,val11,val12,val13)
 		if event ~= "SWING_DAMAGE" and event ~= "SWING_MISSED" then
 			val1 = val2
@@ -2475,6 +2480,9 @@ if ExRT.isClassic then
 	
 		reactionData[sourceGUID] = sourceFlags
 		reactionData[destGUID] = destFlags
+
+		sourceFlags2 = bit_band(sourceFlags2, COMBATLOG_OBJECT_RAIDTARGET_MASK)
+		destFlags2 = bit_band(destFlags2, COMBATLOG_OBJECT_RAIDTARGET_MASK)
 	
 		local func = CLEU[event]
 		if func then
@@ -2668,8 +2676,8 @@ function BWInterfaceFrameLoad()
 
 	-- Some upvaules
 	local ipairs,pairs,tonumber,tostring,format,date,min,sort,table = ipairs,pairs,tonumber,tostring,format,date,min,sort,table
-	local GetSpellInfo = GetSpellInfo
-	if ExRT.isClassic then
+	local GetSpellInfo = ExRT.F.GetSpellInfo or GetSpellInfo
+	if ExRT.isClassic and not ExRT.isCata then
 		local _GetSpellInfo = GetSpellInfo
 		function GetSpellInfo(spellID)
 			if type(spellID) == 'string' then
@@ -2760,6 +2768,7 @@ function BWInterfaceFrameLoad()
 
 	local function CloseDropDownMenus_fix()
 		CloseDropDownMenus()
+		return 4
 	end
 
 	local function timestampToFightTime(time)
@@ -2925,13 +2934,13 @@ function BWInterfaceFrameLoad()
 
 
 	---- Bugfix functions
-	local _GetSpellLink = GetSpellLink
+	local _GetSpellLink = C_Spell and C_Spell.GetSpellLink or GetSpellLink
 	local function GetSpellLink(spellID)
-		local link = _GetSpellLink(spellID)
+		local link = _GetSpellLink(spellID or 0)
 		if link then
 			return link
 		end
-		local spellName = GetSpellInfo(spellID)
+		local spellName = GetSpellInfo(spellID or 0)
 		return spellName or "Unk"
 	end
 
@@ -3096,7 +3105,20 @@ function BWInterfaceFrameLoad()
 			notCheckable = true,
 			func = CloseDropDownMenus_fix,
 		}
-		EasyMenu(fightsList, BWInterfaceFrame.bossButtonDropDown, "cursor", 10 , -15, "MENU")
+		if MenuUtil then
+			MenuUtil.CreateContextMenu(BWInterfaceFrame.bossButtonDropDown, function(ownerRegion, rootDescription)
+				for i=1,#fightsList do
+					local menu = fightsList[i]
+					if menu.isTitle then
+						rootDescription:CreateTitle(menu.text)
+					else
+						rootDescription:CreateButton(menu.text, menu.func)
+					end
+				end
+			end)
+		else
+			EasyMenu(fightsList, BWInterfaceFrame.bossButtonDropDown, "cursor", 10 , -15, "MENU")
+		end
 	end)
 	BWInterfaceFrame.bossButton.tooltipText = L.BossWatcherSelectFight
 
@@ -3141,7 +3163,20 @@ function BWInterfaceFrameLoad()
 			notCheckable = true,
 			func = CloseDropDownMenus_fix,
 		}
-		EasyMenu(fightsList, BWInterfaceFrame.bossButtonDropDown, "cursor", 10 , -15, "MENU")
+		if MenuUtil then
+			MenuUtil.CreateContextMenu(BWInterfaceFrame.bossButtonDropDown, function(ownerRegion, rootDescription)
+				for i=1,#fightsList do
+					local menu = fightsList[i]
+					if menu.isTitle then
+						rootDescription:CreateTitle(menu.text)
+					else
+						rootDescription:CreateButton(menu.text, menu.func)
+					end
+				end
+			end)
+		else
+			EasyMenu(fightsList, BWInterfaceFrame.bossButtonDropDown, "cursor", 10 , -15, "MENU")
+		end
 	end)
 
 
@@ -4020,7 +4055,7 @@ function BWInterfaceFrameLoad()
 			if isSpell then
 				local spellID = key
 				local isPet = 1
-				if (not ExRT.isClassic) and spellID < -1 then
+				if (not ExRT.isClassic or ExRT.isCata) and spellID < -1 then
 					isPet = -1
 					spellID = -spellID
 				end
@@ -4028,7 +4063,7 @@ function BWInterfaceFrameLoad()
 				if spellID == -1 then
 					spellName = L.BossWatcherReportTotal
 				elseif spellName then
-					spellName = "|T"..spellIcon..":0|t "..spellName
+					spellName = "|T"..(spellIcon or "")..":0|t "..spellName
 				else
 					spellName = spellID
 				end
@@ -4422,7 +4457,7 @@ function BWInterfaceFrameLoad()
 			local isPetAbility = damageLine.info == "pet"
 			local spellID = damageLine.spell
 
-			local isDoT = (not ExRT.isClassic) and spellID < 0
+			local isDoT = (not ExRT.isClassic or ExRT.isCata) and spellID < 0
 			if isDoT then
 				spellID = -spellID
 			end
@@ -6096,7 +6131,19 @@ function BWInterfaceFrameLoad()
 				end
 				aurasTab.linesRightClickMoreInfoData = self.spellID
 				aurasTab.linesRightClickLineData = self.lineData
-				EasyMenu(aurasTab.linesRightClickMenu, aurasTab.linesRightClickMenuDropDown, "cursor", 10 , -15, "MENU")
+				if MenuUtil then
+					MenuUtil.CreateContextMenu(aurasTab.linesRightClickMenuDropDown, function(ownerRegion, rootDescription)
+						for i=1,#aurasTab.linesRightClickMenu do
+							if aurasTab.linesRightClickMenu[i].isTitle then
+								rootDescription:CreateTitle(aurasTab.linesRightClickMenu[i].text)
+							else
+								rootDescription:CreateButton(aurasTab.linesRightClickMenu[i].text, aurasTab.linesRightClickMenu[i].func)
+							end
+						end
+					end)
+				else
+					EasyMenu(aurasTab.linesRightClickMenu, aurasTab.linesRightClickMenuDropDown, "cursor", 10 , -15, "MENU")
+				end
 			end
 		end
 	end
@@ -7993,7 +8040,20 @@ function BWInterfaceFrameLoad()
 				func = CloseDropDownMenus_fix,
 			}
 		}
-		EasyMenu(zoomList, graphsTab.graphZoomDropDown, "cursor", 10 , -15, "MENU")
+		if MenuUtil then
+			MenuUtil.CreateContextMenu(graphsTab.graphZoomDropDown, function(ownerRegion, rootDescription)
+				for i=1,#zoomList do
+					local menu = zoomList[i]
+					if menu.isTitle then
+						rootDescription:CreateTitle(menu.text)
+					else
+						rootDescription:CreateButton(menu.text, menu.func)
+					end
+				end
+			end)
+		else
+			EasyMenu(zoomList, graphsTab.graphZoomDropDown, "cursor", 10 , -15, "MENU")
+		end
 	end
 
 	local function GraphGetFightMax()
@@ -8795,7 +8855,7 @@ function BWInterfaceFrameLoad()
 			if isSpell then
 				local spellID = key
 				local isPet = 1
-				if (not ExRT.isClassic) and spellID < -1 then
+				if (not ExRT.isClassic or ExRT.isCata) and spellID < -1 then
 					isPet = -1
 					spellID = -spellID
 				end
@@ -9607,7 +9667,7 @@ function BWInterfaceFrameLoad()
 			local healLine = heal[i]
 			local isPetAbility = healLine.info == "pet"
 			local spellID = healLine.spell
-			local isHoT = (not ExRT.isClassic) and spellID < 0
+			local isHoT = (not ExRT.isClassic or ExRT.isCata) and spellID < 0
 			if isHoT then
 				spellID = -spellID
 			end

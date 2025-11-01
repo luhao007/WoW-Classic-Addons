@@ -1,7 +1,7 @@
 local mod	= DBM:NewMod("OperationFloodgateTrash", "DBM-Party-WarWithin", 9)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20250513070119")
+mod:SetRevision("20250909044153")
 --mod:SetModelID(47785)
 mod.isTrashMod = true
 mod.isTrashModBossFightAllowed = true
@@ -10,7 +10,7 @@ mod:RegisterZoneCombat(2773)
 
 mod:RegisterEvents(
 	"SPELL_CAST_START 465754 474337 1216039 465682 462771 469818 1217496 469721 465827 463058 1214468 465666 465408 471733 461796 468726 468631",
-	"SPELL_CAST_SUCCESS 462771 463058 1214468 469799 471733 471736",
+	"SPELL_CAST_SUCCESS 462771 463058 1214468 469799 471733 471736 465120 465682",
 	"SPELL_INTERRUPT",
 	"SPELL_AURA_APPLIED 462771 463061 469799",
 --	"SPELL_AURA_APPLIED_DOSE",
@@ -20,8 +20,6 @@ mod:RegisterEvents(
 	"UNIT_SPELLCAST_INTERRUPTED_UNFILTERED"
 )
 
---TODO, FINISH bubbles timers
---TODO, review ALL timers much closer to live
 --TODO, Darkfuse Soldier Black Blood Wound stack counter?
 --TODO, EZ-Thro Dynamite III general announce? (Venture Co Surveyor)
 --[[
@@ -34,17 +32,18 @@ ability.id = 469818 and (type = "begincast" or type = "cast")
 local warnWarpBlood							= mod:NewSpellAnnounce(465827, 3)
 local warnRapidReconstruction				= mod:NewSpellAnnounce(465408, 2)--Cast by Venture Co Architect when construction platform is destoryed
 local warnJettisonkelp						= mod:NewSpellAnnounce(471736, 4, nil, nil, nil, nil, nil, 2)
+local warnWindUp							= mod:NewSpellAnnounce(465120, 3)
 
 local specWarnZepBarrage					= mod:NewSpecialWarningDodge(1213704, nil, nil, nil, 2, 2)
 local specWarnFlamethrower					= mod:NewSpecialWarningDodge(465754, nil, nil, nil, 2, 15)
 local specWarnShreddation					= mod:NewSpecialWarningDodge(474337, nil, nil, nil, 2, 2)
 local specWarnRPGG							= mod:NewSpecialWarningDodge(1216039, nil, nil, nil, 2, 2)
 local specWarnSurpriseInspection			= mod:NewSpecialWarningDodge(465682, nil, nil, nil, 2, 15)
-local specWarnBubbleBurp					= mod:NewSpecialWarningDodge(469818, nil, nil, nil, 2, 2)
-local specWarnSplishSplash					= mod:NewSpecialWarningDodge(1217496, nil, nil, nil, 2, 15)
+--local specWarnBubbleBurp					= mod:NewSpecialWarningDodge(469818, nil, nil, nil, 2, 2)--Bubbles got retired (for now, jr is lurking so these may return next time?)
+--local specWarnSplishSplash				= mod:NewSpecialWarningDodge(1217496, nil, nil, nil, 2, 15)--Bubbles got retired (for now, jr is lurking so these may return next time?)
 local specwarnPlantSeaBombs					= mod:NewSpecialWarningDodge(468726, nil, nil, nil, 2, 2)--Not enough data to add timers
 local specWarnSparkslam						= mod:NewSpecialWarningDefensive(465666, nil, nil, nil, 1, 2)
-local specWarnBackwash						= mod:NewSpecialWarningSpell(469721, nil, nil, nil, 2, 2)
+--local specWarnBackwash					= mod:NewSpecialWarningSpell(469721, nil, nil, nil, 2, 2)--Bubbles got retired (for now, jr is lurking so these may return next time?)
 local specWarnSurveyingBeamFailure			= mod:NewSpecialWarningRun(462771, nil, nil, nil, 4, 2)
 --local yellChainLightning					= mod:NewYell(387127)
 local specWarnOverchargeDispel				= mod:NewSpecialWarningDispel(469799, "RemoveMagic", nil, nil, 1, 2)
@@ -55,25 +54,24 @@ local specWarnTrickShot						= mod:NewSpecialWarningInterrupt(1214468, "HasInter
 local specWarnRestorativeAlgae				= mod:NewSpecialWarningInterrupt(471733, "HasInterrupt", nil, nil, 1, 2)
 local specWarnHarpoon						= mod:NewSpecialWarningInterrupt(468631, "HasInterrupt", nil, nil, 1, 2)
 
-local timerFlamethrowerCD					= mod:NewCDNPTimer(25.5, 465754, nil, nil, nil, 3)
-local timerShreddationCD					= mod:NewCDNPTimer(9.7, 474337, nil, nil, nil, 3)--9.7-15 (delayed by flamethrower most likely
+local timerFlamethrowerCD					= mod:NewCDNPTimer(25.5, 465754, nil, nil, nil, 3)--(might also be 18-25 if it lives long enough?)
+local timerShreddationCD					= mod:NewCDNPTimer(18.2, 474337, nil, nil, nil, 3)--18.2-25.4 (delayed by flamethrower most likely
 local timerRPGGCD							= mod:NewCDNPTimer(14.5, 1216039, nil, nil, nil, 3)
-local timerSurpriseInspectionCD				= mod:NewCDNPTimer(6.2, 465682, nil, nil, nil, 3)--6.2-9.7
-local timerBubbleBurpCD						= mod:NewCDNPTimer(21.5, 469818, nil, nil, nil, 3)
-local timerSplishSplashCD					= mod:NewCDNPTimer(21.8, 1217496, nil, nil, nil, 3)
-local timerBackwashCD						= mod:NewCDNPTimer(21.8, 469721, nil, nil, nil, 2)
+local timerSurpriseInspectionCD				= mod:NewCDNPTimer(3.7, 465682, nil, nil, nil, 3)--6.2-9.7 (then 2.5 subtracted)
+--local timerBubbleBurpCD					= mod:NewCDNPTimer(21.5, 469818, nil, nil, nil, 3)
+--local timerSplishSplashCD					= mod:NewCDNPTimer(21.8, 1217496, nil, nil, nil, 3)
+--local timerBackwashCD						= mod:NewCDNPTimer(21.8, 469721, nil, nil, nil, 2)
 local timerWarpBloodCD						= mod:NewCDNPTimer(20.6, 465827, nil, nil, nil, 2)
 local timerSparkslamCD						= mod:NewCDNPTimer(10.9, 465666, nil, nil, nil, 5, nil, DBM_COMMON_L.TANK_ICON)
 local timerJettisonkelpCD					= mod:NewCDNPTimer(15.8, 471736, nil, nil, nil, 5)
 local timerOverchargeCD						= mod:NewCDNPTimer(8.6, 469799, nil, nil, nil, 5, nil, DBM_COMMON_L.MAGIC_ICON)--8.6-15
-local timerSurveyingBeamCD					= mod:NewCDNPTimer(20.6, 462771, nil, nil, nil, 4, nil, DBM_COMMON_L.INTERRUPT_ICON)
+local timerSurveyingBeamCD					= mod:NewCDNPTimer(20.2, 462771, nil, nil, nil, 4, nil, DBM_COMMON_L.INTERRUPT_ICON)
 local timerBloodthirstyCackleCD				= mod:NewCDNPTimer(18, 463058, nil, nil, nil, 4, nil, DBM_COMMON_L.INTERRUPT_ICON)--18-22
 local timerTrickShotCD						= mod:NewCDNPTimer(10.9, 1214468, nil, nil, nil, 4, nil, DBM_COMMON_L.INTERRUPT_ICON)--10.9-14 (seems to be buggy/random in some cases, inconsistent behaviors)
 local timerRestorativeAlgaeCD				= mod:NewCDNPTimer(18.1, 471733, nil, nil, nil, 4, nil, DBM_COMMON_L.INTERRUPT_ICON)
 --local timerPlantSeaBombsCD				= mod:NewCDNPTimer(20.6, 468726, nil, nil, nil, 3)--Not enough data, these mobs are skipped by more skilled groups
 --local timerHarpoonCD						= mod:NewCDNPTimer(20.6, 468631, nil, nil, nil, 4, nil, DBM_COMMON_L.INTERRUPT_ICON)--Not enough data, these mobs are skipped by more skilled groups
-
-local allowInterruptOnBeam = false
+local timerWindUpCD							= mod:NewCDNPTimer(18.2, 465120, nil, nil, nil, 3)
 
 --local playerName = UnitName("player")
 
@@ -114,13 +112,11 @@ function mod:SPELL_CAST_START(args)
 			specWarnRPGG:Play("watchstep")
 		end
 	elseif spellId == 465682 then
-		timerSurpriseInspectionCD:Start(nil, args.sourceGUID)
 		if self:AntiSpam(3, 2) then
 			specWarnSurpriseInspection:Show()
 			specWarnSurpriseInspection:Play("frontal")
 		end
 	elseif spellId == 462771 then
-		allowInterruptOnBeam = true
 		if self:CheckInterruptFilter(args.sourceGUID, false, true) then
 			specWarnSurveyingBeam:Show(args.sourceName)
 			specWarnSurveyingBeam:Play("kickcast")
@@ -145,24 +141,24 @@ function mod:SPELL_CAST_START(args)
 			specWarnRestorativeAlgae:Show(args.sourceName)
 			specWarnRestorativeAlgae:Play("kickcast")
 		end
-	elseif spellId == 469818 then
-		timerBubbleBurpCD:Start(nil, args.sourceGUID)
-		if self:AntiSpam(3, 2) then
-			specWarnBubbleBurp:Show()
-			specWarnBubbleBurp:Play("watchstep")
-		end
-	elseif spellId == 1217496 then
-		timerSplishSplashCD:Start(nil, args.sourceGUID)
-		if self:AntiSpam(3, 2) then
-			specWarnSplishSplash:Show()
-			specWarnSplishSplash:Play("frontal")
-		end
-	elseif spellId == 469721 then
-		timerBackwashCD:Start(nil, args.sourceGUID)
-		if self:AntiSpam(3, 4) then
-			specWarnBackwash:Show()
-			specWarnBackwash:Play("aesoon")
-		end
+--	elseif spellId == 469818 then
+--		timerBubbleBurpCD:Start(nil, args.sourceGUID)
+--		if self:AntiSpam(3, 2) then
+--			specWarnBubbleBurp:Show()
+--			specWarnBubbleBurp:Play("watchstep")
+--		end
+--	elseif spellId == 1217496 then
+--		timerSplishSplashCD:Start(nil, args.sourceGUID)
+--		if self:AntiSpam(3, 2) then
+--			specWarnSplishSplash:Show()
+--			specWarnSplishSplash:Play("frontal")
+--		end
+--	elseif spellId == 469721 then
+--		timerBackwashCD:Start(nil, args.sourceGUID)
+--		if self:AntiSpam(3, 4) then
+--			specWarnBackwash:Show()
+--			specWarnBackwash:Play("aesoon")
+--		end
 	elseif spellId == 465827 then
 		timerWarpBloodCD:Start(nil, args.sourceGUID)
 		if self:AntiSpam(3, 5) then
@@ -193,9 +189,8 @@ function mod:SPELL_CAST_SUCCESS(args)
 	if not self.Options.Enabled then return end
 	local spellId = args.spellId
 	if not self:IsValidWarning(args.sourceGUID) then return end
-	if spellId == 462771 then
-		allowInterruptOnBeam = false
-		timerSurveyingBeamCD:Start(19.1, args.sourceGUID)--20.6-1.5
+	if spellId == 462771 and self:AntiSpam(5, args.sourceGUID) then
+		timerSurveyingBeamCD:Start(18.7, args.sourceGUID)--20.2-1.5
 	elseif spellId == 463058 then
 		timerBloodthirstyCackleCD:Start(18.9, args.sourceGUID)
 	elseif spellId == 1214468 then
@@ -209,13 +204,21 @@ function mod:SPELL_CAST_SUCCESS(args)
 		if self:AntiSpam(5, 6) then
 			warnJettisonkelp:Show()
 		end
+	elseif spellId == 465120 then
+		timerWindUpCD:Start(16.2, args.sourceGUID)--18.2-2
+		--Only warn when it goes off
+		if self:AntiSpam(3, 6) then
+			warnWindUp:Show()
+		end
+	elseif spellId == 465682 then
+		timerSurpriseInspectionCD:Start(nil, args.sourceGUID)
 	end
 end
 
 function mod:SPELL_INTERRUPT(args)
 	if not self.Options.Enabled then return end
-	if args.extraSpellId == 462771 and allowInterruptOnBeam then
-		timerSurveyingBeamCD:Start(19.1, args.destGUID)--20.6-1.5
+	if args.extraSpellId == 462771 and self:AntiSpam(5, args.destGUID) then
+		timerSurveyingBeamCD:Start(18.7, args.destGUID)--20.2-1.5
 	elseif args.extraSpellId == 463058 then
 		timerBloodthirstyCackleCD:Start(18.9, args.destGUID)
 	elseif args.extraSpellId == 1214468 then
@@ -255,10 +258,10 @@ function mod:UNIT_DIED(args)
 		timerSurpriseInspectionCD:Stop(args.destGUID)
 	elseif cid == 229686 then--Venture Co. Surveyor
 		timerSurveyingBeamCD:Stop(args.destGUID)
-	elseif cid == 231197 then--Bubbles
-		timerBubbleBurpCD:Stop(args.destGUID)
-		timerSplishSplashCD:Stop(args.destGUID)
-		timerBackwashCD:Stop(args.destGUID)
+--	elseif cid == 231197 then--Bubbles
+--		timerBubbleBurpCD:Stop(args.destGUID)
+--		timerSplishSplashCD:Stop(args.destGUID)
+--		timerBackwashCD:Stop(args.destGUID)
 	elseif cid == 230748 then--Darkfuse Bloodwarper
 		timerWarpBloodCD:Stop(args.destGUID)
 	elseif cid == 229252 then--Darkfuse Hyena
@@ -275,24 +278,26 @@ function mod:UNIT_DIED(args)
 	elseif cid == 231496 then--Venture Co. Diver
 		--timerPlantSeaBombsCD:Stop(args.destGUID)
 		--timerHarpoonCD:Stop(args.destGUID)
+	elseif cid == 231014 then--Loaderbot
+		timerWindUpCD:Stop(args.destGUID)
 	end
 end
 
 --All timers subject to a ~0.1-1 second clipping due to ScanEngagedUnits
 function mod:StartEngageTimers(guid, cid, delay)
 	if cid == 230740 then--Shredinator 3000
-		timerShreddationCD:Start(3.5-delay, guid)
-		timerFlamethrowerCD:Start(7-delay, guid)
+		timerShreddationCD:Start(2.4-delay, guid)
+		timerFlamethrowerCD:Start(6.6-delay, guid)
 	elseif cid == 229212 then--Darkfuse Demolitionist
 		timerRPGGCD:Start(2-delay, guid)
 	elseif cid == 231385 then--Darkfuse Inspector
 		timerSurpriseInspectionCD:Start(5.8-delay, guid)
 	elseif cid == 229686 then--Venture Co. Surveyor
 		timerSurveyingBeamCD:Start(7-delay, guid)
-	elseif cid == 231197 then--Bubbles
-		timerBubbleBurpCD:Start(4.3-delay, guid)
-		timerSplishSplashCD:Start(9-delay, guid)
-		timerBackwashCD:Start(15-delay, guid)
+--	elseif cid == 231197 then--Bubbles
+--		timerBubbleBurpCD:Start(4.3-delay, guid)
+--		timerSplishSplashCD:Start(9-delay, guid)
+--		timerBackwashCD:Start(15-delay, guid)
 	elseif cid == 230748 then--Darkfuse Bloodwarper
 		timerWarpBloodCD:Start(6-delay, guid)
 --	elseif cid == 229252 then--Darkfuse Hyena
@@ -304,16 +309,18 @@ function mod:StartEngageTimers(guid, cid, delay)
 	elseif cid == 231312 then--Venture Co. Electrician
 		timerOverchargeCD:Start(3.9-delay, guid)
 	elseif cid == 231223 then--Disturbed Kelp
-		timerJettisonkelpCD:Start(7-delay, guid)
+		timerJettisonkelpCD:Start(5.6-delay, guid)
 --		timerRestorativeAlgaeCD:Start(13-delay, guid)--Probably health based for first cast
 	elseif cid == 231496 then--Venture Co. Diver
 		--timerPlantSeaBombsCD:Start(7-delay, guid)
 		--timerHarpoonCD:Start(7-delay, guid)
+	elseif cid == 231014 then--Loaderbot
+		timerWindUpCD:Start(6.4-delay, guid)
 	end
 end
 
 --Abort timers when all players out of combat, so NP timers clear on a wipe
---Caveat, it won't calls top with GUIDs, so while it might terminate bar objects, it may leave lingering nameplate icons
+--Caveat, it won't call stop with GUIDs, so while it might terminate bar objects, it may leave lingering nameplate icons
 function mod:LeavingZoneCombat()
 	self:Stop(true)
 end

@@ -26,11 +26,10 @@ local LocationTimer = {};
 local LocationTimerRunning = false
 
 -- Topic debug tool / scheme
-local dbg = Titan_Debug:New(TITAN_LOCATION_ID)
-dbg:EnableDebug(false)
-dbg:AddTopic("Map")
-dbg:EnableTopic("Events", false)
-dbg:EnableTopic("Flow", false)
+Titan_Debug.location = {}
+Titan_Debug.location.events = false
+Titan_Debug.location.flow = false
+Titan_Debug.location.map = false
 
 
 local place = {
@@ -89,7 +88,7 @@ local function Events(action, reason)
 	local msg = ""
 		.. " " .. tostring(action) .. ""
 		.. " " .. tostring(reason) .. ""
-	dbg:Out("Events", msg)
+	Titan_Debug.Out('location', 'events', msg)
 end
 
 ---local Get the player coordinates on x,y axis of the map of the zone / area they are in.
@@ -136,7 +135,6 @@ local function RealmUpdate()
 end
 ---local Function to throttle down unnecessary updates
 local function CheckForPositionUpdate()
-	local mapID = C_Map.GetBestMapForUnit("player")
 	local tempx, tempy = GetPlayerMapPosition()
 
 	-- If unknown then use 0,0
@@ -180,20 +178,20 @@ local function SetCoordText(player, cursor)
 
 	player_frame:SetText(player or "");
 	cursor_frame:SetText(cursor or "");
+	player_frame:ClearAllPoints()
+	cursor_frame:ClearAllPoints()
 
-	if TITAN_ID == "TitanClassic" then
+	local mloc = TitanGetVar(TITAN_LOCATION_ID, "CoordsLoc")
+
+	if WorldMapFrame.MiniBorderFrame then -- older style world map
 		-- Determine where to show the text
-		player_frame:ClearAllPoints()
-		cursor_frame:ClearAllPoints()
-
-		local mloc = TitanGetVar(TITAN_LOCATION_ID, "CoordsLoc")
 		if mloc == "Top" then
 			if WorldMapFrame:IsMaximized() then
-				TitanMapPlayerLocation:SetPoint("TOPLEFT", WorldMapFrame.BorderFrame, "TOPLEFT", 10, -5)
+				player_frame:SetPoint("TOPLEFT", WorldMapFrame.BorderFrame, "TOPLEFT", 10, -5)
 			else
-				TitanMapPlayerLocation:SetPoint("TOPLEFT", WorldMapFrame.MiniBorderFrame, "TOPLEFT", 20, -33)
+				player_frame:SetPoint("TOPLEFT", WorldMapFrame.MiniBorderFrame, "TOPLEFT", 20, -5)
 			end
-			TitanMapCursorLocation:SetPoint("RIGHT", WorldMapFrame.MaximizeMinimizeFrame, "LEFT", 0, 0)
+			cursor_frame:SetPoint("RIGHT", WorldMapFrame.MaximizeMinimizeFrame, "LEFT", 0, 0)
 		elseif mloc == "Bottom" then
 			player_frame:SetPoint("BOTTOMRIGHT", world_frame, "BOTTOM", -10, 10)
 			cursor_frame:SetPoint("BOTTOMLEFT", world_frame, "BOTTOM", 0, 10)
@@ -205,41 +203,22 @@ local function SetCoordText(player, cursor)
 		end
 	else -- current retail
 		-- Position the text
-		local anchor = world_frame.BorderFrame.MaximizeMinimizeFrame
-		if world_frame:IsMaximized() then
-			-- map should be 'full' screen
-			player_frame:ClearAllPoints();
-			cursor_frame:ClearAllPoints();
-			player_frame:SetPoint("RIGHT", anchor, "LEFT", 0, 0)
-			cursor_frame:SetPoint("TOP", player_frame, "BOTTOM", 0, -5)
-			world_frame.TitanSize = "large"
+		if mloc == "Top" then
+			if WorldMapFrame:IsMaximized() then
+				player_frame:SetPoint("TOPLEFT", world_frame, "TOPLEFT", 20, -5)
+			else
+				player_frame:SetPoint("TOPLEFT", world_frame, "TOPLEFT", 100, -5)
+			end
+			cursor_frame:SetPoint("TOPLEFT", player_frame, "TOPRIGHT", 5, 0)
+		elseif mloc == "Bottom" then
+			player_frame:SetPoint("BOTTOMRIGHT", world_frame, "BOTTOM", -10, 10)
+			cursor_frame:SetPoint("BOTTOMLEFT", world_frame, "BOTTOM", 0, 10)
 		else
-			player_frame:ClearAllPoints();
-			cursor_frame:ClearAllPoints();
-			player_frame:SetPoint("RIGHT", anchor, "LEFT", 0, 0)
-			cursor_frame:SetPoint("LEFT", world_frame.BorderFrame.Tutorial, "RIGHT", 0, 0)
-			world_frame.TitanSize = "small"
+			-- Correct to the default of bottom
+			TitanSetVar(TITAN_LOCATION_ID, "CoordsLoc", "Bottom")
+			player_frame:SetPoint("BOTTOMRIGHT", world_frame, "BOTTOM", -10, 10)
+			cursor_frame:SetPoint("BOTTOMLEFT", world_frame, "BOTTOM", 0, 10)
 		end
-	end
-end
-
----local Show / hide the location above the mini map per user settings
----@param reason string
-local function LocOnMiniMap(reason)
-	if TitanGetVar(TITAN_LOCATION_ID, "ShowLocOnMiniMap") then
-		MinimapBorderTop:Show()
-		MinimapZoneTextButton:Show()
-	else
-		MinimapBorderTop:Hide()
-		MinimapZoneTextButton:Hide()
-		MiniMapWorldMapButton:Hide()
-	end
-
-	-- adjust MiniMap frame if needed
-	if reason == "config" then
-		TitanPanel_AdjustFrames(false, "Location");
-	else
-		-- 2024 Jan - Do not adjust; allow Titan to handle on PEW
 	end
 end
 
@@ -299,7 +278,7 @@ local msg = ""
 .. " " .. (format("%.2f", (bottom + height) or 0)) .. "]"
 .. " " .. (format("%.2f", cx)) .. ""
 .. " " .. (format("%.2f", cy)) .. ""
-	dbg:Out("Map", msg)
+	Titan_Debug.Out('location', 'map', msg)
 --]]
 		end
 
@@ -312,7 +291,7 @@ local msg = ""
 	local msg = ""
 		.. " " .. tostring(playerLocationText) .. ""
 		.. " " .. tostring(cursorLocationText) .. ""
-	dbg:Out("Map", msg)
+	Titan_Debug.Out('location', 'map', msg)
 
 	SetCoordText(playerLocationText, cursorLocationText)
 end
@@ -378,7 +357,7 @@ local function CoordFrames(action)
 			.. " " .. tostring(action) .. ""
 			.. " " .. tostring(place.show_on_map) .. ""
 			.. " " .. tostring(addon_conflict) .. ""
-	dbg:Out("Flow", msg)
+	Titan_Debug.Out('location', 'flow', msg)
 end
 
 ---local Adds player and cursor coords to the WorldMapFrame, unless the player has CT_MapMod
@@ -395,7 +374,7 @@ local function CreateMapFrames()
 
 	local msg =
 		"CreateMapFrames"
-	dbg:Out("Flow", msg)
+	Titan_Debug.Out('location', 'map', msg)
 
 	-- create the frame to hold the font strings, and simulate an "OnUpdate" script handler using C_Timer for efficiency
 	local frame = CreateFrame("FRAME", TITAN_MAP_FRAME, WorldMapFrame)
@@ -415,7 +394,7 @@ end
 local function OnShow(self)
 	local msg =
 		"_OnShow"
-	dbg:Out("Flow", msg)
+	Titan_Debug.Out('location', 'flow', msg)
 
 	if LocationTimerRunning then
 		-- Do not schedule a new one
@@ -424,20 +403,6 @@ local function OnShow(self)
 	end
 
 	CreateMapFrames() -- as needed
-
-	if TITAN_ID == "TitanClassic" then
-		if not TitanGetVar(TITAN_LOCATION_ID, "ShowLocOnMiniMap")
-			and MinimapBorderTop and MinimapBorderTop:IsShown() then
-			LocOnMiniMap("PEW")
-		end
-
-		if TitanGetVar(TITAN_LOCATION_ID, "ShowLocOnMiniMap") and MinimapBorderTop:IsShown() then
-			if not MinimapZoneTextButton:IsShown() then MinimapZoneTextButton:Show() end
-		end
-	else
-		-- no work needed
-	end
-
 	CoordFrames("start") -- start coords on map, if requested
 
 	Events("register", "_OnShow")
@@ -497,6 +462,8 @@ local function GetButtonText(id)
 		-- Coordinates text, if requested
 		if TitanGetVar(TITAN_LOCATION_ID, "ShowCoordsText") then
 			if place.px == 0 and place.py == 0 then
+				xy_text = ""
+			elseif place.px == nil or place.py == nil then
 				xy_text = ""
 			else
 				xy_text = format(TitanGetVar(TITAN_LOCATION_ID, "CoordsFormat"), 100 * place.px, 100 * place.py)
@@ -606,7 +573,7 @@ local function OnEvent(self, event, ...)
 	local msg =
 			"_OnEvent"
 			.. " " .. tostring(event) .. ""
-	dbg:Out("Events", msg)
+	Titan_Debug.Out('location', 'events', msg)
 
 	ZoneUpdate(self);
 	--[[
@@ -684,7 +651,7 @@ local function CreateMenu()
 			info.checked = TitanGetVar(TITAN_LOCATION_ID, "ShowZoneText");
 			TitanPanelRightClickMenu_AddButton(info, TitanPanelRightClickMenu_GetDropdownLevel());
 
---			if TITAN_ID == "TitanClassic" then
+--			if TITAN_ID == "Titan" then
 				info = {};
 				info.text = L["TITAN_LOCATION_MENU_SHOW_SUBZONE_ON_PANEL_TEXT"];
 				info.func = function()
@@ -704,41 +671,6 @@ local function CreateMenu()
 				TitanPanelButton_UpdateButton(TITAN_LOCATION_ID);
 			end
 			info.checked = TitanGetVar(TITAN_LOCATION_ID, "ShowCoordsText");
-			TitanPanelRightClickMenu_AddButton(info, TitanPanelRightClickMenu_GetDropdownLevel());
---[[
-			info = {};
-			info.text = L["TITAN_LOCATION_MENU_SHOW_COORDS_ON_MAP_TEXT"];
-			info.func = function()
-				TitanToggleVar(TITAN_LOCATION_ID, "ShowCoordsOnMap");
-				if (TitanGetVar(TITAN_LOCATION_ID, "ShowCoordsOnMap")) then
-					CoordFrames("start")
-				else
-					CoordFrames("stop")
-				end
-			end
-			info.checked = TitanGetVar(TITAN_LOCATION_ID, "ShowCoordsOnMap");
-			TitanPanelRightClickMenu_AddButton(info, TitanPanelRightClickMenu_GetDropdownLevel());
-
-			if TITAN_ID == "TitanClassic" then
-				info = {};
-				info.text = L["TITAN_LOCATION_MENU_SHOW_LOC_ON_MINIMAP_TEXT"];
-				info.func = function()
-					TitanToggleVar(TITAN_LOCATION_ID, "ShowLocOnMiniMap");
-					LocOnMiniMap("config")
-				end
-				info.checked = TitanGetVar(TITAN_LOCATION_ID, "ShowLocOnMiniMap");
-				info.disabled = InCombatLockdown()
-				TitanPanelRightClickMenu_AddButton(info, TitanPanelRightClickMenu_GetDropdownLevel());
-			else
-				-- no work needed
-			end
-			info = {};
-			info.text = L["TITAN_LOCATION_MENU_UPDATE_WORLD_MAP"];
-			info.func = function()
-				TitanToggleVar(TITAN_LOCATION_ID, "UpdateWorldmap");
-			end
-			info.checked = TitanGetVar(TITAN_LOCATION_ID, "UpdateWorldmap");
-			info.disabled = InCombatLockdown()
 			TitanPanelRightClickMenu_AddButton(info, TitanPanelRightClickMenu_GetDropdownLevel());
 --]]
 		end
@@ -798,7 +730,7 @@ local function CreateMenu()
 			info.disabled = InCombatLockdown()
 			TitanPanelRightClickMenu_AddButton(info, TitanPanelRightClickMenu_GetDropdownLevel());
 
-			if TITAN_ID == "TitanClassic" then
+			if TITAN_ID == "Titan" then
 				info = {};
 				info.notCheckable = true
 				info.text = L["TITAN_LOCATION_MENU_TEXT"];
@@ -868,7 +800,6 @@ local function OnLoad(self)
 			ShowCoordsText = true,
 			ShowCoordsOnMap = false,
 			ShowCursorOnMap = false,
-			ShowLocOnMiniMap = 1,
 			ShowIcon = 1,
 			ShowLabelText = 1,
 			ShowColoredText = 1,
@@ -880,9 +811,7 @@ local function OnLoad(self)
 		}
 	};
 
-	local msg =
-		"_OnLoad"
-	dbg:Out("Flow", msg)
+	Titan_Debug.Out('location', 'flow', "_Onload")
 end
 
 ---local Create needed frames

@@ -11,23 +11,19 @@ function transmogCriteriaHelper:OnEvent(event)
 end
 transmogCriteriaHelper:SetScript("OnEvent", transmogCriteriaHelper.OnEvent);
 
-local transmogSets;
+local transmogSetIds;
 function section:CheckAdd(achievement)
-    if not achievement.TransmogSets then
+    if not achievement.TransmogSetIds then
 		return;
 	end
-	local state;
-	if achievement.TemporaryObtainable then
-		state = achievement.TemporaryObtainable.Obtainable();
-	end
-	local pastObtainable = state and (not state or state == "Past");
-	if not addon.Options.db.profile.Tooltip.Achievements.ObjectivesProgress.Show or pastObtainable then
+	local state = achievement:GetObtainableState();
+	if not addon.Options.db.profile.Tooltip.Achievements.ObjectivesProgress.Show or state == "Past" then
 		return;
 	end
 	if achievement.IsCompleted and not addon.Options.db.profile.Tooltip.Achievements.ObjectivesProgress.ShowWhenAchievementCompleted then
 		return;
 	end
-    transmogSets = addon.GetUsableSets(achievement.TransmogSets);
+    transmogSetIds = addon.GetUsableSets(achievement.TransmogSetIds);
 	return true;
 end
 
@@ -35,10 +31,10 @@ local function AnalyzeTransmogSets()
     local invTypes = {};
     local numCollectedPerSet = {};
 
-    for i, transmogSet in next, transmogSets do
+    for i, transmogSetId in next, transmogSetIds do
         local numCollected = 0;
-        local setInfo = C_TransmogSets.GetSetInfo(transmogSet.Id);
-        local primaryAppearances = C_TransmogSets.GetSetPrimaryAppearances(transmogSet.Id);
+        local setInfo = C_TransmogSets.GetSetInfo(transmogSetId);
+        local primaryAppearances = C_TransmogSets.GetSetPrimaryAppearances(transmogSetId);
         for _, primaryAppearance in ipairs(primaryAppearances) do
             local sourceId = primaryAppearance.appearanceID;
             local sourceInfo = C_TransmogCollection.GetSourceInfo(sourceId);
@@ -77,7 +73,7 @@ local function AchievementHasChanged(prevAchievementId)
 end
 
 local function AddMissingItems(invTypes)
-    for i = 1, #transmogSets, 1 do
+    for i = 1, #transmogSetIds, 1 do
         for j, _ in next, invTypes do
             if invTypes[j].Items[i] == nil then
                 invTypes[j].Items[i] = {
@@ -217,7 +213,7 @@ end
 
 function section:Add()
 	GameTooltip:AddLine(addon.L["Objectives progress"]);
-    if #transmogSets > 0 then
+    if #transmogSetIds > 0 then
 	    AddTransmogCriteriaAsync();
         return;
     end

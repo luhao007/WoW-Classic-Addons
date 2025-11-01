@@ -17,7 +17,6 @@ local zhengliIcon="interface/containerframe/bags.blp"
 local BagdangeW=ContainerFrame1Item1:GetWidth()+5
 local wwc,hhc = 24,24
 ------
-local xuanzhuangsanjiao=BagBankfun.xuanzhuangsanjiao
 local Bag_Item_lv=BagBankfun.Bag_Item_lv
 local Bag_Item_Ranse=BagBankfun.Bag_Item_Ranse
 local Bank_Item_lv=BagBankfun.Bank_Item_lv
@@ -164,7 +163,11 @@ local function UpdateP_BANK(frame, size, id)
 		local itemF = _G[name.."Item"..slot]
 		itemF:ClearAllPoints();
 		if slot==1 then
-			itemF:SetPoint("TOPRIGHT", BankSlotsFrame, "TOPRIGHT", -new_kongyu*BagdangeW-15, -new_hangshu*BagdangeW-33);
+			if PIG_MaxTocversion(50000) then
+				itemF:SetPoint("TOPRIGHT", BankSlotsFrame, "TOPRIGHT", -new_kongyu*BagdangeW-15, -new_hangshu*BagdangeW-33);
+			else
+				itemF:SetPoint("TOPRIGHT", BankSlotsFrame, "TOPRIGHT", -new_kongyu*BagdangeW-25, -new_hangshu*BagdangeW-33);
+			end
 		else
 			local yushu=math.fmod((slot+new_kongyu-1),BankFrame.meihang)
 			local itemFshang = _G[name.."Item"..(slot-1)]
@@ -196,18 +199,15 @@ local function zhegnheBANK()
 	end
 	for i=1,bagData["bankbag"] do
 		BankSlotsFrame["Bag"..i]:Hide();
-		--BankSlotsFrame["Bag"..i]:SetScale(0.76);
-		--BankSlotsFrame["Bag"..i]:ClearAllPoints();
-		-- if i==1 then
-		-- 	BankSlotsFrame["Bag"..i]:SetPoint("TOPLEFT", BankFrameItem1, "BOTTOMLEFT", 70, 100);
-		-- else
-		-- 	BankSlotsFrame["Bag"..i]:SetPoint("LEFT", BankSlotsFrame["Bag"..(i-1)], "RIGHT", 0, 0);
-		-- end
 	end
 	for i = 1, bagData["bankmun"] do
 		_G["BankFrameItem"..i]:ClearAllPoints();
 		if i==1 then
-			_G["BankFrameItem"..i]:SetPoint("TOPLEFT", BankSlotsFrame, "TOPLEFT", 26, -76);
+			if PIG_MaxTocversion(50000) then
+				_G["BankFrameItem"..i]:SetPoint("TOPLEFT", BankSlotsFrame, "TOPLEFT", 26, -76);
+			else
+				_G["BankFrameItem"..i]:SetPoint("TOPLEFT", BankSlotsFrame, "TOPLEFT", 16, -76);
+			end
 		else
 			local yushu=math.fmod(i-1,BankFrame.meihang)
 			if yushu==0 then
@@ -217,16 +217,22 @@ local function zhegnheBANK()
 			end
 		end
 	end
-	BankFrameTitleText:ClearAllPoints();
-	BankFrameTitleText:SetPoint("TOP", BankFrame, "TOP", 0, -15);
 	BankFramePurchaseButton:SetWidth(90)
 	BankFramePurchaseButton:ClearAllPoints();
-	BankFramePurchaseButton:SetPoint("TOPLEFT", BankSlotsFrame, "TOPLEFT", 69, -11.6);
 	BankFramePurchaseButtonText:SetPoint("RIGHT", BankFramePurchaseButton, "RIGHT", -8, 0);
 	BankFrameDetailMoneyFrame:ClearAllPoints();
-	BankFrameDetailMoneyFrame:SetPoint("RIGHT", BankFramePurchaseButtonText, "LEFT", 6, -1);
-	BankCloseButton:SetPoint("CENTER", BankFrame, "TOPRIGHT", -11, -22);
-	BankFrameMoneyFrame:SetPoint("BOTTOMRIGHT", BankFrame, "BOTTOMRIGHT", -10, 11);
+	if PIG_MaxTocversion(50000) then
+		BankFrameTitleText:ClearAllPoints();
+		BankFrameTitleText:SetPoint("TOP", BankFrame, "TOP", 0, -15);
+		BankFramePurchaseButton:SetPoint("TOPLEFT", BankSlotsFrame, "TOPLEFT", 69, -11.6);
+		BankFrameDetailMoneyFrame:SetPoint("RIGHT", BankFramePurchaseButtonText, "LEFT", 6, -1);
+		BankCloseButton:SetPoint("CENTER", BankFrame, "TOPRIGHT", -11, -22);
+		BankFrameMoneyFrame:SetPoint("BOTTOMRIGHT", BankFrame, "BOTTOMRIGHT", -10, 11);
+	else
+		BankFramePurchaseButton:SetPoint("TOPLEFT", BankSlotsFrame, "TOPLEFT", 69, 0);
+		BankFrameDetailMoneyFrame:SetPoint("RIGHT", BankFramePurchaseButtonText, "LEFT", 6, -1);
+		BankItemSearchBox:SetPoint("TOPRIGHT",BankFrame,"TOPRIGHT",-60,-1);
+	end
 	Update_BankFrame_Height(BagdangeW)
 	Bank_Item_lv()
 	Bank_Item_ranse()
@@ -352,15 +358,9 @@ function BagBankfun.Zhenghe(Rneirong,tabbut)
 	BAGheji.fenlei:SetScript("OnMouseUp", function (self)
 		self.Tex:SetPoint("CENTER",BAGheji.fenlei,"CENTER",2,0);
 	end);
-	BAGheji.fenlei.show=false
 	BAGheji.fenlei:SetScript("OnClick",  function (self)
-		if self.show then
-			self.show=false
-		else
-			self.show=true
-		end
-		xuanzhuangsanjiao(self.Tex,self.show)
-		BAGheji:Show_Hide_but(self.show)
+		BAGheji:ShowHide_butList()
+		BagBankfun.UpdateIconDirection(self.Tex,BAGheji.ButLsit[1]:IsShown())
 	end);
 	BagBankfun.addfenleibagbut(BAGheji,"PIG_CharacterBag_")
 	--钥匙
@@ -505,7 +505,6 @@ function BagBankfun.Zhenghe(Rneirong,tabbut)
 	end)
 	-----
 	BAGheji:RegisterEvent("PLAYER_ENTERING_WORLD");
-	--BAGheji:RegisterEvent("BAG_UPDATE_DELAYED")
 	BAGheji:RegisterEvent("AUCTION_HOUSE_SHOW")
 	BAGheji:RegisterEvent("PLAYERBANKBAGSLOTS_CHANGED")
 	BAGheji:RegisterUnitEvent("UNIT_PORTRAIT_UPDATE","player")
@@ -522,16 +521,12 @@ function BagBankfun.Zhenghe(Rneirong,tabbut)
 				end)
 			end
 		elseif event=="BAG_CONTAINER_UPDATE" or event=="PLAYERBANKBAGSLOTS_CHANGED" then
-			self:Show_Hide_but(self.fenlei.show)
+			C_Timer.After(0.1,function() self:ShowHide_butList(true) end) 
 			if BankSlotsFrame:IsShown() then
-				BankSlotsFrame:Show_Hide_but(BankSlotsFrame.fenlei.show)
+				BankSlotsFrame:ShowHide_butList(true)
 				for banki=2,#bagData["bankID"] do
 					OpenBag(bagData["bankID"][banki])
 				end
-			end
-		elseif event=="PLAYERBANKBAGSLOTS_CHANGED" then
-			if BankSlotsFrame:IsShown() then
-				BankSlotsFrame:Show_Hide_but(BankSlotsFrame.fenlei.show)
 			end
 		elseif event=="BAG_UPDATE_DELAYED" then
 			if self:IsShown() then
@@ -608,22 +603,23 @@ function BagBankfun.Zhenghe(Rneirong,tabbut)
 	BankSlotsFrame.fenlei:SetScript("OnMouseUp", function (self)
 		self.Tex:SetPoint("CENTER",BankSlotsFrame.fenlei,"CENTER",2,0);
 	end);
-	BankSlotsFrame.fenlei.show=false
 	BankSlotsFrame.fenlei:SetScript("OnClick",  function (self)
-		if self.show then
-			self.show=false
-		else
-			self.show=true
-		end
-		xuanzhuangsanjiao(self.Tex,self.show)
-		BankSlotsFrame:Show_Hide_but(self.show)
+		BankSlotsFrame:ShowHide_butList()
+		BagBankfun.UpdateIconDirection(self.Tex,BankSlotsFrame.ButLsit[1]:IsShown())
 	end);
 	BagBankfun.addfenleibagbut(BankSlotsFrame,"PIG_CharacterBANK_")
-	Create.BagBankFrameBG(BankFrame,true)
+	if PIG_MaxTocversion(50000) then
+		Create.BagBankFrameBG(BankFrame,true)
+	end
 	--物品显示区域
 	BankSlotsFrame.wupin = CreateFrame("Frame", nil, BankSlotsFrame,"BackdropTemplate")
-	BankSlotsFrame.wupin:SetPoint("TOPLEFT", BankSlotsFrame, "TOPLEFT",21, -70);
-	BankSlotsFrame.wupin:SetPoint("BOTTOMRIGHT", BankSlotsFrame, "BOTTOMRIGHT", -10, 30);
+	if PIG_MaxTocversion(50000) then
+		BankSlotsFrame.wupin:SetPoint("TOPLEFT", BankSlotsFrame, "TOPLEFT",21, -70);
+		BankSlotsFrame.wupin:SetPoint("BOTTOMRIGHT", BankSlotsFrame, "BOTTOMRIGHT", -10, 30);
+	else
+		BankSlotsFrame.wupin:SetPoint("TOPLEFT", BankSlotsFrame, "TOPLEFT",10, -70);
+		BankSlotsFrame.wupin:SetPoint("BOTTOMRIGHT", BankSlotsFrame, "BOTTOMRIGHT", -18, 30);
+	end
 	BankSlotsFrame.wupin:EnableMouse(true)
 	BankSlotsFrame.wupin:SetBackdrop( { bgFile = "interface/framegeneral/ui-background-marble.blp" });
 	-- -----------

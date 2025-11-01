@@ -5,13 +5,14 @@
 -- ------------------------------------------------------------------------------ --
 
 local TSM = select(2, ...) ---@type TSM
-local Groups = TSM.UI.VendoringUI:NewPackage("Groups")
-local L = TSM.Include("Locale").GetTable()
-local TempTable = TSM.Include("Util.TempTable")
-local FSM = TSM.Include("Util.FSM")
-local Settings = TSM.Include("Service.Settings")
-local UIElements = TSM.Include("UI.UIElements")
-local UIUtils = TSM.Include("UI.UIUtils")
+local Groups = TSM.UI.VendoringUI:NewPackage("Groups") ---@type AddonPackage
+local L = TSM.Locale.GetTable()
+local TempTable = TSM.LibTSMUtil:Include("BaseType.TempTable")
+local Group = TSM.LibTSMTypes:Include("Group")
+local GroupOperation = TSM.LibTSMTypes:Include("GroupOperation")
+local FSM = TSM.LibTSMUtil:Include("FSM")
+local UIElements = TSM.LibTSMUI:Include("Util.UIElements")
+local UIUtils = TSM.LibTSMUI:Include("Util.UIUtils")
 local private = {
 	settings = nil,
 	groupSearch = "",
@@ -24,9 +25,13 @@ local private = {
 -- Module Functions
 -- ============================================================================
 
-function Groups.OnInitialize()
-	private.settings = Settings.NewView()
+function Groups.OnInitialize(settingsDB)
+	private.settings = settingsDB:NewView()
 		:AddKey("char", "vendoringUIContext", "groupTree")
+		:AddKey("global", "coreOptions", "regionWide")
+		:AddKey("global", "appearanceOptions", "showTotalMoney")
+		:AddKey("global", "internalData", "warbankMoney")
+		:AddKey("sync", "internalData", "money")
 	private.FSMCreate()
 	TSM.UI.VendoringUI.RegisterTopLevelPage(L["Groups"], private.GetFrame)
 end
@@ -80,7 +85,7 @@ function private.GetFrame()
 		:AddChild(UIElements.New("HorizontalLine", "line"))
 		:AddChild(UIElements.New("ApplicationGroupTree", "groupTree")
 			:SetSettingsContext(private.settings, "groupTree")
-			:SetQuery(TSM.Groups.CreateQuery(), "Vendoring")
+			:SetQuery(GroupOperation.CreateQuery(), "Vendoring")
 			:SetSearchString(private.groupSearch)
 			:SetScript("OnGroupSelectionChanged", private.GroupTreeOnGroupSelectionChanged)
 		)
@@ -95,7 +100,9 @@ function private.GetFrame()
 				:SetWidth(166)
 				:SetMargin(0, 8, 0, 0)
 				:SetPadding(4)
-				:AddChild(TSM.UI.Views.PlayerGoldText.New("text"))
+				:AddChild(UIElements.New("PlayerGoldText", "text")
+					:SetSettings(private.settings)
+				)
 			)
 			:AddChild(UIElements.New("ActionButton", "buyBtn")
 				:SetMargin(0, 8, 0, 0)
@@ -160,10 +167,10 @@ function private.GroupTreeOnGroupSelectionChanged(groupTree)
 	local numGroups, numItems = 0, 0
 	for _, groupPath in groupTree:SelectedGroupsIterator() do
 		numGroups = numGroups + 1
-		if groupPath == TSM.CONST.ROOT_GROUP_PATH then
+		if groupPath == Group.GetRootPath() then
 			-- TODO
 		else
-			for _ in TSM.Groups.ItemIterator(groupPath) do
+			for _ in Group.ItemIterator(groupPath) do
 				numItems = numItems + 1
 			end
 		end

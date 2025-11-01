@@ -60,6 +60,11 @@
 		<Title>钥石助手</Title>
 		<Category>副本</Category>
 	</Addon>
+	<Addon name="AskMrRobot">
+		<Title>机器人模拟</Title>
+		<Notes>生成可以在AskMrRobot网站模拟的字符串</Notes>
+		<Category>功能</Category>
+	</Addon>
 	<Addon name="AskMrRobotClassic">
 		<Title>机器人模拟</Title>
 		<Notes>生成可以在AskMrRobot网站模拟的字符串</Notes>
@@ -475,6 +480,11 @@
 		<Notes>自定义的额外动作条</Notes>
 		<Category>界面</Category>
 	</Addon>
+	<Addon name="CauseseDB">
+		<Title>Causese数据库</Title>
+		<Notes>配合Causese的WA使用</Notes>
+		<Category>副本</Category>
+	</Addon>
 	<Addon name="CensusPlusClassic">
 		<Title>人口普查</Title>
 		<Notes>统计服务器中的人口数量</Notes>
@@ -754,6 +764,10 @@
 				<Title>团队</Title>
 				<TitleExtra>军团再临</TitleExtra>
 			</SubAddon>
+			<SubAddon name="DBM-Raids-Midnight">
+				<Title>团队</Title>
+				<TitleExtra>至暗之夜</TitleExtra>
+			</SubAddon>
 			<SubAddon name="DBM-Raids-MoP">
 				<Title>团队</Title>
 				<TitleExtra>熊猫人之谜</TitleExtra>
@@ -898,6 +912,11 @@
 		<Notes>在角色面板中显示额外的信息，如法术命中等</Notes>
 		<Category>界面</Category>
 	</Addon>
+	<Addon name="DelveCompanion">
+		<Title>地下堡助手</Title>
+		<Notes>在冒险者日志中添加“地下堡”分页</Notes>
+		<Category>副本</Category>
+	</Addon>
 	<Addon name="Details">
 		<Title>伤害统计</Title>
 		<Notes>功能强大的伤害统计插件</Notes>
@@ -925,6 +944,11 @@
 				<Title>插件</Title>
 				<TitleExtra>首领详情</TitleExtra>
 				<Notes>显示打断、驱散等数据，并且支持对于该首领一键生成WA</Notes>
+			</SubAddon>
+			<SubAddon name='Details_MythicPlus'>
+				<Title>插件</Title>
+				<TitleExtra>大秘境助手</TitleExtra>
+				<Notes>显示大秘境统计数据，支持计时条</Notes>
 			</SubAddon>
 			<SubAddon name='Details_RaidCheck'>
 				<Title>插件</Title>
@@ -1137,6 +1161,14 @@
 				<Title>宝藏/稀有</Title>
 				<TitleExtra>军团再临</TitleExtra>
 			</SubAddon>
+			<SubAddon name="HandyNotes_MapNotes">
+				<Title>地图标记</Title>
+				<Notes>显示副本入口，主城NPC等信息</Notes>
+			</SubAddon>
+			<SubAddon name="HandyNotes_NaxxFrozenRunes">
+				<Title>宝藏/稀有</Title>
+				<TitleExtra>NAXX冰冻符文</TitleExtra>
+			</SubAddon>
 			<SubAddon name="HandyNotes_MistsOfPandaria">
 				<Title>宝藏/稀有</Title>
 				<TitleExtra>熊猫人之谜</TitleExtra>
@@ -1226,6 +1258,10 @@
 		<Title>功能百宝箱</Title>
 		<Category>功能</Category>
 	</Addon>
+	<Addon name="LegionRemixHelper">
+		<Title>军团再临幻境新生助手</Title>
+		<Category>收藏</Category>
+	</Addon>
 	<Addon name="LootMonitor">
 		<Title>黑手检测</Title>
 		<Category>功能</Category>
@@ -1251,6 +1287,11 @@
 		<Title>小地图按钮整合</Title>
 		<Notes>将小地图的按钮整合成一个</Notes>
 		<Category>界面</Category>
+	</Addon>
+	<Addon name="MDTGuide">
+		<Title>大秘境工具路线图</Title>
+		<Notes>配合MDT显示一个微缩地图</Notes>
+		<Category>副本</Category>
 	</Addon>
 	<Addon name="MeetingStone">
 		<Title>集合石</Title>
@@ -1404,6 +1445,11 @@
 			</SubAddon>
 		</SubAddons>
 	</Addon>
+	<Addon name="OmniCD">
+		<Title>队友冷却</Title>
+		<Notes>在小队面板中显示队友的技能冷却</Notes>
+		<Category>战斗</Category>
+	</Addon>
 	<Addon name="OPie">
 		<Title>环形动作条</Title>
 		<Category>功能</Category>
@@ -1476,6 +1522,11 @@
 		<Notes>在地图和小地图上提供任务指引，在怪物身上提示任务进度</Notes>
 		<Category>任务</Category>
 	</Addon>
+	<Addon name="Quest_Counter">
+		<Title>任务计数</Title>
+		<Notes>显示任务计数</Notes>
+		<Category>任务</Category>
+	</Addon>
 	<Addon name="RaidAchievement">
 		<Title>团队成就助手</Title>
 		<Notes>在团队和小队中追踪成就完成情况，并给与相应提示。内置当前版本的副本模块。</Notes>
@@ -1524,6 +1575,10 @@
 				<Title>巫妖王之怒小队</Title>
 			</SubAddon>
 		</SubAddons>
+	</Addon>
+	<Addon name="RaiderIO">
+		<Title>Raider.IO数据</Title>
+		<Category>副本</Category>
 	</Addon>
 	<Addon name="RaidLedger">
 		<Title>金团账本</Title>
@@ -1966,6 +2021,10 @@
 		<Title>任务完成辅助</Title>
 		<Category>任务</Category>
 	</Addon>
+	<Addon name="WindDungeonHelper">
+		<Title>Wind地下城助手</Title>
+		<Category>副本</Category>
+	</Addon>
 	<Addon name="WorldBossTimers">
 		<Title>世界首领计时器</Title>
 		<Category>收藏</Category>
@@ -1982,6 +2041,10 @@
 		<Title>输出模拟器</Title>
 		<Notes>模拟当前人物的输出，来确认哪个装备属性更好。</Notes>
 		<Category>战斗</Category>
+	</Addon>
+	<Addon name="WYJJDB">
+		<Title>忘忧景久语音包</Title>
+		<Category>功能</Category>
 	</Addon>
 	<Addon name="zAutoLoadPetTeam_Rematch">
 		<Title>自动载入宠物队伍</Title>

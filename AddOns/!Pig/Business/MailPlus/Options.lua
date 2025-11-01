@@ -20,6 +20,7 @@ local fuFrame,fuFrameBut = BusinessInfo.fuFrame,BusinessInfo.fuFrameBut
 local GetContainerNumSlots = GetContainerNumSlots or C_Container and C_Container.GetContainerNumSlots
 local GetContainerItemInfo = GetContainerItemInfo or C_Container and C_Container.GetContainerItemInfo
 local GetItemInfoInstant=GetItemInfoInstant or C_Item and C_Item.GetItemInfoInstant
+local IsAddOnLoaded=IsAddOnLoaded or C_AddOns and C_AddOns.IsAddOnLoaded
 
 local GnName = MINIMAP_TRACKING_MAILBOX.."助手"
 ------------
@@ -35,6 +36,7 @@ function BusinessInfo.MailPlusOptions()
 		if self:GetChecked() then
 			PIGA["MailPlus"]["Open"]=true;
 			BusinessInfo.MailPlus_ADDUI()
+			fuFrame:Update_Set()
 		else
 			PIGA["MailPlus"]["Open"]=false;
 			PIG_OptionsUI.RLUI:Show()
@@ -51,14 +53,17 @@ function BusinessInfo.MailPlusOptions()
 		if self:GetChecked() then
 			PIGA["MailPlus"]["BagOpen"]=true;
 		else
-			PIGA["MailPlus"]["BagOpen"]=nil
+			PIGA["MailPlus"]["BagOpen"]=false
 		end
 	end);
 	--------
-	fuFrame:HookScript("OnShow", function (self)
+	function fuFrame:Update_Set()
 		self.MailPlus:SetChecked(PIGA["MailPlus"]["Open"])
-		self.BagOpen:SetChecked(PIGA["MailPlus"]["BagOpen"])
 		self.MailPlus.ScanSlider:PIGSetValue(PIGA["MailPlus"]["OpenAllCD"])
+		self.BagOpen:SetChecked(PIGA["MailPlus"]["BagOpen"])
+	end
+	fuFrame:HookScript("OnShow", function (self)
+		fuFrame:Update_Set()
 	end);
 	BusinessInfo.MailPlus_ADDUI()
 end
@@ -68,9 +73,11 @@ function BusinessInfo.MailPlus_ADDUI()
 	hooksecurefunc("MailFrameTab_OnClick", function(self, tabID)
 		if tabID == 1 then
 			MailFrame:SetWidth(338)
-		else
-			if not PIGA["MailPlus"]["BagOpen"] then CloseAllBags() end
-			MailFrame:SetWidth(705)
+		elseif tabID == 2 then
+			if SendMailFrame.pigopen then
+				if not PIGA["MailPlus"]["BagOpen"] then CloseAllBags() end
+				MailFrame:SetWidth(705)
+			end
 		end
 	end)
 	----
@@ -83,6 +90,7 @@ function BusinessInfo.MailPlus_ADDUI()
 				local itemBut=InboxFrame.ItemBox.ButList[i]
 				itemBut:Hide()
 				itemBut.TimeLeft:Hide()
+				itemBut.wasReturned:Hide()
 				itemBut.Num:SetText("")
 				itemBut.LV:SetText("");
 				itemBut:SetScript("OnEnter", nil);
@@ -90,7 +98,7 @@ function BusinessInfo.MailPlus_ADDUI()
 			end
 		end
 	end
-	local function SetTooltipFrom(FROMname,MONEY)
+	local function SetTooltipFrom(FROMname,MONEY,wasReturned)
 		local TimeLeft = MONEY
 		if ( TimeLeft >= 1 ) then
 			TimeLeft = GREEN_FONT_COLOR_CODE..format(DAYS_ABBR, floor(TimeLeft)).." "..FONT_COLOR_CODE_CLOSE;
@@ -98,12 +106,15 @@ function BusinessInfo.MailPlus_ADDUI()
 			TimeLeft = RED_FONT_COLOR_CODE..SecondsToTime(floor(TimeLeft * 24 * 60 * 60))..FONT_COLOR_CODE_CLOSE;
 		end
 		GameTooltip:AddLine(FROM..GREEN_FONT_COLOR_CODE..FROMname..FONT_COLOR_CODE_CLOSE..", "..TIME_REMAINING..TimeLeft)
+		GameTooltip:AddLine(wasReturned and "|cffFF0000退回邮件，到期将被删除|r")
 	end
+	local mailData = {}
 	local function Show_ItemList()
 		if not InboxFrame:IsShown() then return end
 		local lyID=InboxFrame.PIG_Select
 		ClearBut(lyID)
-		local mailData = {{},{},0}
+		wipe(mailData)
+		mailData[1],mailData[2],mailData[3] = {},{},0
 		local numItems, totalItems = GetInboxNumItems();
 		for i=1, numItems do
 			local packageIcon, stationeryIcon, sender, subject, money, CODAmount, daysLeft, itemCount, wasRead, wasReturned, textCreated, canReply, isGM = GetInboxHeaderInfo(i);
@@ -112,7 +123,7 @@ function BusinessInfo.MailPlus_ADDUI()
 					local ItemLink=GetInboxItemLink(i, n);
 					if ItemLink then
 						local _, itemID, _, count = GetInboxItem(i, n);
-						table.insert(mailData[1], {ItemLink,count,i, n,sender,daysLeft,itemID});
+						table.insert(mailData[1], {ItemLink,count,i, n,sender,daysLeft,itemID,wasReturned});
 					end
 				end
 			end
@@ -150,6 +161,7 @@ function BusinessInfo.MailPlus_ADDUI()
 						return
 					end
 					SetItemButtonTexture(itemBut, itemTexture)
+					itemBut.wasReturned:SetShown(mailData[1][i][8])
 					local TimeLeft=mailData[1][i][6]
 					if TimeLeft<3 then
 						itemBut.TimeLeft:Show()
@@ -170,7 +182,7 @@ function BusinessInfo.MailPlus_ADDUI()
 						GameTooltip:ClearLines();
 						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 						GameTooltip:SetInboxItem(mailData[1][dangqian][3], mailData[1][dangqian][4]);
-						SetTooltipFrom(mailData[1][i][5],TimeLeft)
+						SetTooltipFrom(mailData[1][i][5],TimeLeft,mailData[1][i][8])
 						GameTooltip:Show();
 					end);
 					itemBut:SetScript("OnClick", function ()
@@ -261,7 +273,7 @@ function BusinessInfo.MailPlus_ADDUI()
 		InboxFrame:Show_tabList()
 	end);
 	InboxFrame.Delbut:SetScript("OnClick", function (self)
-		StaticPopup_Show ("MAIL_PLUS_DELNONEMAIL");
+		StaticPopup_Show("MAIL_PLUS_DELNONEMAIL");
 	end);
 	function InboxFrame:Show_tabList(id)
 		for i=1,INBOXITEMS_TO_DISPLAY do
@@ -419,6 +431,7 @@ function BusinessInfo.MailPlus_ADDUI()
 		itemBut.Num:SetTextColor(1, 1, 1, 1);
 		itemBut.Num:SetSize(40,14);
 		itemBut.Num:SetJustifyH("RIGHT")
+		itemBut.wasReturned=PIGDiyTex(itemBut,{"TOPLEFT",itemBut,"TOPLEFT",0,0},{16,16})
 	end
 	InboxFrame.ItemBox.PrevPageBut = CreateFrame("Button",nil,InboxFrame.ItemBox);
 	InboxFrame.ItemBox.PrevPageBut:SetNormalTexture("Interface/Buttons/UI-SpellbookIcon-PrevPage-Up")
@@ -677,8 +690,9 @@ function BusinessInfo.MailPlus_ADDUI()
 			Show_ItemList()
 		end
 	end)
-
+	
 	---发件页===================
+	SendMailFrame.pigopen=true
 	local line_W1,line_W2,collW,collY, hang_Height,collhang_NUM = 206,174,20,20,20,15
 	SendMailFrame.line1 = SendMailFrame:CreateTexture()
 	SendMailFrame.line1:SetTexture("interface/taxiframe/ui-taxi-line.blp")
@@ -887,9 +901,9 @@ function BusinessInfo.MailPlus_ADDUI()
 	local lixianNum,meihang,BagdangeW=(#bagData["bagID"])*MAX_CONTAINER_ITEMS,10,20
 	local function But_Click(self)
 		if BankFrame.GetActiveBankType then
-			C_Container.UseContainerItem(self.BagID, self.SlotID, nil, BankFrame:GetActiveBankType(), BankFrame:IsShown() and BankFrame.selectedTab == 2);
+			C_Container.UseContainerItem(self.BagID, self.SlotID, nil, BankFrame:GetActiveBankType(), false);
 		else
-			C_Container.UseContainerItem(self.BagID, self.SlotID, nil, BankFrame:IsShown() and (BankFrame.selectedTab == 2));
+			C_Container.UseContainerItem(self.BagID, self.SlotID, nil, false);
 		end
 	end
 	local function PIG_allbagSet(DQitemID)
@@ -1095,47 +1109,44 @@ function BusinessInfo.MailPlus_ADDUI()
 		self.Updata_Items()
 	end);
 	SendMailFrame.ItemList:RegisterEvent("BAG_UPDATE");
-	SendMailFrame.ItemList:SetScript("OnEvent", function(self,event,arg1)
-		if event=="BAG_UPDATE" and self:IsShown() then
-			if arg1~=-2 then
+	SendMailFrame.ItemList:SetScript("OnEvent", function(self,event,arg1,arg2)
+		if event=="BAG_UPDATE" then
+			if self:IsShown() and arg1~=-2 then
 				if arg1>=0 and arg1<=bagData["bagIDMax"] then
 					self.Updata_Items()
 				end
 			end
 		end
 	end)
+	local function SaveSendName()
+		if PIGA["MailPlus"]["lianxuMode"] then
+			if SendMailFrame.PreviousName then
+				SendMailNameEditBox:SetText(SendMailFrame.PreviousName);
+			end
+		end
+		for i=1,#PIGA["MailPlus"]["Coll"] do
+			if SendMailFrame.PreviousName==PIGA["MailPlus"]["Coll"][i] then
+				return
+			end
+		end
+		local PlayerData = PIGA["StatsInfo"]["Players"]
+		for nameserver,data in pairs(PlayerData) do
+			local name, server = strsplit("-", nameserver);
+			if SendMailFrame.PreviousName==name then
+				return
+			end
+		end
+		table.insert(PIGA["MailPlus"]["Coll"],1,SendMailFrame.PreviousName)
+		SendMailFrame.recipients.Update_hang(SendMailFrame.recipients.Scroll)
+	end
+	hooksecurefunc("SendMailFrame_SendMail", function()
+		SendMailFrame.PreviousName=SendMailNameEditBox:GetText()
+	end)
 	MailFrame:HookScript("OnEvent", function (self,event)
 		if event == "MAIL_SEND_SUCCESS" then
-			if PIGA["MailPlus"]["lianxuMode"] then
-				if SendMailFrame.PreviousName then
-					SendMailNameEditBox:SetText(SendMailFrame.PreviousName);
-				end
-			end
+			C_Timer.After(0.1,SaveSendName)
 		elseif event == "MAIL_SEND_INFO_UPDATE" then
 			SendMailFrame.ItemList.Updata_Items()
-		end
-	end)
-	--
-	hooksecurefunc("SendMailFrame_SendMail", function()
-		local fjname = SendMailNameEditBox:GetText()
-		if fjname~="" and fjname~=" " then
-			if PIGA["MailPlus"]["lianxuMode"] then
-				SendMailFrame.PreviousName=fjname
-			end
-			for i=1,#PIGA["MailPlus"]["Coll"] do
-				if fjname==PIGA["MailPlus"]["Coll"][i] then
-					return
-				end
-			end
-			local PlayerData = PIGA["StatsInfo"]["Players"]
-			for nameserver,data in pairs(PlayerData) do
-				local name, server = strsplit("-", nameserver);
-				if fjname==name then
-					return
-				end
-			end
-			table.insert(PIGA["MailPlus"]["Coll"],1,fjname)
-			SendMailFrame.recipients.Update_hang(SendMailFrame.recipients.Scroll)
 		end
 	end)
 	hooksecurefunc("SendMailFrame_Update", function()

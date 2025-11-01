@@ -14,14 +14,14 @@ LDB (libdatabroker) is a small library that enables an addon to hook into a 'dis
 The addon dev creates an LDB object which the lib places in storage accessible by lib:DataObjectIterator().
 It also fires a "LibDataBroker_DataObjectCreated" callback.
 
-LDB objects work by callbacks. 
+LDB objects work by callbacks.
 When an LDB addon changes one of its values, the lib fires a callback for the display addon.
 
 The LDB addon may declare scripts (tooltip, mouse clicks, etc.) per the spec for the display addon to use.
 
 --- Starting from Titan view
 On PLAYER_ENTERING_WORLD, Titan will use the iterator to wrap each LDB type addon into a Titan plugin.
-Once done processing the known LDB objects, 
+Once done processing the known LDB objects,
 Titan registers for the callback to handle LDB objects created later or on demand.
 
 Titan registers for callbacks on text and icon updates - depending on the LDB type.
@@ -115,7 +115,7 @@ local InCombatLockdown = _G.InCombatLockdown;
 -- Create control frame so we can get events
 local LDBToTitan = CreateFrame("Frame", "LDBTitan")
 local ldb = LibStub:GetLibrary("LibDataBroker-1.1")
-local Tablet, LibQTip = nil, nil
+local LibQTip = nil
 local media = LibStub("LibSharedMedia-3.0")
 -- generic icon in case the DO does not provide one
 local iconTitanDefault = "Interface\\PVPFrame\\PVP-ArenaPoints-Icon";
@@ -222,7 +222,7 @@ function LDBToTitan:TitanLDBSetTooltip(name, frame, tt_func)
 end
 
 ---Titan Script Handler for the Titan (LDB) plugin
---- This implementation will work fine for a static tooltip but may have implications for dynamic ones so for now, 
+--- This implementation will work fine for a static tooltip but may have implications for dynamic ones so for now,
 --- we'll only set it once (no callback) and see what happens
 ---@param event string Event name
 ---@param name string Plugin id name for LDB
@@ -315,39 +315,19 @@ function LDBToTitan:TitanLDBHandleScripts(event, name, _, func, obj)
 	else
 		TitanPluginframe:SetScript("OnEnter", function(self)
 			-- Check for tooltip libs without embedding them
-			if AceLibrary and AceLibrary:HasInstance("Tablet-2.0") then
-				Tablet = AceLibrary("Tablet-2.0")
-			end
+
+			-- Dropped Ace Tablet-2.0 lib as of 2025 Sep; last updated 2008 Sep
 			LibQTip = LibStub("LibQTip-1.0", true)
 			-- Check to see if we allow tooltips to be shown
 			if not TitanPanelGetVar("ToolTipsShown")
 				or (TitanPanelGetVar("HideTipsInCombat") and InCombatLockdown()) then
 				-- if a plugin is using tablet, then detach and close the tooltip
-				if Tablet and Tablet:IsRegistered(TitanPluginframe)
-					and Tablet:IsAttached(TitanPluginframe) then
-					Tablet:Detach(TitanPluginframe);
-					Tablet:Close(TitanPluginframe);
-				end
 				return;
 			else
 				-- if a plugin is using tablet, then re-attach the tooltip
 				-- (it will auto-open on mouseover)
-				if Tablet and Tablet:IsRegistered(TitanPluginframe)
-					and not Tablet:IsAttached(TitanPluginframe) then
-					Tablet:Attach(TitanPluginframe);
-				end
 			end
-			-- if a plugin is using tablet then set its transparency
-			-- and font size accordingly
-			if Tablet and Tablet:IsRegistered(TitanPluginframe) then
-				Tablet:SetTransparency(TitanPluginframe, TitanPanelGetVar("TooltipTrans"))
-				if not TitanPanelGetVar("DisableTooltipFont") then
-					Tablet:SetFontSizePercent(TitanPluginframe, TitanPanelGetVar("TooltipFont"))
-				elseif TitanPanelGetVar("DisableTooltipFont")
-					and Tablet:GetFontSizePercent(TitanPluginframe) ~= 1 then
-					Tablet:SetFontSizePercent(TitanPluginframe, 1)
-				end
-			end
+
 			-- set original tooltip scale for GameTooltip
 			if not TitanPanelGetVar("DisableTooltipFont") then
 				TitanTooltipOrigScale = GameTooltip:GetScale();
@@ -502,12 +482,12 @@ function LDBToTitan:TitanLDBIconUpdate(_, name, attr, value, dataobj)
 			TitanPlugins[name].icon = value;
 			TitanPanelButton_SetButtonIcon(name);
 		end
-	
+
 		-- support for iconCoords, iconR, iconG, iconB attributes
 		if attr == "iconCoords" then
 			TitanPanelButton_SetButtonIcon(name, value);
 		end
-	
+
 		if attr == "iconR" or attr == "iconB" or attr == "iconG" then
 			TitanPanelButton_SetButtonIcon(name, nil,
 				dataobj.iconR, dataobj.iconG, dataobj.iconB);
@@ -542,9 +522,7 @@ end
 ---@param obj table LDB data object
 function TitanLDBCreateObject(self, name_str, obj)
 	local name = name_str
-	if Titan_Global.debug.ldb_setup then
-		TitanDebug(tostring(name) .. " : Attempting to register ");
-	end
+	Titan_Debug.Out('titan', 'ldb_setup', tostring(name) .. " : Attempting to register ");
 
 	-- couple sanity checks
 	--	if not obj or not name then
@@ -554,9 +532,7 @@ function TitanLDBCreateObject(self, name_str, obj)
 		local issue = "LDB request name "
 			.. " '" .. tostring(name) .. "'"
 			.. " unrecognizable !!!!"
-		if Titan_Global.debug.ldb_setup then
-			TitanDebug(issue);
-		end
+		Titan_Debug.Out('titan', 'ldb_setup', issue);
 		error(issue) -- get out
 	end
 	if obj and type(obj) == 'table' then
@@ -572,9 +548,7 @@ function TitanLDBCreateObject(self, name_str, obj)
 			.. " '" .. tostring(name) .. "'"
 			.. " " .. tostring(object) .. ""
 			.. "  !!!!"
-		if Titan_Global.debug.ldb_setup then
-			TitanDebug(issue);
-		end
+		Titan_Debug.Out('titan', 'ldb_setup', issue);
 		error(issue) -- get out
 	end
 
@@ -595,9 +569,7 @@ function TitanLDBCreateObject(self, name_str, obj)
 		-- Create enough of a plugin to tell the user / developer
 		-- that this plugin failed miserably
 		local issue = "Unsupported LDB type '" .. tostring(obj.type) .. "'"
-		if Titan_Global.debug.ldb_setup then
-			TitanDebug(TITAN_REGISTER_FAILED .. " " .. issue);
-		end
+		Titan_Debug.Out('titan', 'ldb_setup', TITAN_REGISTER_FAILED .. " " .. issue);
 		error(issue)
 		--		return TITAN_REGISTER_FAILED -- get out, there is nothing more that can be done
 	end
@@ -723,11 +695,9 @@ function TitanLDBCreateObject(self, name_str, obj)
 		iconG = (obj.iconG or nil),
 	};
 
-	if Titan_Global.debug.ldb_setup then
-		TitanDebug(""
-			.. " type: '" .. tostring(registry.ldb) .. "' "
-		)
-	end
+	Titan_Debug.Out('titan', 'ldb_setup', ""
+		.. " type: '" .. tostring(registry.ldb) .. "' "
+	)
 
 	-- Set the plugin category, if it exists, else default to "General"
 	-- Per the 1.1 LDB spec we check for a tocname attrib first,
@@ -791,11 +761,6 @@ function TitanLDBCreateObject(self, name_str, obj)
 						SecureUnitButton_OnClick(self, button, down)
 						--TitanPanelBarButton_OnClick(self, button)
 						end)
-		if Titan_Global.debug.ldb_setup then
-			TitanDebug(""
-				.." macrotext cmd: '"..tostring(obj.commandtext).."' "
-			)
-		end
 	else
 		newTitanFrame = CreateFrame("Button",
 			TitanUtils_ButtonName(name),
@@ -865,14 +830,12 @@ function TitanLDBCreateObject(self, name_str, obj)
 		TitanVariables_SyncSinglePluginSettings(registry.id)
 		TitanPanel_InitPanelButtons() -- Show it...
 	end
-	if Titan_Global.debug.ldb_setup then
-		TitanDebug("LDB create"
-			.. " " .. tostring(pew) .. ""
-			.. " '" .. tostring(registry.id) .. "'"
-			.. " '" .. tostring(registry.ldb) .. "'"
-			.. "\n...'" .. tostring(newTitanFrame:GetName()) .. "'"
-		)
-	end
+	Titan_Debug.Out('titan', 'ldb_setup', "LDB create"
+		.. " " .. tostring(pew) .. ""
+		.. " '" .. tostring(registry.id) .. "'"
+		.. " '" .. tostring(registry.ldb) .. "'"
+		.. "\n...'" .. tostring(newTitanFrame:GetName()) .. "'"
+	)
 	return "Success"
 end
 
@@ -908,14 +871,12 @@ function LDBToTitan:TitanLDBCreateObject(sender, name, obj)
 		TitanUtils_PluginFail(plugin)
 	end
 
-	if Titan_Global.debug.ldb_setup then
-		TitanDebug("LDB Create:"
-			--			.." "..tostring(sender)..""
-			.. " " .. tostring(name) .. ""
-			.. " " .. tostring(call_success) .. ""
-			.. " " .. tostring(ret_val) .. ""
-		)
-	end
+	Titan_Debug.Out('titan', 'ldb_setup', "LDB Create:"
+		--			.." "..tostring(sender)..""
+		.. " " .. tostring(name) .. ""
+		.. " " .. tostring(call_success) .. ""
+		.. " " .. tostring(ret_val) .. ""
+	)
 end
 
 --- OnEvent - PLAYER_LOGIN - handler for LDBToTitan
@@ -954,13 +915,11 @@ LDBToTitan:SetScript("OnEvent", function(self, event, ...)
 				TitanUtils_PluginFail(plugin)
 			end
 
-			if Titan_Global.debug.ldb_setup then
-				TitanDebug("LDB"
-					.. " " .. tostring(name) .. ""
-					.. " " .. tostring(call_success) .. ""
-					.. " " .. tostring(ret_val) .. ""
-				)
-			end
+			Titan_Debug.Out('titan', 'ldb_setup', "LDB"
+				.. " " .. tostring(name) .. ""
+				.. " " .. tostring(call_success) .. ""
+				.. " " .. tostring(ret_val) .. ""
+			)
 		end
 
 		-- In case a LDB plugin is created later...

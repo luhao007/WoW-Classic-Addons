@@ -1,13 +1,16 @@
-## Interface: 30405
+## Interface: 50502
 ## Author: foxlit
-## Version: Ånd 6.2
+## Version: Ånd 7.5
+## License: All rights reserved. Do not redistribute, in whole or in part, without explicit prior permission from the author.
 
 ## Title: OPie
 ## Notes: Group abilities into rings that appear when you hold down a binding.
-## Title-zhCN: |cFFFFE00A<|r|cFFFFF468功能|r|cFFFFE00A>|r |cFFFFFFFF环形动作条|r |cFFFFE00AOPie|r
+## Title-zhCN: |cFFFFE00A<|r|cFFFFF468功能|r|cFFFFE00A>|r|cFFFFFFFF环形动作条|r |cFFFFE00AOPie|r
 ## Notes-zhCN: 当你按下快捷键时显示一个环形的技能分组.
 
 ## IconTexture: Interface/AddOns/OPie/gfx/opie_ring_icon
+
+## Category-zhCN: |cFFFFE00A<|r|cFFFFF468功能|r|cFFFFE00A>|r
 
 ## AddonCompartmentFunc: OPie_OpenSettings
 
@@ -23,13 +26,14 @@ Libs\Evie.lua
 Libs\Niji.lua
 Libs\TaintLess.xml
 Libs\exui\exui.xml
+Libs\Ware.lua
 Libs\BrokenSun.xml
 Libs\ActionBook\ActionBook.xml
 Libs\Mirage.lua
-Libs\TenSettings.lua
 Libs\NotGameTooltip.lua
-Meta\PackTag-2.lua
+Libs\TenSettings.lua
 Meta\Widgets.lua
+Meta\PackTag-3.lua
 Locale.lua
 OPieCore.lua
 OPieUI.lua
@@ -44,5 +48,6 @@ Meta\EQSet2.lua
 Meta\PSConfig.lua
 Bundle\QuestItems.lua
 Bundle\ExtraActions.lua
+Bundle\Mythport.lua
 Bundle\Tracking.lua
 Bundle\Editable.lua

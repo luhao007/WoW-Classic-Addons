@@ -21,7 +21,7 @@ L.LOAD_MOD_SUCCESS			= "Modules '%s' chargés. Pour plus d'options, tapez /dbm o
 L.LOAD_MOD_COMBAT			= "Chargement de '%s' reporté jusqu'à la fin du combat"
 L.LOAD_GUI_ERROR			= "Impossible de charger l'interface: %s"
 L.LOAD_GUI_COMBAT			= "GUI ne peut pas se charger initialement en combat. GUI sera chargé après le combat. Une fois le GUI chargé, vous pourrez le charger en combat." --load?reload?change?
-L.BAD_LOAD					= "" .. L.DBM .. " a détecté une erreur de chargement du mod de l'instance car vous êtes en combat. Dès que vous sortez de combat veuillez entrer /console reloadui le plus vite possible."
+L.BAD_LOAD					= L.DBM .. " a détecté une erreur de chargement du mod de l'instance car vous êtes en combat. Dès que vous sortez de combat veuillez entrer /console reloadui le plus vite possible."
 L.LOAD_MOD_VER_MISMATCH		= "%s n'a pas pu être chargé car votre DBM-Core ne remplit pas les conditions. Il vous faut une version plus récente."
 L.LOAD_MOD_EXP_MISMATCH 	= "%s n'a pas pu être chargé car il est conçu pour une extension de WoW qui n'est pas actuellement disponible. Lorsque l'extension sera disponible, ce mod fonctionnera automatiquement."
 L.LOAD_MOD_TOC_MISMATCH 	= "%s n'a pas pu être chargé car il est conçu pour un patch WoW (%s) qui n'est pas actuellement disponible. Lorsque le patch sera disponible, ce mod fonctionnera automatiquement."
@@ -36,6 +36,7 @@ L.TEXT_ONLY_RANGE 			= "La fenêtre de portée est limitée au texte uniquement 
 L.NO_RANGE 					= "La fenêtre de portée ne peut pas être utilisée en raison des restrictions de l'API dans cette zone."
 L.NO_ARROW 					= "La flèche ne peut pas être utilisée dans les instances."
 L.NO_HUD 					= "HUDMap ne peut pas être utilisé dans les instances."
+L.NO_COMMS					= "La communication des addons ne peut pas être utilisée pendant les rencontres ou les donjons M+ actifs. Utilisez cette commande à nouveau après la fin de la rencontre ou du donjon."
 
 L.DYNAMIC_DIFFICULTY_CLUMP	= L.DBM .. " a désactivé la vérification du nombre de joueurs à portée sur ce combat pour cause de manque d'information sur le nombre de joueurs requis regroupés pour votre taille de raid."
 L.DYNAMIC_ADD_COUNT			= L.DBM .. " a désactivé les alertes de décompte d'adds en vie sur ce combat pour cause de manque d'information du nombre d'adds apparaissant pour votre taille de raid."
@@ -257,26 +258,29 @@ L.INFOFRAME_ALT					= "Alt:"--Alternate Power
 
 L.LFG_INVITE					= "Invitation RdG"
 
-L.SLASHCMD_HELP				= {
+--Common slash commands
+L.SLASHCMD_HELP							= {--AI translated (check me)
 	"Commandes slash disponibles :",
-	"----------------",
-	"/dbm unlock : Affiche une barre de délai déplaçable (alias : move).",
-	"/range <numéro> ou /distance <numéro>: Affiche la fenêtre de portée. /rrange ou /rdistance pour inverser les couleurs.",
-	"/hudar <numéro>: Affiche le radar de portée HUD.",
-	"/dbm timer: Lance un chronomètre DBM perso, voir '/dbm timer' pour plus de détails.",
-	"/dbm arrow : Affiche la flèche DBM, voir /dbm arrow help pour les détails.",
-	"/dbm hud: Affiche le HUD de DBM, voir '/dbm hud' pour plus de détails.",
-	"/dbm help2: Affiche les commandes slash de gestion de raid."
-}
-L.SLASHCMD_HELP2				= {
-	"Commandes slash disponibles:",
 	"-----------------",
-	"/dbm pull <sec> : Lance un délai de pull de <sec> secondes. Donne à tous les membres du raid ayant " .. L.DBM .. " ce délai de pull (nécessite d'être chef du raid ou assistant).",
-	"/dbm break <min>: Envoire un chronomètre de pause de <min> minutes au raid (nécessite d'être chef du raid ou assistant).",
-	"/dbm version: Effectue une vérification de version de " .. L.DBM .. " (alias : ver).",
-	"/dbm version2: Effectue une vérification de version de " .. L.DBM .. " qui chuchote aux membres pas à jour (alias : ver2).",
-	"/dbm lag: Effectue une vérification de latence du raid.",
-	"/dbm durability: Effectue une vérification de durabilité du raid."
+	"/dbm unlock: Affiche un chronomètre de barre d'état déplaçable (alias : move).",
+	"/dbm pull <sec>: Envoie un chronomètre de pull de <sec> secondes au raid (nécessite des permissions élevées. alias : pull).",
+	"/dbm break <min>: Envoie un chronomètre de pause de <min> minutes au raid (nécessite des permissions élevées. alias : break).",
+	"/dbm timer: Démarre un chronomètre personnalisé " .. L.DBM .. ", voir '/dbm timer' pour plus de détails.",
+	"/dbm key: Effectue des vérifications de clé M+ et de notation sur le groupe/guilde et des raccourcis vers les téléportations de donjon. (alias : key, keys, keystone)",
+	"/dbm lag: Effectue une vérification de latence pour tout le raid.",
+	"/dbm durability: Effectue une vérification de durabilité pour tout le raid.",
+	"/dbm help2: Affiche des commandes slash supplémentaires"
+}
+--Less used slash commands
+L.SLASHCMD_HELP2						= {--AI translated (check me)
+	"Commandes slash disponibles :",
+	"-----------------",
+	"/dbm version : Vérifie la version du mod de boss (alias : ver).",
+	"/dbm version2 : Vérifie la version du mod de boss et envoie un message aux utilisateurs obsolètes (alias : ver2).",
+	"/range <nombre> ou /distance <nombre> : Affiche la fenêtre de portée. /rrange ou /rdistance pour inverser les couleurs.",
+	"/hudar <nombre> : Affiche le détecteur de portée HUD.",
+	"/dbm arrow : Affiche la flèche " .. L.DBM .. ", voir '/dbm arrow help' pour plus de détails.",
+	"/dbm hud : Affiche le HUD " .. L.DBM .. ", voir '/dbm hud' pour plus de détails."
 }
 L.TIMER_USAGE	= {
 	"Commandes " .. L.DBM .. " des chronomètres:",
@@ -293,9 +297,9 @@ L.PULL_TIME_TOO_SHORT			= "Le chronomètre de pull doit durer plus de 3 secondes
 L.PULL_TIME_TOO_LONG			= "Le chronomètre de pull ne peut pas dépasser 60 secondes."
 
 L.BREAK_USAGE				= "Les chronomètres de pause ne peuvent pas durer plus de 60 minutes. Assurez vous de mettre le temps en minutes et pas secondes."
-L.BREAK_START				= "La pause commence maintenant -- vous avez %s minute(s) !"
-L.BREAK_MIN					= "Fin de la pause dans %s minute(s) !"
-L.BREAK_SEC					= "Fin de la pause dans %s secondes !"
+L.BREAK_START				= "La pause commence maintenant -- vous avez %s !"
+L.BREAK_MIN					= "Fin de la pause dans %s |4minute:minutes; !"
+L.BREAK_SEC					= "Fin de la pause dans %s |4seconde:secondes; !"
 L.TIMER_BREAK				= "Pause !"
 L.ANNOUNCE_BREAK_OVER		= "La pause est terminée"
 
@@ -319,7 +323,7 @@ L.AUTO_ANNOUNCE_TEXTS.spell				= "%s"
 L.AUTO_ANNOUNCE_TEXTS.incoming			= "Affaiblissement de %s imminent"
 L.AUTO_ANNOUNCE_TEXTS.incomingcount		= "Affaiblissement de %s imminent (%%s)"
 L.AUTO_ANNOUNCE_TEXTS.ends				= "%s s'est terminé"
-L.AUTO_ANNOUNCE_TEXTS.endtarget			= "%s s'est terminé: >%%s<"
+L.AUTO_ANNOUNCE_TEXTS.endtarget			= "%s s'est terminé : >%%s<"
 L.AUTO_ANNOUNCE_TEXTS.fades				= "%s s'est dissipé"
 L.AUTO_ANNOUNCE_TEXTS.addsleft			= "%s restant: %%d"
 L.AUTO_ANNOUNCE_TEXTS.cast				= "Incantation %s: %.1f sec"
@@ -578,17 +582,18 @@ L.AUTO_YELL_OPTION_TEXT.combo 			= "Crie (avec texte personnalisé) lorsque vous
 L.AUTO_YELL_OPTION_TEXT.repeatplayer 	= "Crie de manière répétée (avec le nom du joueur) lorsque vous êtes affecté par $spell:%s"
 L.AUTO_YELL_OPTION_TEXT.repeaticon 		= "Crie de manière répétée (avec icône) lorsque vous êtes affecté par $spell:%s"
 
-L.AUTO_YELL_ANNOUNCE_TEXT.shortyell		= "%s" -- OPTIONAL
-L.AUTO_YELL_ANNOUNCE_TEXT.yell			= "%s sur " .. UnitName("player") .. " !"
-L.AUTO_YELL_ANNOUNCE_TEXT.count			= "%s sur " .. UnitName("player") .. " ! (%%d)"
-L.AUTO_YELL_ANNOUNCE_TEXT.fade			= "%s disparaît dans %%d"
-L.AUTO_YELL_ANNOUNCE_TEXT.shortfade		= "%%d" -- OPTIONAL
-L.AUTO_YELL_ANNOUNCE_TEXT.iconfade		= "{rt%%2$d}%%1$d" -- OPTIONAL
-L.AUTO_YELL_ANNOUNCE_TEXT.position 		= "%s %%s sur {rt%%d}"..UnitName("player").."{rt%%d}"
-L.AUTO_YELL_ANNOUNCE_TEXT.shortposition = "{rt%%1$d}%s"--Icon, Spellname -- OPTIONAL
-L.AUTO_YELL_ANNOUNCE_TEXT.combo			= "%s et %%s"--Spell name (from option, plus spellname given in arg)
-L.AUTO_YELL_ANNOUNCE_TEXT.repeatplayer	= UnitName("player")--Doesn't need translation, it's just player name spam -- OPTIONAL
-L.AUTO_YELL_ANNOUNCE_TEXT.repeaticon	= "{rt%%1$d}"--Doesn't need translation. It's just icon spam -- OPTIONAL
+L.AUTO_YELL_ANNOUNCE_TEXT.shortyell			= "%s" -- OPTIONAL
+L.AUTO_YELL_ANNOUNCE_TEXT.yell				= "%s sur " .. UnitName("player") .. " !"
+L.AUTO_YELL_ANNOUNCE_TEXT.count				= "%s sur " .. UnitName("player") .. " ! (%%d)"
+L.AUTO_YELL_ANNOUNCE_TEXT.fade				= "%s disparaît dans %%d"
+L.AUTO_YELL_ANNOUNCE_TEXT.shortfade			= "%%d" -- OPTIONAL
+L.AUTO_YELL_ANNOUNCE_TEXT.iconfade			= "{rt%%2$d}%%1$d" -- OPTIONAL
+L.AUTO_YELL_ANNOUNCE_TEXT.position 			= "%s %%s sur {rt%%d}"..UnitName("player").."{rt%%d}"
+L.AUTO_YELL_ANNOUNCE_TEXT.positionnoIcon	= "%s %%s sur " ..UnitName("player")
+L.AUTO_YELL_ANNOUNCE_TEXT.shortposition 	= "{rt%%1$d}%s"--Icon, Spellname -- OPTIONAL
+L.AUTO_YELL_ANNOUNCE_TEXT.combo				= "%s et %%s"--Spell name (from option, plus spellname given in arg)
+L.AUTO_YELL_ANNOUNCE_TEXT.repeatplayer		= UnitName("player")--Doesn't need translation, it's just player name spam -- OPTIONAL
+L.AUTO_YELL_ANNOUNCE_TEXT.repeaticon		= "{rt%%1$d}"--Doesn't need translation. It's just icon spam -- OPTIONAL
 
 L.AUTO_YELL_CUSTOM_POSITION			= "{rt%d}%s"--Doesn't need translating. Has no strings (Used in niche situations such as icon repeat yells) -- OPTIONAL
 L.AUTO_YELL_CUSTOM_FADE				= "%s disparaît"
@@ -646,14 +651,9 @@ L.SPEED_CLEAR_TIMER_TEXT  	= "Meilleur clear"
 L.COMBAT_RES_TIMER_TEXT		= "Prochaine charge de résurrection en combat"
 L.TIMER_RESPAWN				= "%s Réapparition"
 
-L.LAG_CHECKING			   	= "Vérification de la latence du raid..."
-L.LAG_HEADER				= L.DEADLY_BOSS_MODS .. " - Résultats sur la latence"
-L.LAG_ENTRY				  	= "%s: délai monde [%d ms] / délai domicile [%d ms]"
-L.LAG_FOOTER				= "Pas de réponse: %s"
-
-L.DUR_CHECKING 				= "Vérification de la durabilité du raid... "
-L.DUR_HEADER 				= L.DEADLY_BOSS_MODS.. " - Résultats de durabilité"
-L.DUR_ENTRY 				= "%s: Durabilité [%d pour cent] / Équipement endommagé [%s]"
+L.LAG_HEADER				= L.DBM .. " - Résultats sur la latence"
+L.DUR_HEADER 				= L.DBM .. " - Résultats de durabilité"
+L.KEYSTONES_HEADER			= L.DBM .. " - Mythiques"
 
 L.OVERRIDE_ACTIVATED 		= "Les remplacements de configuration ont été activés pour cette rencontre par le responsable de raid"
 
@@ -702,3 +702,14 @@ L.TOOLTIP_FASTEST             = "Victoire la plus rapide (%s)"
 L.FOLLOWER							= "Sujet"--i.e. the new dungeon type in 10.2.5. I haven't found a translated string yet
 L.STORY					    		= PLAYER_DIFFICULTY_STORY_RAID or "Histoire"--i.e. the new dungeon type in 11.0.0. I haven't found a translated string yet
 L.DUOS								= "Duos"
+
+-- Keystone dungeon names (keep to a max of 6 characters)
+-- See https://wago.tools/db2/MapChallengeMode for ID => Dungeon Names
+L.KEYSTONE_NAMES[378] = 'SALLE' -- Halls of Atonement
+L.KEYSTONE_NAMES[391] = 'RUE' -- Tazavesh: Streets of Wonder
+L.KEYSTONE_NAMES[392] = 'STRATA' -- Tazavesh: So'leah's Gambit
+L.KEYSTONE_NAMES[499] = 'PRIEUR' -- Priority of the Sacred Flame
+L.KEYSTONE_NAMES[503] = 'ARA' -- Ara-Kara, City of Echoes
+L.KEYSTONE_NAMES[505] = 'AUBE' -- The Dawnbreaker
+L.KEYSTONE_NAMES[525] = 'VANNES' -- Operation Floodgate
+L.KEYSTONE_NAMES[542] = 'DÔME' -- Eco-Dome Al'dani

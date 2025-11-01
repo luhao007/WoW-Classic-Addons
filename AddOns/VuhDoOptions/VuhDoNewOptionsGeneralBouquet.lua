@@ -78,6 +78,8 @@ function VUHDO_bouquetsUpdateDefaultColors()
 	VUHDO_BOUQUET_BUFFS_SPECIAL["DEBUFF_DISEASE"]["defaultColor"] = VUHDO_deepCopyColor(VUHDO_PANEL_SETUP["BAR_COLORS"]["DEBUFF" .. VUHDO_DEBUFF_TYPE_DISEASE]);
 	VUHDO_BOUQUET_BUFFS_SPECIAL["DEBUFF_POISON"]["defaultColor"] = VUHDO_deepCopyColor(VUHDO_PANEL_SETUP["BAR_COLORS"]["DEBUFF" .. VUHDO_DEBUFF_TYPE_POISON]);
 	VUHDO_BOUQUET_BUFFS_SPECIAL["DEBUFF_CURSE"]["defaultColor"] = VUHDO_deepCopyColor(VUHDO_PANEL_SETUP["BAR_COLORS"]["DEBUFF" .. VUHDO_DEBUFF_TYPE_CURSE]);
+	VUHDO_BOUQUET_BUFFS_SPECIAL["DEBUFF_BLEED"]["defaultColor"] = VUHDO_deepCopyColor(VUHDO_PANEL_SETUP["BAR_COLORS"]["DEBUFF" .. VUHDO_DEBUFF_TYPE_BLEED]);
+	VUHDO_BOUQUET_BUFFS_SPECIAL["DEBUFF_ENRAGE"]["defaultColor"] = VUHDO_deepCopyColor(VUHDO_PANEL_SETUP["BAR_COLORS"]["DEBUFF" .. VUHDO_DEBUFF_TYPE_ENRAGE]);
 	VUHDO_BOUQUET_BUFFS_SPECIAL["DEBUFF_CHARMED"]["defaultColor"] = VUHDO_deepCopyColor(VUHDO_PANEL_SETUP["BAR_COLORS"]["CHARMED"]);
 	VUHDO_BOUQUET_BUFFS_SPECIAL["DEAD"]["defaultColor"] = VUHDO_deepCopyColor(VUHDO_PANEL_SETUP["BAR_COLORS"]["DEAD"]);
 	VUHDO_BOUQUET_BUFFS_SPECIAL["DISCONNECTED"]["defaultColor"] = VUHDO_deepCopyColor(VUHDO_PANEL_SETUP["BAR_COLORS"]["OFFLINE"]);
@@ -100,7 +102,6 @@ end
 
 
 --
-local tInfo;
 local function VUHDO_getBouquetItemDisplayText(aName)
 	if (VUHDO_BOUQUET_BUFFS_SPECIAL[aName] ~= nil) then
 		return "[" .. VUHDO_BOUQUET_BUFFS_SPECIAL[aName]["displayName"] .. "]";
@@ -267,11 +268,11 @@ end
 
 
 --
-local tCombo, tEditBox, tModel, tIsTempModel, tSwatch, tCheckBox, tCustomPanel, tBuffName;
+local tCombo, tEditBox, tModel, tIsTempModel, tSwatch, tCheckBox, tBuffName;
 local tPanel, tSubPanel, tSlider;
 local tIndex, tSpecialName;
 local tBouquetName, tBouquet, tInfo, tCurrentItem;
-local tInnerPanel, tRadioButton, tSlider;
+local tInnerPanel, tRadioButton;
 function VUHDO_rebuildBouquetContextEditors(anIndex)
 
 	if (anIndex ~= nil) then
@@ -375,10 +376,6 @@ function VUHDO_rebuildBouquetContextEditors(anIndex)
 		VUHDO_lnfSetRadioModel(tRadioButton, tModel .. ".custom.radio", 3);
 		VUHDO_lnfRadioButtonInitFromModel(tRadioButton);
 
-		tSlider = _G[tInnerPanel:GetName() .. "ClassColorBrightnessSlider"];
-		VUHDO_lnfSetModel(tSlider, tModel .. ".custom.bright");
-		VUHDO_lnfSliderOnLoad(tSlider, VUHDO_I18N_BRIGHTNESS, 0, 4, "x", 0.05);
-
 		tSwatch = _G[tInnerPanel:GetName() .. "ColorTexture"];
 		VUHDO_lnfSetModel(tSwatch, tModel .. ".color");
 		VUHDO_lnfColorSwatchInitFromModel(tSwatch);
@@ -429,6 +426,65 @@ function VUHDO_rebuildBouquetContextEditors(anIndex)
 			tSwatch:Hide();
 		end
 
+		if (tCurrentItem ~= nil and tCurrentItem["custom"]["radio"] == 1) then
+			if tCurrentItem["custom"]["isSolidGradient"] == nil and not tIsTempModel then
+				tCurrentItem["custom"]["isSolidGradient"] = VUHDO_PANEL_SETUP["PANEL_COLOR"]["isSolidGradient"] or false;
+			end
+
+			tCheckBox = _G[tInnerPanel:GetName() .. "SolidGradientCheckButton"];
+			VUHDO_lnfSetModel(tCheckBox, tModel .. ".custom.isSolidGradient");
+			VUHDO_lnfCheckButtonInitFromModel(tCheckBox);
+			tCheckBox:Show();
+
+			if tCurrentItem["custom"]["maxColor"] == nil and not tIsTempModel then
+				if VUHDO_PANEL_SETUP["PANEL_COLOR"]["solidMaxColor"] ~= nil then
+					tCurrentItem["custom"]["maxColor"] = VUHDO_deepCopyTable(VUHDO_PANEL_SETUP["PANEL_COLOR"]["solidMaxColor"]);
+				else
+					tCurrentItem["custom"]["maxColor"] = VUHDO_deepCopyTable(VUHDO_SANE_BOUQUET_ITEM["color"]);
+				end
+
+				tCurrentItem["custom"]["maxColor"]["useBackground"] = true;
+				tCurrentItem["custom"]["maxColor"]["useOpacity"] = true;
+			end
+
+			tSwatch = _G[tInnerPanel:GetName() .. "MaxColorTexture"];
+			VUHDO_lnfSetModel(tSwatch, tModel .. ".custom.maxColor");
+			VUHDO_lnfColorSwatchInitFromModel(tSwatch);
+			tSwatch:Show();
+		else
+			tCheckBox = _G[tInnerPanel:GetName() .. "SolidGradientCheckButton"];
+			VUHDO_lnfSetModel(tCheckBox, nil);
+			tCheckBox:Hide();
+
+			tSwatch = _G[tInnerPanel:GetName() .. "MaxColorTexture"];
+			VUHDO_lnfSetModel(tSwatch, nil);
+			tSwatch:Hide();
+		end
+
+		if (tCurrentItem ~= nil and tCurrentItem["custom"]["radio"] == 2) then
+			if tCurrentItem["custom"]["isClassGradient"] == nil and not tIsTempModel then
+				tCurrentItem["custom"]["isClassGradient"] = VUHDO_USER_CLASS_GRADIENT_COLORS["isClassGradient"] or false;
+			end
+
+			tCheckBox = _G[tInnerPanel:GetName() .. "ClassGradientCheckButton"];
+			VUHDO_lnfSetModel(tCheckBox, tModel .. ".custom.isClassGradient");
+			VUHDO_lnfCheckButtonInitFromModel(tCheckBox);
+			tCheckBox:Show();
+
+			tSlider = _G[tInnerPanel:GetName() .. "ClassColorBrightnessSlider"];
+			VUHDO_lnfSetModel(tSlider, tModel .. ".custom.bright");
+			VUHDO_lnfSliderOnLoad(tSlider, VUHDO_I18N_BRIGHTNESS, 0, 1.6, "x", 0.05);
+			tSlider:Show();
+		else
+			tCheckBox = _G[tInnerPanel:GetName() .. "ClassGradientCheckButton"];
+			VUHDO_lnfSetModel(tCheckBox, nil);
+			tCheckBox:Hide();
+
+			tSlider = _G[tInnerPanel:GetName() .. "ClassColorBrightnessSlider"];
+			VUHDO_lnfSetModel(tSlider, nil);
+			tSlider:Hide();
+		end
+
 		if (VUHDO_BOUQUET_BUFFS_SPECIAL[tBuffName]["no_color"]) then
 			tInnerPanel:Hide();
 		else
@@ -443,7 +499,7 @@ function VUHDO_rebuildBouquetContextEditors(anIndex)
 				tSubPanel = _G[tInnerPanel:GetName() .. "PercentFrame"];
 				tSlider = _G[tSubPanel:GetName() .. "Slider"];
 				VUHDO_lnfSetModel(tSlider, tModel .. ".custom.bright");
-				VUHDO_lnfSliderOnLoad(tSlider, VUHDO_I18N_BRIGHTNESS, 0, 4, "x", 0.1);
+				VUHDO_lnfSliderOnLoad(tSlider, VUHDO_I18N_BRIGHTNESS, 0, 1.6, "x", 0.05);
 				tSubPanel:Show();
 			elseif (VUHDO_BOUQUET_BUFFS_SPECIAL[tBuffName]["custom_type"] == VUHDO_BOUQUET_CUSTOM_TYPE_PERCENT) then
 				tSubPanel = _G[tInnerPanel:GetName() .. "PercentFrame"];
@@ -587,7 +643,7 @@ function VUHDO_rebuildAllBouquetItems(aParent, aCursorPos)
 		tBouquet = VUHDO_getCurrentBouquet();
 
 		if (tBouquet ~= nil) then
-			for tIndex, tBuffInfo in ipairs(tBouquet) do
+			for tIndex, _ in ipairs(tBouquet) do
 				tPanel = VUHDO_getOrCreateBouqetItem(tIndex, tParent);
 			end
 

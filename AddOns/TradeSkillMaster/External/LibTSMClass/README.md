@@ -60,7 +60,7 @@ end
 
 ### Static Class Functions
 
-Static class functions (not instead methods) can be defined via the `__static` property.
+Static class functions (not instance methods) can be defined via the `__static` property.
 
 ```lua
 function MyClass.__static.GetSecretNumber()
@@ -126,7 +126,7 @@ end
 
 ### Private Class Methods
 
-Classes can define `private` methods which can only be accessed by the class itself. In other worse, these methods can only be called from within another method of the same class. Private methods are defined by creating them against the `__private` property of the class.
+Classes can define `private` methods which can only be accessed by the class itself. In other words, these methods can only be called from within another method of the same class or within a static function of the class. Private methods are defined by creating them against the `__private` property of the class.
 
 ```lua
 function MyClass.__private._HashRound(self, x, y)
@@ -139,7 +139,7 @@ end
 
 ### Protected Class Methods
 
-Classes can define `protected` methods which behave like private classes, but can also be accessed by subclsses of the class. Protected methods are defined by creating them against the `__protected` property of the class (in a similar manner to example above for private methods).
+Classes can define `protected` methods which behave like private methods, but can also be accessed by subclasses of the class. Protected methods are defined by creating them against the `__protected` property of the class (in a similar manner to example above for private methods).
 
 ### Other Useful Attributes
 
@@ -173,11 +173,9 @@ All instances have a special `__dump()` method which can be used to pretty-print
 ```lua
 local classInst = MyClass(0)
 classInst:__dump()
--- prints [[
-MyClass:00B8C688 {
-	_value = 0
-}
-]]
+-- MyClass:00B8C688 {
+--     _value = 0
+-- }
 ```
 
 #### `__class`
@@ -197,6 +195,18 @@ In order to test whether or not an instance belongs to a given class, the `__isa
 local classInst = MyClass(3)
 print(classInst:__isa(MyClass)) -- prints true
 print(classInst:__isa(MySubClass)) -- prints false
+```
+
+#### `__closure()`
+
+A class with private or protected methods may want to allow calling those methods from outside of another method of the class, which would generally not be allowed. This can be accomplished using the `__closure` method.
+
+```lua
+function MyClass.__private._EventHandler(self, eventName)
+	print("Handling event: "..eventName)
+end
+local classInst = MyClass(3)
+Event.RegisterHandler(classInst:__closure("_EventHandler"))
 ```
 
 ### Virtual Methods
@@ -293,6 +303,10 @@ obj:AddValue(5)
 print(obj:GetValue()) -- 15
 ```
 
+## LuaLS Plugin
+
+A [plugin](LuaLSPlugin/LibTSMClassLuaLSPlugin.lua) for [LuaLS](https://github.com/LuaLS/lua-language-server) is provided to allow for better handling of classes defined with LibTSMClass.
+
 ## License and Contributes
 
-LibTSMClass is licensed under the MIT license. See LICENSE.txt for more information. If you would like to contribute to LibTSMClass, opening an issue or submitting a pull request against the [LibTSMClass Bitbucket project](https://bitbucket.org/tradeskillmasteraddon/libtsmclass) is highly encouraged.
+LibTSMClass is licensed under the MIT license. See LICENSE.txt for more information. If you would like to contribute to LibTSMClass, opening an issue or submitting a pull request against the [LibTSMClass GitHub project](https://github.com/TradeSkillMaster/LibTSMClass) is highly encouraged.

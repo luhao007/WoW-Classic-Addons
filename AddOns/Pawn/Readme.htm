@@ -307,60 +307,54 @@ indeterminate or an upgrade. This can be used for auto-sell rules, such as <code
 </ul>
 
 <h2>Updates</h2>
-<h3>Version 2.8.11</h3>
+<h3>Version 2.11.9</h3>
 <ul>
-	<li>Classic Season of Discovery: Added support for those new hit and crit stats, again. Because Blizzard broke them in a patch.</li>
+	<li>The War Within: When inspecting another player, the Pawn button will now appear in the lower-left corner of the character sheet even if it's normally set to display in the lower-right (the default), since there's now a Talents button occupying that space.</li>
+	<li>Classic versions: When hovering over the Pawn button on your character sheet, you'll now see the average item level of your gear like you do when hovering over the Pawn button when inspecting another character.</li>
 </ul>
-<h3>Version 2.8.10</h3>
+<h3>Version 2.11.8</h3>
 <ul>
-	<li>Classic Season of Discovery: Added support for the new Gnomeregan items with hit or crit to all attacks. Items with the new hit stat will receive points for your Hit and Hit (Spell) stats, and items with the new crit stat will receive points for your Crit and Crit (Spell) stats.</li>
+	<li>Mists of Pandaria Classic: Added an experimental fix for a bug in the game that was causing strange quest upgrade suggestions. (You'll see a few things spammed to your chat log if you encounter the bug—I'd appreciate it if you could let me know what it says.)</li>
 </ul>
-<h3>Version 2.8.9</h3>
+<h3>Version 2.11.7</h3>
 <ul>
-	<li>Dragonflight: Updated stat weights for all classes and specs.</li>
-	<li>Dragonflight: Updated Pawn's scale color button to work with the new patch 10.2.5 color picker.</li>
+	<li>Classic Era: Fixed a bug introduced in version 2.11.6 that caused an error message when playing a druid on Classic Era realms and for the names of the druid starter scales to show up incorrectly.</li>
 </ul>
-<h3>Version 2.8.8</h3>
+<h3>Version 2.11.6</h3>
 <ul>
-	<li>Dragonflight: Removed the "Only show upgrades for my best armor type after level 27" option. After level 27, Pawn will now always stop showing items that are not the right type of armor for your class.</li>
-	<li>Classic: Fixed a bug where Pawn would suggest armor your character can't wear as upgrades.</li>
-	<li>Classic: Fixed a bug where Pawn would sometimes suggest socketing Glinting Flame Spessarite when it meant to suggest Sovereign Shadow Draenite. This bug potentially affected any time Glinting Flame Spessarite was suggested (such as in the socketing advisor popup), but didn't affect any other calculations or upgrade suggestions.</li>
+	<li>Mists of Pandaria Classic: Fixed a bug that could cause Pawn to show the wrong spec on a fresh character (either Blood or none at all).</li>
+	<li>Mists of Pandaria Classic: Added spec icons to tooltips and the Pawn UI in Automatic mode, like on The War Within.</li>
+	<li>Mists of Pandaria Classic: Added support for more items with critical strike when playing in Latin American Spanish.</li>
 </ul>
-<h3>Version 2.8.7</h3>
+<h3>Version 2.11.5</h3>
 <ul>
-	<li>Classic: Added support for the Classic trade skill and crafting window: hovering over the item icon in that window should now work the same as if the item were already in your bags.</li>
+	<li>Classic Era: Fixed an error that would occur when using wands with arcane damage when playing in Traditional Chinese on Classic Era realms.</li>
 </ul>
-<h3>Version 2.8.6</h3>
+<h3>Version 2.11.4</h3>
 <ul>
-	<li>Dragonflight: More new stat weight updates, updated for patch 10.2.0.</li>
+	<li>Fixed a bug where turning off Pawn's socketing advisor was even less effective than Basic Campfire.</li>
+	<li>Mists of Pandaria Classic: Fixed a bug where Pawn's reforging advisor couldn't be turned off.</li>
 </ul>
-<h3>Version 2.8.5</h3>
+<h3>Version 2.11.3</h3>
 <ul>
-	<li>Dragonflight: New stat weights have been included for all classes and specs, including all evoker specs, based on the latest Ask Mr. Robot raid simulation data.</li>
+	<li>Mists of Pandaria Classic: Added support for rare French items with spell power (Le bâton des Mondes jumeaux).</li>
+	<li>Fixed a harmless bug where when playing Mists of Pandaria Classic in French and using the Compare tab with one or more items you haven't collected the appearance of, those items would show up as having les effets spéciaux.</li>
 </ul>
-<h3>Version 2.8.4</h3>
+<h3>Version 2.11.2</h3>
 <ul>
-	<li>To keep things responsive, especially on the slower Classic versions of the game, Pawn has a new system that caps how much processing power it will allow bag addons to use when calculating which items get green upgrade arrows. Roughly speaking, if the game runs at 60 FPS for you, Pawn will block bag addons from reducing that by more than 2 FPS. (This change doesn't affect you if you aren't using a custom bag addon.)</li>
+	<li>Mists of Pandaria Classic: Fixed a bug where some items with Expertise stopped working properly after patch 5.5.</li>
+	<li>Fixed a problem where an error in LinkWrangler could then also cause Pawn to fail if you used both addons.</li>
 </ul>
-<h3>Version 2.8.3</h3>
+<h3>Version 2.11.1</h3>
 <ul>
-	<li>Wrath Classic: The new gems for Content Phase 3 (Cardinal Ruby, etc.) will now show 
-		up in recommendations, and will be taken into account when determining the 
-		value of sockets on high-level gear.</li>
+	<li>Mists of Pandaria Classic: Fixed a bug where some items with Hit and Haste stopped working properly in some languages after patch 5.5.</li>
+	<li>Mists of Pandaria Classic: Fixed a problem where Pawn would display an error when logging in when playing in Russian and European Spanish.</li>
 </ul>
-<h3>Version 2.8.2</h3>
+<h3>Version 2.11.0</h3>
 <ul>
-	<li>Dragonflight: Dragonflight 10.1.0 has a game bug that was causing Pawn to show the wrong information on "currently equipped" tooltips. That bug is fixed in Dragonflight 10.1.5. Pawn will stop annotating "currently equipped" tooltips until 10.1.5 launches.</li>
-	<li>Dragonflight: Added support for the 10.1.5 PTR.</li>
-	<li>Dragonflight: Added support for Augmentation Evokers. If you're using Pawn in Automatic mode (the default), you don't need to do anything extra. If you're using Pawn in Manual mode, you'll need to import your own Augmentation scale or use (shift-click) the one that comes with Pawn. (Stat weights for Augmentation aren't available yet so it's a placeholder in this version of Pawn.)</li>
-</ul>
-<h3>Version 2.8.1</h3>
-<ul>
-	<li>Dragonflight: Fixed a problem that could occur when showing Pawn's version number on 10.1.0.</li>
-</ul>
-<h3>Version 2.8.0</h3>
-<ul>
-	<li>Updated for Dragonflight: Embers of Neltharion (10.1.0).</li>
+	<li>Mists of Pandaria Classic: Pawn now works on Mists of Pandaria Classic and patch 5.5.</li>
+	<li>Mists of Pandaria Classic: Pawn's Automatic mode is now available. Automatic mode will be turned on the first time each character logs in after Mists of Pandaria Classic, but you can turn it off at any time after that.</li>
+	<li>Mists of Pandaria Classic: Pawn's original Wowhead starter scales from patch 5.4 have been added. Note that these are more than ten years old and may not reflect the latest simulations; you can get more accurate results if you import stat weights obtained by simulating your character and gear in other tools.</li>
 </ul>
 
 <h3>Older versions</h3>
@@ -368,7 +362,7 @@ indeterminate or an upgrade. This can be used for auto-sell rules, such as <code
 	information about older versions of Pawn.</p>
 
 <h2>The fine print</h2>
-<p>© 2006-2024 Travis Spomer. This mod is released under the Creative Commons
+<p>© 2006-2025 Travis Spomer. This mod is released under the Creative Commons
 <a href="http://creativecommons.org/licenses/by-nc-nd/3.0/" target="_blank">
 Attribution-NonCommercial-NoDerivs 3.0</a> license. In short, this means 
 that you can use it, copy it, and share it, but you can't sell it or distribute 

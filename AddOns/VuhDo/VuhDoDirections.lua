@@ -1,6 +1,9 @@
 local VUHDO_1_DIV_2_PI_MUL_108 = 108 / math.pi / 2;
+
 local UnitIsUnit = UnitIsUnit;
 local floor = floor;
+local _;
+
 local sOldButton;
 local sOldDistance;
 local sIsDeadOnly;
@@ -10,7 +13,6 @@ local sScale;
 local VuhDoDirectionFrame;
 local VuhDoDirectionFrameArrow;
 local VuhDoDirectionFrameText;
-local VUHDO_setMapToCurrentZone;
 local VUHDO_getDistanceBetween;
 local VUHDO_getUnitDirection;
 
@@ -28,7 +30,6 @@ function VUHDO_directionsInitLocalOverrides()
 	VuhDoDirectionFrame = _G["VuhDoDirectionFrame"];
 	VuhDoDirectionFrameArrow = _G["VuhDoDirectionFrameArrow"];
 	VuhDoDirectionFrameText = _G["VuhDoDirectionFrameText"];
-	VUHDO_setMapToCurrentZone = _G["VUHDO_setMapToCurrentZone"];
 	VUHDO_getDistanceBetween = _G["VUHDO_getDistanceBetween"];
 	VUHDO_getUnitDirection = _G["VUHDO_getUnitDirection"];
 end
@@ -100,30 +101,38 @@ local VUHDO_shouldDisplayArrow = VUHDO_shouldDisplayArrow;
 
 
 --
+local tPanelNum;
 local tUnit;
+local tDirection;
 local tCell;
 local sLastCell = nil;
 local tButton = nil;
 local tHeight;
 local tDistance;
-local tHeight;
 local tDestR, tDestG;
 function VUHDO_updateDirectionFrame(aButton)
-	if aButton then tButton = aButton;
-	elseif not tButton then return; end
+
+	if aButton then
+		tButton = aButton;
+	elseif not tButton then
+		return;
+	end
 
 	tUnit = tButton:GetAttribute("unit");
 
 	if not VUHDO_shouldDisplayArrow(tUnit) then
 		VuhDoDirectionFrame["shown"] = false;
 		VuhDoDirectionFrame:Hide();
+
 		return;
 	end
 
 	tDirection = VUHDO_getUnitDirection(tUnit);
+
 	if not tDirection then
 		VuhDoDirectionFrame["shown"] = false;
 		VuhDoDirectionFrame:Hide();
+
 		return;
 	end
 
@@ -155,10 +164,16 @@ function VUHDO_updateDirectionFrame(aButton)
 	if sOldButton ~= tButton then
 		sOldButton = tButton;
 		tHeight = tButton:GetHeight() * sScale * tButton:GetEffectiveScale();
+
 		VuhDoDirectionFrame:SetPoint("CENTER", tButton:GetName(), "CENTER", 0, 0);
 		VuhDoDirectionFrame:SetWidth(tHeight);
 		VuhDoDirectionFrame:SetHeight(tHeight);
+
+		tPanelNum = VUHDO_BUTTON_CACHE[tButton];
+		VuhDoDirectionFrameText:SetFont(VUHDO_getFont(VUHDO_PANEL_SETUP[tPanelNum]["HOTS"]["TIMER_TEXT"]["FONT"]), 6, "OUTLINE");
 	end
+
 	VuhDoDirectionFrame:Show();
 	VuhDoDirectionFrame["shown"] = true;
+
 end

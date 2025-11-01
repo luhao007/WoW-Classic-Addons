@@ -7,6 +7,7 @@ local PIGFrame=Create.PIGFrame
 local PIGEnter=Create.PIGEnter
 local PIGDiyBut=Create.PIGDiyBut
 local PIGDownMenu=Create.PIGDownMenu
+local PIGCheckbutton=Create.PIGCheckbutton
 local PIGFontString=Create.PIGFontString
 local PIGOptionsList_R=Create.PIGOptionsList_R
 --------
@@ -43,17 +44,34 @@ function BusinessInfo.FBCD(StatsInfo)
 	fujiF:Show()
 	fujiTabBut:Selected()
 	PIGA["StatsInfo"]["InstancesCD"]["Mode"]=PIGA["StatsInfo"]["InstancesCD"]["Mode"] or 1
-	fujiF.SetMode = PIGDiyBut(fujiF,{"TOPLEFT", fujiF, "TOPLEFT", 10, -6},{20,20,23,23,"MagePortalAlliance"})
+	fujiF.SetMode = PIGDiyBut(fujiF,nil,{17,17,nil,nil,"common-icon-undo"})
+	local Tooltipx = {"","在"..addonName.."小地图按钮鼠标提示\n注意:为了节省性能开销，战斗中无效"}
+	fujiF.MinibutTisp = PIGCheckbutton(fujiF,{"LEFT",fujiF.SetMode,"RIGHT",4,0},Tooltipx,{14,14})
+	fujiF.MinibutTisp:SetScript("OnClick", function (self)
+		if self:GetChecked() then
+			PIGA["StatsInfo"]["InstancesCD"]["MinibutTisp"]=true
+		else
+			PIGA["StatsInfo"]["InstancesCD"]["MinibutTisp"]=false
+		end
+	end);
+	if PIGA["StatsInfo"]["InstancesCD"]["Mode"]==1 then
+		fujiF.SetMode:SetPoint("TOPLEFT", fujiF, "TOPLEFT", 10, -6)
+		fujiF.SetMode:SetSize(18,18)
+		fujiF.SetMode.icon:SetSize(18,18)
+		fujiF.MinibutTisp:SetSize(16,16)
+		fujiF.SetMode.tisptxt="切换为旧版记录模式？\n需要重载界面"
+	else
+		fujiF.SetMode:SetPoint("TOPLEFT", fujiF, "TOPLEFT", 10, -2);
+		fujiF.SetMode.tisptxt="切换为新版记录模式？\n需要重载界面"
+	end
+	if PIG_MaxTocversion(50000,true) then
+		PIGA["StatsInfo"]["InstancesCD"]["Mode"]=2
+		fujiF.SetMode:Hide()
+	end
+	PIGEnter(fujiF.SetMode,fujiF.SetMode.tisptxt)
 	fujiF.SetMode:SetScript("OnClick", function ()
 		StaticPopup_Show("STATSINFOINSTANCESCDMODE");
 	end);
-	if PIGA["StatsInfo"]["InstancesCD"]["Mode"]==1 then
-		fujiF.SetMode.tisptxt="切换为旧版记录模式？\n需要重载界面"
-	else
-		fujiF.SetMode:SetPoint("TOPLEFT", fujiF, "TOPLEFT", 10, 0);
-		fujiF.SetMode.tisptxt="切换为新版记录模式？\n需要重载界面"
-	end
-	PIGEnter(fujiF.SetMode,fujiF.SetMode.tisptxt)
 	StaticPopupDialogs["STATSINFOINSTANCESCDMODE"] = {
 		text = fujiF.SetMode.tisptxt,
 		button1 = YES,
@@ -70,8 +88,33 @@ function BusinessInfo.FBCD(StatsInfo)
 		whileDead = true,
 		hideOnEscape = true,
 	}
+	local OldMode = PIGA["StatsInfo"]["InstancesCD"]["Mode"]==2
+	local MiniMapBut=addonTable.Mapfun.MiniMapBut
+	fujiF.tispBG=PIGFrame(fujiF)
+	fujiF.tispBG:PIGSetBackdrop(1,1)
+	fujiF.tispBG:SetPoint("TOPLEFT",fujiF,"TOPLEFT",0,0);
+	fujiF.tispBG:SetPoint("BOTTOMRIGHT",fujiF,"BOTTOMRIGHT",0,0);
+	fujiF.tispBG:SetFrameLevel(fujiF.tispBG:GetFrameLevel()-1)
+	MiniMapBut:HookScript("OnEnter", function(self)
+		if InCombatLockdown() then return end
+		if not PIGA["StatsInfo"]["InstancesCD"]["MinibutTisp"] then return end
+		local offsetWW = fujiF:GetWidth()
+		local offsetHH = fujiF:GetHeight()
+		fujiF:SetParent(MiniMapBut)
+		fujiF:ClearAllPoints();
+		fujiF:SetPoint("CENTER",UIParent,"CENTER",0,20);
+		fujiF:SetSize(offsetWW,offsetHH);
+		fujiF.tispBG:Show()
+	end);
+	MiniMapBut:HookScript("OnLeave", function()
+		if not PIGA["StatsInfo"]["InstancesCD"]["MinibutTisp"] then return end
+		fujiF:SetParent(StatsInfo.F)
+		fujiF:ClearAllPoints();
+		fujiF:SetPoint("TOPLEFT",StatsInfo.F.Bot,"TOPLEFT",0,0);
+		fujiF:SetPoint("BOTTOMRIGHT",StatsInfo.F.Bot,"BOTTOMRIGHT",0,0);
+		fujiF.tispBG:Hide()
+	end);
 	---
-	local OldMode = PIG_MaxTocversion(50000,true) or PIGA["StatsInfo"]["InstancesCD"]["Mode"]==2
 	local funamelist = {[836]=-2,[839]=-1}--ZUG/MC--BOSS数-1
 	local function GetBossNUM_1(name)
 		for k,v in pairs(funamelist) do
@@ -99,6 +142,7 @@ function BusinessInfo.FBCD(StatsInfo)
 		PIGA["StatsInfo"]["InstancesCD"][StatsInfo.allname]=InstancesCDinfo
 	end
 	fujiF:HookScript("OnShow", function(self)
+		self.MinibutTisp:SetChecked(PIGA["StatsInfo"]["InstancesCD"]["MinibutTisp"])
 		self.Update_List();
 	end)
 	fujiF:RegisterEvent("PLAYER_ENTERING_WORLD")       
@@ -266,7 +310,7 @@ function BusinessInfo.FBCD(StatsInfo)
 			table.insert(insList_DUNGEONS,{"["..DUNGEONS.."]-"..EXPANSION_NAME2,{1121,1122,1123,1124,1125,1126,1127,1128,1129,1130,1131,1132,1133,1134,1135,1136,
 			1197,1198,1199,1200,1201,1202,1203,1204,1205,1206,1207,1208,1209,1210,1211,1212,1213,1214,1215,1216,1217,1218,1219,1220,1238,
 			1223,1224,1225,1226,1227,1228,1229,1230,1231,1232,1233,1234,1239,1240,1241,1242}})
-			local wlkid = {1095,841,1101,1102,1156,1106,1100,1110}
+			local wlkid = {1095,841,1101,1102,1156,1106,1100,1110,1108}
 			table.insert(insList_RAIDS,{"["..RAIDS.."]-"..EXPANSION_NAME2,wlkid})
 			PIGA["StatsInfo"]["InstancesCD"]["Records"]=PIGA["StatsInfo"]["InstancesCD"]["Records"] or morenRecords(wlkid)
 		elseif PIG_MaxTocversion(50000) then
@@ -296,8 +340,9 @@ function BusinessInfo.FBCD(StatsInfo)
 			[852]="SW",[851]="ZAM",[850]="BT",[849]="HS",[848]="DS",[847]="FB",[846]="GLR",[845]="MSLD",[844]="KLZ",
 		}
 		---
-		fujiF.Setfuben = PIGDownMenu(fujiF,{"TOPLEFT", fujiF, "TOPLEFT", 40, -10},{140,22})
+		fujiF.Setfuben = PIGDownMenu(fujiF,{"TOPLEFT", fujiF, "TOPLEFT", 54, -10},{126,22})
 		fujiF.Setfuben:PIGDownMenu_SetText("选择监控副本")
+		fujiF.Setfuben.fenlie={2,40}
 		function fujiF.Setfuben:PIGDownMenu_Update_But(level, menuList)
 			local info = {}
 			if (level or 1) == 1 then
@@ -341,15 +386,6 @@ function BusinessInfo.FBCD(StatsInfo)
 			fujiF.Update_List()
 			PIGCloseDropDownMenus()
 		end
-		local soundFile = "Sound\\Creature\\Ragnaros\\Ragnaros_Death.ogg"
-PlaySoundFile(soundFile, "Master", function(handle, errorReason)
-    if errorReason then
-        print("音频文件不存在或加载失败:", errorReason)
-    else
-        print("音频文件存在，已播放")
-        StopSound(handle)  -- 停止播放
-    end
-end)
 		fujiF.CDTimeT = PIGFontString(fujiF,{"TOPLEFT", fujiF, "TOPLEFT", 204, -5},"重置剩余:")
 		fujiF.CDTime7 = PIGFontString(fujiF,{"LEFT", fujiF.CDTimeT, "RIGHT", 5, 0},"常规团本:"..disp_time(GetInstancesCD_1()))
 		fujiF.CDTime7:SetTextColor(0,1,0, 1);

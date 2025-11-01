@@ -1,9 +1,7 @@
 @cont1nuity:
-- Sending NPC information to other players would not work if the name contained a ','.
-- Fixing options alignment issue with Cata.
-- Base support for TWW.
-- Ensuring Gladiator Stance is not considered tanking in SoD.
-
-@Terciob:
-- Backend changes to options layout.
+- Fixing soft-interact icons on classic and era.
+- Adding combat auto toggle option for 'Always Show Nameplates'.
+- Adding 'Dispatch' as rogue execute in MoP.
+- Adding possiblitly to add new NPCs via '/plater add <npcID>' with automatic name but 'UNKNOWN' zone.
+- Removing 'Twist of Fate' as 35% execute for priests. Use a mod if you need this.
 

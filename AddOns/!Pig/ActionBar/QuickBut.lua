@@ -6,7 +6,6 @@ local PIGFrame=Create.PIGFrame
 local PIGDiyBut=Create.PIGDiyBut
 local PIGButton=Create.PIGButton
 local PIGCheckbutton=Create.PIGCheckbutton
-local PIGDownMenu=Create.PIGDownMenu
 local PIGQuickBut=Create.PIGQuickBut
 local PIGLine=Create.PIGLine
 local PIGSlider = Create.PIGSlider
@@ -94,7 +93,6 @@ end)
 QuickButF.CZBUT = PIGButton(QuickButF,{"LEFT",QuickButF.suofang,"RIGHT",60,0},{80,24},"重置位置")
 QuickButF.CZBUT:SetScript("OnClick", function ()
 	Create.PIG_ResPoint(QuickButUIname)
-	Create.PIG_ResPoint(Data.QuickTrinketUIname)
 end)
 QuickButF:HookScript("OnShow", function(self)
 	self.Open:SetChecked(PIGA["QuickBut"]["Open"])
@@ -130,368 +128,6 @@ QuickButF.ModF.QKButTrinket:SetScript("OnClick", function (self)
 		PIG_OptionsUI.RLUI:Show();
 	end
 end)
-QuickButF.ModF.QKButTrinket_1 = PIGCheckbutton_R(QuickButF.ModF,{nil,nil},true)
-QuickButF.ModF.QKButTrinket_1:Hide()
-local function TrinketFenli()
-	if PIGA["QuickBut"]["TrinketFenli"] then
-		QuickButF.ModF.QKButTrinket.Fenli.lock:Enable()
-		QuickButF.ModF.QKButTrinket.Fenli.suofang:Enable()
-	else
-		QuickButF.ModF.QKButTrinket.Fenli.lock:Disable();
-		QuickButF.ModF.QKButTrinket.Fenli.suofang:Disable()
-	end
-end
-QuickButF.ModF.QKButTrinket.Fenli = PIGCheckbutton(QuickButF.ModF.QKButTrinket,{"TOPLEFT",QuickButF.ModF.QKButTrinket,"BOTTOMLEFT",30,-16},{UNDOCK_WINDOW,"分离"..INVTYPE_TRINKET..newText..VIDEO_OPTIONS_WINDOWED})
-QuickButF.ModF.QKButTrinket.Fenli:SetScript("OnClick", function (self)
-	if self:GetChecked() then
-		PIGA["QuickBut"]["TrinketFenli"]=true
-		PIG_OptionsUI.RLUI:Show();
-	else
-		PIGA["QuickBut"]["TrinketFenli"]=false
-		PIG_OptionsUI.RLUI:Show();
-	end
-end)
-local pailieList = {"横","竖"}
-QuickButF.ModF.QKButTrinket.Fenli.pailie=PIGDownMenu(QuickButF.ModF.QKButTrinket.Fenli,{"LEFT",QuickButF.ModF.QKButTrinket.Fenli.Text,"RIGHT",2,0},{46,nil})
-function QuickButF.ModF.QKButTrinket.Fenli.pailie:PIGDownMenu_Update_But()
-	local info = {}
-	info.func = self.PIGDownMenu_SetValue
-	for i=1,#pailieList,1 do
-	    info.text, info.arg1 = pailieList[i], i
-	    info.checked = i==PIGA["QuickBut"]["TrinketFenliPailie"]
-		self:PIGDownMenu_AddButton(info)
-	end 
-end
-function QuickButF.ModF.QKButTrinket.Fenli.pailie:PIGDownMenu_SetValue(value,arg1,arg2)
-	self:PIGDownMenu_SetText(value)
-	PIGA["QuickBut"]["TrinketFenliPailie"]=arg1
-	if _G[Data.QuickTrinketUIname] then _G[Data.QuickTrinketUIname].UpdataPailie() end
-	PIGCloseDropDownMenus()
-end
-QuickButF.ModF.QKButTrinket.Fenli.lock = PIGCheckbutton(QuickButF.ModF.QKButTrinket.Fenli,{"LEFT",QuickButF.ModF.QKButTrinket.Fenli.pailie,"RIGHT",20,0},{LOCK_FRAME,LOCK_FOCUS_FRAME})
-QuickButF.ModF.QKButTrinket.Fenli.lock:SetScript("OnClick", function (self)
-	if self:GetChecked() then
-		PIGA["QuickBut"]["TrinketFenlilock"]=true
-	else
-		PIGA["QuickBut"]["TrinketFenlilock"]=false
-	end
-	if _G[Data.QuickTrinketUIname] then
-		if PIGA["QuickBut"]["TrinketFenlilock"] then
-			_G[Data.QuickTrinketUIname].yidong:Hide()
-		else
-			_G[Data.QuickTrinketUIname].yidong:Show();
-		end
-	end
-end)
-QuickButF.ModF.QKButTrinket.Fenli.suofang_t = PIGFontString(QuickButF.ModF.QKButTrinket.Fenli,{"LEFT",QuickButF.ModF.QKButTrinket.Fenli.lock.Text,"RIGHT",20,2},"缩放:")
-local xiayiinfo = {0.8,1.8,0.01,{["Right"]="%"}}
-QuickButF.ModF.QKButTrinket.Fenli.suofang = PIGSlider(QuickButF.ModF.QKButTrinket.Fenli,{"LEFT",QuickButF.ModF.QKButTrinket.Fenli.suofang_t,"RIGHT",10,0},xiayiinfo)
-QuickButF.ModF.QKButTrinket.Fenli.suofang.Slider:HookScript("OnValueChanged", function(self, arg1)
-	PIGA["QuickBut"]["TrinketScale"]=arg1;
-	if _G[Data.QuickTrinketUIname] then _G[Data.QuickTrinketUIname]:SetScale(arg1) end
-end)
-----
-QuickButF.ModF.QKButTrinket.AutoMode = PIGButton(QuickButF.ModF.QKButTrinket,{"LEFT",QuickButF.ModF.QKButTrinket.Text,"RIGHT",30,0},{76,20},SWITCH..MODE);
-local UIname,TrinkeWW,TrinkeHH = "PIG_TrinketAutoModeUI",300,400
-QuickButUI.TrinketAutoMode=UIname
-local TrinketAutoMode=PIGFrame(UIParent,{"CENTER",UIParent,"CENTER",0,0},{TrinkeWW,TrinkeHH},UIname,true)
-TrinketAutoMode:PIGSetBackdrop()
-TrinketAutoMode:PIGSetMovableNoSave()
-TrinketAutoMode:PIGClose()
-TrinketAutoMode:Hide()
-TrinketAutoMode.t = PIGFontString(TrinketAutoMode,{"TOP",TrinketAutoMode,"TOP",0,-3},INVTYPE_TRINKET..SWITCH..MODE)
-TrinketAutoMode.nr=PIGFrame(TrinketAutoMode,{"TOPLEFT",TrinketAutoMode,"TOPLEFT",3,-20})
-TrinketAutoMode.nr:SetPoint("BOTTOMRIGHT", TrinketAutoMode, "BOTTOMRIGHT", -3, 3);
-TrinketAutoMode.nr:PIGSetBackdrop()
-TrinketAutoMode.nr.mode1 = PIGCheckbutton(TrinketAutoMode.nr,{"TOPLEFT",TrinketAutoMode.nr,"TOPLEFT",10,-6},{TRACKER_SORT_MANUAL..MODE})
-TrinketAutoMode.nr.mode1:SetScript("OnClick", function (self)
-	PIGA_Per["QuickBut"]["TrinketMode"]=1
-	TrinketAutoMode:SetCheckbut()
-end)
-TrinketAutoMode.nr.mode1.F=PIGFrame(TrinketAutoMode.nr.mode1,{"TOPLEFT",TrinketAutoMode.nr,"TOPLEFT",0,-28})
-TrinketAutoMode.nr.mode1.F:SetPoint("BOTTOMRIGHT", TrinketAutoMode.nr, "BOTTOMRIGHT", 0, 0);
-TrinketAutoMode.nr.mode1.F:Hide()
-local tishiNR = "1、此模式下"..INVTYPE_TRINKET..SWITCH..TRACKER_SORT_MANUAL..NPE_CONTROLS..
-				"\n\n2、"..LEAVING_COMBAT..":\n"..string.rep(" ", 6)..KEY_BUTTON1..SWITCH.."上"..INVTYPE_TRINKET.."\n"..string.rep(" ", 6)..KEY_BUTTON2..SWITCH.."下"..INVTYPE_TRINKET..
-				"\n\n3、"..AT_WAR.."点击加入队列,\n"..string.rep(" ", 6)..LEAVING_COMBAT..SWITCH..INVTYPE_TRINKET..
-				"\n\n4、"..KEY_BUTTON2.."取消队列中饰品"
-TrinketAutoMode.nr.mode1.F.tip = PIGFontString(TrinketAutoMode.nr.mode1.F,{"TOPLEFT",TrinketAutoMode.nr.mode1.F,"TOPLEFT",10,-13},tishiNR)
-TrinketAutoMode.nr.mode1.F.tip:SetJustifyH("LEFT")
-TrinketAutoMode.nr.mode2 = PIGCheckbutton(TrinketAutoMode.nr,{"LEFT",TrinketAutoMode.nr.mode1.Text,"RIGHT",10,0},{SELF_CAST_AUTO..MODE})
-TrinketAutoMode.nr.mode2:SetScript("OnClick", function (self)
-	PIGA_Per["QuickBut"]["TrinketMode"]=2
-	TrinketAutoMode:SetCheckbut()
-end)
-TrinketAutoMode.nr.mode2.F=PIGFrame(TrinketAutoMode.nr.mode2,{"TOPLEFT",TrinketAutoMode.nr,"TOPLEFT",0,-28})
-TrinketAutoMode.nr.mode2.F:SetPoint("BOTTOMRIGHT", TrinketAutoMode.nr, "BOTTOMRIGHT", 0, 0);
-TrinketAutoMode.nr.mode2.F:Hide()
-TrinketAutoMode.nr.mode2.F.tip = PIGFontString(TrinketAutoMode.nr.mode2.F,{"TOPLEFT",TrinketAutoMode.nr.mode2.F,"TOPLEFT",10,-4},"点击"..CHAT_JOIN..SELF_CAST_AUTO..SWITCH..SOCIAL_QUEUE_TOOLTIP_HEADER.."(CD后脱战切换)")
-local hang_Height,hang_NUM  = 26.4, 12;
-TrinketAutoMode.nr.mode2.F.S=PIGFrame(TrinketAutoMode.nr.mode2.F,{"TOPLEFT",TrinketAutoMode.nr.mode2.F,"TOPLEFT",4,-24})
-TrinketAutoMode.nr.mode2.F.S:PIGSetBackdrop()
-TrinketAutoMode.nr.mode2.F.S:SetPoint("TOPLEFT",TrinketAutoMode.nr.mode2.F,"TOPLEFT",4,-24);
-TrinketAutoMode.nr.mode2.F.S:SetPoint("BOTTOMRIGHT",TrinketAutoMode.nr.mode2.F,"BOTTOMRIGHT",-17,5);
-TrinketAutoMode.nr.mode2.F.S.Scroll = CreateFrame("ScrollFrame",nil,TrinketAutoMode.nr.mode2.F.S, "FauxScrollFrameTemplate");  
-TrinketAutoMode.nr.mode2.F.S.Scroll:SetPoint("TOPLEFT",TrinketAutoMode.nr.mode2.F.S,"TOPLEFT",0,0);
-TrinketAutoMode.nr.mode2.F.S.Scroll:SetPoint("BOTTOMRIGHT",TrinketAutoMode.nr.mode2.F.S,"BOTTOMRIGHT",-3,0);
-TrinketAutoMode.nr.mode2.F.S.Scroll.ScrollBar:SetScale(0.8);
-TrinketAutoMode.nr.mode2.F.S.Scroll:SetScript("OnVerticalScroll", function(self, offset)
-    FauxScrollFrame_OnVerticalScroll(self, offset, hang_Height, TrinketAutoMode.nr.mode2.F.S.gengxinhang)
-end)
-local function add_updwonbut(fujiUI,Normal,Pushed,Disabled)
-	local but = CreateFrame("Button",nil,fujiUI, "TruncatedButtonTemplate");
-	but:SetNormalTexture(Normal)
-	but:SetPushedTexture(Pushed)
-	but:SetDisabledTexture(Disabled)
-	but:SetHighlightTexture("interface/buttons/ui-common-mousehilight.blp");
-	but:SetSize(hang_Height-8,hang_Height-2);
-	but:GetNormalTexture():SetPoint("TOPLEFT", but, "TOPLEFT", -4,4);
-	but:GetNormalTexture():SetPoint("BOTTOMRIGHT", but, "BOTTOMRIGHT", 4,-4);
-	but:GetPushedTexture():SetPoint("TOPLEFT", but, "TOPLEFT", -4,4);
-	but:GetPushedTexture():SetPoint("BOTTOMRIGHT", but, "BOTTOMRIGHT", 4,-4);
-	but:GetDisabledTexture():SetPoint("TOPLEFT", but, "TOPLEFT", -4,4);
-	but:GetDisabledTexture():SetPoint("BOTTOMRIGHT", but, "BOTTOMRIGHT", 4,-4);
-	return but
-end
-local GetContainerItemLink = C_Container.GetContainerItemLink
-local function GET13_14item(dangqianData,invSlotId)
-	local itemID= GetInventoryItemID("player", invSlotId)
-	if itemID then
-		local ItemLink= GetInventoryItemLink("player", invSlotId)
-		local icon= GetInventoryItemTexture("player", invSlotId)
-		table.insert(dangqianData,{icon,itemID,ItemLink})
-	end
-end
-local function GET_shipinxuanzhongL()
-	TrinketAutoMode.TrinketMode=PIGA_Per["QuickBut"]["TrinketMode"]
-	local dangqianData = {}
-	GET13_14item(dangqianData,13)
-	GET13_14item(dangqianData,14)
-	for bag=1,#bagID do
-		for slot = 1, C_Container.GetContainerNumSlots(bagID[bag]) do
-			local ItemLink = GetContainerItemLink(bagID[bag], slot);
-			if ItemLink then
-				local itemID, itemType, itemSubType, itemEquipLoc, icon= GetItemInfoInstant(ItemLink)
-				if itemEquipLoc=="INVTYPE_TRINKET" then
-					table.insert(dangqianData,{icon,itemID,ItemLink})
-				end
-			end
-		end
-	end
-	local NewData = {{},{}}
-	for i=1,#PIGA_Per["QuickBut"]["TrinketList"] do
-		for ii=#dangqianData,1,-1 do
-			if dangqianData[ii][2]==PIGA_Per["QuickBut"]["TrinketList"][i] then
-				table.insert(NewData[1],dangqianData[ii][2])
-				table.insert(NewData[2],dangqianData[ii])
-				table.remove(dangqianData,ii)
-			end
-		end
-	end
-	PIGA_Per["QuickBut"]["TrinketList"]=NewData[1]
-	TrinketAutoMode.NextList=NewData[1]
-	return NewData[1],NewData[2],dangqianData
-end
-TrinketAutoMode.GET_shipinxuanzhongL=GET_shipinxuanzhongL
-local function SET_xuelie_UPdwan(itemID,caozuo)
-	local jiluweizhi = {0,{}}
-	for i=1,#PIGA_Per["QuickBut"]["TrinketList"] do
-		if itemID==PIGA_Per["QuickBut"]["TrinketList"][i] then
-			jiluweizhi[1]=i
-			jiluweizhi[2]=PIGA_Per["QuickBut"]["TrinketList"][i]
-			table.remove(PIGA_Per["QuickBut"]["TrinketList"],i)
-		end
-	end
-	if caozuo=="-" then
-		table.insert(PIGA_Per["QuickBut"]["TrinketList"],jiluweizhi[1]-1,jiluweizhi[2])
-	elseif caozuo=="+" then
-		table.insert(PIGA_Per["QuickBut"]["TrinketList"],jiluweizhi[1]+1,jiluweizhi[2])
-	end
-	TrinketAutoMode.nr.mode2.F.S.gengxinhang(TrinketAutoMode.nr.mode2.F.S.Scroll)
-end
-TrinketAutoMode.nr.mode2.F.S.ButList={}
-for id = 1, hang_NUM do
-	local hang = CreateFrame("Button", nil, TrinketAutoMode.nr.mode2.F.S,nil,id);
-	TrinketAutoMode.nr.mode2.F.S.ButList[id]=hang
-	hang:SetSize(TrinkeWW-70, hang_Height);
-	if id==1 then
-		hang:SetPoint("TOPLEFT",TrinketAutoMode.nr.mode2.F.S.Scroll,"TOPLEFT",0,-1);
-	else
-		hang:SetPoint("TOP",TrinketAutoMode.nr.mode2.F.S.ButList[id-1],"BOTTOM",0,0);
-	end
-	if id~=hang_NUM then
-		PIGLine(hang,"BOT",nil,nil,{2,40},{0.3,0.3,0.3,0.5})
-	end
-	hang.check = hang:CreateTexture()
-	hang.check:SetTexture("interface/buttons/ui-checkbox-check.bl");
-	hang.check:SetSize(hang_Height-6,hang_Height-2);
-	hang.check:SetPoint("LEFT", hang, "LEFT", 0,0);
-	hang.icon = hang:CreateTexture(nil, "BORDER");
-	hang.icon:SetSize(hang_Height-2,hang_Height-2);
-	hang.icon:SetPoint("LEFT", hang.check, "RIGHT", 0,0);
-	hang.link = PIGFontString(hang,{"LEFT", hang.icon, "RIGHT", 4,0})
-	hang:SetScript("OnEnter", function (self)
-		GameTooltip:ClearLines();
-		GameTooltip:SetOwner(self, "ANCHOR_LEFT",TrinkeWW);
-		GameTooltip:SetHyperlink(self.linkD)
-		GameTooltip:Show();
-		local tooltip, anchorFrame, shoppingTooltip1, shoppingTooltip2 = GameTooltip_InitializeComparisonTooltips(GameTooltip);
-		shoppingTooltip1:Hide()
-		shoppingTooltip2:Hide()
-	end);
-	hang:SetScript("OnLeave", function ()
-		GameTooltip:ClearLines();
-		GameTooltip:Hide() 
-	end);
-	hang:SetScript("OnMouseUp", function (self,button)
-		for ib=#PIGA_Per["QuickBut"]["TrinketList"],1,-1 do
-			if self.itemID==PIGA_Per["QuickBut"]["TrinketList"][ib] then
-				table.remove(PIGA_Per["QuickBut"]["TrinketList"],ib)
-				TrinketAutoMode.nr.mode2.F.S.gengxinhang(TrinketAutoMode.nr.mode2.F.S.Scroll)
-				return
-			end
-		end
-		table.insert(PIGA_Per["QuickBut"]["TrinketList"],self.itemID)
-		TrinketAutoMode.nr.mode2.F.S.gengxinhang(TrinketAutoMode.nr.mode2.F.S.Scroll)
-	end);
-	hang.UP = add_updwonbut(hang,130857,130855,130854)
-	hang.UP:SetPoint("LEFT", hang, "RIGHT", 0,0);
-	hang.UP:SetScript("OnClick", function (self)
-		local fujik = self:GetParent()
-		SET_xuelie_UPdwan(fujik.itemID,"-")
-	end);
-	hang.DOWN = add_updwonbut(hang,130853,130851,130850)
-	hang.DOWN:SetPoint("LEFT", hang.UP, "RIGHT", 0,0);
-	hang.DOWN:SetScript("OnClick", function (self)
-		local fujik = self:GetParent()
-		SET_xuelie_UPdwan(fujik.itemID,"+")
-	end);
-end
-function TrinketAutoMode.nr.mode2.F.S.gengxinhang(self)
-	if not TrinketAutoMode.nr.mode2.F.S:IsVisible() then return end
-	local Scroll = self
-	for id = 1, hang_NUM do
-		TrinketAutoMode.nr.mode2.F.S.ButList[id]:Hide();
-    end
-	local TrinketMode,yixuanzhong,baguodata =GET_shipinxuanzhongL()
-	local bagshujuy={}
-	local duilieNUM = #yixuanzhong
-	for i=1,duilieNUM do
-		table.insert(bagshujuy,yixuanzhong[i])
-	end
-	for i=1,#baguodata do
-		table.insert(bagshujuy,baguodata[i])
-	end
-	local ItemsNum = #bagshujuy;
-    FauxScrollFrame_Update(Scroll, ItemsNum, hang_NUM, hang_Height);
-    local offset = FauxScrollFrame_GetOffset(Scroll);
-    for id = 1, hang_NUM do
-    	local dangqianH = id+offset;
-    	if bagshujuy[dangqianH] then
-    		local hang = TrinketAutoMode.nr.mode2.F.S.ButList[id]
-    		hang:Show();
-	    	hang.icon:SetTexture(bagshujuy[dangqianH][1]);
-			hang.link:SetText(bagshujuy[dangqianH][3]);
-			hang.linkD=bagshujuy[dangqianH][3]
-			hang.itemID=bagshujuy[dangqianH][2]
-			if dangqianH<=duilieNUM then
-				hang.icon:SetDesaturated(false)
-				hang.check:Show()
-				hang.UP:Show()
-				hang.DOWN:Show()
-				if dangqianH==1 then
-	    			hang.UP:Disable()
-	    		else
-	    			hang.UP:Enable()
-	    		end
-	    		if dangqianH==duilieNUM then
-	    			hang.DOWN:Disable()
-	    		else
-	    			hang.DOWN:Enable()
-	    		end
-			else
-				hang.icon:SetDesaturated(true)
-				hang.check:Hide()
-				hang.UP:Hide()
-				hang.DOWN:Hide()
-			end
-    	end
-    end
-end
-TrinketAutoMode.nr.mode2.F:SetScript("OnShow", function (self)
-	self.S.gengxinhang(self.S.Scroll)
-end)
----
-TrinketAutoMode:SetScript("OnShow", function (self)
-	TrinketAutoMode:SetCheckbut()
-end)
-function TrinketAutoMode:SetCheckbut()
-	if not TrinketAutoMode:IsShown() then return end
-	TrinketAutoMode.nr.mode1:SetChecked(false)
-	TrinketAutoMode.nr.mode2:SetChecked(false)
-	TrinketAutoMode.nr.mode1.F:Hide()
-	TrinketAutoMode.nr.mode2.F:Hide()
-	if PIGA_Per["QuickBut"]["TrinketMode"]==1 then
-		TrinketAutoMode.nr.mode1:SetChecked(true)
-		TrinketAutoMode.nr.mode1.F:Show()
-	elseif PIGA_Per["QuickBut"]["TrinketMode"]==2 then
-		TrinketAutoMode.nr.mode2:SetChecked(true)
-		TrinketAutoMode.nr.mode2.F:Show()
-	end
-	TrinketAutoMode.TrinketMode=PIGA_Per["QuickBut"]["TrinketMode"]
-	if PIGA["QuickBut"]["TrinketFenli"] then
-		TrinketAutoMode:SetyidongButText(_G[Data.QuickTrinketUIname].yidong)
-	else
-		TrinketAutoMode:SetyidongButText(QuickButUI.yidong)
-	end
-end
-function TrinketAutoMode:SetyidongButText(yidongUI)
-	if PIGA_Per["QuickBut"]["TrinketMode"]==1 then
-		yidongUI.t:SetText(TRACKER_SORT_MANUAL)
-		yidongUI.t:SetTextColor(0.8, 0.8, 0.8, 0.8)
-	elseif PIGA_Per["QuickBut"]["TrinketMode"]==2 then
-		yidongUI.t:SetText(SELF_CAST_AUTO)
-		yidongUI.t:SetTextColor(0.1, 0.8, 0.8, 0.9)
-	end
-end
-function TrinketAutoMode:yidongButClick(yidongUI,Button)
-	if Button=="LeftButton" then
-		if PIGA_Per["QuickBut"]["TrinketMode"]==1 then
-			PIGA_Per["QuickBut"]["TrinketMode"]=2
-			TrinketAutoMode.TrinketMode=2
-			PIG_OptionsUI:ErrorMsg(SELF_CAST_AUTO..MODE)
-		elseif PIGA_Per["QuickBut"]["TrinketMode"]==2 then
-			PIGA_Per["QuickBut"]["TrinketMode"]=1
-			TrinketAutoMode.TrinketMode=1
-			PIG_OptionsUI:ErrorMsg(TRACKER_SORT_MANUAL..MODE)
-		end
-		TrinketAutoMode:SetyidongButText(yidongUI)
-		TrinketAutoMode:SetCheckbut()
-	else
-		if IsShiftKeyDown() then
-			QuickButUI:yidongRightBut()
-		else
-			if TrinketAutoMode:IsShown() then
-				TrinketAutoMode:Hide()
-			else
-				TrinketAutoMode:Show()
-			end
-		end
-	end
-end
-QuickButF.ModF.QKButTrinket.AutoMode:SetScript("OnClick", function (self)
-	if TrinketAutoMode:IsShown() then
-		TrinketAutoMode:Hide()
-	else
-		PIG_OptionsUI:Hide()
-		TrinketAutoMode:Show()
-	end
-end)
-QuickButF.ModF.QKButTrinket.Bindings = PIGButton(QuickButF.ModF.QKButTrinket,{"LEFT",QuickButF.ModF.QKButTrinket.AutoMode,"RIGHT",30,0},{76,20},KEY_BINDING);
-QuickButF.ModF.QKButTrinket.Bindings:SetScript("OnClick", function (self)
-	Settings.OpenToCategory(Settings.KEYBINDINGS_CATEGORY_ID, addonName);
-end)
---
 if PIG_MaxTocversion(20000) and C_Engraving and C_Engraving.IsEngravingEnabled() then
 	QuickButF.ModF.QKButRune = PIGCheckbutton_R(QuickButF.ModF,{string.format(L["ACTION_ADDQUICKBUT"],RUNES..newText),string.format(L["ACTION_ADDQUICKBUTTIS"],RUNES..newText)},true)
 	QuickButF.ModF.QKButRune:SetScript("OnClick", function (self)
@@ -528,12 +164,22 @@ QuickButF.ModF.QKButEquip:SetScript("OnClick", function (self)
 		PIG_OptionsUI.RLUI:Show();
 	end
 end)
+QuickButF.ModF.AddonList = PIGCheckbutton_R(QuickButF.ModF,{string.format(L["ACTION_ADDQUICKBUT"],ADDONS..CHAT_MODERATE)},true)
+QuickButF.ModF.AddonList:SetScript("OnClick", function (self)
+	if self:GetChecked() then
+		PIGA["QuickBut"]["AddonList"]=true
+		QuickButUI.ButList[6]()
+	else
+		PIGA["QuickBut"]["AddonList"]=false
+		PIG_OptionsUI.RLUI:Show();
+	end
+end)
 local Lushi_tooltip = {string.format(L["ACTION_ADDQUICKBUT"],TUTORIAL_TITLE31.."/"..TRADE_SKILLS),string.format(L["ACTION_ADDQUICKBUTTIS"],TUTORIAL_TITLE31.."/"..TRADE_SKILLS)}
 QuickButF.ModF.Lushi=PIGCheckbutton_R(QuickButF.ModF,Lushi_tooltip,true)
 QuickButF.ModF.Lushi:SetScript("OnClick", function (self)
 	if self:GetChecked() then
 		PIGA["QuickBut"]["Lushi"]=true;
-		QuickButUI.ButList[6]()
+		QuickButUI.ButList[7]()
 	else
 		PIGA["QuickBut"]["Lushi"]=false;
 		PIG_OptionsUI.RLUI:Show()
@@ -543,45 +189,27 @@ QuickButF.ModF.Spell=PIGCheckbutton_R(QuickButF.ModF,{string.format(L["ACTION_AD
 QuickButF.ModF.Spell:SetScript("OnClick", function (self)
 	if self:GetChecked() then
 		PIGA["QuickBut"]["Spell"]=true;
-		QuickButUI.ButList[7]()
+		QuickButUI.ButList[8]()
 	else
 		PIGA["QuickBut"]["Spell"]=false;
 		PIG_OptionsUI.RLUI:Show()
 	end
 end)
-QuickButF.ModF.Spell.Close = PIGCheckbutton(QuickButF.ModF.Spell,{"LEFT",QuickButF.ModF.Spell.Text,"RIGHT",30,0},{"使用后关闭界面"});
-QuickButF.ModF.Spell.Close:SetScript("OnClick", function (self)
-	if self:GetChecked() then
-		PIGA["QuickBut"]["SpellClose"]=true;
-	else
-		PIGA["QuickBut"]["SpellClose"]=false;
-	end
-end)
-QuickButF.ModF.Spell.CZ = PIGButton(QuickButF.ModF.Spell,{"LEFT",QuickButF.ModF.Spell.Close.Text,"RIGHT",30,0},{76,20},"恢复默认");
-QuickButF.ModF.Spell.CZ:SetScript("OnClick", function (self)
-	PIGA_Per["QuickBut"]["ActionData"]={}
-	PIG_OptionsUI.RLUI:Show()
-end)
 QuickButF.ModF:HookScript("OnShow", function(self)
 	self.Lushi:SetChecked(PIGA["QuickBut"]["Lushi"])
 	self.Spell:SetChecked(PIGA["QuickBut"]["Spell"])
-	self.Spell.Close:SetChecked(PIGA["QuickBut"]["SpellClose"])
 	self.BGbroadcast:SetChecked(PIGA["QuickBut"]["BGbroadcast"])
+	self.QKButTrinket:SetChecked(PIGA["QuickBut"]["Trinket"])
 	if self.QKButRune then
 		self.QKButRune:SetChecked(PIGA["QuickBut"]["Rune"])
 		self.QKButRune.RuneShow:SetChecked(PIGA["QuickBut"]["RuneShow"])
 	end
 	self.QKButEquip:SetChecked(PIGA["QuickBut"]["Equip"])
+	self.AddonList:SetChecked(PIGA["QuickBut"]["AddonList"])
 	if PIG_MaxTocversion(20000) then
 		self.QKButEquip:SetEnabled(PIGA["FramePlus"]["Character_Shuxing"])
 		self.QKButEquip.errt:SetShown(not PIGA["FramePlus"]["Character_Shuxing"])
 	end
-	self.QKButTrinket:SetChecked(PIGA["QuickBut"]["Trinket"])
-	self.QKButTrinket.Fenli:SetChecked(PIGA["QuickBut"]["TrinketFenli"])
-	self.QKButTrinket.Fenli.pailie:PIGDownMenu_SetText(pailieList[PIGA["QuickBut"]["TrinketFenliPailie"]])
-	self.QKButTrinket.Fenli.lock:SetChecked(PIGA["QuickBut"]["TrinketFenlilock"])
-	self.QKButTrinket.Fenli.suofang:PIGSetValue(PIGA["QuickBut"]["TrinketScale"])
-	TrinketFenli()
 end)
 QuickButF.ModF.CZBUT = PIGButton(QuickButF.ModF,{"BOTTOMLEFT",QuickButF.ModF,"BOTTOMLEFT",20,-20},{76,20},"重置配置");  
 QuickButF.ModF.CZBUT:SetScript("OnClick", function ()
@@ -608,50 +236,38 @@ QuickButUI.ButList[1]=function()
 	QuickButUI.yidong=PIGFrame(QuickButUI,{"TOPLEFT",QuickButUI,"TOPLEFT",0,0})
 	QuickButUI.yidong:SetPoint("BOTTOMLEFT", QuickButUI, "BOTTOMLEFT", 0, 0);
 	QuickButUI.yidong:SetWidth(13);
-	if PIGA["QuickBut"]["Lock"] then
-		QuickButUI.yidong:Hide()
-	end
+	if PIGA["QuickBut"]["Lock"] then QuickButUI.yidong:Hide() end
 	QuickButUI.yidong:PIGSetBackdrop()
 	QuickButUI.yidong:PIGSetMovable(QuickButUI,nil,nil,true)
-	function QuickButUI:yidongRightBut()
-		if PIG_OptionsUI:IsShown() then
-			PIG_OptionsUI:Hide()
-		else
-			PIG_OptionsUI:Show()
-			Create.Show_TabBut(fuFrame,fuFrameBut)
-			Create.Show_TabBut_R(RTabFrame,QuickButF,QuickButTabBut)
-		end
-	end
-	QuickButUI.yidong:SetScript("OnMouseUp", function (self,Button)
-		if PIGA["QuickBut"]["Trinket"] and not PIGA["QuickBut"]["TrinketFenli"] then
-			TrinketAutoMode:yidongButClick(self,Button)
-		else
-			if Button=="RightButton" then QuickButUI:yidongRightBut() end
+	QuickButUI.yidong:HookScript("OnMouseUp", function (self,Button)
+		if Button=="RightButton" then
+			if PIG_OptionsUI:IsShown() then
+				PIG_OptionsUI:Hide()
+			else
+				PIG_OptionsUI:Show()
+				Create.Show_TabBut(fuFrame,fuFrameBut)
+				Create.Show_TabBut_R(RTabFrame,QuickButF,QuickButTabBut)
+			end
 		end
 	end);
-	QuickButUI.yidong:SetScript("OnEnter", function (self)
+	QuickButUI.yidong:HookScript("OnEnter", function (self)
 		self:SetBackdropBorderColor(0,0.8,1, 0.9);
 		GameTooltip:ClearLines();
 		GameTooltip:SetOwner(self, "ANCHOR_TOPLEFT",0,0);
-		if PIGA["QuickBut"]["Trinket"] and not PIGA["QuickBut"]["TrinketFenli"] then
-			GameTooltip:AddLine(KEY_BUTTON1.."-|cff00FFff"..SWITCH..MODE.."|r\n"..KEY_BUTTON2.."-|cff00FFff"..SETTINGS..MODE.."|r\nShift+"..KEY_BUTTON2.."-|cff00FFff"..SETTINGS.."|r\n"..KEY_BUTTON1.."拖拽-|cff00FFff"..TUTORIAL_TITLE2.."|r")
-		else
-			GameTooltip:AddLine(KEY_BUTTON1.."-|cff00FFff"..TUTORIAL_TITLE2.."|r,"..KEY_BUTTON2.."-|cff00FFff"..SETTINGS.."|r")	
-		end
+		GameTooltip:AddLine(L["LIB_TIPS"])
+		GameTooltip:AddLine(KEY_BUTTON1.."拖拽-|cff00FFff"..TUTORIAL_TITLE2.."|r\n"..KEY_BUTTON2.."-|cff00FFff"..SETTINGS.."|r")	
 		GameTooltip:Show();
 	end);
-	QuickButUI.yidong:SetScript("OnLeave", function (self)
+	QuickButUI.yidong:HookScript("OnLeave", function (self)
 		self:SetBackdropBorderColor(0, 0, 0, 1);
 		GameTooltip:ClearLines();
 		GameTooltip:Hide() 
 	end)
-	QuickButUI.yidong.t = PIGFontString(QuickButUI.yidong,nil,"拖\n动",nil,9)
-	QuickButUI.yidong.t:SetAllPoints(QuickButUI.yidong)
+	QuickButUI.yidong.t = PIGFontString(QuickButUI.yidong,{"CENTER",QuickButUI.yidong,"CENTER",0,0},"拖\n动",nil,9)
 	QuickButUI.yidong.t:SetTextColor(0.8, 0.8, 0.8, 0.8)
-	if not PIGA["QuickBut"]["TrinketFenli"] then TrinketAutoMode:SetyidongButText(QuickButUI.yidong) end
 	QuickButUI.nr=PIGFrame(QuickButUI,{"TOPLEFT",QuickButUI.yidong,"TOPRIGHT",1,0})
-	QuickButUI.nr:PIGSetBackdrop()
 	QuickButUI.nr:SetPoint("BOTTOMRIGHT", QuickButUI, "BOTTOMRIGHT", 0, 0);
+	QuickButUI.nr:PIGSetBackdrop()
 end
 --战场通告
 QuickButUI.ButList[2]=function()
@@ -699,7 +315,7 @@ QuickButUI.ButList[2]=function()
 	end
 end
 --炉石专业按钮----
-QuickButUI.ButList[6]=function()
+QuickButUI.ButList[7]=function()
 	if PIGA["QuickBut"]["Open"] and PIGA["QuickBut"]["Lushi"] then
 		if QuickButUI.LushiOpen then return end
 		QuickButUI.LushiOpen=true
@@ -1023,7 +639,7 @@ if PIG_MaxTocversion() then
 		end)
 	end
 end
-QuickButUI.ButList[7]=function()
+QuickButUI.ButList[8]=function()
 	local PigMacroEventCount_QK =0;
 	local PigMacroDeleted_QK = false;
 	local PigMacroCount_QK=0
@@ -1070,7 +686,16 @@ QuickButUI.ButList[7]=function()
 		local Zhushou=PIGQuickBut(nil,Tooltip,Icon,nil,nil,"SecureHandlerClickTemplate")
 		local IconTEX=Zhushou:GetNormalTexture()
 		local IconCoord = CLASS_ICON_TCOORDS[PIG_OptionsUI.ClassData.classFile];
-		IconTEX:SetTexCoord(unpack(IconCoord));
+		if PIG_OptionsUI.IsOpen_ElvUI() or PIG_OptionsUI.IsOpen_NDui() then
+			local left, right, top, bottom = unpack(IconCoord);
+			local left   = left+0.02;
+			local right  = right  - 0.02;
+			local top    = top+0.02;
+			local bottom = bottom - 0.02;
+			IconTEX:SetTexCoord(left, right, top, bottom);
+		else
+			IconTEX:SetTexCoord(unpack(IconCoord));
+		end
 		Zhushou.arrow = Zhushou:CreateTexture(nil,"ARTWORK");
 		Zhushou.arrow:SetDrawLayer("ARTWORK", 7)
 		Zhushou.arrow.chushijiaodu=0
@@ -1189,7 +814,7 @@ QuickButUI.ButList[7]=function()
 			end
 		end)
 		---
-		Zhushou_List.Close=PIGDiyBut(Zhushou_List,{"BOTTOM",Zhushou_List,"TOP",0,0},{26},nil,"SecureHandlerClickTemplate")
+		Zhushou_List.Close=PIGDiyBut(Zhushou_List,{"BOTTOMRIGHT",Zhushou_List,"TOPRIGHT",0,0},{26},nil,"SecureHandlerClickTemplate")
 		Zhushou_List.Close:SetAttribute("_onclick",[=[
 			if button == "LeftButton" then
 				local ref=self:GetFrameRef("frame1")
@@ -1201,6 +826,34 @@ QuickButUI.ButList[7]=function()
 			end
 		]=])
 		Zhushou_List.Close:SetFrameRef("frame1", Zhushou_List);
+		Zhushou_List.ClickClose = PIGCheckbutton(Zhushou_List,{"RIGHT",Zhushou_List.Close,"LEFT",-butW*0.4,0},{"","按钮点击使用后关闭界面"});
+		Zhushou_List.ClickClose:SetScript("OnClick", function (self)
+			if self:GetChecked() then
+				PIGA["QuickBut"]["SpellClose"]=true;
+			else
+				PIGA["QuickBut"]["SpellClose"]=false;
+			end
+		end)
+		Zhushou_List.ClickClose:SetScript("OnShow", function (self)
+			self:SetChecked(PIGA["QuickBut"]["SpellClose"])
+		end)
+		Zhushou_List.Reset = PIGDiyBut(Zhushou_List,{"RIGHT",Zhushou_List.ClickClose,"LEFT",-4,0},{21,nil,21,nil,"common-icon-undo"})
+		Zhushou_List.Reset:SetScript("OnClick", function (self)
+			StaticPopup_Show ("ZHUSHOU_LISTRESET");
+		end)
+		StaticPopupDialogs["ZHUSHOU_LISTRESET"] = {
+			text = "|cffff0000重置|r"..CLASS..BINDING_HEADER_ACTIONBAR.."为默认(需要重载界面)\n确定重置?",
+			button1 = YES,
+			button2 = NO,
+			OnAccept = function()
+				PIGA_Per["QuickBut"]["ActionData"]={}
+				ReloadUI();
+			end,
+			timeout = 0,
+			whileDead = true,
+			hideOnEscape = true,
+		}
+
 		Zhushou_List.ButList={}
 		for i=1,gaoNum*kuanNum do
 			local zhushoubut

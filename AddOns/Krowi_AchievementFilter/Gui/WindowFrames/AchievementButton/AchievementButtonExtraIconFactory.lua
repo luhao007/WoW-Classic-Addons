@@ -46,6 +46,7 @@ function factory.ResetExtraIcons(self)
     for _, extraIcon in next, self.ExtraIcons do
         extraIcon.Used = nil;
         extraIcon.Texture:SetVertexColor(1, 1, 1, 1);
+        extraIcon.Texture:SetTexCoord(0, 1, 0, 1);
         extraIcon:Hide();
     end
 end
@@ -60,7 +61,10 @@ local function SetExtraIconAlwaysVisible(self, achievement)
 		return;
 	end
 
-	extraIcon.Texture:SetAtlas("flightpath");
+	extraIcon.Texture:SetAtlas("poi-traveldirections-arrow");
+	if not addon.Util.IsMainline then
+		extraIcon.Texture:SetAtlas("flightpath");
+	end
 	extraIcon.Text = addon.L["Achievement shown temporarily"];
 end
 
@@ -92,11 +96,19 @@ local function SetExtraIconIsExcluded(self, achievement)
 	extraIcon.Text = addon.L["Achievement is excluded"];
 end
 
-local function SetExtraIconRemixPandaria(self, achievement)
-	if not achievement.TemporaryObtainable
-	or not achievement.TemporaryObtainable.Start
-	or achievement.TemporaryObtainable.Start.Function ~= "Event"
-	or achievement.TemporaryObtainable.Start.Value ~= "1514" then
+local function SetExtraIconRemix(self, achievement)
+	if not achievement.TemporaryObtainable then
+		return;
+	end
+
+	local remixRecord;
+	for _, record in next, achievement.TemporaryObtainable do
+		if record.Start and record.Start.Function == "Event" and (record.Start.Value == "1514" or  record.Start.Value == "1640") then
+			remixRecord = record;
+		end
+	end
+
+	if not remixRecord then
 		return;
 	end
 
@@ -107,7 +119,7 @@ local function SetExtraIconRemixPandaria(self, achievement)
 
 	extraIcon.Texture:SetAtlas("timerunning-glues-icon");
 	local text, occurrence;
-	text, extraIcon.Color, occurrence = addon.Data.TemporaryObtainable:GetNotObtainableText(achievement);
+	text, extraIcon.Color, occurrence = addon.Data.TemporaryObtainable:GetNotObtainableText(remixRecord);
 	extraIcon.Lines = {
 		text,
 		occurrence
@@ -125,7 +137,8 @@ local function SetExtraIconEvent(self, achievement)
 		return;
 	end
 
-	local text, color, occurrence = addon.Data.TemporaryObtainable:GetNotObtainableText(achievement);
+	local record = achievement.TemporaryObtainable[#achievement.TemporaryObtainable];
+	local text, color, occurrence = addon.Data.TemporaryObtainable:GetNotObtainableText(record);
 	extraIcon.Color = color;
 	extraIcon.Texture:SetAtlas("auctionhouse-icon-clock");
 	extraIcon.Texture:SetVertexColor(color.R, color.G, color.B, 1);
@@ -135,9 +148,25 @@ local function SetExtraIconEvent(self, achievement)
 	};
 end
 
+local function SetExtraIconWarband(self, achievement)
+	if not addon.Options.db.profile.Achievements.ShowWarbandIcon or not achievement.IsAccountWide then
+		return;
+	end
+
+	local extraIcon = factory.Get(self);
+	if not extraIcon then
+		return;
+	end
+
+	extraIcon.Texture:SetTexture("interface/warbands/uiwarbandsicons");
+	extraIcon.Texture:SetTexCoord(0, 0.3671875, 0, 0.45);
+	extraIcon.Text = addon.L["Warband Achievement"];
+end
+
 function factory.SetExtraIcons(self, achievement)
     factory.ResetExtraIcons(self);
-	if not SetExtraIconRemixPandaria(self, achievement) then
+	SetExtraIconWarband(self, achievement);
+	if not SetExtraIconRemix(self, achievement) then
 		SetExtraIconEvent(self, achievement);
 	end
 	SetExtraIconAlwaysVisible(self, achievement);

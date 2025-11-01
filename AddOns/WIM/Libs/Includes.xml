@@ -5,5 +5,4 @@
 <Include file="ChatThrottleLib\ChatThrottleLib.xml"/>
 
 <!-- compatibility -->
-<Include file="compat\LibDropDownMenu.lua"/>
 </Ui>

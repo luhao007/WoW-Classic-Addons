@@ -469,7 +469,7 @@
 				</Anchors>
 
 				<Frames>
-					<CheckButton name="$parenScanCheckButton" text="VUHDO_I18N_SCAN" inherits="VuhDoCheckButtonTemplate">
+					<CheckButton name="$parentScanCheckButton" text="VUHDO_I18N_SCAN" inherits="VuhDoCheckButtonTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
@@ -509,7 +509,7 @@
 				</Anchors>
 
 				<Frames>
-					<CheckButton name="$parenParseCheckButton" text="VUHDO_I18N_PARSE" inherits="VuhDoCheckButtonTemplate">
+					<CheckButton name="$parentParseCheckButton" text="VUHDO_I18N_PARSE" inherits="VuhDoCheckButtonTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>

@@ -96,7 +96,7 @@
 
 			<Frame name="VuhDoNewOptionsSpellKeysLocalPanel" inherits="VuhDoPanelTemplate">
 				<Size>
-					<AbsDimension x="469" y="425" />
+					<AbsDimension x="469" y="405" />
 				</Size>
 				<Anchors>
 					<Anchor point="TOPLEFT">
@@ -157,7 +157,7 @@
 
 					<ScrollFrame name="$parentScrollPanel" inherits="VuhDoScrollPanelTemplate">
 						<Size>
-							<AbsDimension x="475" y="325" />
+							<AbsDimension x="475" y="317" />
 						</Size>
 						<Anchors>
 							<Anchor point="TOPLEFT">
@@ -169,7 +169,7 @@
 						<ScrollChild>
 							<Frame name="$parentChild">
 								<Size>
-									<AbsDimension x="18" y="588" />
+									<AbsDimension x="18" y="593" />
 								</Size>
 								<Anchors>
 									<Anchor point="TOPLEFT">
@@ -248,18 +248,22 @@
 
 			<Frame name="$parentHintLabel" inherits="VuhDoLabelFrameTemplate">
 				<Size>
-					<AbsDimension x="400" y="18" />
+					<AbsDimension x="460" y="18" />
 				</Size>
 				<Anchors>
-					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT">
+					<Anchor point="TOPLEFT">
 						<Offset>
-							<AbsDimension x="20" y="-60" />
+							<AbsDimension x="20" y="-420" />
 						</Offset>
 					</Anchor>
 				</Anchors>
 				<Layers>
 					<Layer>
-						<FontString name="$parentLabel" text="" justifyH="LEFT" inherits="VuDoButtonFontDark">
+						<FontString name="$parentLabel" text="" inherits="VuDoButtonFontDark">
+							<Anchors>
+								<Anchor point="TOPLEFT" />
+								<Anchor point="BOTTOMRIGHT" />
+							</Anchors>
 						</FontString>
 					</Layer>
 				</Layers>
@@ -278,7 +282,7 @@
 
 			<Frame name="VuhDoNewOptionsSpellKeysLocalMacroPanel" inherits="VuhDoPanelTemplate">
 				<Size>
-					<AbsDimension x="469" y="425" />
+					<AbsDimension x="469" y="405" />
 				</Size>
 				<Anchors>
 					<Anchor point="TOPLEFT">
@@ -319,7 +323,7 @@
 
 					<ScrollFrame name="$parentScrollFrame" inherits="VuhDoScrollPanelTemplate">
 						<Size>
-							<AbsDimension x="475" y="325"/>
+							<AbsDimension x="475" y="317"/>
 						</Size>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT">
@@ -331,7 +335,7 @@
 						<ScrollChild>
 							<EditBox name="$parentEditBox" multiLine="true" autoFocus="true">
 								<Size>
-									<AbsDimension x="460" y="325"/>
+									<AbsDimension x="460" y="317"/>
 								</Size>
 								<Color r="0" g="0" b="0" />
 								<Scripts>
@@ -389,18 +393,22 @@
 
 			<Frame name="$parentHintLabel1" inherits="VuhDoLabelFrameTemplate">
 				<Size>
-					<AbsDimension x="400" y="18" />
+					<AbsDimension x="460" y="18" />
 				</Size>
 				<Anchors>
-					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT">
+					<Anchor point="TOPLEFT">
 						<Offset>
-							<AbsDimension x="20" y="-55" />
+							<AbsDimension x="20" y="-415" />
 						</Offset>
 					</Anchor>
 				</Anchors>
 				<Layers>
 					<Layer>
-						<FontString name="$parentLabel" justifyH="LEFT" text="VUHDO_I18N_LKA_HINT_1" inherits="VuDoButtonFontDark">
+						<FontString name="$parentLabel" text="VUHDO_I18N_LKA_HINT_1" inherits="VuDoButtonFontDark">
+							<Anchors>
+								<Anchor point="TOPLEFT" />
+								<Anchor point="BOTTOMRIGHT" />
+							</Anchors>
 						</FontString>
 					</Layer>
 				</Layers>
@@ -408,18 +416,22 @@
 
 			<Frame name="$parentHintLabel2" inherits="VuhDoLabelFrameTemplate">
 				<Size>
-					<AbsDimension x="400" y="18" />
+					<AbsDimension x="460" y="18" />
 				</Size>
 				<Anchors>
-					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT">
+					<Anchor point="TOPLEFT">
 						<Offset>
-							<AbsDimension x="20" y="-65" />
+							<AbsDimension x="20" y="-430" />
 						</Offset>
 					</Anchor>
 				</Anchors>
 				<Layers>
 					<Layer>
-						<FontString name="$parentLabel" justifyH="LEFT" text="VUHDO_I18N_LKA_HINT_2" inherits="VuDoButtonFontDark">
+						<FontString name="$parentLabel" text="VUHDO_I18N_LKA_HINT_2" inherits="VuDoButtonFontDark">
+							<Anchors>
+								<Anchor point="TOPLEFT" />
+								<Anchor point="BOTTOMRIGHT" />
+							</Anchors>
 						</FontString>
 					</Layer>
 				</Layers>

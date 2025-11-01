@@ -1,10 +1,12 @@
-## Interface: 30405
+## Interface: 50502
 ## Author: Pazza (Bronzebeard), (Updated by Sylvanaar/MysticalOS/Humfras)
-## Version: 3.12.13
+## Version: 3.12.17
 
 ## Title: WIM
 ## Notes: Give whispers an instant messenger feel.
-## Title-zhCN: |cFFFFE00A<|r|cFFF48CBA社交|r|cFFFFE00A>|r |cFFFFFFFF即时通信|r |cFFFFE00AWIM|r
+## Title-zhCN: |cFFFFE00A<|r|cFFF48CBA社交|r|cFFFFE00A>|r|cFFFFFFFF即时通信|r |cFFFFE00AWIM|r
+
+## Category-zhCN: |cFFFFE00A<|r|cFFF48CBA社交|r|cFFFFE00A>|r
 
 ## OptionalDeps: LibStub, CallbackHandler-1.0, ChatThrottleLib, LibSharedMedia-3.0, LibChatAnims
 ## DefaultState: Enabled

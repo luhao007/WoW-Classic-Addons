@@ -13,21 +13,57 @@ local TITAN_BUTTON = "TitanPanel"..TITAN_LOOTTYPE_ID.."Button"
 
 local _G = getfenv(0);
 local L = LibStub("AceLocale-3.0"):GetLocale(TITAN_ID, true)
-local TitanLootMethod = {};
 local updateTable = {TITAN_LOOTTYPE_ID, TITAN_PANEL_UPDATE_ALL};
+
+local TitanLootMethod = {};
 TitanLootMethod["freeforall"] = {text = L["TITAN_LOOTTYPE_FREE_FOR_ALL"]};
 TitanLootMethod["roundrobin"] = {text = L["TITAN_LOOTTYPE_ROUND_ROBIN"]};
 TitanLootMethod["master"] = {text = L["TITAN_LOOTTYPE_MASTER_LOOTER"]};
 TitanLootMethod["group"] = {text = L["TITAN_LOOTTYPE_GROUP_LOOT"]};
 TitanLootMethod["needbeforegreed"] = {text = L["TITAN_LOOTTYPE_NEED_BEFORE_GREED"]};
 TitanLootMethod["personalloot"] = {text = L["TITAN_LOOTTYPE_PERSONAL"]};
+-- For new method... which returns a number rather than a string
+TitanLootMethod[0] = {text = L["TITAN_LOOTTYPE_FREE_FOR_ALL"]};
+TitanLootMethod[1] = {text = L["TITAN_LOOTTYPE_ROUND_ROBIN"]};
+TitanLootMethod[2] = {text = L["TITAN_LOOTTYPE_MASTER_LOOTER"]};
+TitanLootMethod[3] = {text = L["TITAN_LOOTTYPE_GROUP_LOOT"]};
+TitanLootMethod[4] = {text = L["TITAN_LOOTTYPE_NEED_BEFORE_GREED"]};
+TitanLootMethod[5] = {text = L["TITAN_LOOTTYPE_PERSONAL"]};
 
 -- ******************************** Variables *******************************
 local loot_spec_name = ""
 local current_spec = ""
 
--- ******************************** Functions *******************************
+-- ******************************** Deprecated Retail Functions *******************************
+-- Diag marked per line to make deprecation obvious
 
+local LootMethod = nil
+if C_PartyInfo and C_PartyInfo.GetLootMethod then
+	LootMethod = C_PartyInfo.GetLootMethod
+else
+---@diagnostic disable-next-line: undefined-global
+	LootMethod = GetLootMethod
+end
+
+-- As of 11.2.0
+local GetSpec = nil
+-- 1-4 ; nil or 5 (Initial) assume none
+if C_SpecializationInfo and C_SpecializationInfo.GetSpecialization then
+	GetSpec = C_SpecializationInfo.GetSpecialization
+else
+	GetSpec = GetSpecialization
+end
+
+-- As of 11.2.0
+local GetSpecInfo = nil
+-- New C routine has more params and returns more values!
+if C_SpecializationInfo and C_SpecializationInfo.GetSpecializationInfo then
+	GetSpecInfo = C_SpecializationInfo.GetSpecializationInfo
+else
+	GetSpecInfo = GetSpecializationInfo
+end
+
+-- ******************************** Functions *******************************
 --[[
 -- **************************************************************************
 -- NAME : TitanPanelLootTypeButton_OnLoad()
@@ -170,7 +206,7 @@ function TitanPanelLootTypeButton_GetButtonText(id)
 	dungeondiff = "";
 
 	if (GetNumSubgroupMembers() > 0) or (GetNumGroupMembers() > 0) then
-		lootTypeText = TitanLootMethod[GetLootMethod()].text;
+		lootTypeText = TitanLootMethod[LootMethod()].text;
 		lootThreshold = GetLootThreshold();
 		color = _G["ITEM_QUALITY_COLORS"][lootThreshold];
 	else
@@ -194,11 +230,11 @@ function TitanPanelLootTypeButton_GetButtonText(id)
 	-- Determine current spec
 	local spec = 0
 	local id, name, descr, icon, role, is_rec, is_allowed 
-	spec = GetSpecialization() -- 1-4 ; nil or 5 (Initial) assume none
+	spec = GetSpec()
 	if spec == nil or spec == 5 then 
 		name = (NONE or "None...")
 	else 
-		id, name, descr, icon, role, is_rec, is_allowed = GetSpecializationInfo(spec)
+		id, name, descr, icon, role, is_rec, is_allowed = GetSpecInfo(spec)
 	end
 	current_spec = name -- for tool tip
 
@@ -215,7 +251,7 @@ function TitanPanelLootTypeButton_GetButtonText(id)
 print("T Loot"
 .." "..tostring(spec).." "
 .." "..tostring(loot_spec).." "
---.." "..tostring(GetSpecializationInfo(spec)).." "
+--.." "..tostring(GetSpecInfo(spec)).." "
 .." "..tostring(name).." "
 )
 --]]
@@ -260,7 +296,7 @@ end
 function TitanPanelLootTypeButton_GetTooltipText()
 	local party = ""
 	if (GetNumSubgroupMembers() > 0) or (GetNumGroupMembers() > 0) then
-		local lootTypeText = TitanLootMethod[GetLootMethod()].text;
+		local lootTypeText = TitanLootMethod[LootMethod()].text;
 		local lootThreshold = GetLootThreshold();
 		local itemQualityDesc = _G["ITEM_QUALITY"..lootThreshold.."_DESC"];
 		local color = _G["ITEM_QUALITY_COLORS"][lootThreshold];

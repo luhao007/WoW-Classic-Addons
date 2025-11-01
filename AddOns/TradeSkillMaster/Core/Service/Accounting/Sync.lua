@@ -6,13 +6,13 @@
 
 local TSM = select(2, ...) ---@type TSM
 local AccountingSync = TSM.Accounting:NewPackage("Sync")
-local L = TSM.Include("Locale").GetTable()
-local Delay = TSM.Include("Util.Delay")
-local Log = TSM.Include("Util.Log")
-local TempTable = TSM.Include("Util.TempTable")
-local Theme = TSM.Include("Util.Theme")
-local Wow = TSM.Include("Util.Wow")
-local Sync = TSM.Include("Service.Sync")
+local L = TSM.Locale.GetTable()
+local DelayTimer = TSM.LibTSMWoW:IncludeClassType("DelayTimer")
+local Log = TSM.LibTSMUtil:Include("Util.Log")
+local TempTable = TSM.LibTSMUtil:Include("BaseType.TempTable")
+local Sync = TSM.LibTSMService:Include("Sync")
+local Theme = TSM.LibTSMService:Include("UI.Theme")
+local SessionInfo = TSM.LibTSMWoW:Include("Util.SessionInfo")
 local private = {
 	accountLookup = {},
 	accountStatus = {},
@@ -36,8 +36,8 @@ local RETRY_DELAY = 5
 -- ============================================================================
 
 function AccountingSync.OnInitialize()
-	private.changeTimer = Delay.CreateTimer("ACCOUNTING_SYNC_CHANGE", private.NotifyChange)
-	private.hashesRetryTimer = Delay.CreateTimer("ACCOUNTING_SYNC_HASHES_RETRY", private.RetryGetPlayerHashRPC)
+	private.changeTimer = DelayTimer.New("ACCOUNTING_SYNC_CHANGE", private.NotifyChange)
+	private.hashesRetryTimer = DelayTimer.New("ACCOUNTING_SYNC_HASHES_RETRY", private.RetryGetPlayerHashRPC)
 	Sync.RegisterConnectionChangedCallback(private.ConnectionChangedHandler)
 	Sync.RegisterRPC("ACCOUNTING_GET_PLAYER_HASH", private.RPCGetPlayerHash)
 	Sync.RegisterRPC("ACCOUNTING_GET_PLAYER_CHUNKS", private.RPCGetPlayerChunks)
@@ -76,7 +76,7 @@ function private.GetPlayerHash(player)
 end
 
 function private.RPCGetPlayerHash()
-	return TSM.Accounting.Transactions.GetSyncHash(Wow.GetCharacterName())
+	return TSM.Accounting.Transactions.GetSyncHash(SessionInfo.GetCharacterName())
 end
 
 function private.RPCGetPlayerHashResultHandler(success, player, hash)
@@ -114,7 +114,7 @@ function private.GetPlayerChunks(player)
 end
 
 function private.RPCGetPlayerChunks()
-	return TSM.Accounting.Transactions.GetSyncHashByDay(Wow.GetCharacterName())
+	return TSM.Accounting.Transactions.GetSyncHashByDay(SessionInfo.GetCharacterName())
 end
 
 function private.RPCGetPlayerChunksResultHandler(success, player, chunks)
@@ -169,7 +169,7 @@ end
 
 function private.RPCGetData(day)
 	wipe(private.dataTemp)
-	TSM.Accounting.Transactions.GetSyncData(Wow.GetCharacterName(), day, private.dataTemp)
+	TSM.Accounting.Transactions.GetSyncData(SessionInfo.GetCharacterName(), day, private.dataTemp)
 	return day, private.dataTemp
 end
 

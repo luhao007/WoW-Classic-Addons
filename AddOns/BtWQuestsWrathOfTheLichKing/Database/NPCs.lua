@@ -1293,7 +1293,7 @@ BtWQuestsDatabase:AddNPCsTable({
         },
     },
     [25329] = {
-        name = "Gorge the Corpsegrinder",
+        name = "Annihilator Grek'lor",
         locations = {
             [114] = {
                 {
@@ -4735,7 +4735,7 @@ BtWQuestsDatabase:AddNPCsTable({
         },
     },
     [30247] = {
-        name = "Bloodguard Lorga",
+        name = "Blood Guard Lorga",
         locations = {
             [120] = {
                 {

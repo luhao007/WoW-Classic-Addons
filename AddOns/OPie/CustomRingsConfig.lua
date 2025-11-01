@@ -1,6 +1,7 @@
 local COMPAT, api, _, T = select(4,GetBuildInfo()), {}, ...
 local PC, RK, ORI, L, config = T.OPieCore, T.RingKeeper, OPie.UI, T.L, T.config
 local MODERN = COMPAT >= 11e4
+local CF_MISTS = not MODERN and COMPAT > 5e4
 local AB, EV, TS, XU = T.ActionBook:compatible(2,23), T.Evie, T.TenSettings, T.exUI
 local GameTooltip = T.NotGameTooltip or GameTooltip
 assert(PC and RK and ORI and AB and EV and TS and XU and L and 1, 'Incompatible library bundle')
@@ -124,9 +125,9 @@ end
 local ringContainer, ringDetail, sliceDetail, newSlice, newRing, editorHost
 local panel = TS:CreateOptionsPanel(L"Custom Rings", "OPie")
 	panel.desc:SetText(L"Customize OPie by modifying existing rings, or creating your own.")
-local ringDropDown = CreateFrame("Frame", "RKC_RingSelectionDropDown", panel, "UIDropDownMenuTemplate")
+local ringDropDown = XU:Create("DropDown", nil, panel)
 	ringDropDown:SetPoint("TOP", -70, -60)
-	UIDropDownMenu_SetWidth(ringDropDown, 260)
+	ringDropDown:SetWidth(310)
 local btnNewRing = CreateButton(panel)
 	btnNewRing:SetPoint("LEFT", ringDropDown, "RIGHT", -5, 3)
 	btnNewRing:SetText(L"New Ring...")
@@ -370,7 +371,7 @@ ringContainer = CreateFrame("Frame", nil, panel) do
 			config.ui.HideTooltip(self)
 			if IsAltKeyDown() then
 				self:SetChecked(not self:GetChecked())
-				TS:ShowPromptOverlay(panel, L"Custom slice", L"Input a slice action specification:", (L"Example: %s."):format(GREEN_FONT_COLOR_CODE .. '"item", 19019|r'), nil, api.addCustomSlice, 0.95)
+				api.showCustomSlicePrompt()
 				return
 			end
 			if newSlice:IsShown() then
@@ -420,8 +421,9 @@ ringDetail = CreateFrame("Frame", nil, ringContainer) do
 	local tex = ringDetail.name:CreateTexture()
 	tex:SetHeight(1) tex:SetPoint("BOTTOMLEFT", 0, -2) tex:SetPoint("BOTTOMRIGHT", 0, -2)
 	tex:SetColorTexture(1,0.82,0, 0.5)
-	ringDetail.scope = CreateFrame("Frame", "RKC_RingScopeDropDown", ringDetail, "UIDropDownMenuTemplate")
-	ringDetail.scope:SetPoint("TOPLEFT", 250, -37) UIDropDownMenu_SetWidth(ringDetail.scope, 250)
+	ringDetail.scope = XU:Create("DropDown", nil, ringDetail)
+	ringDetail.scope:SetPoint("TOPLEFT", 250, -37)
+	ringDetail.scope:SetWidth(300)
 	ringDetail.scope.label = ringDetail.scope:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
 	ringDetail.scope.label:SetPoint("TOPLEFT", ringDetail, "TOPLEFT", 10, -47)
 	ringDetail.scope.label:SetText(L"Make this ring available to:")
@@ -434,18 +436,20 @@ ringDetail = CreateFrame("Frame", nil, ringContainer) do
 	ringDetail.binding.label:SetPoint("TOPLEFT", ringDetail, "TOPLEFT", 10, -73)
 	ringDetail.binding.label:SetText(L"Binding:")
 	do -- ringDetail.rotation
-		local s, sliderLeftMargin, centerLine = TS:CreateOptionsSlider(ringDetail, nil, 250)
+		local t, s, sliderLeftMargin, centerLine = nil, XU:Create("OPie:OptionsSlider", nil, ringDetail)
+		s:SetWidth(250)
 		s:SetPoint("TOPLEFT", 270-sliderLeftMargin, -95)
 		s:SetMinMaxValues(0, 345)
 		s:SetValueStep(15)
 		s:SetObeyStepOnDrag(true)
 		s:SetScript("OnValueChanged", function(_, value) api.setRingProperty("offset", value) end)
-		s.lo:SetText("0°")
-		s.hi:SetText("345°")
-		s.text:SetPoint("LEFT", ringDetail, "TOPLEFT", 10, -95-centerLine)
-		s.text:SetText(L"Rotation:")
-		s.text:Show()
-		ringDetail.rotation, s.label = s, s.text
+		s:SetRangeLabelText("0°", "345°")
+		s:SetTipValueFormat("%d°")
+		t = s:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+		t:SetPoint("LEFT", ringDetail, "TOPLEFT", 10, -95-centerLine)
+		t:SetText(L"Rotation:")
+		t:Show()
+		ringDetail.rotation, s.label = s, t
 	end
 	ringDetail.opportunistCA = TS:CreateOptionsCheckButton(nil, ringDetail)
 	ringDetail.opportunistCA:SetPoint("TOPLEFT", 266, -118)
@@ -550,7 +554,24 @@ end
 sliceDetail = CreateFrame("Frame", nil, ringContainer) do
 	sliceDetail:SetAllPoints()
 	sliceDetail.desc = sliceDetail:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
-	sliceDetail.desc:SetPoint("TOPLEFT", 7, -9) sliceDetail.desc:SetPoint("TOPRIGHT", -7, -7) sliceDetail.desc:SetJustifyH("LEFT")
+	sliceDetail.desc:SetPoint("TOPLEFT", 7, -9)
+	sliceDetail.desc:SetPoint("TOPRIGHT", -7, -7)
+	sliceDetail.desc:SetJustifyH("LEFT")
+	sliceDetail.desc:SetScript("OnEnter", function(self)
+		if self.tooltipText then
+			GameTooltip:SetOwner(sliceDetail, "ANCHOR_NONE")
+			GameTooltip:ClearAllPoints()
+			GameTooltip:SetPoint("BOTTOMLEFT", self, "TOPLEFT", -2, 2)
+			GameTooltip:SetText(self.tooltipText)
+			GameTooltip:Show()
+		end
+	end)
+	sliceDetail.desc:SetScript("OnLeave", function()
+		if GameTooltip:IsOwned(sliceDetail) then
+			GameTooltip:Hide()
+		end
+	end)
+	
 	TS:EscapeCallback(sliceDetail, "TAB", function(_, key)
 		if sliceDetail.iconSelector:IsShown() then
 			if key == "TAB" then
@@ -563,10 +584,10 @@ sliceDetail = CreateFrame("Frame", nil, ringContainer) do
 		end
 	end)
 	local oy = 37
-	sliceDetail.skipSpecs = CreateFrame("Frame", "RKC_SkipSpecDropdown", sliceDetail, "UIDropDownMenuTemplate") do
+	sliceDetail.skipSpecs = XU:Create("DropDown", nil, sliceDetail) do
 		local s = sliceDetail.skipSpecs
 		s:SetPoint("TOPLEFT", 250, -oy)
-		UIDropDownMenu_SetWidth(s, 250)
+		s:SetWidth(300)
 		oy = oy + 31
 		s.label = s:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
 		s.label:SetPoint("BOTTOMLEFT", sliceDetail, "TOPLEFT", 10, 9-oy)
@@ -583,14 +604,23 @@ sliceDetail = CreateFrame("Frame", nil, ringContainer) do
 		prepEditBox(c, function(self) api.setSliceProperty("show", self:GetText()) end)
 		c:SetScript("OnEnter", function(self)
 			GameTooltip:SetOwner(self, "ANCHOR_TOP")
-			GameTooltip:AddLine(L"Conditional Visibility")
-			GameTooltip:AddLine((L"If this macro conditional evaluates to %s, or if none of its clauses apply, this slice will be hidden."):format(GREEN_FONT_COLOR_CODE .. "hide" .. "|r"), HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, 1)
-			GameTooltip:AddLine((L"You may use extended macro conditionals; see %s for details."):format("|cff33DDFFhttps://townlong-yak.com/addons/opie/extended-conditionals|r"), HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, 1)
+			GameTooltip:AddLine(((L"Visibility conditional:"):gsub("%s*:%s*$", "")))
+			GameTooltip:AddLine((L"If this macro options expression evaluates to %s, or if none of its clauses apply, this slice will be hidden."):format(GREEN_FONT_COLOR_CODE .. "hide" .. "|r"), HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, 1)
+			GameTooltip:AddLine((L"You may use extended conditionals; see %s for details."):format("|cff33DDFFhttps://townlong-yak.com/addons/opie/extended-conditionals|r"), HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, 1)
+			local isHorde, _, class = UnitFactionGroup("player") == "Horde", UnitClass("player")
+			local ex1, ex2 = isHorde and "horde" or "alliance", class and ",me:" .. class:lower() or ",mod"
+			local c = "[combat] hide; [" .. ex1 .. ex2 .. "] show";
 			GameTooltip:AddLine((L"Example: %s."):format(GREEN_FONT_COLOR_CODE .. "[nocombat][mod]|r"), NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b)
-			GameTooltip:AddLine((L"Example: %s."):format(GREEN_FONT_COLOR_CODE .. "[combat,@target,noexists] hide; show|r"), NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b)
+			GameTooltip:AddLine((L"Example: %s."):format(GREEN_FONT_COLOR_CODE .. c .. "|r"), NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b)
 			GameTooltip:Show()
 		end)
+		local function MaybeHideTooltip(self)
+			return not self:IsMouseMotionFocus() and config.ui.HideTooltip(self)
+		end
 		c:SetScript("OnLeave", config.ui.HideTooltip)
+		c:SetScript("OnHide", config.ui.HideTooltip)
+		c:HookScript("OnEditFocusLost", MaybeHideTooltip)
+		c:HookScript("OnEscapePressed", MaybeHideTooltip)
 	end
 	sliceDetail.shortLabel = XU:Create("LineInput", nil, sliceDetail) do
 		local c = sliceDetail.shortLabel
@@ -653,7 +683,7 @@ sliceDetail = CreateFrame("Frame", nil, ringContainer) do
 			cp.previousValues, cp.hasOpacity, cp.func, cp.cancelFunc, cp.swatchFunc, cp.opacityFunc = true
 			if cp.SetColorRGB then
 				cp:SetColorRGB(r,g,b)
-				cp.func = update
+				cp.func, cp.swatchFunc = update, update
 			else
 				cp.Content.ColorSwatchOriginal:SetColorTexture(r,g,b)
 				cp.Content.HexBox:OnColorSelect(r,g,b)
@@ -737,10 +767,10 @@ sliceDetail = CreateFrame("Frame", nil, ringContainer) do
 		e.label:SetPoint("BOTTOMLEFT", sliceDetail, "TOPLEFT", 10, 6-oy)
 		e.label:SetText(L"Options:")
 	end
-	sliceDetail.collectionDrop = CreateFrame("Frame", "RKC_SliceOptions_Collection", sliceDetail, "UIDropDownMenuTemplate") do
+	sliceDetail.collectionDrop = XU:Create("DropDown", nil, sliceDetail) do
 		local w = sliceDetail.collectionDrop
 		w:SetPoint("TOPLEFT", 250, -oy)
-		UIDropDownMenu_SetWidth(w, 250)
+		w:SetWidth(300)
 		w.label = w:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
 		w.label:SetText(L"Display as:")
 		w.label:SetPoint("LEFT", -240, 0)
@@ -778,7 +808,7 @@ sliceDetail = CreateFrame("Frame", nil, ringContainer) do
 			elseif mode then
 				text = (NORMAL_FONT_COLOR_CODE .. L"Nested ring: %s"):format("|r" .. mode)
 			end
-			UIDropDownMenu_SetText(self, text)
+			self:SetText(text)
 		end
 		function w:initialize()
 			local info = {minWidth=self:GetWidth()-40, func=w.set}
@@ -827,6 +857,9 @@ sliceDetail = CreateFrame("Frame", nil, ringContainer) do
 	sliceDetail.repick:SetText(L"Change action")
 	sliceDetail.repick:SetScript("OnClick", function()
 		PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON)
+		if IsAltKeyDown() then
+			return api.showCustomSlicePrompt(true)
+		end
 		return api.beginSliceRepick()
 	end)
 	sliceDetail.restore = CreateButton(sliceDetail)
@@ -1212,7 +1245,7 @@ local function updateImportedRingContents(data, ringNameMap)
 	end
 end
 
-local ringNameMap, ringOrderMap, ringTypeMap, ringNames, currentRing, currentRingName, sliceBaseIndex, currentSliceIndex, repickSlice = {}, {}, {}, {}
+local ringNameMap, ringOrderMap, ringTypeMap, ringNames, currentRing, currentRingName, sliceBaseIndex, currentSliceIndex, repickSlice, skipResetErrors = {}, {}, {}, {}
 local typePrefix = {
 	MINE="|cff25bdff|TInterface/FriendsFrame/UI-Toast-FriendOnlineIcon:14:14:0:1:32:32:8:24:8:24:30:190:255|t ",
 	PERSONAL="|cffd659ff|TInterface/FriendsFrame/UI-Toast-FriendOnlineIcon:14:14:0:1:32:32:8:24:8:24:180:0:255|t ",
@@ -1330,7 +1363,7 @@ function api.selectRing(_, name)
 		end
 	end
 	RK:SoftSync(name)
-	UIDropDownMenu_SetText(ringDropDown, desc.name or name)
+	ringDropDown:SetText(desc.name or name)
 	ringDetail.rotation:SetValue(desc.offset or 0)
 	ringDetail.name:SetText(desc.name or name)
 	ringDetail.name:SetCursorPosition(0)
@@ -1403,10 +1436,11 @@ function sliceDetail.skipSpecs:GetValue()
 	return self.val:match("^/(.+)/$")
 end
 function sliceDetail.skipSpecs:text()
-	if not MODERN then
-		UIDropDownMenu_DisableDropDown(self)
-		return UIDropDownMenu_SetText(self, L"All characters")
+	if not (MODERN or CF_MISTS) then
+		self:Disable()
+		return self:SetText(L"All characters")
 	end
+	local GetSpecializationInfo = CF_MISTS and C_SpecializationInfo.GetSpecializationInfo or GetSpecializationInfo
 	local text, u, skipSpecs = "", GetNumSpecializations(), self.val
 	for i=1, u do
 		local id, name = GetSpecializationInfo(i)
@@ -1421,16 +1455,30 @@ function sliceDetail.skipSpecs:text()
 	else
 		text = (L"Only %s"):format("|cff" .. PLAYER_CLASS_COLOR_HEX .. text .. "|r")
 	end
-	UIDropDownMenu_SetText(self, text)
+	self:SetText(text)
+end
+local function focusSliceVisibility()
+	local sc = sliceDetail.showConditional
+	sc:SetFocus()
+	if not sc:IsMouseMotionFocus() then
+		sc:GetScript("OnEnter")(sc)
+	end
 end
 function sliceDetail.skipSpecs:initialize()
 	local info = {func=self.toggle, isNotRadio=true, minWidth=self:GetWidth()-40, keepShownOnClick=true}
 	local skip = self.val or ""
+	local GetSpecializationInfo = CF_MISTS and C_SpecializationInfo.GetSpecializationInfo or GetSpecializationInfo
 	for i=1, GetNumSpecializations() do
 		local id, name, _, icon = GetSpecializationInfo(i)
 		info.text, info.arg1, info.checked = "|T" .. icon .. ":16:16:0:0:64:64:4:60:4:60|t " .. name, id, not skip:match("/" .. id .. "/")
 		UIDropDownMenu_AddButton(info)
 	end
+	UIDropDownMenu_AddSeparator()
+	local infoIcon = "|TInterface/Common/help-i:18:18:0:0:32:32:8:24:8:24|t "
+	local infoText = (L"For other options, use a {visibility conditional}."):gsub("{(.-)%}", NORMAL_FONT_COLOR_CODE .. "%1|r")
+	info.text, info.notCheckable, info.func = infoIcon .. infoText, true, focusSliceVisibility
+	info.arg1, info.checked, info.keepShownOnClick = nil
+	UIDropDownMenu_AddButton(info)
 end
 function ringDetail.scope:initialize()
 	local luFaction, lFaction = UnitFactionGroup("player")
@@ -1450,7 +1498,7 @@ end
 function ringDetail.scope:text()
 	local limit = currentRing.limit
 	local isFactionLimit = (limit == "Alliance" or limit == "Horde")
-	UIDropDownMenu_SetText(self, type(limit) ~= "string" and L"All characters" or
+	self:SetText(type(limit) ~= "string" and L"All characters" or
 		isFactionLimit and (L"All %s characters"):format((limit == "Horde" and "|cffff3000" or "|cff00a0ff") .. (limit == "Horde" and FACTION_HORDE or FACTION_ALLIANCE) .. "|r") or
 		limit:match("[^A-Z]") and (L"Only %s"):format("|cff" .. (limit == FULLNAME and PLAYER_CLASS_COLOR_HEX .. SHORTNAME or ("d659ff" .. limit)) .. "|r") or
 		RAID_CLASS_COLORS[limit] and (L"All %s characters"):format("|cff" .. RAID_CLASS_COLORS[limit].colorStr:sub(3) .. (UnitSex("player") == 3 and LOCALIZED_CLASS_NAMES_FEMALE or LOCALIZED_CLASS_NAMES_MALE)[limit] .. "|r")
@@ -1478,6 +1526,7 @@ function api.setRingBinding(value)
 	end
 end
 function api.setRingProperty(name, value)
+	if skipResetErrors and not currentRing then return end
 	if not currentRing then return end
 	currentRing[name] = value
 	if name == "limit" then
@@ -1496,7 +1545,7 @@ function api.setRingProperty(name, value)
 	end
 	api.saveRing(currentRingName, currentRing)
 	if name == "name" then
-		UIDropDownMenu_SetText(ringDropDown, value or currentRingName)
+		ringDropDown:SetText(value or currentRingName)
 	end
 end
 function api.setSliceAction()
@@ -1505,6 +1554,7 @@ function api.setSliceAction()
 	end
 end
 function api.setSliceProperty(prop, ...)
+	if skipResetErrors and not currentRing then return end
 	local slice = assert(currentRing[currentSliceIndex], "Setting a slice property on an unknown slice")
 	if prop == "color" then
 		local r, g, b = ...
@@ -1594,12 +1644,14 @@ function api.selectSlice(offset, select)
 	currentSliceIndex = id
 end
 function api.updateSliceDisplay(_id, desc)
-	local stype, sname, sicon, icoext = getSliceInfo(desc)
-	if (sname or "") ~= "" and stype ~= sname then
-		sliceDetail.desc:SetFormattedText("%s: |cffffffff%s|r", stype or "?", sname or "?")
-	else
-		sliceDetail.desc:SetText(stype or "?")
+	local stype, sname, sicon, icoext, _, _, _, aflags = getSliceInfo(desc)
+	local labelText = (sname or "") ~= "" and stype ~= sname and (stype or "?") .. ": |cffffffff" .. sname .. "|r" or stype or "?"
+	local warnNotUsable = type(aflags) == "number" and aflags % 2 >= 1
+	if warnNotUsable then
+		labelText = "|A:services-icon-warning:0:0|a " .. labelText
 	end
+	sliceDetail.desc.tooltipText = warnNotUsable and "|A:services-icon-warning:0:0|a " .. L"Your character currently cannot use this." or nil
+	sliceDetail.desc:SetText(labelText)
 	local skipSpecs, showConditional = (desc.show or ""):match("^%[spec:([%d/]+)%] hide;(.*)")
 	sliceDetail.iconSelector:Hide()
 	sliceDetail.icon:SetIcon(sicon, desc.icon, icoext)
@@ -1672,7 +1724,7 @@ end
 function api.deselectRing()
 	ringContainer:Hide()
 	currentRing, currentRingName, ringNames = nil
-	UIDropDownMenu_SetText(ringDropDown, L"Select a ring to modify")
+	ringDropDown:SetText(L"Select a ring to modify")
 end
 function api.restoreDefault()
 	if currentRingName then
@@ -1730,6 +1782,27 @@ function api.addCustomSlice(_editbox, text, attemptAccept)
 		return true
 	end
 	return resolveCustomSliceAdd(pcall(decodeConstantList, text, 1))
+end
+function api.getCurrentSliceABspec()
+	local sd, o = currentRing and currentRing[currentSliceIndex]
+	for i=1, sd and #sd or 0 do
+		local v = sd[i]
+		if type(v) == "string" and not v:match("\n") then
+			v = ("%q"):format(v)
+		elseif type(v) == "number" or type(v) == "boolean" then
+			v = tostring(v)
+		else
+			o = nil
+			break
+		end
+		o = i > 1 and o .. ", " .. v or v
+	end
+	return sd and o ~= "" and o
+end
+function api.showCustomSlicePrompt(forRepick)
+	repickSlice = forRepick and currentRing[currentSliceIndex] or nil
+	local cs = api.getCurrentSliceABspec()
+	TS:ShowPromptOverlay(panel, L"Custom slice", L"Input a slice action specification:", (L"Example: %s."):format(GREEN_FONT_COLOR_CODE .. (cs and not repickSlice and #cs < 200 and cs or '"item", 19019') .. '|r'), nil, api.addCustomSlice, 0.95, nil, repickSlice and cs or "")
 end
 function api.closeActionPicker(source)
 	if source == "add-new-slice-button" and repickSlice then
@@ -1799,8 +1872,9 @@ ringDetail:SetScript("OnShow", function()
 end)
 
 local function resetView()
-	currentRingName, currentRing, currentSliceIndex, ringNames = nil
-	ringContainer:Hide()
+	skipResetErrors, currentRingName, currentRing, currentSliceIndex, ringNames = 1, nil
+	securecall(ringContainer.Hide, ringContainer)
+	skipResetErrors = nil
 end
 function panel:refresh()
 	local oRingName, oBaseIndex, oSliceIndex = currentRingName, sliceBaseIndex, currentSliceIndex
@@ -1826,7 +1900,7 @@ function panel:refresh()
 		end
 	end
 	if not currentRing then
-		UIDropDownMenu_SetText(ringDropDown, L"Select a ring to modify")
+		ringDropDown:SetText(L"Select a ring to modify")
 	end
 end
 function panel:default()

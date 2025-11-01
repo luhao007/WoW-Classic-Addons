@@ -1,30 +1,13 @@
-## Interface: 30405
-## Author: Created by Thandrenn, Maintained by Thanbini, Code fixed for 10.x by Zilom
-## Version: 4.13.05
+## Interface: 50502
 
-## Title: AtlasQuest |cff00ff00!
-## Notes: Shows the Quests for dungeons and battlegrounds.
-## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r |cFFFFFFFF副本任务|r |cFFFFE00AAtlasQuest|r
+## Title: AtlasQuest|cFFFF0000 game client not supported|r
+## Notes: This version of AtlasQuest only supports Classic Era and Retail
+## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r|cFFFFFFFF副本任务|r |cFFFFE00AAtlasQuest|r
 ## Notes-zhCN: 副本任务列表
 
-## RequiredDeps: Atlas
-## Dependencies: 
-## OptionalDeps: Atlas_ClassicWoW,Atlas_BurningCrusade,Atlas_WrathoftheLichKing
-## LoadOnDemand: 0
+## Category-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r
 
-## SavedVariables: AtlasQuest_Options
-## SavedVariablesPerCharacter: 
-
-## X-Author-Faction: Alliance
-## X-Author-Server: Atiesh US
-## X-eMail: mystery8@gmail.com
-## X-Website: https://github.com/thandrenn/AtlasQuest
-## X-Category: Quests
-## X-License: GPLv2
-## X-Credits: AtlasQuest Team
-## X-Localizations: enUS, deDE, koKR, zhCN, zhTW, ruRU, esES, esMX
-## X-Date: February 2, 2023
-## X-Help: AtlasQuestHelp
-
-AtlasQuest_InsideFrame.xml
-AtlasQuest.xml
+# This file is used to show unsupported game client message.
+# Supported client flavors load their own TOC file and unsupported ones fall back to this one.
+# Check expansion specific TOC files for the correct data.
+Core\WrongVersion.lua

@@ -3,6 +3,7 @@ local _;
 local VUHDO_IS_SMART_CAST = false;
 
 local SecureButton_GetButtonSuffix = SecureButton_GetButtonSuffix;
+local GetTexCoordsForRole = GetTexCoordsForRole or VUHDO_getTexCoordsForRole;
 local InCombatLockdown = InCombatLockdown;
 local strlower = strlower;
 local strfind = strfind;
@@ -376,18 +377,27 @@ end
 
 --
 function VUHDO_stopMoving(aPanel)
-	aPanel:StopMovingOrSizing();
-	aPanel["isMoving"] = false;
+
 	if not InCombatLockdown() then
+		aPanel:StopMovingOrSizing();
+
 		aPanel:SetFrameStrata(VUHDO_PANEL_SETUP[VUHDO_getPanelNum(aPanel)]["frameStrata"]);
 	end
+
+	aPanel["isMoving"] = false;
+
 	VUHDO_savePanelCoords(aPanel);
 	VUHDO_saveCurrentProfilePanelPosition(VUHDO_getPanelNum(aPanel));
+
 	if sIsStatusShown then
 		sIsStatusShown = false;
+
 		VUHDO_hideAllPlayerIcons();
 		VUHDO_initAllEventBouquets();
 	end
+
+	return;
+
 end
 
 
@@ -415,12 +425,12 @@ function VUHDO_showDebuffTooltip(aDebuffIcon)
 		GameTooltip:SetOwner(aDebuffIcon, "ANCHOR_RIGHT", 0, 0);
 	end
 
-	if aDebuffIcon["debuffCnt"] then
+	if aDebuffIcon["debuffInstanceId"] and aDebuffIcon["debuffCnt"] then
 		if not GameTooltip:IsForbidden() then
 			if aDebuffIcon["isBuff"] then 
 				GameTooltip:SetUnitBuff(tButton["raidid"], aDebuffIcon["debuffCnt"]);
 			else 
-				GameTooltip:SetUnitDebuff(tButton["raidid"], aDebuffIcon["debuffCnt"]); 
+				GameTooltip:SetUnitDebuff(tButton["raidid"], aDebuffIcon["debuffCnt"]);
 			end
 		end
 	end

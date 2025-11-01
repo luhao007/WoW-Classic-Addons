@@ -5,20 +5,22 @@
 -- ------------------------------------------------------------------------------ --
 
 local TSM = select(2, ...) ---@type TSM
-local Operations = TSM.MainUI:NewPackage("Operations")
-local Environment = TSM.Include("Environment")
-local L = TSM.Include("Locale").GetTable()
-local Log = TSM.Include("Util.Log")
-local Theme = TSM.Include("Util.Theme")
-local TextureAtlas = TSM.Include("Util.TextureAtlas")
-local Money = TSM.Include("Util.Money")
-local TempTable = TSM.Include("Util.TempTable")
-local GroupPath = TSM.Include("Util.GroupPath")
-local Settings = TSM.Include("Service.Settings")
-local CustomPrice = TSM.Include("Service.CustomPrice")
-local UIElements = TSM.Include("UI.UIElements")
-local UIUtils = TSM.Include("UI.UIUtils")
+local Operations = TSM.MainUI:NewPackage("Operations") ---@type AddonPackage
+local L = TSM.Locale.GetTable()
+local Theme = TSM.LibTSMService:Include("UI.Theme")
+local TextureAtlas = TSM.LibTSMService:Include("UI.TextureAtlas")
+local TempTable = TSM.LibTSMUtil:Include("BaseType.TempTable")
+local Operation = TSM.LibTSMTypes:Include("Operation")
+local Group = TSM.LibTSMTypes:Include("Group")
+local GroupOperation = TSM.LibTSMTypes:Include("GroupOperation")
+local ChatMessage = TSM.LibTSMService:Include("UI.ChatMessage")
+local UIElements = TSM.LibTSMUI:Include("Util.UIElements")
+local UIUtils = TSM.LibTSMUI:Include("Util.UIUtils")
+local Reactive = TSM.LibTSMUtil:Include("Reactive")
+local UIManager = TSM.LibTSMUtil:IncludeClassType("UIManager")
 local private = {
+	manager = nil, ---@type UIManager
+	settingsDB = nil,
 	settings = nil,
 	moduleNames = {},
 	moduleCollapsed = {},
@@ -27,9 +29,13 @@ local private = {
 	currentOperationName = nil,
 	playerList = {},
 	factionrealmList = {},
-	linkMenuEntries = {},
+	numGroupsCache = {},
+	numItemsCache = {},
 }
 local DEFAULT_PRICE_INPUT_VALIDATE_CONTEXT = {}
+local STATE_SCHEMA = Reactive.CreateStateSchema("OPERATIONS_UI_STATE")
+	:AddOptionalTableField("frame")
+	:Commit()
 
 
 
@@ -37,10 +43,17 @@ local DEFAULT_PRICE_INPUT_VALIDATE_CONTEXT = {}
 -- Module Functions
 -- ============================================================================
 
-function Operations.OnInitialize()
-	private.settings = Settings.NewView()
+function Operations.OnInitialize(settingsDB)
+	private.settingsDB = settingsDB
+	private.settings = settingsDB:NewView()
 		:AddKey("global", "mainUIContext", "operationsDividedContainer")
 		:AddKey("global", "mainUIContext", "operationsSummaryScrollingTable")
+
+	-- Create the state / manager
+	local state = STATE_SCHEMA:CreateState()
+	private.manager = UIManager.Create("OPERATIONS_UI", state, private.ActionHandler)
+		:SuppressActionLog("ACTION_HANDLE_NAME_INPUT_CHANGED")
+
 	TSM.MainUI.RegisterTopLevelPage(L["Operations"], private.GetOperationsFrame)
 end
 
@@ -55,47 +68,70 @@ function Operations.ShowOperationSettings(baseFrame, moduleName, operationName)
 end
 
 function Operations.GetOperationManagementElements(moduleName, operationName)
-	local operation = TSM.Operations.GetSettings(private.currentModule, private.currentOperationName)
+	local operation = Operation.GetSettings(private.currentModule, private.currentOperationName)
 	wipe(private.factionrealmList)
 	wipe(private.playerList)
-	for _, factionrealm in TSM.db:ScopeKeyIterator("factionrealm") do
+	for _, factionrealm in private.settingsDB:ScopeKeyIterator("factionrealm") do
 		tinsert(private.factionrealmList, factionrealm)
-		for _, character in TSM.db:FactionrealmCharacterIterator(factionrealm) do
+		for _, character in private.settingsDB:AccessibleCharacterIterator(nil, factionrealm) do
 			tinsert(private.playerList, character.." - "..factionrealm)
 		end
 	end
 	return UIElements.New("Frame", "management")
 		:SetLayout("VERTICAL")
 		:AddChild(Operations.CreateExpandableSection(moduleName, "managementOptions", L["Management Options"], L["Below you can ignore this operation on certain characters or realms."])
-			:AddChild(Operations.CreateSettingLine("ignoreFactionRealms", L["Ignore operation on faction-realms"])
+			:AddChild(UIElements.New("Frame", "ignoreFactionRealms")
 				:SetLayout("VERTICAL")
 				:SetHeight(48)
 				:SetMargin(0, 0, 0, 12)
+				:AddChild(UIElements.New("Text", "label")
+					:SetHeight(24)
+					:SetFont("BODY_BODY2_MEDIUM")
+					:SetTextColor("TEXT")
+					:SetText(L["Ignore operation on faction-realms"])
+				)
 				:AddChild(UIElements.New("MultiselectionDropdown", "dropdown")
 					:SetHeight(24)
 					:SetItems(private.factionrealmList, private.factionrealmList)
 					:SetSelectionText(L["No Faction-Realms"], L["%d Faction-Realms"], L["All Faction-Realms"])
 					:SetSettingInfo(operation, "ignoreFactionrealm")
-					:SetScript("OnSelectionChanged", TSM.Groups.RebuildDB)
+					:SetScript("OnSelectionChanged", GroupOperation.RebuildDB)
+					:SetTooltip(L["This operation will be ignored on any of the selected faction-realms."])
 				)
 			)
-			:AddChild(Operations.CreateSettingLine("ignoreCharacters", L["Ignore operation on characters"])
+			:AddChild(UIElements.New("Frame", "ignoreCharacters")
 				:SetLayout("VERTICAL")
 				:SetHeight(48)
+				:SetMargin(0, 0, 0, 4)
+				:AddChild(UIElements.New("Text", "label")
+					:SetHeight(24)
+					:SetFont("BODY_BODY2_MEDIUM")
+					:SetTextColor("TEXT")
+					:SetText(L["Ignore operation on characters"])
+				)
 				:AddChild(UIElements.New("MultiselectionDropdown", "dropdown")
 					:SetHeight(24)
 					:SetItems(private.playerList, private.playerList)
 					:SetSelectionText(L["No Characters"], L["%d Characters"], L["All Characters"])
 					:SetSettingInfo(operation, "ignorePlayer")
-					:SetScript("OnSelectionChanged", TSM.Groups.RebuildDB)
+					:SetScript("OnSelectionChanged", GroupOperation.RebuildDB)
+					:SetTooltip(L["This operation will be ignored on any of the selected characters."])
 				)
 			)
 		)
 		:AddChild(Operations.CreateExpandableSection(moduleName, "groupManagement", L["Group Management"], L["Here you can add/remove what groups this operation is attached to."])
-			:AddChild(Operations.CreateSettingLine("applyNewGroup", L["Apply operation to group"])
+			:AddChild(UIElements.New("Frame", "applyNewGroup")
 				:SetLayout("VERTICAL")
 				:SetHeight(48)
+				:SetMargin(0, 0, 0, 4)
+				:AddChild(UIElements.New("Text", "label")
+					:SetHeight(24)
+					:SetFont("BODY_BODY2_MEDIUM")
+					:SetTextColor("TEXT")
+					:SetText(L["Apply operation to group"])
+				)
 				:AddChild(UIElements.New("GroupSelector", "group")
+					:SetHeight(24)
 					:SetHintText(L["Add operation to groups"])
 					:SetScript("OnSelectionChanged", private.GroupSelectionChanged)
 				)
@@ -105,51 +141,25 @@ function Operations.GetOperationManagementElements(moduleName, operationName)
 end
 
 function Operations.CreateExpandableSection(moduleName, id, text, description)
-	return UIElements.New("CollapsibleContainer", id)
-		:SetLayout("VERTICAL")
+	return UIElements.New("OperationCollapsibleContainer", id)
 		:SetMargin(0, 0, 0, 8)
 		:SetContextTable(private.moduleCollapsed, moduleName..text)
-		:SetHeadingText(text)
-		:AddChild(UIElements.New("Text", "description")
-			:SetHeight(20)
-			:SetMargin(0, 0, 0, 12)
-			:SetFont("BODY_BODY3")
-			:SetText(description)
-		)
+		:SetHeadingDescription(text, description)
 end
 
 function Operations.CreateLinkedSettingLine(settingKey, labelText, disabled, alternateName)
-	local relationshipSet = TSM.Operations.HasRelationship(private.currentModule, private.currentOperationName, settingKey)
-	return UIElements.New("Frame", alternateName or settingKey)
-		:SetLayout("HORIZONTAL")
-		:SetHeight(24)
+	return UIElements.New("OperationLinkedSettingLine", alternateName or settingKey)
+		:SetLayout("VERTICAL")
+		:SetHeight(48)
 		:SetMargin(0, 0, 0, 4)
-		:AddChild(UIElements.New("Frame", "line")
-			:SetLayout("HORIZONTAL")
-			:AddChild(UIElements.New("Text", "label")
-				:SetWidth("AUTO")
-				:SetFont("BODY_BODY2_MEDIUM")
-				:SetTextColor((relationshipSet or disabled) and "TEXT_DISABLED" or "TEXT")
-				:SetText(labelText)
-			)
-			:AddChild(private.CreateLinkButton(disabled, settingKey))
-			:AddChild(UIElements.New("Spacer", "spacer"))
-		)
+		:SetOperationSetting(private.currentModule, private.currentOperationName, settingKey)
+		:SetLabel(labelText)
+		:SetDisabled(disabled and true or false)
+		:SetManager(private.manager)
+		:SetAction("OnRelationshipChanged", "ACTION_RELOAD_CURRENT_SETTINGS")
 end
 
-function Operations.CreateSettingLine(id, labelText, disabled)
-	return UIElements.New("Frame", id)
-		:SetLayout("HORIZONTAL")
-		:SetHeight(24)
-		:SetMargin(0, 0, 0, 4)
-		:AddChild(UIElements.New("Text", "label")
-			:SetFont("BODY_BODY2_MEDIUM")
-			:SetTextColor(disabled and "TEXT_DISABLED" or "TEXT")
-			:SetText(labelText)
-		)
-end
-
-function Operations.CreateLinkedPriceInput(settingKey, label, validateContext, defaultValue, isDisabled)
+function Operations.CreateLinkedPriceInput(settingKey, label, validateContext, defaultValue, isDisabled, tooltip)
 	-- Make sure the context is the right shape
 	validateContext = validateContext or DEFAULT_PRICE_INPUT_VALIDATE_CONTEXT
 	for key in pairs(validateContext) do
@@ -164,38 +174,39 @@ function Operations.CreateLinkedPriceInput(settingKey, label, validateContext, d
 	assert(not validateContext.isNumber or not validateContext.badSources)
 
 	-- Get information on the opeartion
-	isDisabled = isDisabled or TSM.Operations.HasRelationship(private.currentModule, private.currentOperationName, settingKey)
-	local operation = TSM.Operations.GetSettings(private.currentModule, private.currentOperationName)
+	local shouldDisable = isDisabled or Operation.HasRelationship(private.currentModule, private.currentOperationName, settingKey)
+	local operation = Operation.GetSettings(private.currentModule, private.currentOperationName)
 	local value = operation[settingKey]
 	if defaultValue ~= nil and (not value or value == "") then
 		isDisabled = true
 		value = defaultValue
 	end
 
-	return Operations.CreateLinkedSettingLine(settingKey, label)
+	local rangeTooltip = not shouldDisable and validateContext.minValue and format(L["This supported value range is from %d to %d."], validateContext.minValue, validateContext.maxValue) or nil
+	if tooltip and rangeTooltip then
+		tooltip = tooltip.." "..rangeTooltip
+	else
+		tooltip = tooltip or rangeTooltip
+	end
+	return UIElements.New("OperationLinkedSettingLine", settingKey)
 		:SetLayout("VERTICAL")
 		:SetHeight(48)
-		:AddChild(UIElements.New("Frame", "content")
-			:SetLayout("HORIZONTAL")
-			:SetContext(label)
-			:AddChild(UIElements.New("Input", "input")
-				:SetHeight(24)
-				:SetBackgroundColor("PRIMARY_BG")
-				:SetDisabled(isDisabled)
-				:SetContext(settingKey)
-				:SetValidateFunc(validateContext.isUndercut and private.UndercutValidateFunction or private.DefaultValidateFunction, validateContext.badSources)
-				:SetSettingInfo(operation, settingKey)
-				:SetValue(validateContext.isNumber and value or (Money.ToString(value) or value))
-				:SetTooltip(not isDisabled and validateContext.minValue and format(L["Supported value range: %d - %d"], validateContext.minValue, validateContext.maxValue) or nil)
-			)
-			:AddChild(UIElements.New("Button", "popout")
-				:SetMargin(4, 4, 0, 0)
-				:SetBackgroundAndSize("iconPack.12x12/Popout", isDisabled and "TEXT_DISABLED" or "TEXT")
-				:SetDisabled(isDisabled)
-				:SetContext(validateContext)
-				:SetScript("OnClick", private.CustomStringPopoutOnClick)
-			)
+		:SetMargin(0, 0, 0, 4)
+		:SetOperationSetting(private.currentModule, private.currentOperationName, settingKey)
+		:SetLabel(label)
+		:SetDisabled(isDisabled and true or false)
+		:SetManager(private.manager)
+		:AddChild(UIElements.New("CustomStringSingleLineInput", "input")
+			:SetHeight(24)
+			:SetBackgroundColor("PRIMARY_BG")
+			:SetDisabled(shouldDisable)
+			:SetValidateFunc(validateContext.isUndercut and "UNDERCUT" or "CUSTOM_STRING", validateContext.badSources)
+			:SetSettingInfo(operation, settingKey)
+			:SetIsNumber(validateContext.isNumber)
+			:SetPopoutTitle(label)
+			:SetTooltip(tooltip, "__parent")
 		)
+		:SetAction("OnRelationshipChanged", "ACTION_RELOAD_CURRENT_SETTINGS")
 end
 
 
@@ -233,6 +244,8 @@ function private.GetOperationsFrame()
 			:AddPath("summary")
 			:AddPath("operation")
 		)
+		:SetScript("OnHide", private.manager:CallbackToProcessAction("ACTION_HANDLE_FRAME_HIDDEN"))
+	private.manager:ProcessAction("ACTION_HANDLE_FRAME_SHOWN", frame)
 	return frame
 end
 
@@ -330,11 +343,12 @@ function private.GetOperationsContent(_, path)
 end
 
 function private.GetSummaryContent()
-	local query = TSM.Operations.CreateQuery()
+	wipe(private.numGroupsCache)
+	wipe(private.numItemsCache)
+	local query = Operation.NewQuery()
 		:Equal("moduleName", private.currentModule)
-		:VirtualField("numGroups", "number", private.NumGroupsVirtualField)
-		:VirtualField("numItems", "number", private.NumItemsVirtualField)
-		:OrderBy("operationName", true)
+		:VirtualField("numGroups", "number", private.NumGroupsVirtualField, "operationName")
+		:VirtualField("numItems", "number", private.NumItemsVirtualField, "operationName")
 	local mostGroupsName, mostGroupsValue = "---", -math.huge
 	local leastGroupsName, leastGroupsValue = "---", math.huge
 	local mostItemsName, mostItemsValue = "---", -math.huge
@@ -448,39 +462,11 @@ function private.GetSummaryContent()
 				)
 			)
 		)
-		:AddChild(UIElements.New("SelectionScrollingTable", "list")
-			:SetSettingsContext(private.settings, "operationsSummaryScrollingTable")
-			:GetScrollingTableInfo()
-				:NewColumn("name")
-					:SetTitle(L["Operation"])
-					:SetFont("TABLE_TABLE1")
-					:SetJustifyH("LEFT")
-					:SetTextInfo("operationName")
-					:SetSortInfo("operationName")
-					:SetActionIconInfo(1, 12, private.GetConfigureIcon, true)
-					:SetActionIconClickHandler(private.OnConfigureIconClick)
-					:DisableHiding()
-					:Commit()
-				:NewColumn("groups")
-					:SetTitle(L["Groups Using"])
-					:SetFont("TABLE_TABLE1")
-					:SetJustifyH("LEFT")
-					:SetTextInfo("numGroups")
-					:SetSortInfo("numGroups")
-					:Commit()
-				:NewColumn("items")
-					:SetTitle(L["Items Using"])
-					:SetFont("TABLE_TABLE1")
-					:SetJustifyH("LEFT")
-					:SetTextInfo("numItems", private.GetNumItemsText)
-					:SetSortInfo("numItems")
-					:SetTooltipInfo("numItems", private.GetNumItemsTooltip)
-					:Commit()
-				:Commit()
+		:AddChild(UIElements.New("OperationSummaryScrollTable", "list")
+			:SetSettings(private.settings, "operationsSummaryScrollingTable")
 			:SetQuery(query)
-			:SetContext(query)
-			:SetAutoReleaseQuery(true)
 			:SetScript("OnSelectionChanged", private.OperationListOnSelectionChanged)
+			:SetScript("OnOperationConfigure", private.OperationListOnOperationConfigure)
 		)
 		:AddChild(UIElements.New("HorizontalLine", "line"))
 		:AddChild(UIElements.New("Frame", "footer")
@@ -517,56 +503,49 @@ function private.GetSummaryContent()
 end
 
 function private.AddOperationGroups(frame)
-	for _, groupPath in TSM.Operations.GroupIterator(private.currentModule, private.currentOperationName, true) do
+	for _, groupPath in GroupOperation.GroupIteratorByOperation(private.currentModule, private.currentOperationName, true) do
 		frame:AddChild(private.CreateGroupOperationLine(groupPath))
 	end
 end
 
 function private.CreateGroupOperationLine(groupPath)
-	local groupName = groupPath == TSM.CONST.ROOT_GROUP_PATH and L["Base Group"] or GroupPath.GetName(groupPath)
-	local level = select('#', strsplit(TSM.CONST.GROUP_SEP, groupPath))
-	return UIElements.New("Frame", "group")
-		:SetLayout("HORIZONTAL")
+	return UIElements.New("OperationGroupLine", "group")
 		:SetHeight(20)
 		:SetMargin(2, 0, 0, 0)
-		:AddChild(UIElements.New("Text", "text")
-			:SetWidth("AUTO")
-			:SetFont("BODY_BODY2")
-			:SetTextColor(Theme.GetGroupColorKey(level))
-			:SetText(groupName)
-		)
-		:AddChild(UIElements.New("Button", "viewBtn")
-			:SetMargin(2, 2, 0, 0)
-			:SetBackgroundAndSize("iconPack.14x14/Groups")
-			:SetContext(groupPath)
-			:SetScript("OnClick", private.ViewGroupOnClick)
-		)
-		:AddChild(UIElements.New("Button", "removeBtn")
-			:SetBackgroundAndSize("iconPack.14x14/Close/Default")
-			:SetContext(groupPath)
-			:SetScript("OnClick", private.RemoveOperationGroupOnClick)
-		)
-		:AddChild(UIElements.New("Spacer", "spacer"))
+		:SetGroupAndOperation(groupPath, private.currentModule, private.currentOperationName)
+		:SetManager(private.manager)
+		:SetAction("OnViewGroup", "ACTION_VIEW_GROUP")
+		:SetAction("OnRemoved", "ACTION_REMOVE_GROUP_LINE")
 end
 
-function private.CreateLinkButton(disabled, settingKey)
-	local relationshipSet = TSM.Operations.HasRelationship(private.currentModule, private.currentOperationName, settingKey)
-	local linkTexture = nil
-	if disabled and relationshipSet then
-		linkTexture = TextureAtlas.GetColoredKey("iconPack.14x14/Link", "INDICATOR_DISABLED")
-	elseif disabled then
-		linkTexture = TextureAtlas.GetColoredKey("iconPack.14x14/Link", "TEXT_DISABLED")
-	elseif relationshipSet then
-		linkTexture = TextureAtlas.GetColoredKey("iconPack.14x14/Link", "INDICATOR")
+
+
+-- ============================================================================
+-- Action Handler
+-- ============================================================================
+
+---@param manager UIManager
+---@param state OperationsUIState
+function private.ActionHandler(manager, state, action, ...)
+	if action == "ACTION_HANDLE_FRAME_SHOWN" then
+		local frame = ...
+		assert(frame)
+		state.frame = frame
+	elseif action == "ACTION_HANDLE_FRAME_HIDDEN" then
+		state.frame = nil
+	elseif action == "ACTION_RELOAD_CURRENT_SETTINGS" then
+		Operations.ShowOperationSettings(state.frame:GetBaseElement(), private.currentModule, private.currentOperationName)
+	elseif action == "ACTION_VIEW_GROUP" then
+		local groupPath = ...
+		TSM.MainUI.Groups.ShowGroupSettings(state.frame:GetBaseElement(), groupPath)
+	elseif action == "ACTION_REMOVE_GROUP_LINE" then
+		local line = ...
+		local parent = line:GetParentElement()
+		parent:RemoveChild(line)
+		parent:GetParentElement():GetParentElement():GetParentElement():Draw()
 	else
-		linkTexture = TextureAtlas.GetColoredKey("iconPack.14x14/Link", "TEXT")
+		error("Unknown action: "..tostring(action))
 	end
-	return UIElements.New("Button", "linkBtn")
-		:SetMargin(4, 4, 0, 0)
-		:SetBackgroundAndSize(linkTexture)
-		:SetDisabled(disabled)
-		:SetContext(settingKey)
-		:SetScript("OnClick", private.LinkBtnOnClick)
 end
 
 
@@ -586,9 +565,9 @@ function private.OperationTreeOnOperationAdded(operationTree, moduleName, operat
 		:SetValue("")
 		:Draw()
 	operationTree:SetOperationNameFilter("")
-	TSM.Operations.Create(moduleName, operationName)
+	Operation.Create(moduleName, operationName)
 	if copyOperationName then
-		TSM.Operations.Copy(moduleName, operationName, copyOperationName)
+		Operation.Copy(moduleName, operationName, copyOperationName)
 	end
 end
 
@@ -597,10 +576,8 @@ function private.OperationTreeOnOperationConfirmDelete(self, moduleName, operati
 end
 
 function private.OperationTreeOnOperationDeleted(self, moduleName, operationName)
-	TSM.Operations.Delete(moduleName, operationName)
-	local operationTree = self:GetElement("__parent.operationTree")
-	operationTree:SetSelectedOperation(moduleName, nil)
-		:Draw()
+	GroupOperation.DeleteOperation(moduleName, operationName)
+	self:GetElement("__parent.operationTree"):SetSelectedOperation(moduleName, nil)
 end
 
 function private.OperationTreeOnOperationSelected(self, moduleName, operationName)
@@ -609,7 +586,7 @@ function private.OperationTreeOnOperationSelected(self, moduleName, operationNam
 
 	local viewContainer = self:GetParentElement():GetParentElement():GetElement("content")
 	if moduleName and operationName then
-		TSM.Operations.Update(moduleName, operationName)
+		Operation.UpdateFromRelationships(moduleName, operationName)
 		viewContainer:SetPath("operation")
 		viewContainer:GetElement("settings.title.text"):SetText(operationName)
 		local contentFrame = viewContainer:GetElement("settings.content")
@@ -617,7 +594,7 @@ function private.OperationTreeOnOperationSelected(self, moduleName, operationNam
 		contentFrame:AddChild(private.moduleCallbacks[moduleName](operationName))
 	elseif moduleName then
 		local numOperations = 0
-		for _ in TSM.Operations.OperationIterator(moduleName) do
+		for _ in Operation.Iterator(moduleName) do
 			numOperations = numOperations + 1
 		end
 		UIUtils.AnalyticsRecordPathChange("main", "operations", "summary")
@@ -635,16 +612,10 @@ function private.OperationTreeOnOperationSelected(self, moduleName, operationNam
 end
 
 function private.CreateNewOperationOnClick(button)
-	local operationName = "New Operation"
-	local num = 1
-	while TSM.Operations.Exists(private.currentModule, operationName.." "..num) do
-		num = num + 1
-	end
-	operationName = operationName .. " " .. num
-	TSM.Operations.Create(private.currentModule, operationName)
+	local operationName = Operation.GetDeduplicatedName(private.currentModule, L["New Operation"])
+	Operation.Create(private.currentModule, operationName)
 	button:GetElement("__parent.__parent.__parent.__parent.selection.operationTree")
 		:SetSelectedOperation(private.currentModule, operationName)
-		:Draw()
 end
 
 function private.OperationNameChanged(text, newValue)
@@ -653,16 +624,15 @@ function private.OperationNameChanged(text, newValue)
 		-- didn't change
 		text:Draw()
 	elseif newValue == "" then
-		Log.PrintUser(L["Invalid operation name."])
+		ChatMessage.PrintUser(L["Invalid operation name."])
 		text:Draw()
-	elseif TSM.Operations.Exists(private.currentModule, newValue) then
-		Log.PrintUser(L["Group already exists."])
+	elseif Operation.Exists(private.currentModule, newValue) then
+		ChatMessage.PrintUser(L["Group already exists."])
 		text:Draw()
 	else
-		TSM.Operations.Rename(private.currentModule, private.currentOperationName, newValue)
+		GroupOperation.RenameOperation(private.currentModule, private.currentOperationName, newValue)
 		text:GetElement("__parent.__parent.__parent.__parent.selection.operationTree")
 			:SetSelectedOperation(private.currentModule, newValue)
-			:Draw()
 	end
 end
 
@@ -683,151 +653,71 @@ function private.ResetOperationOnClick(button)
 end
 
 function private.ConfirmResetOnClick(button)
-	TSM.Operations.Reset(private.currentModule, private.currentOperationName)
+	Operation.Reset(private.currentModule, private.currentOperationName)
 	local settingsFrame = button:GetBaseElement():GetElement("content.operations.content.settings")
 	local contentFrame = settingsFrame:GetElement("content")
 	contentFrame:ReleaseAllChildren()
-	TSM.Operations.Update(private.currentModule, private.currentOperationName)
+	Operation.UpdateFromRelationships(private.currentModule, private.currentOperationName)
 	contentFrame:AddChild(private.moduleCallbacks[private.currentModule](private.currentOperationName))
 	button:GetBaseElement():HideDialog()
 	settingsFrame:Draw()
-	Log.PrintfUser(L["%s - %s has been reset to default values."], private.currentModule, Theme.GetColor("INDICATOR_ALT"):ColorText(private.currentOperationName))
+	ChatMessage.PrintfUser(L["%s - %s has been reset to default values."], private.currentModule, Theme.GetColor("INDICATOR_ALT"):ColorText(private.currentOperationName))
 end
 
 function private.GroupSelectionChanged(groupSelector)
 	for groupPath in groupSelector:SelectedGroupIterator() do
-		if not TSM.Operations.GroupHasOperation(private.currentModule, groupPath, private.currentOperationName) then
-			local parentElement = groupSelector:GetParentElement():GetParentElement()
-			if groupPath ~= TSM.CONST.ROOT_GROUP_PATH then
-				TSM.Groups.SetOperationOverride(groupPath, private.currentModule, true, true)
+		if not GroupOperation.HasOperation(groupPath, private.currentModule, private.currentOperationName) then
+			local removedOperationName = GroupOperation.Add(groupPath, private.currentModule, private.currentOperationName)
+			if removedOperationName then
+				ChatMessage.PrintfUser(L["%s previously had the max number of operations, so removed %s."], ChatMessage.ColorUserAccentText(Group.FormatPath(groupPath)), ChatMessage.ColorUserAccentText(removedOperationName))
 			end
-			local numOperations = 0
-			local lastOperationName = nil
-			for _, groupOperationName in TSM.Groups.OperationIterator(groupPath, private.currentModule) do
-				lastOperationName = groupOperationName
-				numOperations = numOperations + 1
-			end
-			if numOperations == TSM.Operations.GetMaxNumber(private.currentModule) then
-				-- replace the last operation since we're already at the max number of operations
-				TSM.Groups.RemoveOperation(groupPath, private.currentModule, numOperations, true)
-				Log.PrintfUser(L["%s previously had the max number of operations, so removed %s."], Log.ColorUserAccentText(GroupPath.Format(groupPath)), Log.ColorUserAccentText(lastOperationName))
-			end
-			TSM.Groups.AppendOperation(groupPath, private.currentModule, private.currentOperationName, true)
-			Log.PrintfUser(L["Added %s to %s."], Log.ColorUserAccentText(private.currentOperationName), Log.ColorUserAccentText(groupPath == TSM.CONST.ROOT_GROUP_PATH and L["Base Group"] or GroupPath.Format(groupPath)))
-			parentElement:AddChild(private.CreateGroupOperationLine(groupPath))
+			ChatMessage.PrintfUser(L["Added %s to %s."], ChatMessage.ColorUserAccentText(private.currentOperationName), ChatMessage.ColorUserAccentText(groupPath == Group.GetRootPath() and L["Base Group"] or Group.FormatPath(groupPath)))
+			groupSelector:GetParentElement():GetParentElement():AddChild(private.CreateGroupOperationLine(groupPath))
 		end
 	end
-	TSM.Groups.RebuildDB()
 	groupSelector:ClearSelectedGroups(true)
 	groupSelector:GetParentElement():GetParentElement():GetParentElement():GetParentElement():GetParentElement():GetParentElement():Draw()
 end
 
-function private.ViewGroupOnClick(button)
-	local baseFrame = button:GetBaseElement()
-	TSM.MainUI.Groups.ShowGroupSettings(baseFrame, button:GetContext())
-end
-
-function private.RemoveOperationGroupOnClick(self)
-	local groupPath = self:GetContext()
-	TSM.Groups.RemoveOperationByName(groupPath, private.currentModule, private.currentOperationName)
-
-	-- remove the line for this group
-	local removeElement = self:GetParentElement()
-	local removeElementParent = removeElement:GetParentElement()
-	removeElementParent:RemoveChild(removeElement)
-	removeElementParent:GetParentElement():GetParentElement():GetParentElement():Draw()
-end
-
-function private.LinkBtnOnClick(button)
-	local settingKey = button:GetContext()
-	wipe(private.linkMenuEntries)
-	for _, operationName in TSM.Operations.OperationIterator(private.currentModule) do
-		if operationName ~= private.currentOperationName and not TSM.Operations.IsCircularRelationship(private.currentModule, private.currentOperationName, settingKey) then
-			tinsert(private.linkMenuEntries, operationName)
-		end
-	end
-	sort(private.linkMenuEntries)
-	button:GetBaseElement():ShowDialogFrame(UIElements.New("PopupFrame", "linkDialog")
-		:SetLayout("VERTICAL")
-		:SetSize(263, 243)
-		:AddAnchor("TOPRIGHT", button:_GetBaseFrame(), "BOTTOM", 22, -16)
-		:AddChild(UIElements.New("Frame", "titleFrame")
-			:SetLayout("VERTICAL")
-			:SetHeight(37)
-			:AddChild(UIElements.New("Text", "title")
-				:SetFont("BODY_BODY2_MEDIUM")
-				:SetJustifyH("CENTER")
-				:SetText(L["Link to Another Operation"])
-			)
-		)
-		:AddChild(UIElements.New("HorizontalLine", "line")
-			:SetColor("TEXT")
-		)
-		:AddChild(UIElements.New("SelectionList", "list")
-			:SetContext(settingKey)
-			:SetMargin(2, 2, 0, 3)
-			:SetEntries(private.linkMenuEntries, TSM.Operations.GetRelationship(private.currentModule, private.currentOperationName, settingKey))
-			:SetScript("OnEntrySelected", private.ListOnEntrySelected)
-		)
-	)
-end
-
-function private.ListOnEntrySelected(list, operationName)
-	local settingKey = list:GetContext()
-	local previousValue = TSM.Operations.GetRelationship(private.currentModule, private.currentOperationName, settingKey)
-	if operationName == previousValue then
-		TSM.Operations.SetRelationship(private.currentModule, private.currentOperationName, settingKey, nil)
-	else
-		TSM.Operations.SetRelationship(private.currentModule, private.currentOperationName, settingKey, operationName)
-	end
-
-	local baseFrame = list:GetBaseElement()
-	baseFrame:HideDialog()
-	Operations.ShowOperationSettings(baseFrame, private.currentModule, private.currentOperationName)
-end
-
-function private.OperationListOnSelectionChanged(scrollingTable)
-	local selectionCleared = scrollingTable:IsSelectionCleared()
+function private.OperationListOnSelectionChanged(scrollTable)
+	local allSelected, noneSelected = scrollTable:GetSelectionState()
 	local numSelected = 0
-	for _ in scrollingTable:SelectionIterator() do
+	for _ in scrollTable:SelectedOperationsIterator() do
 		numSelected = numSelected + 1
 	end
-	local footer = scrollingTable:GetElement("__parent.footer")
+	local footer = scrollTable:GetElement("__parent.footer")
 	footer:GetElement("deleteSelected")
 		:SetText(numSelected > 0 and format(L["Delete %d Operations"], numSelected) or L["Delete Operations"])
-		:SetDisabled(selectionCleared)
+		:SetDisabled(noneSelected)
 	footer:GetElement("selectAll")
-		:SetDisabled(scrollingTable:IsAllSelected())
+		:SetDisabled(allSelected)
 	footer:GetElement("clearAll")
-		:SetDisabled(selectionCleared)
+		:SetDisabled(noneSelected)
 	footer:Draw()
 end
 
 function private.SelectAllOnClick(button)
-	button:GetElement("__parent.__parent.list"):SelectAll()
+	button:GetElement("__parent.__parent.list"):SetSelectionState(true)
 end
 
 function private.ClearAllOnClick(button)
-	button:GetElement("__parent.__parent.list"):ClearSelection()
+	button:GetElement("__parent.__parent.list"):SetSelectionState(false)
 end
 
 function private.DeleteSelectedOnClick(button)
-	local scrollingTable = button:GetElement("__parent.__parent.list")
-	button:GetBaseElement():ShowConfirmationDialog(L["Delete Operations?"], L["Are you sure you want to delete the selected operations?"], private.DeleteSelectedOperations, scrollingTable)
+	local scrollTable = button:GetElement("__parent.__parent.list")
+	button:GetBaseElement():ShowConfirmationDialog(L["Delete Operations?"], L["Are you sure you want to delete the selected operations?"], private.DeleteSelectedOperations, scrollTable)
 end
 
-function private.DeleteSelectedOperations(scrollingTable)
+function private.DeleteSelectedOperations(scrollTable)
 	local toDelete = TempTable.Acquire()
-	for _, row in scrollingTable:SelectionIterator() do
-		local moduleName, operationName = row:GetFields("moduleName", "operationName")
-		assert(moduleName == private.currentModule)
+	for operationName in scrollTable:SelectedOperationsIterator() do
 		tinsert(toDelete, operationName)
 	end
-	TSM.Operations.DeleteList(private.currentModule, toDelete)
+	GroupOperation.DeleteOperations(private.currentModule, toDelete)
 	TempTable.Release(toDelete)
-	scrollingTable:UpdateData(true)
-	private.OperationListOnSelectionChanged(scrollingTable)
-	scrollingTable:GetElement("__parent.__parent.__parent.__parent.__parent.selection.operationTree"):UpdateData(true)
+	private.OperationListOnSelectionChanged(scrollTable)
+	scrollTable:GetElement("__parent.__parent.__parent.__parent.__parent.selection.operationTree"):SetSelectedOperation(private.currentModule, nil)
 end
 
 
@@ -836,90 +726,37 @@ end
 -- Private Helper Functions
 -- ============================================================================
 
-function private.NumGroupsVirtualField(row)
-	local num = 0
-	for _ in TSM.Operations.GroupIterator(row:GetField("moduleName"), row:GetField("operationName")) do
-		num = num + 1
-	end
-	return num
-end
-
-function private.NumItemsVirtualField(row)
-	local includesBaseGroup = false
-	local num = 0
-	for _, groupPath in TSM.Operations.GroupIterator(row:GetField("moduleName"), row:GetField("operationName")) do
-		if groupPath == TSM.CONST.ROOT_GROUP_PATH then
-			includesBaseGroup = true
-		else
-			num = num + TSM.Groups.GetNumItems(groupPath)
+function private.NumGroupsVirtualField(operationName)
+	if not private.numGroupsCache[operationName] then
+		local num = 0
+		for _ in GroupOperation.GroupIteratorByOperation(private.currentModule, operationName) do
+			num = num + 1
 		end
+		private.numGroupsCache[operationName] = num
 	end
-	if includesBaseGroup then
-		num = num + 0.9
-	end
-	return num
+	return private.numGroupsCache[operationName]
 end
 
-function private.GetConfigureIcon(_, _, iconIndex)
-	assert(iconIndex == 1)
-	return true, "iconPack.12x12/Popout", false
+function private.NumItemsVirtualField(operationName)
+	if not private.numItemsCache[operationName] then
+		local includesBaseGroup = false
+		local num = 0
+		for _, groupPath in GroupOperation.GroupIteratorByOperation(private.currentModule, operationName) do
+			if groupPath == Group.GetRootPath() then
+				includesBaseGroup = true
+			else
+				num = num + Group.GetNumItems(groupPath)
+			end
+		end
+		if includesBaseGroup then
+			num = num + 0.9
+		end
+		private.numItemsCache[operationName] = num
+	end
+	return private.numItemsCache[operationName]
 end
 
-function private.OnConfigureIconClick(scrollingTable, data, iconIndex)
-	assert(iconIndex == 1)
-	local operationName = scrollingTable:GetContext():GetResultRowByUUID(data):GetField("operationName")
-	scrollingTable:GetElement("__parent.__parent.__parent.__parent.__parent.selection.operationTree")
+function private.OperationListOnOperationConfigure(scrollTable, operationName)
+	scrollTable:GetElement("__parent.__parent.__parent.__parent.__parent.selection.operationTree")
 		:SetSelectedOperation(private.currentModule, operationName)
-end
-
-function private.GetNumItemsText(numItems)
-	if numItems == floor(numItems) then
-		return numItems
-	else
-		return floor(numItems).."*"
-	end
-end
-
-function private.GetNumItemsTooltip(numItems)
-	if numItems == floor(numItems) then
-		return nil
-	end
-	return L["This operation is applied to the base group which includes every item not in another group."]
-end
-
-function private.CustomStringPopoutOnClick(button)
-	local validateContext = button:GetContext()
-	local input = button:GetElement("__parent.input")
-	local title = button:GetParentElement():GetContext()
-	local validateFunc = validateContext.isUndercut and private.UndercutValidateFunction or private.DefaultValidateFunction
-	button:GetBaseElement():ShowDialogFrame(TSM.UI.Views.CustomStringDialog.New(input:GetValue(), title, validateFunc, validateContext.badSources, validateContext.isNumber and private.CustomStringNumberDialogCallback or private.CustomStringDialogCallback, button))
-end
-
-function private.CustomStringDialogCallback(newValue, button)
-	button:GetElement("__parent.input"):SetValue(Money.ToString(newValue) or newValue)
-		:Draw()
-end
-
-function private.CustomStringNumberDialogCallback(newValue, button)
-	button:GetElement("__parent.input"):SetValue(newValue)
-		:Draw()
-end
-
-function private.DefaultValidateFunction(_, value, badSources)
-	local isValid, err = CustomPrice.Validate(value, badSources)
-	if not isValid then
-		return false, err
-	end
-	return true
-end
-
-function private.UndercutValidateFunction(_, value, badSources)
-	if Environment.IsRetail() then
-		if Money.FromString(Money.ToString(value) or value) == 0 then
-			return true
-		elseif (Money.FromString(Money.ToString(value) or value) or math.huge) < COPPER_PER_SILVER then
-			return false, L["Invalid undercut. To post below the cheapest auction without a significant undercut, set your undercut to 0c."]
-		end
-	end
-	return private.DefaultValidateFunction(nil, value, badSources)
 end

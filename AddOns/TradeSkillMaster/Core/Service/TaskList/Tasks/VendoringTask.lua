@@ -5,9 +5,11 @@
 -- ------------------------------------------------------------------------------ --
 
 local TSM = select(2, ...) ---@type TSM
-local VendoringTask = TSM.Include("LibTSMClass").DefineClass("VendoringTask", TSM.TaskList.ItemTask)
-local L = TSM.Include("Locale").GetTable()
-local TempTable = TSM.Include("Util.TempTable")
+local LibTSMClass = LibStub("LibTSMClass")
+local VendoringTask = LibTSMClass.DefineClass("VendoringTask", TSM.TaskList.ItemTask)
+local L = TSM.Locale.GetTable()
+local TempTable = TSM.LibTSMUtil:Include("BaseType.TempTable")
+local Vendor = TSM.LibTSMService:Include("Vendor")
 TSM.TaskList.VendoringTask = VendoringTask
 local private = {
 	query = nil,
@@ -24,7 +26,7 @@ function VendoringTask.__init(self)
 	self.__super:__init()
 
 	if not private.query then
-		private.query = TSM.Vendoring.Buy.CreateMerchantQuery()
+		private.query = Vendor.NewScannerQuery()
 			:SetUpdateCallback(private.QueryUpdateCallback)
 	end
 end
@@ -47,7 +49,7 @@ end
 
 function VendoringTask.OnButtonClick(self)
 	local itemsToBuy = TempTable.Acquire()
-	local query = TSM.Vendoring.Buy.CreateMerchantQuery()
+	local query = Vendor.NewScannerQuery()
 		:Select("itemString")
 	for _, itemString in query:Iterator() do
 		itemsToBuy[itemString] = self:GetItems()[itemString]
@@ -79,7 +81,7 @@ function VendoringTask._UpdateState(self)
 	end
 	local canBuy = false
 	for itemString in pairs(self:GetItems()) do
-		if TSM.Vendoring.Buy.CanBuyItem(itemString) then
+		if Vendor.GetFirstIndex(itemString) then
 			canBuy = true
 			break
 		end

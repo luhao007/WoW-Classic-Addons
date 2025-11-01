@@ -4,34 +4,32 @@
 --    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
-local TSM = select(2, ...) ---@type TSM
-local DestroyingUI = TSM.UI:NewPackage("DestroyingUI")
-local Environment = TSM.Include("Environment")
-local L = TSM.Include("Locale").GetTable()
-local DisenchantInfo = TSM.Include("Data.DisenchantInfo")
-local ItemString = TSM.Include("Util.ItemString")
-local Log = TSM.Include("Util.Log")
-local TempTable = TSM.Include("Util.TempTable")
-local Theme = TSM.Include("Util.Theme")
-local TextureAtlas = TSM.Include("Util.TextureAtlas")
-local Reactive = TSM.Include("Util.Reactive")
-local ItemInfo = TSM.Include("Service.ItemInfo")
-local Conversions = TSM.Include("Service.Conversions")
-local Settings = TSM.Include("Service.Settings")
-local UIElements = TSM.Include("UI.UIElements")
-local UIManager = TSM.Include("UI.UIManager")
-local UIUtils = TSM.Include("UI.UIUtils")
+local TSM = select(2, ...)
+local DestroyingUI = TSM.UI:NewPackage("DestroyingUI") ---@type AddonPackage
+local ClientInfo = TSM.LibTSMWoW:Include("Util.ClientInfo")
+local L = TSM.Locale.GetTable()
+local ItemString = TSM.LibTSMTypes:Include("Item.ItemString")
+local TempTable = TSM.LibTSMUtil:Include("BaseType.TempTable")
+local ChatMessage = TSM.LibTSMService:Include("UI.ChatMessage")
+local Theme = TSM.LibTSMService:Include("UI.Theme")
+local Reactive = TSM.LibTSMUtil:Include("Reactive")
+local ItemInfo = TSM.LibTSMService:Include("Item.ItemInfo")
+local Conversion = TSM.LibTSMTypes:Include("Item.Conversion")
+local Conversions = TSM.LibTSMApp:Include("Service.Conversions")
+local UIElements = TSM.LibTSMUI:Include("Util.UIElements")
+local UIManager = TSM.LibTSMUtil:IncludeClassType("UIManager")
+local UIUtils = TSM.LibTSMUI:Include("Util.UIUtils")
 local private = {
-	manager = nil,
-	settings = nil,
-	query = nil,
+	manager = nil, ---@type UIManager
+	settings = nil, ---@type SettingsView
+	query = nil, ---@type DatabaseQuery
 }
 local MIN_FRAME_SIZE = { width = 280, height = 280 }
 local CONVERSION_METHODS = {
-	Conversions.METHOD.PROSPECT,
-	Conversions.METHOD.MILL,
+	Conversion.METHOD.PROSPECT,
+	Conversion.METHOD.MILL,
 }
-local STATE_SCHEMA = Reactive.CreateStateSchema()
+local STATE_SCHEMA = Reactive.CreateStateSchema("DESTROYING_UI_STATE")
 	:AddOptionalTableField("combineFuture")
 	:AddOptionalTableField("destroyFuture")
 	:AddOptionalTableField("frame")
@@ -40,23 +38,32 @@ local STATE_SCHEMA = Reactive.CreateStateSchema()
 	:AddBooleanField("autoShow", false)
 	:AddBooleanField("autoCombine", false)
 	:AddBooleanField("didAutoShow", false)
+	:AddBooleanField("hasActiveFuture", false)
+	:AddBooleanField("canCombineOrDestroy", false)
 	:Commit()
-
 
 
 -- ============================================================================
 -- Module Functions
 -- ============================================================================
 
-function DestroyingUI.OnEnable()
-	private.settings = Settings.NewView()
+function DestroyingUI.OnInitialize(settingsDB)
+	private.settings = settingsDB:NewView()
 		:AddKey("global", "destroyingUIContext", "frame")
 		:AddKey("global", "destroyingUIContext", "itemsScrollingTable")
 		:AddKey("global", "destroyingOptions", "autoShow")
 		:AddKey("global", "destroyingOptions", "autoStack")
+end
 
+function DestroyingUI.OnEnable(settingsDB)
 	local state = STATE_SCHEMA:CreateState()
-	private.manager = UIManager.Create(state, private.ActionHandler)
+	private.manager = UIManager.Create("DESTROYING", state, private.ActionHandler)
+
+	-- Set up some computed state properties
+	private.manager:SetStateFromPublisher("hasActiveFuture", state:PublisherForExpression([[combineFuture or destroyFuture]])
+		:MapToBoolean()
+	)
+	private.manager:SetStateFromPublisher("canCombineOrDestroy", state:PublisherForExpression([[canCombine or canDestroy]]))
 
 	-- Setup publisher to set state.canCombine
 	private.manager:SetStateFromPublisher("canCombine", TSM.Destroying.CanCombinePublisher())
@@ -74,15 +81,13 @@ function DestroyingUI.OnEnable()
 	private.manager:SetStateFromPublisher("autoShow", private.settings:PublisherForKey("autoShow"))
 
 	-- Publisher for when we have something to combine/destory
-	private.manager:ProcessActionFromPublisher("ACTION_CAN_COMBINE_OR_DESTROY", state:Publisher()
-		:IgnoreDuplicatesWithKeys("canDestroy", "canCombine", "autoShow", "didAutoShow")
-		:IgnoreWithFunction(private.StateToShouldShow)
+	private.manager:ProcessActionFromPublisher("ACTION_CAN_COMBINE_OR_DESTROY", state:PublisherForExpression([[autoShow and not didAutoShow and canCombineOrDestroy]])
+		:IgnoreIfNotEquals(true)
 	)
 
 	-- Publisher for when we don't have anything to combine/destory
-	private.manager:ProcessActionFromPublisher("ACTION_CAN_NOT_COMBINE_OR_DESTROY", state:Publisher()
-		:IgnoreDuplicatesWithKeys("canDestroy", "canCombine")
-		:IgnoreWithFunction(private.StateToShouldHide)
+	private.manager:ProcessActionFromPublisher("ACTION_CAN_NOT_COMBINE_OR_DESTROY", state:PublisherForKeyChange("canCombineOrDestroy")
+		:IgnoreIfNotEquals(false)
 	)
 end
 
@@ -97,86 +102,14 @@ end
 
 
 -- ============================================================================
--- Action Handler
--- ============================================================================
-
-function private.ActionHandler(state, action)
-	Log.Info("Handling action %s", action)
-	if action == "ACTION_FRAME_SHOW" then
-		assert(not state.frame and (state.canCombine or state.canDestroy))
-		UIUtils.AnalyticsRecordPathChange("destroying")
-		state.didAutoShow = true
-		state.frame = private.CreateMainFrame(state)
-		state.frame:Show()
-		state.frame:Draw()
-		private.ItemsOnSelectionChanged(state.frame:GetElement("content.items"))
-
-		if state.autoCombine then
-			-- We should auto-combine first
-			return "ACTION_COMBINE_START"
-		end
-	elseif action == "ACTION_FRAME_ON_HIDE" then
-		UIUtils.AnalyticsRecordClose("destroying")
-		assert(state.frame)
-		if state.combineFuture then
-			state.combineFuture:Cancel()
-			state.combineFuture = nil
-		end
-		if state.destroyFuture then
-			state.destroyFuture:Cancel()
-			state.destroyFuture = nil
-		end
-		state.frame:Hide()
-		state.frame:Release()
-		state.frame = nil
-	elseif action == "ACTION_COMBINE_START" then
-		assert(not state.combineFuture)
-		local future = TSM.Destroying.StartCombine()
-		future:SetScript("OnDone", private.CombineFutureOnDone)
-		state.combineFuture = future
-	elseif action == "ACTION_COMBINE_DONE" then
-		-- Don't care what the result was
-		state.combineFuture:GetValue()
-		state.combineFuture = nil
-	elseif action == "ACTION_DESTROY_START" then
-		assert(not state.destroyFuture)
-		local future = TSM.Destroying.StartDestroy(state.frame:GetElement("content.destroyBtn"), state.frame:GetElement("content.items"):GetSelection())
-		future:SetScript("OnDone", private.DestroyFutureOnDone)
-		state.destroyFuture = future
-	elseif action == "ACTION_DESTROY_DONE" then
-		-- Don't care what the result was
-		state.destroyFuture:GetValue()
-		state.destroyFuture = nil
-	elseif action == "ACTION_TOGGLE" then
-		if state.frame then
-			state.frame:Hide()
-		elseif state.canCombine or state.canDestroy then
-			return "ACTION_FRAME_SHOW"
-		end
-	elseif action == "ACTION_ON_DISABLE" or action == "ACTION_CAN_NOT_COMBINE_OR_DESTROY" then
-		if not state.frame then
-			return
-		end
-		state.frame:Hide()
-	elseif action == "ACTION_CAN_COMBINE_OR_DESTROY" then
-		if state.frame then
-			return
-		end
-		return "ACTION_FRAME_SHOW"
-	else
-		error("Unknown action: "..tostring(action))
-	end
-end
-
-
-
--- ============================================================================
 -- Main Frame
 -- ============================================================================
 
+---@param state DestroyingUIState
 function private.CreateMainFrame(state)
-	local frame = UIElements.New("ApplicationFrame", "base")
+	return UIElements.New("ApplicationFrame", "base")
 		:SetParent(UIParent)
+		:SetManager(private.manager)
 		:SetSettingsContext(private.settings, "frame")
 		:SetMinResize(MIN_FRAME_SIZE.width, MIN_FRAME_SIZE.height)
 		:SetStrata("HIGH")
@@ -220,50 +153,23 @@ function private.CreateMainFrame(state)
 					)
 				)
 			)
-			:AddChild(UIElements.New("QueryScrollingTable", "items")
-				:SetSettingsContext(private.settings, "itemsScrollingTable")
-				:GetScrollingTableInfo()
-					:NewColumn("item")
-						:SetTitle(L["Item"])
-						:SetIconSize(12)
-						:SetFont("ITEM_BODY3")
-						:SetJustifyH("LEFT")
-						:SetTextInfo("itemString", UIUtils.GetDisplayItemName)
-						:SetIconInfo("itemString", ItemInfo.GetTexture)
-						:SetTooltipInfo("itemString")
-						:SetSortInfo("name")
-						:SetTooltipLinkingDisabled(true)
-						:SetActionIconInfo(1, 12, private.GetHideIcon)
-						:SetActionIconClickHandler(private.OnHideIconClick)
-						:DisableHiding()
-						:Commit()
-					:NewColumn("num")
-						:SetTitle("Qty")
-						:SetFont("TABLE_TABLE1")
-						:SetJustifyH("CENTER")
-						:SetTextInfo("quantity")
-						:SetSortInfo("quantity")
-						:Commit()
-					:Commit()
+			:AddChild(UIElements.New("DestroyingScrollTable", "items")
+				:SetSettings(private.settings, "itemsScrollingTable")
 				:SetQuery(private.query)
-				:SetScript("OnSelectionChanged", private.ItemsOnSelectionChanged)
+				:SetAction("OnSelectionChanged", "ACTION_ITEM_SELECTION_CHANGED")
+				:SetAction("OnHideIconClick", "ACTION_HIDE_ITEM")
 			)
 			:AddChild(UIElements.New("HorizontalLine", "lineBottom"))
-			:AddChild(UIElements.New("ActionButton", "combineBtn")
+			:AddChildIf(not ClientInfo.IsRetail(), UIElements.New("ActionButton", "combineBtn")
 				:SetHeight(26)
 				:SetMargin(12, 12, 12, 0)
 				:SetTextPublisher(state:PublisherForKeyChange("combineFuture")
 					:MapToBoolean()
 					:MapBooleanWithValues(L["Combining..."], L["Combine Partial Stacks"])
 				)
-				:SetDisabledPublisher(state:Publisher()
-					:IgnoreDuplicatesWithKeys("canCombine", "combineFuture", "destroyFuture")
-					:MapWithFunction(private.StateToCombineDisabled)
-				)
-				:SetPressedPublisher(state:PublisherForKeyChange("combineFuture")
-					:MapToBoolean()
-				)
-				:SetScript("OnClick", private.CombineButtonOnClick)
+				:SetDisabledPublisher(state:PublisherForExpression([[hasActiveFuture or not canCombine]]))
+				:SetPressedPublisher(state:PublisherForKeyChange("combineFuture"):MapToBoolean())
+				:SetAction("OnClick", "ACTION_COMBINE_START")
 			)
 			:AddChild(UIElements.NewNamed("SecureMacroActionButton", "destroyBtn", "TSMDestroyBtn")
 				:SetHeight(26)
@@ -272,89 +178,112 @@ function private.CreateMainFrame(state)
 					:MapToBoolean()
 					:MapBooleanWithValues(L["Destroying..."], L["Destroy Next"])
 				)
-				:SetDisabledPublisher(state:Publisher()
-					:IgnoreDuplicatesWithKeys("canDestroy", "combineFuture", "destroyFuture")
-					:MapWithFunction(private.StateToDestroyDisabled)
-				)
-				:SetPressedPublisher(state:PublisherForKeyChange("destroyFuture")
-					:MapToBoolean()
-				)
-				:SetScript("PreClick", private.DestroyButtonPreClick)
+				:SetDisabledPublisher(state:PublisherForExpression([[hasActiveFuture or not canDestroy]]))
+				:SetPressedPublisher(state:PublisherForKeyChange("destroyFuture"):MapToBoolean())
+				:SetAction("PreClick", "ACTION_DESTROY_START")
 			)
 		)
-	return frame
 end
 
 
 
 -- ============================================================================
--- Local Script Handlers
+-- Action Handler
 -- ============================================================================
 
-function private.FrameOnHide()
-	private.manager:ProcessAction("ACTION_FRAME_ON_HIDE")
-end
+---@param manager UIManager
+---@param state DestroyingUIState
+function private.ActionHandler(manager, state, action, ...)
+	if action == "ACTION_FRAME_SHOW" then
+		assert(not state.frame and state.canCombineOrDestroy)
+		UIUtils.AnalyticsRecordPathChange("destroying")
+		state.didAutoShow = true
+		state.frame = private.CreateMainFrame(state)
+		state.frame:Show()
+		state.frame:Draw()
+		manager:ProcessAction("ACTION_ITEM_SELECTION_CHANGED")
+		if state.autoCombine then
+			-- We should auto-combine first
+			manager:ProcessAction("ACTION_COMBINE_START")
+		end
+	elseif action == "ACTION_FRAME_ON_HIDE" then
+		UIUtils.AnalyticsRecordClose("destroying")
+		assert(state.frame)
+		if state.combineFuture then
+			manager:CancelFuture("combineFuture")
+		end
+		if state.destroyFuture then
+			manager:CancelFuture("destroyFuture")
+		end
+		state.frame:Hide()
+		state.frame:Release()
+		state.frame = nil
+	elseif action == "ACTION_COMBINE_START" then
+		local future = TSM.Destroying.StartCombine()
+		-- Don't care about the result of the future
+		manager:ManageFuture("combineFuture", future)
+	elseif action == "ACTION_DESTROY_START" then
+		local future = TSM.Destroying.StartDestroy(state.frame:GetElement("content.destroyBtn"), state.frame:GetElement("content.items"):GetSelection())
+		-- Don't care about the result of the future
+		manager:ManageFuture("destroyFuture", future)
+	elseif action == "ACTION_TOGGLE" then
+		if state.frame then
+			state.frame:Hide()
+		elseif state.canCombineOrDestroy then
+			return manager:ProcessAction("ACTION_FRAME_SHOW")
+		else
+			ChatMessage.PrintUser(L["There is nothing in your inventory to destroy which matches your settings."])
+		end
+	elseif action == "ACTION_ON_DISABLE" or action == "ACTION_CAN_NOT_COMBINE_OR_DESTROY" then
+		if state.frame then
+			state.frame:Hide()
+		end
+	elseif action == "ACTION_CAN_COMBINE_OR_DESTROY" then
+		if not state.frame then
+			return manager:ProcessAction("ACTION_FRAME_SHOW")
+		end
+	elseif action == "ACTION_ITEM_SELECTION_CHANGED" then
+		local scrollTable = state.frame:GetElement("content.items")
+		local itemString = scrollTable:GetSelection()
+		if not itemString then
+			-- Just select the first row
+			return scrollTable:SelectFirstItem()
+		end
 
-function private.GetHideIcon(_, data, iconIndex, isMouseOver)
-	assert(iconIndex == 1)
-	-- TODO: needs a new texture for the icon
-	return true, isMouseOver and TextureAtlas.GetColoredKey("iconPack.12x12/Hide", "TEXT_ALT") or "iconPack.12x12/Hide", true, L["Click to hide this item for the current session. Hold shift to hide this item permanently."]
-end
+		local itemFrame = state.frame:GetElement("content.item")
+		itemFrame:GetElement("header.icon")
+			:SetBackground(ItemInfo.GetTexture(itemString))
+			:SetTooltip(itemString)
+		itemFrame:GetElement("header.name")
+			:SetText(UIUtils.GetDisplayItemName(itemString) or "")
 
-function private.OnHideIconClick(scrollingTable, data, iconIndex, mouseButton)
-	assert(iconIndex == 1)
-	if mouseButton ~= "LeftButton" then
-		return
-	end
-	local row = scrollingTable._query:GetResultRowByUUID(data)
-	local itemString = row:GetField("itemString")
-	if IsShiftKeyDown() then
-		Log.PrintfUser(L["Destroying will ignore %s permanently. You can remove it from the ignored list in the settings."], ItemInfo.GetName(itemString))
-		TSM.Destroying.IgnoreItemPermanent(itemString)
+		local info, targetItems = private.GetDestroyInfo(itemString)
+		local scrollFrame = itemFrame:GetElement("container.scroll")
+		scrollFrame:ReleaseAllChildren()
+		for i, text in ipairs(info) do
+			scrollFrame:AddChild(UIElements.New("Button", "row"..i)
+				:SetHeight(14)
+				:SetFont("ITEM_BODY3")
+				:SetJustifyH("LEFT")
+				:SetText(text)
+				:SetTooltip(targetItems[i])
+			)
+		end
+		TempTable.Release(info)
+		TempTable.Release(targetItems)
+		itemFrame:Draw()
+	elseif action == "ACTION_HIDE_ITEM" then
+		local itemString, isPermanent = ...
+		if isPermanent then
+			ChatMessage.PrintfUser(L["Destroying will ignore %s permanently. You can remove it from the ignored list in the settings."], ItemInfo.GetName(itemString))
+			TSM.Destroying.IgnoreItemPermanent(itemString)
+		else
+			ChatMessage.PrintfUser(L["Destroying will ignore %s until you log out."], ItemInfo.GetName(itemString))
+			TSM.Destroying.IgnoreItemSession(itemString)
+		end
 	else
-		Log.PrintfUser(L["Destroying will ignore %s until you log out."], ItemInfo.GetName(itemString))
-		TSM.Destroying.IgnoreItemSession(itemString)
+		error("Unknown action: "..tostring(action))
 	end
-end
-
-function private.ItemsOnSelectionChanged(scrollingTable)
-	if not scrollingTable:GetSelection() then
-		-- select the first row
-		local result = private.query:GetFirstResult()
-		return scrollingTable:SetSelection(result and result:GetUUID() or nil)
-	end
-
-	local itemString = scrollingTable:GetSelection():GetField("itemString")
-	local itemFrame = scrollingTable:GetElement("__parent.item")
-	itemFrame:GetElement("header.icon")
-		:SetBackground(ItemInfo.GetTexture(itemString))
-		:SetTooltip(itemString)
-	itemFrame:GetElement("header.name")
-		:SetText(UIUtils.GetDisplayItemName(itemString) or "")
-
-	local info, targetItems = private.GetDestroyInfo(itemString)
-	local scrollFrame = itemFrame:GetElement("container.scroll")
-	scrollFrame:ReleaseAllChildren()
-	for i, text in ipairs(info) do
-		scrollFrame:AddChild(UIElements.New("Button", "row"..i)
-			:SetHeight(14)
-			:SetFont("ITEM_BODY3")
-			:SetJustifyH("LEFT")
-			:SetText(text)
-			:SetTooltip(targetItems[i])
-		)
-	end
-	TempTable.Release(info)
-	TempTable.Release(targetItems)
-	itemFrame:Draw()
-end
-
-function private.CombineButtonOnClick(button)
-	private.manager:ProcessAction("ACTION_COMBINE_START")
-end
-
-function private.DestroyButtonPreClick(button)
-	private.manager:ProcessAction("ACTION_DESTROY_START")
 end
 
 
@@ -363,15 +292,19 @@ end
 -- Private Helper Functions
 -- ============================================================================
 
+function private.FrameOnHide()
+	private.manager:ProcessAction("ACTION_FRAME_ON_HIDE")
+end
+
 function private.GetDestroyInfo(itemString)
 	local classId = ItemInfo.GetClassId(itemString)
 	local quality = ItemInfo.GetQuality(itemString)
-	local itemLevel = Environment.IsRetail() and ItemInfo.GetItemLevel(itemString) or ItemInfo.GetItemLevel(ItemString.GetBase(itemString))
-	local expansion = Environment.IsRetail() and ItemInfo.GetExpansion(itemString) or nil
+	local itemLevel = ClientInfo.IsRetail() and ItemInfo.GetItemLevel(itemString) or ItemInfo.GetItemLevel(ItemString.GetBase(itemString))
+	local expansion = ClientInfo.IsRetail() and ItemInfo.GetExpansion(itemString) or nil
 	local info = TempTable.Acquire()
 	local targetItems = TempTable.Acquire()
-	for targetItemString in DisenchantInfo.TargetItemIterator() do
-		local amountOfMats, matRate, minAmount, maxAmount = DisenchantInfo.GetTargetItemSourceInfo(targetItemString, classId, quality, itemLevel, expansion)
+	for targetItemString in Conversion.DisenchantTargetItemIterator() do
+		local amountOfMats, matRate, minAmount, maxAmount = Conversions.GetDisenchantTargetItemSourceInfo(targetItemString, classId, quality, itemLevel, expansion)
 		if amountOfMats then
 			local name = ItemInfo.GetName(targetItemString)
 			local color = ItemInfo.GetQualityColor(targetItemString)
@@ -385,7 +318,7 @@ function private.GetDestroyInfo(itemString)
 		end
 	end
 	for _, method in ipairs(CONVERSION_METHODS) do
-		for targetItemString, amountOfMats, matRate, minAmount, maxAmount in Conversions.TargetItemsByMethodIterator(itemString, method) do
+		for targetItemString, amountOfMats, matRate, minAmount, maxAmount in Conversion.TargetItemsByMethodIterator(itemString, method) do
 			local name = ItemInfo.GetName(targetItemString)
 			local color = ItemInfo.GetQualityColor(targetItemString)
 			if name and color then
@@ -398,28 +331,4 @@ function private.GetDestroyInfo(itemString)
 		end
 	end
 	return info, targetItems
-end
-
-function private.StateToCombineDisabled(state)
-	return state.combineFuture or state.destroyFuture or not state.canCombine
-end
-
-function private.StateToDestroyDisabled(state)
-	return state.combineFuture or state.destroyFuture or not state.canDestroy
-end
-
-function private.StateToShouldShow(state)
-	return state.autoShow and not state.didAutoShow and (state.canDestroy or state.canCombine)
-end
-
-function private.StateToShouldHide(state)
-	return not state.canDestroy and not state.canCombine
-end
-
-function private.CombineFutureOnDone()
-	private.manager:ProcessAction("ACTION_COMBINE_DONE")
-end
-
-function private.DestroyFutureOnDone()
-	private.manager:ProcessAction("ACTION_DESTROY_DONE")
 end

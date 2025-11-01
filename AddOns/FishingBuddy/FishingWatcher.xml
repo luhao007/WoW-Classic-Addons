@@ -17,7 +17,7 @@
 			</OnUpdate>
 		</Scripts>
 		<Frames>
-			<Button name="FishingWatchTab" inherits="OptionsFrameTabButtonTemplate" hidden="true">
+			<Button name="FishingWatchTab" inherits="PanelTabButtonTemplate" hidden="true">
 				<Size x="64" y="32"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="FishingWatchFrame" relativePoint="TOPLEFT">

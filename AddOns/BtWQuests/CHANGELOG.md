@@ -1,3 +1,13 @@
+# v2.56.1
+
+- Fixed Mists of Pandaria not being included with the Classic release
+
+# v2.56.0
+
+- Updated for 5.5.0
+- Updated World Map guide icon to use a custom texture
+- Fixed fallback for Chromie Time
+
 # v2.52.0
 
 - Updated for 4.4.2

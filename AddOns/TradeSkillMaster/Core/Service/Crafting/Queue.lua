@@ -5,18 +5,20 @@
 -- ------------------------------------------------------------------------------ --
 
 local TSM = select(2, ...) ---@type TSM
-local Queue = TSM.Crafting:NewPackage("Queue")
-local CraftString = TSM.Include("Util.CraftString")
-local Database = TSM.Include("Util.Database")
-local Math = TSM.Include("Util.Math")
-local Log = TSM.Include("Util.Log")
-local TempTable = TSM.Include("Util.TempTable")
-local RecipeString = TSM.Include("Util.RecipeString")
-local ItemString = TSM.Include("Util.ItemString")
-local MatString = TSM.Include("Util.MatString")
-local AltTracking = TSM.Include("Service.AltTracking")
-local CustomPrice = TSM.Include("Service.CustomPrice")
-local Settings = TSM.Include("Service.Settings")
+local Queue = TSM.Crafting:NewPackage("Queue") ---@type AddonPackage
+local Spell = TSM.LibTSMWoW:Include("API.Spell")
+local CraftString = TSM.LibTSMTypes:Include("Crafting.CraftString")
+local Database = TSM.LibTSMUtil:Include("Database")
+local Math = TSM.LibTSMUtil:Include("Lua.Math")
+local TempTable = TSM.LibTSMUtil:Include("BaseType.TempTable")
+local RecipeString = TSM.LibTSMTypes:Include("Crafting.RecipeString")
+local ItemString = TSM.LibTSMTypes:Include("Item.ItemString")
+local MatString = TSM.LibTSMTypes:Include("Crafting.MatString")
+local Group = TSM.LibTSMTypes:Include("Group")
+local CustomString = TSM.LibTSMTypes:Include("CustomString")
+local ChatMessage = TSM.LibTSMService:Include("UI.ChatMessage")
+local CraftingOperation = TSM.LibTSMSystem:Include("CraftingOperation")
+local AltTracking = TSM.LibTSMApp:Include("Service.AltTracking")
 local private = {
 	settings = nil,
 	db = nil,
@@ -32,9 +34,15 @@ local MAX_NUM_QUEUED = 9999
 -- Module Functions
 -- ============================================================================
 
-function Queue.OnEnable()
-	private.settings = Settings.NewView()
+function Queue.OnInitialize(settingsDB)
+	private.settings = settingsDB:NewView()
 		:AddKey("factionrealm", "internalData", "craftingQueue")
+		:AddKey("factionrealm", "internalData", "crafts")
+		:AddKey("global", "craftingOptions", "ignoreGuilds")
+		:AddKey("global", "craftingOptions", "ignoreCharacters")
+end
+
+function Queue.OnEnable()
 	private.db = Database.NewSchema("CRAFTING_QUEUE")
 		:AddUniqueStringField("recipeString")
 		:AddStringField("craftString")
@@ -71,15 +79,15 @@ function Queue.SetNum(recipeString, num)
 		:Equal("recipeString", recipeString)
 	local row = query:GetFirstResult()
 	if row and numQueued == 0 then
-		-- delete this row
+		-- Delete this row
 		private.db:DeleteRow(row)
 	elseif row then
-		-- update this row
+		-- Update this row
 		row:SetField("num", numQueued)
 			:Update()
 	elseif numQueued > 0 then
 		local craftString = CraftString.FromRecipeString(recipeString)
-		-- insert a new row
+		-- Insert a new row
 		private.db:NewRow()
 			:SetField("recipeString", recipeString)
 			:SetField("craftString", craftString)
@@ -99,12 +107,8 @@ function Queue.GetNumByCraftString(craftString)
 		:SumAndRelease("num")
 end
 
-function Queue.Add(recipeString, quantity)
-	Queue.SetNum(recipeString, Queue.GetNum(recipeString) + quantity)
-end
-
-function Queue.Remove(recipeString, quantity)
-	Queue.SetNum(recipeString, Queue.GetNum(recipeString) - quantity)
+function Queue.Adjust(recipeString, amount)
+	Queue.SetNum(recipeString, Queue.GetNum(recipeString) + amount)
 end
 
 function Queue.Clear()
@@ -121,7 +125,8 @@ function Queue.GetTotals()
 	local query = private.db:NewQuery()
 		:Select("recipeString", "craftString", "num")
 	for _, recipeString, craftString, numQueued in query:Iterator() do
-		local numResult = TSM.db.factionrealm.internalData.crafts[craftString] and TSM.db.factionrealm.internalData.crafts[craftString].numResult or 0
+		local craftInfo = private.settings.crafts[craftString]
+		local numResult = craftInfo and craftInfo.numResult or 0
 		local cost, _, profit = TSM.Crafting.Cost.GetCostsByRecipeString(recipeString)
 		if cost then
 			totalCost = (totalCost or 0) + cost * numQueued * numResult
@@ -130,7 +135,7 @@ function Queue.GetTotals()
 			totalProfit = (totalProfit or 0) + profit * numQueued * numResult
 		end
 		local spellId = CraftString.GetSpellId(craftString)
-		local castTime = select(4, GetSpellInfo(spellId))
+		local _, _, castTime = Spell.GetInfo(spellId)
 		if castTime then
 			totalCastTimeMs = (totalCastTimeMs or 0) + castTime * numQueued
 		end
@@ -142,15 +147,15 @@ end
 function Queue.RestockGroups(groups)
 	private.db:SetQueryUpdatesPaused(true)
 	for _, groupPath in ipairs(groups) do
-		if groupPath ~= TSM.CONST.ROOT_GROUP_PATH then
-			for _, itemString in TSM.Groups.ItemIterator(groupPath) do
+		if groupPath ~= Group.GetRootPath() then
+			for _, itemString in Group.ItemIterator(groupPath) do
 				local levelItemString = ItemString.ToLevel(itemString)
 				if TSM.Crafting.CanCraftItem(levelItemString) then
-					local isValid, err = TSM.Operations.Crafting.IsValid(itemString)
+					local isValid, err = TSM.Crafting.IsOperationValid(itemString)
 					if isValid then
 						private.RestockItem(itemString)
 					elseif err then
-						Log.PrintUser(err)
+						ChatMessage.PrintUser(err)
 					end
 				end
 			end
@@ -167,9 +172,9 @@ end
 
 function private.RestockItem(itemString)
 	assert(not next(private.optionalMatTemp) and not next(private.qualityMatTemp))
-	local cheapestCost, cheapestCraftString = TSM.Crafting.Cost.GetLowestCostByItem(itemString, private.optionalMatTemp, private.qualityMatTemp)
-	if not cheapestCraftString then
-		-- can't craft this item
+	local cheapestCost, cheapestCraftString, cheapestConcentration = TSM.Crafting.Cost.GetLowestCostByItem(itemString, private.optionalMatTemp, private.qualityMatTemp)
+	if not cheapestCraftString or (cheapestConcentration or 0) > 0 then
+		-- Can't craft this item (or need concentration)
 		wipe(private.qualityMatTemp)
 		wipe(private.optionalMatTemp)
 		return
@@ -183,42 +188,36 @@ function private.RestockItem(itemString)
 	wipe(private.optionalMatTemp)
 	local itemValue = TSM.Crafting.Cost.GetCraftedItemValue(itemString)
 	local profit = itemValue and cheapestCost and (itemValue - cheapestCost) or nil
-	local hasMinProfit, minProfit = TSM.Operations.Crafting.GetMinProfit(itemString)
+	local hasMinProfit, minProfit = CraftingOperation.GetMinProfit(itemString)
 	if hasMinProfit and (not minProfit or not profit or profit < minProfit) then
-		-- profit is too low
+		-- Profit is too low
 		return
 	end
 
-	local haveQuantity = CustomPrice.GetSourcePrice(itemString, "NumInventory") or 0
-	for guild, ignored in pairs(TSM.db.global.craftingOptions.ignoreGuilds) do
+	local haveQuantity = CustomString.GetSourceValue("NumInventory", itemString) or 0
+	for guild, ignored in pairs(private.settings.ignoreGuilds) do
 		if ignored then
 			haveQuantity = haveQuantity - AltTracking.GetGuildQuantity(itemString, guild)
 		end
 	end
-	for player, ignored in pairs(TSM.db.global.craftingOptions.ignoreCharacters) do
+	for player, ignored in pairs(private.settings.ignoreCharacters) do
 		if ignored then
 			haveQuantity = haveQuantity - AltTracking.GetBagQuantity(itemString, player)
 			haveQuantity = haveQuantity - AltTracking.GetBankQuantity(itemString, player)
-			haveQuantity = haveQuantity - AltTracking.GetReagentBankQuantity(itemString, player)
 			haveQuantity = haveQuantity - AltTracking.GetAuctionQuantity(itemString, player)
 			haveQuantity = haveQuantity - AltTracking.GetMailQuantity(itemString, player)
 		end
 	end
 	assert(haveQuantity >= 0)
-	local neededQuantity = TSM.Operations.Crafting.GetRestockQuantity(itemString, haveQuantity)
+	local neededQuantity = CraftingOperation.GetRestockQuantity(itemString, haveQuantity)
 	if neededQuantity == 0 then
 		return
 	end
-	local chance = 1
 	if CraftString.GetQuality(cheapestCraftString) then
 		assert(not next(private.matsTemp) and not next(private.qualityMatTemp))
 		TSM.Crafting.GetMatsAsTable(cheapestCraftString, private.matsTemp)
-		local canCraft, inspirationChance = TSM.Crafting.DFCrafting.GetOptionalMats(cheapestCraftString, private.matsTemp, private.qualityMatTemp)
-		if canCraft then
-			chance = inspirationChance
-		end
 		wipe(private.qualityMatTemp)
 		wipe(private.matsTemp)
 	end
-	Queue.SetNum(recipeString, floor(neededQuantity / (TSM.Crafting.GetNumResult(cheapestCraftString) * chance)))
+	Queue.SetNum(recipeString, floor(neededQuantity / TSM.Crafting.GetNumResult(cheapestCraftString)))
 end

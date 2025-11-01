@@ -4,22 +4,33 @@ addon.Gui.RightClickMenu.EventReminderMenu = {
 };
 local eventReminderMenu = addon.Gui.RightClickMenu.EventReminderMenu;
 
-local rightClickMenu = LibStub("Krowi_Menu-1.0");
-
-function eventReminderMenu:Open(event, anchor, offsetX, offsetY, point, relativePoint, frameStrata, frameLevel)
-	-- Reset menu
-	rightClickMenu:Clear();
-
-	-- Always add header
-	rightClickMenu:AddTitle(event.EventDetails.Name);
+local function CreateMenu(self, menu, event)
+	addon.MenuUtil:CreateTitle(menu, event.EventDetails and event.EventDetails.Name or addon.L["Unknown"]);
 
 	for _, section in next, self.Sections do
 		if section:CheckAdd(event) then
-			section:Add(rightClickMenu, event);
+			section:Add(menu, event);
 		end
 	end
+end
 
-	rightClickMenu:Open(anchor, offsetX, offsetY, point, relativePoint, frameStrata, frameLevel);
+if addon.Util.IsTheWarWithin then
+	function eventReminderMenu:Open(caller, event, anchor, offsetX, offsetY, point, relativePoint, frameStrata, frameLevel)
+		MenuUtil.CreateContextMenu(caller, function(owner, menu)
+			menu:SetTag("RIGHT_CLICK_MENU_EVENT_REMINDER");
+
+			CreateMenu(self, menu, event);
+		end);
+	end
+else
+	local rightClickMenu = LibStub("Krowi_Menu-1.0");
+	function eventReminderMenu:Open(caller, event, anchor, offsetX, offsetY, point, relativePoint, frameStrata, frameLevel)
+		rightClickMenu:Clear();
+
+		CreateMenu(self, rightClickMenu, event);
+
+		rightClickMenu:Open(anchor, offsetX, offsetY, point, relativePoint, frameStrata, frameLevel);
+	end
 end
 
 function eventReminderMenu:GetLastSection()

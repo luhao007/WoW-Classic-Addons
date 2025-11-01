@@ -1,8 +1,8 @@
 local appName, app = ...;
-local L, settings = app.L.SETTINGS_MENU, app.Settings;
+local L, settings = app.L, app.Settings;
 
 -- Settings: General Page
-local child = settings:CreateOptionsPage("General", appName, true)
+local child = settings:CreateOptionsPage(L.GENERAL_PAGE, appName, true)
 
 -- Creates a Checkbox used to designate tracking the specified 'trackingOption', based on tracking of 'parentTrackingOption' if specified
 -- localeKey: The prefix of the locale lookup value (i.e. HEIRLOOMS_UPGRADES)
@@ -16,7 +16,7 @@ child.CreateTrackingCheckbox = function(frame, localeKey, thing, officiallySuppo
 		tooltip = tooltip .. "\n\n" .. L.UNOFFICIAL_SUPPORT_TOOLTIP;
 	end
 	if settings.RequiredForInsaneMode[thing] then
-		name = app.ccColors.Insane .. name;
+		name = "|c" .. app.DefaultColors.Insane .. name;
 	end
 	if settings.ForceAccountWide[thing] then
 		tooltip = tooltip .. "\n\n" .. L.ACC_WIDE_DEFAULT;
@@ -143,6 +143,7 @@ local function presetStore()
 		["Show:OnlyActiveEvents"] = settings:Get("Show:OnlyActiveEvents"),
 		["Show:PetBattles"] = settings:Get("Show:PetBattles"),
 		["Hide:PvP"] = settings:Get("Hide:PvP"),
+		["Hide:ChallengeMaster"] = settings:Get("Hide:ChallengeMaster"),
 		["Show:Skyriding"] = settings:Get("Show:Skyriding"),
 
 		-- Expansion Things
@@ -225,6 +226,7 @@ modeButton:SetScript("OnClick", function()
 				settings:Set("Show:OnlyActiveEvents", settings:Get("PresetRestore")["Show:OnlyActiveEvents"])
 				settings:Set("Show:PetBattles", settings:Get("PresetRestore")["Show:PetBattles"])
 				settings:Set("Hide:PvP", settings:Get("PresetRestore")["Hide:PvP"])
+				settings:Set("Hide:ChallengeMaster", settings:Get("PresetRestore")["Hide:ChallengeMaster"])
 				settings:Set("Show:Skyriding", settings:Get("PresetRestore")["Show:Skyriding"])
 
 				-- Expansion Things
@@ -305,6 +307,7 @@ modeButton:SetScript("OnClick", function()
 			settings:Set("Show:OnlyActiveEvents", true)
 			settings:Set("Show:PetBattles", false)
 			settings:Set("Hide:PvP", true)
+			settings:Set("Hide:ChallengeMaster", true)
 			settings:Set("Show:Skyriding", false)
 
 			-- Expansion Things
@@ -362,6 +365,7 @@ modeButton:SetScript("OnClick", function()
 			settings:Set("Show:OnlyActiveEvents", false)
 			settings:Set("Show:PetBattles", true)
 			settings:Set("Hide:PvP", false)
+			settings:Set("Hide:ChallengeMaster", true)
 			settings:Set("Show:Skyriding", true)
 
 			-- Expansion Things
@@ -419,6 +423,7 @@ modeButton:SetScript("OnClick", function()
 			settings:Set("Show:OnlyActiveEvents", false)
 			settings:Set("Show:PetBattles", true)
 			settings:Set("Hide:PvP", false)
+			settings:Set("Hide:ChallengeMaster", false)
 			settings:Set("Show:Skyriding", true)
 
 			-- Expansion Things
@@ -485,6 +490,7 @@ modeButton:SetScript("OnClick", function()
 			settings:Set("Show:OnlyActiveEvents", false)
 			settings:Set("Show:PetBattles", true)
 			settings:Set("Hide:PvP", false)
+			settings:Set("Hide:ChallengeMaster", false)
 			settings:Set("Show:Skyriding", true)
 
 			-- Expansion Things
@@ -644,11 +650,11 @@ local checkboxFactionMode = child:CreateCheckBox(L.FACTION_MODE,
 function(self)
 	local englishFaction = UnitFactionGroup("player")
 	if englishFaction == "Alliance" then
-		self.Text:SetText(app.ccColors.Alliance..self.Text:GetText())
+		self.Text:SetText("|c" .. app.DefaultColors.Alliance..self.Text:GetText())
 	elseif englishFaction == "Horde" then
-		self.Text:SetText(app.ccColors.Horde..self.Text:GetText())
+		self.Text:SetText("|c" .. app.DefaultColors.Horde..self.Text:GetText())
 	else
-		self.Text:SetText(app.ccColors.Default..self.Text:GetText())
+		self.Text:SetText("|c" .. app.DefaultColors.Default..self.Text:GetText())
 	end
 	self:SetChecked(settings:Get("FactionMode"))
 	if app.MODE_DEBUG or not app.MODE_ACCOUNT then
@@ -698,7 +704,7 @@ accwideCheckboxTransmog:SetPoint("TOPLEFT", headerAccountThings, "BOTTOMLEFT", -
 
 local name = L.APPEARANCES_CHECKBOX;
 if settings.RequiredForInsaneMode.Transmog then
-	name = app.ccColors.Insane .. name;
+	name = "|c" .. app.DefaultColors.Insane .. name;
 end
 local checkboxTransmog = child:CreateCheckBox(name,
 function(self)
@@ -1028,7 +1034,7 @@ headerGeneralContent.OnRefresh = function(self)
 	end
 end
 
-local checkboxShowUnboundItems = child:CreateCheckBox("|T"..app.asset("Category_WorldDrops")..":0|t " .. app.ccColors.Insane .. L.SHOW_BOE_CHECKBOX,
+local checkboxShowUnboundItems = child:CreateCheckBox("|T"..app.asset("Category_WorldDrops")..":0|t |c" .. app.DefaultColors.Insane .. L.SHOW_BOE_CHECKBOX,
 function(self)
 	self:SetChecked(not settings:Get("Hide:BoEs"))	-- Inversed, so enabled = show
 	if app.MODE_DEBUG then
@@ -1063,7 +1069,7 @@ end)
 checkboxIgnoreUnboundFilters:SetATTTooltip(L.IGNORE_FILTERS_FOR_BOES_CHECKBOX_TOOLTIP)
 checkboxIgnoreUnboundFilters:AlignBelow(checkboxShowUnboundItems, 1)
 
-local checkboxNoLevelFilter = child:CreateCheckBox("|T1530081:0|t " .. app.ccColors.Insane .. L.FILTER_THINGS_BY_LEVEL_CHECKBOX,
+local checkboxNoLevelFilter = child:CreateCheckBox("|T1530081:0|t |c" .. app.DefaultColors.Insane .. L.FILTER_THINGS_BY_LEVEL_CHECKBOX,
 function(self)
 	self:SetChecked(not settings:Get("Filter:ByLevel"))	-- Inversed, so enabled = show
 	if app.MODE_DEBUG then
@@ -1099,7 +1105,7 @@ end
 
 local checkboxNoSkillLevelFilter;
 if app.GameBuildVersion < 20000 then
-checkboxNoSkillLevelFilter = child:CreateCheckBox("|T1530081:0|t " .. app.ccColors.Insane .. L.FILTER_THINGS_BY_SKILL_LEVEL_CHECKBOX,
+checkboxNoSkillLevelFilter = child:CreateCheckBox("|T1530081:0|t |c" .. app.DefaultColors.Insane .. L.FILTER_THINGS_BY_SKILL_LEVEL_CHECKBOX,
 function(self)
 	self:SetChecked(not settings:Get("Filter:BySkillLevel"))	-- Inversed, so enabled = show
 	if app.MODE_DEBUG then
@@ -1121,7 +1127,7 @@ end
 -- Personal Loot was introduced with Mists of Pandaria
 local checkboxShowAllLearnableQuestRewards;
 if app.GameBuildVersion >= 50000 then
-	checkboxShowAllLearnableQuestRewards = child:CreateCheckBox("|T"..app.asset("Interface_Quest_header")..":0|t " .. app.ccColors.Insane .. L.SHOW_ALL_LEARNABLE_QUEST_REWARDS_CHECKBOX,
+	checkboxShowAllLearnableQuestRewards = child:CreateCheckBox("|T"..app.asset("Interface_Quest_header")..":0|t |c" .. app.DefaultColors.Insane .. L.SHOW_ALL_LEARNABLE_QUEST_REWARDS_CHECKBOX,
 		function(self)
 			self:SetChecked(settings:Get("Show:UnavailablePersonalLoot"))
 			if app.MODE_DEBUG then
@@ -1140,7 +1146,7 @@ if app.GameBuildVersion >= 50000 then
 	checkboxShowAllLearnableQuestRewards:AlignBelow(checkboxNoLevelFilter)
 end
 
-local checkboxNoSeasonalFilter = child:CreateCheckBox("|T"..app.asset("Category_Holidays")..":0|t " .. app.ccColors.Insane .. L.SHOW_ALL_SEASONAL,
+local checkboxNoSeasonalFilter = child:CreateCheckBox("|T"..app.asset("Category_Holidays")..":0|t |c" .. app.DefaultColors.Insane .. L.SHOW_ALL_SEASONAL,
 	function(self)
 		self:SetChecked(not settings:Get("Show:OnlyActiveEvents"))	-- Inversed, so enabled = show
 		if app.MODE_DEBUG then
@@ -1159,7 +1165,7 @@ local checkboxNoSeasonalFilter = child:CreateCheckBox("|T"..app.asset("Category_
 checkboxNoSeasonalFilter:SetATTTooltip(L.SHOW_ALL_SEASONAL_TOOLTIP)
 checkboxNoSeasonalFilter:AlignBelow(checkboxShowAllLearnableQuestRewards or checkboxNoSkillLevelFilter or checkboxNoLevelFilter)
 
-local checkboxShowPetBattles = child:CreateCheckBox("|T"..app.asset("Category_PetBattles")..":0|t " .. app.ccColors.Insane .. L.SHOW_PET_BATTLES_CHECKBOX,
+local checkboxShowPetBattles = child:CreateCheckBox("|T"..app.asset("Category_PetBattles")..":0|t |c" .. app.DefaultColors.Insane .. L.SHOW_PET_BATTLES_CHECKBOX,
 function(self)
 	self:SetChecked(settings:Get("Show:PetBattles"))
 	if app.MODE_DEBUG then
@@ -1177,7 +1183,7 @@ end)
 checkboxShowPetBattles:SetATTTooltip(L.SHOW_PET_BATTLES_CHECKBOX_TOOLTIP)
 checkboxShowPetBattles:AlignBelow(checkboxNoSeasonalFilter)
 
-local checkboxShowPvP = child:CreateCheckBox("|T"..app.asset("Category_PvP")..":0|t " .. app.ccColors.Insane .. L.SHOW_PVP_CHECKBOX,
+local checkboxShowPvP = child:CreateCheckBox("|T"..app.asset("Category_PvP")..":0|t |c" .. app.DefaultColors.Insane .. L.SHOW_PVP_CHECKBOX,
 function(self)
 	self:SetChecked(not settings:Get("Hide:PvP"))	-- Inversed, so enabled = show
 	if app.MODE_DEBUG then
@@ -1195,8 +1201,28 @@ end)
 checkboxShowPvP:SetATTTooltip(L.SHOW_PVP_CHECKBOX_TOOLTIP)
 checkboxShowPvP:AlignBelow(checkboxShowPetBattles)
 
+if app.GameBuildVersion > 50000 and app.GameBuildVersion <= 70000 then
+	local checkboxShowChallengeMaster = child:CreateCheckBox("|TInterface\\Icons\\achievement_challengemode_platinum:0|t " .. L.SHOW_CHALLENGE_MASTER_CHECKBOX,
+	function(self)
+		self:SetChecked(not settings:Get("Hide:ChallengeMaster"))	-- Inversed, so enabled = show
+		if app.MODE_DEBUG then
+			self:Disable()
+			self:SetAlpha(0.4)
+		else
+			self:Enable()
+			self:SetAlpha(1)
+		end
+	end,
+	function(self)
+		settings:Set("Hide:ChallengeMaster", not self:GetChecked())	-- Inversed, so enabled = show
+		settings:UpdateMode(1)
+	end)
+	checkboxShowChallengeMaster:SetATTTooltip(L.SHOW_CHALLENGE_MASTER_CHECKBOX_TOOLTIP)
+	checkboxShowChallengeMaster:AlignBelow(checkboxShowPvP)
+end
+
 if app.GameBuildVersion >= 100000 then
-	local checkboxShowSkyriding = child:CreateCheckBox("|TInterface\\Icons\\ability_dragonriding_dragonridinggliding01:0|t " .. app.ccColors.Insane .. L.SHOW_SKYRIDING_CHECKBOX,
+	local checkboxShowSkyriding = child:CreateCheckBox("|TInterface\\Icons\\ability_dragonriding_dragonridinggliding01:0|t |c" .. app.DefaultColors.Insane .. L.SHOW_SKYRIDING_CHECKBOX,
 	function(self)
 		self:SetChecked(settings:Get("Show:Skyriding"))
 		if app.MODE_DEBUG then
@@ -1254,7 +1280,7 @@ if app.GameBuildVersion >= 60000 then
 
 			-- Runeforge Legendaries (Shadowlands+)
 			local accwideCheckboxRunecarvingPowers =
-			child:CreateForcedAccountWideCheckbox()
+			child:CreateAccountWideCheckbox("RUNEFORGELEGENDARIES", "RuneforgeLegendaries")
 				:AlignBelow(accwideCheckboxConduits)
 			child:CreateTrackingCheckbox("RUNEFORGELEGENDARIES", "RuneforgeLegendaries", true)
 				:AlignAfter(accwideCheckboxRunecarvingPowers)
@@ -1262,7 +1288,7 @@ if app.GameBuildVersion >= 60000 then
 			if app.GameBuildVersion >= 100000 then
 				-- Mount Mods (Dragonflight+)
 				local accwideCheckboxMountMods =
-				child:CreateForcedAccountWideCheckbox()
+				child:CreateAccountWideCheckbox("MOUNTMODS", "MountMods")
 					:AlignBelow(accwideCheckboxRunecarvingPowers)
 				child:CreateTrackingCheckbox("MOUNTMODS", "MountMods", true)
 					:AlignAfter(accwideCheckboxMountMods)

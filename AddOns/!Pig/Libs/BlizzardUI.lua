@@ -100,7 +100,7 @@ end
 --创建角色信息界面
 function Create.CharacterFrame(fuji,UIName,FrameLevel)
 	local frameX = CreateFrame("Frame", UIName, fuji)
-	frameX:SetSize(384,512);
+	frameX:SetSize(352,466);
 	frameX:SetFrameLevel(FrameLevel)
 	frameX:Hide()
 	tinsert(UISpecialFrames,UIName);
@@ -121,10 +121,26 @@ function Create.CharacterFrame(fuji,UIName,FrameLevel)
 			frameX._BG:SetPoint("BOTTOMRIGHT",frameX,"BOTTOMRIGHT",-34,72);
 		end
 	else
+		frameX._BackdropL1 = frameX:CreateTexture(nil, "BORDER");
+	    frameX._BackdropL1:SetTexture("Interface/PaperDollInfoFrame/UI-Character-CharacterTab-L1");
+	    frameX._BackdropL1:SetSize(256,256);
+	    frameX._BackdropL1:SetPoint("TOPLEFT",0,14);
+	    frameX._BackdropR1 = frameX:CreateTexture(nil, "BORDER");
+	    frameX._BackdropR1:SetTexture("Interface/PaperDollInfoFrame/UI-Character-CharacterTab-R1");
+	    frameX._BackdropR1:SetSize(128,256);
+	    frameX._BackdropR1:SetPoint("TOPLEFT",256,14);
+	    frameX._BackdropB1 = frameX:CreateTexture(nil, "BORDER");
+	    frameX._BackdropB1:SetTexture("Interface/PaperDollInfoFrame/UI-Character-CharacterTab-BottomLeft");
+	    frameX._BackdropB1:SetSize(256,256);
+	    frameX._BackdropB1:SetPoint("TOPLEFT",0,-242);
+	    frameX._BackdropBr = frameX:CreateTexture(nil, "BORDER");
+	    frameX._BackdropBr:SetTexture("Interface/PaperDollInfoFrame/UI-Character-CharacterTab-BottomRight");
+	    frameX._BackdropBr:SetSize(128,256);
+	    frameX._BackdropBr:SetPoint("TOPLEFT",256,-242);
 	    frameX.Portrait_BG = frameX:CreateTexture(nil, "BACKGROUND");
 		frameX.Portrait_BG:SetTexture("interface/buttons/iconborder-glowring.blp");
 		frameX.Portrait_BG:SetSize(60,60);
-		frameX.Portrait_BG:SetPoint("TOPLEFT",frameX,"TOPLEFT",9,-7);
+		frameX.Portrait_BG:SetPoint("TOPLEFT",frameX,"TOPLEFT",9,7);
 		frameX.Portrait_BG:SetDrawLayer("BACKGROUND", -2)
 		frameX.Portrait_BGmask = frameX:CreateMaskTexture()
 		frameX.Portrait_BGmask:SetAllPoints(frameX.Portrait_BG)
@@ -132,35 +148,20 @@ function Create.CharacterFrame(fuji,UIName,FrameLevel)
 		frameX.Portrait_BG:AddMaskTexture(frameX.Portrait_BGmask)
 		frameX.Portrait = frameX:CreateTexture(nil, "BACKGROUND");
 		frameX.Portrait:SetSize(60,60);
-	    frameX.Portrait:SetPoint("TOPLEFT", frameX, "TOPLEFT", 8, -7);
+	    frameX.Portrait:SetPoint("TOPLEFT", frameX, "TOPLEFT", 8, 7);
 		frameX.Close = CreateFrame("Button",nil,frameX, "UIPanelCloseButton");
-	    frameX.Close:SetPoint("CENTER", frameX, "TOPRIGHT", -44, -25);
-		frameX._BackdropL1 = frameX:CreateTexture(nil, "BORDER");
-	    frameX._BackdropL1:SetTexture("Interface/PaperDollInfoFrame/UI-Character-CharacterTab-L1");
-	    frameX._BackdropL1:SetSize(256,256);
-	    frameX._BackdropL1:SetPoint("TOPLEFT");
-	    frameX._BackdropR1 = frameX:CreateTexture(nil, "BORDER");
-	    frameX._BackdropR1:SetTexture("Interface/PaperDollInfoFrame/UI-Character-CharacterTab-R1");
-	    frameX._BackdropR1:SetSize(128,256);
-	    frameX._BackdropR1:SetPoint("TOPLEFT",256,0);
-	    frameX._BackdropB1 = frameX:CreateTexture(nil, "BORDER");
-	    frameX._BackdropB1:SetTexture("Interface/PaperDollInfoFrame/UI-Character-CharacterTab-BottomLeft");
-	    frameX._BackdropB1:SetSize(256,256);
-	    frameX._BackdropB1:SetPoint("TOPLEFT",0,-256);
-	    frameX._BackdropBr = frameX:CreateTexture(nil, "BORDER");
-	    frameX._BackdropBr:SetTexture("Interface/PaperDollInfoFrame/UI-Character-CharacterTab-BottomRight");
-	    frameX._BackdropBr:SetSize(128,256);
-	    frameX._BackdropBr:SetPoint("TOPLEFT",256,-256);
+	    frameX.Close:SetPoint("CENTER", frameX, "TOPRIGHT", -12, -11);
+
 	end
 	--
 	frameX.TitleText = PIGFontString(frameX,nil,nil,nil,nil,"OVERLAY")
 	frameX.TitleText:SetTextColor(1, 1, 1, 1)
 	frameX.LevelText = PIGFontString(frameX,nil,nil,nil,nil,"OVERLAY")
-	frameX.TitleText:SetPoint("TOP", frameX, "TOP",8, -17);
-	frameX.LevelText:SetPoint("TOP", frameX, "TOP",8, -38)
+	frameX.TitleText:SetPoint("TOP", frameX, "TOP",8, -3);
+	frameX.LevelText:SetPoint("TOP", frameX, "TOP",8, -24)
 	frameX.tishi = CreateFrame("Frame", nil, frameX)
     frameX.tishi:SetSize(200,150);
-    frameX.tishi:SetPoint("CENTER", frameX, "CENTER", 0, 30);
+    frameX.tishi:SetPoint("CENTER", frameX, "CENTER", 14, 44);
     frameX.tishi:SetFrameLevel(frameX:GetFrameLevel()+3)
     frameX.tishi.t = PIGFontString(frameX.tishi,{"CENTER", frameX.tishi, "CENTER",-4, 20})
 	----
@@ -179,15 +180,15 @@ function Create.CharacterFrame(fuji,UIName,FrameLevel)
 		end
 		if i<17 then
 			if i==1 then
-				item:SetPoint("TOPLEFT",frameX.PaperDollItemsFrame,"TOPLEFT",5,-4);
+				item:SetPoint("TOPLEFT",frameX.PaperDollItemsFrame,"TOPLEFT",5,10);
 			elseif i==9 then
-				item:SetPoint("TOPLEFT",frameX.PaperDollItemsFrame,"TOPLEFT",290,-4);
+				item:SetPoint("TOPLEFT",frameX.PaperDollItemsFrame,"TOPLEFT",290,10);
 			else
 				item:SetPoint("TOP", frameX.ItemList[InvSlot["CID"][i-1]], "BOTTOM", 0, -4);
 			end
 		else
 			if i==17 then
-				item:SetPoint("TOPLEFT",frameX.PaperDollItemsFrame,"BOTTOMLEFT",106,47);
+				item:SetPoint("TOPLEFT",frameX.PaperDollItemsFrame,"BOTTOMLEFT",105,15);
 			else
 				item:SetPoint("LEFT", frameX.ItemList[InvSlot["CID"][i-1]], "RIGHT", 4, 0);
 			end

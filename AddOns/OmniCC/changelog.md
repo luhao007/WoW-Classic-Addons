@@ -1,5 +1,100 @@
 # OmniCC Changelog
 
+## 11.2.7
+
+* Update TOCs for 11.2.5 and 5.5.1
+
+## 11.2.6
+
+* The Cooldown Timer Offset option should work again.
+* Added an additional guard to hopefully prevent instances of the Attempt to call method 'RemoveCooldown' error
+* Resolved the 'Attempted to release inactive object' error for the Shine and Flare effects.
+
+## 11.2.5
+
+* Update TOCs for 11.2.0 (thanks Hollicsh)
+
+## 11.2.4
+
+* Update TOCs for 11.1.7 and 5.5.0
+
+## 11.2.3
+
+* Fix an error that could appear when hiding flare finish effect.
+
+## 11.2.2
+
+* Added a more agressive disable for cooldown text to handle flickering issues.
+
+## 11.2.1
+
+* Fix `/omnicc` not showing the options menu,
+
+## 11.2.0
+
+* OmniCC will now disable Blizzard's default cooldown text implementation text
+  on all cooldowns by default. You can toggle this behavior via the new `/occ blizzard`
+  slash command.
+
+## 11.1.0
+
+* (Retail) OmniCC will now check GetHideCountdownNumbers and skip displaying text where the value is set to false.
+  This should prevent double text.
+
+## 11.0.8
+
+* Update TOCs for 1.15.7
+
+## 11.0.7
+
+* Update TOCs for 11.1.0, 4.4.2 and 1.15.6
+
+## 11.0.6
+
+* Fix another nil value error
+
+## 11.0.5
+
+* Fix an error that could ocurr when updating timer settings while active timers are present
+
+## 11.0.4
+
+* Update TOCs
+* Update cooldown calculations
+* Add typings
+
+## 11.0.3
+
+* Add modRate to display duration calculations
+* Update TOCs
+
+## 11.0.2
+
+* Fixed bug in PreviewDialog that caused some effects not to show
+* Update TOCs
+
+## 11.0.1
+
+* Increase cooldown text frame level
+
+## 11.0.0
+
+* Fix an error when attempting to display the cooldown preview frame
+* Update TOCs
+
+## 10.2.9
+
+* Add an additional check for forbidden frames
+
+## 10.2.8
+
+* Update TOCs
+
+## 10.2.7
+
+* Update TOCs
+* Preliminary War Within support
+
 ## 10.2.6
 
 * Update TOCs

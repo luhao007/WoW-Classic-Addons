@@ -2,6 +2,7 @@ local app = select(2, ...);
 
 -- WoW API Cache
 local IsRetrieving = app.Modules.RetrievingData.IsRetrieving
+local Colorize = app.Modules.Color.Colorize
 
 -- Illusion Class
 local AccountWideIllusionData = {};
@@ -62,13 +63,9 @@ end
 app.CreateIllusion = app.CreateClass(CLASSNAME, KEY, illusionFields,
 "WithItem", {
 	ImportFrom = "Item",
-	ImportFields = app.IsRetail and { "name", "link", "icon", "tsm", "costCollectibles" } or { "name", "link", "icon", "tsm" },
+	ImportFields = app.IsRetail and { "name", "link", "icon", "tsm", "costCollectibles", "AsyncRefreshFunc" } or { "name", "link", "icon", "tsm" },
 	text = function(t)
-		-- triggering the Item's Link logic will ensure it is refreshed properly from server
-		if not t.link then return end
-
-		local name = t.name or RETRIEVING_DATA
-		return "|cffff80ff[" .. name .. "]|r";
+		return Colorize("["..(t.name or RETRIEVING_DATA).."]", app.Colors.Illusion)
 	end
 }, function(t) return t.itemID; end);
 

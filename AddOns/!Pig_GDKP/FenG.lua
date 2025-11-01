@@ -5,6 +5,7 @@ function GDKPInfo.ADD_fenG(RaidR)
 	-----
 	local PIGFrame=Create.PIGFrame
 	local PIGButton = Create.PIGButton
+	local PIGDiyBut=Create.PIGDiyBut
 	local PIGDownMenu=Create.PIGDownMenu
 	local PIGLine=Create.PIGLine
 	local PIGEnter=Create.PIGEnter
@@ -163,7 +164,15 @@ function GDKPInfo.ADD_fenG(RaidR)
 					fujiF.nr.raidbutlist[p].butlist[qq].fenGren:SetChecked(false);
 				end
 				self:SetChecked(true);
-			end)	
+			end)
+			playerbut.IsTrade = PIGDiyBut(playerbut,{"LEFT",playerbut,"LEFT",1,0},{18,nil,20,nil,"bags-junkcoin"})
+			PIGEnter(playerbut.IsTrade,"工资已发放到玩家\n点击取消工资发放记录")
+			playerbut.IsTrade:SetScript("OnClick", function (self)
+				if PIGA["GDKP"]["Raidinfo"][p][pp][9] then
+					PIGA["GDKP"]["Raidinfo"][p][pp][9]=false;
+				end
+				RaidR.Update_FenG()
+			end)
 			-------------
 			playerbut.Name = CreateFrame("Frame", nil, playerbut);
 			playerbut.Name:SetPoint("LEFT",playerbut.fenGren,"RIGHT",1,0);
@@ -172,6 +181,10 @@ function GDKPInfo.ADD_fenG(RaidR)
 			playerbut.Name:SetScript("OnMouseUp", function (self,button)
 				if button=="LeftButton" then
 					if UnitIsConnected(playerbut.AllName) then
+						if PIGA["GDKP"]["Raidinfo"][p][pp][9] then
+							PIG_OptionsUI:ErrorMsg(playerbut.AllName.."已完成工资发放");
+							return
+						end
 						RaidR.PIGTradeF.fenGModeV=playerbut.fenGV_V
 						InitiateTrade(playerbut.AllName);
 					else
@@ -688,7 +701,10 @@ function GDKPInfo.ADD_fenG(RaidR)
 			local duiwuF = fujiF.nr.raidbutlist[p]
 			duiwuF.tongzhi:Hide()
 			for pp=1,5 do
-				fujiF.nr.raidbutlist[p].butlist[pp]:Hide()
+				local renyF = fujiF.nr.raidbutlist[p].butlist[pp]
+				renyF:Hide()
+				renyF.fenGren:Show()
+				renyF.IsTrade:Hide()
 			end
 		end
 		local renyuanxinxi = {
@@ -761,6 +777,11 @@ function GDKPInfo.ADD_fenG(RaidR)
 						end
 					else
 						renyF.mail:Hide()
+					end
+					--交易
+					if infoData[p][pp][9] then
+						renyF.fenGren:Hide()
+						renyF.IsTrade:Show()
 					end
 				end
 			end

@@ -45,11 +45,22 @@ local cl_Name_Role={
 local ClasseID={};
 local ClasseNameID={}
 local ClassFile_Name={};
-for index=1,GetNumClasses() do
-	if (index == 10) and (GetClassicExpansionLevel() <= LE_EXPANSION_CATACLYSM) then
-		index = 11;
-	end
-	local className, classFile, classID = PIGGetClassInfo(index)
+local expansionLevel = GetClassicExpansionLevel()
+local classIDs
+if expansionLevel == 0 or expansionLevel == 1 then
+    classIDs = {1,2,3,4,5,7,8,9,11}
+elseif expansionLevel == 2 then
+    classIDs = {1,2,3,4,5,6,7,8,9,11}
+elseif expansionLevel == 4 then
+    classIDs = {1,2,3,4,5,6,7,8,9,10,11} 
+-- elseif expansionLevel == 6 then
+-- 	classIDs = {1,2,3,4,5,6,7,8,9,10,11,12} 
+else
+	classIDs = {1,2,3,4,5,6,7,8,9,10,11,12,13} 
+end
+for index=1,#classIDs do
+	local classID=classIDs[index]
+	local className, classFile, classID = PIGGetClassInfo(classID)
 	if classFile then
 		table.insert(cl_Name,{classFile,cl_Name_Role[classFile],className, classID})
 		ClasseID[classFile]= classID
@@ -137,7 +148,7 @@ Data.bagData = {
 	["bankID"]={-1,5,6,7,8,9,10},
 	["bankmun"]=24,
 	["bankbag"]=6,
-	["ItemWH"]=_G["BankFrameItem1"]:GetWidth()+5,
+	["ItemWH"]=42,
 }
 if PIG_MaxTocversion(20000,true) then
 	Data.bagData["bankmun"]=28;
@@ -148,6 +159,10 @@ if PIG_MaxTocversion(100000,true) then
 	Data.bagData["bagIDMax"]= NUM_TOTAL_BAG_FRAMES
 	Data.bagData["bagID"]={0,1,2,3,4,5}
 	Data.bagData["bankID"]={-1,6,7,8,9,10,11,12}
+elseif PIG_MaxTocversion(110200) then
+	Data.bagData.ItemWH=_G["BankFrameItem1"]:GetWidth()+5
+else
+	Data.bagData.ItemWH=ContainerFrameCombinedBags.Items[1]:GetWidth()+5
 end
 --物品类型
 local ItemTypeLsit = {
@@ -278,139 +293,6 @@ function Data.Get_Skill_Info(one)
 	end
 	return SkillData
 end
-
---副本数据
--- local InstanceList = {{NONE,0}}
--- local InstanceID_id = {
--- 	["Party"]={
--- 		["Vanilla"]={33,34,36,43,47,48,70,90,109,129,189,209,229,230,289,329,349,389,429,},
--- 		["TBC"]={269,540,542,543,545,546,547,552,553,554,555,556,557,558,560,585,},
--- 		["WLK"]={574,575,576,578,595,599,600,601,602,604,608,619,632,650,658,668,},
--- 	},
--- 	["Raid"] = {
--- 		["Vanilla"]={309,409,469,509,531},
--- 		["TBC"]={532,534,544,548,550,564,565,580},
--- 		["WLK"]={603,615,616,624,631,649,724},
--- 	},
--- }
--- if PIG_MaxTocversion(20000) then
--- 	table.insert(InstanceList,{DUNGEONS,"Party","Vanilla"})
--- 	table.insert(InstanceList,{GUILD_INTEREST_RAID,"Raid","Vanilla"})
--- 	table.insert(InstanceID_id["Raid"]["Vanilla"],249)--奥妮克希亚的巢穴
--- 	table.insert(InstanceID_id["Raid"]["Vanilla"],533)--纳克萨玛斯
--- else
--- 	table.insert(InstanceList,{DUNGEONS,"Party","Vanilla"})
--- 	table.insert(InstanceList,{DUNGEONS.."(TBC)","Party","TBC"})
--- 	table.insert(InstanceList,{GUILD_INTEREST_RAID,"Raid","Vanilla"})
--- 	table.insert(InstanceList,{GUILD_INTEREST_RAID.."(TBC)","Raid","TBC"})
--- 	if PIG_MaxTocversion(30000) then
--- 		table.insert(InstanceID_id["Raid"]["Vanilla"],249)
--- 		table.insert(InstanceID_id["Raid"]["Vanilla"],533)
--- 	else
--- 		table.insert(InstanceList,4,{DUNGEONS.."(WLK)","Party","WLK"})
--- 		table.insert(InstanceList,{GUILD_INTEREST_RAID.."(WLK)","Raid","WLK"})
--- 		table.insert(InstanceID_id["Raid"]["WLK"],249)
--- 		table.insert(InstanceID_id["Raid"]["WLK"],533)
--- 	end
--- end
---Data.FBdata={InstanceList,InstanceID}
-local FBdataUI = CreateFrame("Frame")
-FBdataUI.jicinum=0
-FBdataUI.FBindexCategory = {}
-FBdataUI.FBdata = {}
-FBdataUI.FBName = {["Category"]={},["Group"]={},["Activity"]={[0]=NONE}}
-FBdataUI:RegisterEvent("PLAYER_LOGIN");
-local tihuankuohao=addonTable.Fun.tihuankuohao
-local function Getfubendata()
-	if #C_LFGList.GetAvailableCategories()==0 and FBdataUI.jicinum<10 then
-		C_Timer.After(0.1,Getfubendata)
-		FBdataUI.jicinum=FBdataUI.jicinum+1
-		return
-	end
-	if PIG_MaxTocversion(40000) then
-		--系统活动类型(地下城2/团队114/任务和地图116/PVP118/自定义120)
-		local categories = C_LFGList.GetAvailableCategories();
-		for i=1, #categories do
-			local categoryID=categories[i]
-			if categoryID==2 or categoryID==114 then
-				local CategoryInfo= C_LFGList.GetLfgCategoryInfo(categoryID)
-				local activityGroups = C_LFGList.GetAvailableActivityGroups(categoryID);
-				for _,groupID in ipairs(activityGroups) do
-					local groupName, groupOrderIndex = C_LFGList.GetActivityGroupInfo(groupID);
-					local NewIDID = tonumber(categoryID..groupID)
-					if PIG_MaxTocversion(20000) or CategoryInfo.name==groupName then
-						FBdataUI.FBName.Category[NewIDID]=CategoryInfo.name
-					else
-						FBdataUI.FBName.Category[NewIDID]=CategoryInfo.name.."-"..groupName
-					end
-					FBdataUI.FBdata[NewIDID]={}
-					local activities = C_LFGList.GetAvailableActivities(categoryID,groupID)
-					for _,activityID in pairs(activities) do
-						local activityInfo = C_LFGList.GetActivityInfoTable(activityID);
-						local fullName = tihuankuohao(activityInfo.fullName)
-						FBdataUI.FBdata[NewIDID][activityID]={fullName,activityInfo.shortName}
-						-- if categoryID==114 then
-						-- 	if groupID==288 then
-						-- 		print(CategoryInfo.name.."-"..groupName,activityID,fullName,activityInfo.shortName)
-						-- 		if string.match(groupName,EXPANSION_NAME2) then
-						-- 		end
-						-- 	end
-						-- end
-					end	
-				end
-			end
-		end
-	else
-		--系统活动类型(任务1/地下城2/团队3/战场8/自定义6/竞技场练习赛7/海岛探险111)
-		local categories = C_LFGList.GetAvailableCategories();
-		for i=1, #categories do
-			local categoryID=categories[i]
-			if categoryID==2 or categoryID==3 then
-				local CategoryInfo= C_LFGList.GetLfgCategoryInfo(categoryID)
-				local activities = C_LFGList.GetAvailableActivities(categoryID);
-				for ii=1,#activities do
-					local activityID=activities[ii]
-					local activityInfo = C_LFGList.GetActivityInfoTable(activityID);
-					local Difficultyname = GetDifficultyInfo(activityInfo.difficultyID)
-					local fullName = tihuankuohao(activityInfo.fullName)
-					if tonumber(activityInfo.difficultyID)>0 and Difficultyname then
-						if activityID==1506 then
-							activityInfo.difficultyID=15
-						end
-						local Difficultyname = tihuankuohao(Difficultyname)
-						local NewIDID = tonumber(categoryID..activityInfo.difficultyID)
-						FBdataUI.FBName.Category[NewIDID]=FBdataUI.FBName.Category[NewIDID] or {}
-						FBdataUI.FBName.Category[NewIDID]=CategoryInfo.name.."-"..Difficultyname
-						FBdataUI.FBdata[NewIDID]=FBdataUI.FBdata[NewIDID] or {}
-						FBdataUI.FBdata[NewIDID][activityID]={fullName,activityInfo.shortName}
-					else
-						FBdataUI.FBName.Category[categoryID]=CategoryInfo.name
-						FBdataUI.FBdata[categoryID]=FBdataUI.FBdata[categoryID] or {}
-						FBdataUI.FBdata[categoryID][activityID]={fullName,activityInfo.shortName}
-					end
-					-- if categoryID==3 then
-					-- 	--print(categoryID,activityID,fullName,activityInfo.shortName)
-					-- 	for k2,v2 in pairs(activityInfo) do
-					-- 		-- if activityID==4 or activityID==1505 then
-					-- 		-- 	print(categoryID,activityID,activityInfo.difficultyID,k2,v2)
-					-- 		-- end
-					-- 	end
-					-- end
-				end
-			end
-		end	
-	end
-	for k,v in pairs(FBdataUI.FBdata) do
-		table.insert(FBdataUI.FBindexCategory, k)
-	end
-	table.sort(FBdataUI.FBindexCategory, function(a, b) return tonumber(a) < tonumber(b) end)
-	Data.FBindexCategory=FBdataUI.FBindexCategory
-	Data.FBdata=FBdataUI.FBdata
-	Data.FBName=FBdataUI.FBName
-end
-FBdataUI:SetScript("OnEvent", function(self,event)
-	Getfubendata()
-end)
 
 ---时空之门=====
 Data.Tardis={["Prefix"]="!Pig_Tardis",

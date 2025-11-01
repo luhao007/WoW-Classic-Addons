@@ -5,7 +5,6 @@ local VUHDO_HIGLIGHT_CLUSTER = { };
 local VUHDO_HIGLIGHT_NUM = 0;
 local VUHDO_ICON_CLUSTER = { };
 local VUHDO_NUM_IN_UNIT_CLUSTER = { };
-local VUHDO_ACTIVE_HOTS = { };
 local sClusterConfig;
 
 local VUHDO_CLUSTER_UNIT = nil;
@@ -19,7 +18,6 @@ local VUHDO_RAID = { };
 local VUHDO_getUnitsInRadialClusterWith;
 local VUHDO_getUnitsInChainClusterWith;
 local VUHDO_getUnitButtons;
-local VUHDO_getHealthBar;
 local VUHDO_getClusterBorderFrame;
 local VUHDO_updateBouquetsForEvent;
 local VUHDO_getBarIcon;
@@ -38,19 +36,19 @@ local sIsSourcePlayer;
 local sRangePow;
 local sNumMaxJumps;
 local sIsRadial;
-local sClusterSlot;
+local sClusterSlots;
+local sIsClusterSlotActive;
 local sCdSpell;
 local sCone;
 local sJumpRangePow;
-local aAreTargetsRandom;
+local sAreTargetsRandom;
 function VUHDO_customClustersInitLocalOverrides()
+
 	VUHDO_RAID = _G["VUHDO_RAID"];
-	VUHDO_ACTIVE_HOTS = _G["VUHDO_ACTIVE_HOTS"];
 
 	VUHDO_getUnitsInRadialClusterWith = _G["VUHDO_getUnitsInRadialClusterWith"];
 	VUHDO_getUnitsInChainClusterWith = _G["VUHDO_getUnitsInChainClusterWith"];
 	VUHDO_getUnitButtons = _G["VUHDO_getUnitButtons"];
-	VUHDO_getHealthBar = _G["VUHDO_getHealthBar"];
 	VUHDO_getClusterBorderFrame = _G["VUHDO_getClusterBorderFrame"];
 	VUHDO_updateBouquetsForEvent = _G["VUHDO_updateBouquetsForEvent"];
 	VUHDO_getBarIcon = _G["VUHDO_getBarIcon"];
@@ -78,17 +76,26 @@ function VUHDO_customClustersInitLocalOverrides()
 		sCdSpell = nil;
 	end
 
-	sClusterSlot = nil;
-	for tIndex, tHotName in pairs(VUHDO_PANEL_SETUP["HOTS"]["SLOTS"]) do
-		if "CLUSTER" == tHotName and (tIndex < 6 or tIndex > 8) then sClusterSlot = tIndex; end
+	sClusterSlots = { };
+	sIsClusterSlotActive = false;
+
+	for tPanelNum = 1, 10 do -- VUHDO_MAX_PANELS
+		for tIndex, tHotName in pairs(VUHDO_PANEL_SETUP[tPanelNum]["HOTS"]["SLOTS"]) do
+			if "CLUSTER" == tHotName and (tIndex < 6 or tIndex > 8) then
+				sClusterSlots[tPanelNum] = tIndex;
+
+				sIsClusterSlotActive = true;
+			end
+		end
 	end
+
 end
 
 
 
 --
 local tDestCluster = { };
-local tInfo, tSrcInfo, tNumArray;
+local tInfo, tSrcInfo;
 local tSrcGroup;
 function VUHDO_getCustomDestCluster(aUnit, anArray, anIsSourcePlayer, anIsRadial, aRangePow, aNumMaxTargets, aHealthLimit, anIsRaid, aCdSpell, aCone, aJumpRangePow, aAreTargetsRandom)
 	-- If targets are random, return ALL targets in range, so the caller can determine the average heals
@@ -130,9 +137,18 @@ end
 --
 local tNumLow;
 local tAllButtons;
+local tClusterSlot;
+local tPanelUnitButtons;
 function VUHDO_updateAllClusterIcons(aUnit, anInfo)
+
+	if not sIsClusterSlotActive then
+		return;
+	end
+
 	tAllButtons = VUHDO_getUnitButtons(aUnit);
-	if not tAllButtons then return; end
+	if not tAllButtons then
+		return;
+	end
 
 	tNumLow = VUHDO_getDestCluster(aUnit, VUHDO_ICON_CLUSTER);
 	if VUHDO_NUM_IN_UNIT_CLUSTER[aUnit] ~= tNumLow then
@@ -140,26 +156,30 @@ function VUHDO_updateAllClusterIcons(aUnit, anInfo)
 		VUHDO_updateBouquetsForEvent(aUnit, 16); -- VUHDO_UPDATE_NUM_CLUSTER
 	end
 
-	if not sClusterSlot then return; end
+	for tPanelNum = 1, 10 do -- VUHDO_MAX_PANELS
+		tClusterSlot = sClusterSlots[tPanelNum];
+		tPanelUnitButtons = VUHDO_getUnitButtonsPanel(aUnit, tPanelNum);
 
-	for _, tButton in pairs(tAllButtons) do
-		-- FIXME: right after spec change the bar icon frame for "CLUSTER" is nil
-		-- FIXME: not entirely sure why but this will prevent nil reference until next update
-		if not VUHDO_getBarIcon(tButton, sClusterSlot) then
-			return;
-		end
+		for _, tButton in pairs(tPanelUnitButtons) do
+			-- FIXME: right after spec change the bar icon frame for "CLUSTER" is nil
+			-- FIXME: not entirely sure why but this will prevent nil reference until next update
+			if not VUHDO_getBarIcon(tButton, tClusterSlot) then
+				return;
+			end
 
-		if tNumLow < sThreshFair or not anInfo["range"] then
-			VUHDO_getBarIconFrame(tButton, sClusterSlot):Hide();
-			VUHDO_getBarIconTimer(tButton, sClusterSlot):SetText("");
-		else
-			VUHDO_getBarIcon(tButton, sClusterSlot):SetVertexColor(VUHDO_backColor(tNumLow < sThreshGood and sColorFair or sColorGood));
-			VUHDO_getBarIconFrame(tButton, sClusterSlot):Show();
-			if sClusterConfig["IS_NUMBER"] then
-				VUHDO_getBarIconTimer(tButton, sClusterSlot):SetText(tNumLow);
+			if tNumLow < sThreshFair or not anInfo["range"] then
+				VUHDO_getBarIconFrame(tButton, tClusterSlot):Hide();
+				VUHDO_getBarIconTimer(tButton, tClusterSlot):SetText("");
+			else
+				VUHDO_getBarIcon(tButton, tClusterSlot):SetVertexColor(VUHDO_backColor(tNumLow < sThreshGood and sColorFair or sColorGood));
+				VUHDO_getBarIconFrame(tButton, tClusterSlot):Show();
+				if sClusterConfig["IS_NUMBER"] then
+					VUHDO_getBarIconTimer(tButton, tClusterSlot):SetText(tNumLow);
+				end
 			end
 		end
 	end
+
 end
 
 
@@ -244,3 +264,11 @@ function VUHDO_clusterBorderBouquetCallback(aUnit, anIsActive, anIcon, aTimer, a
 
 end
 
+
+
+--
+function VUHDO_getIsClusterSlotActive()
+
+	return sIsClusterSlotActive;
+
+end
