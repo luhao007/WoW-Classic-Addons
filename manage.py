@@ -458,12 +458,12 @@ class Manager:
         utils.change_defaults("Addons/Atlas/Data/Constants.lua", "			hide = true,")
 
     @staticmethod
-    @available_on(["retail", "classic"])
+    @available_on(["retail"])
     def handle_atlasloot():
         utils.change_defaults("Addons/AtlasLoot/db.lua", "			shown = false,")
 
     @staticmethod
-    @available_on(["classic_era"])
+    @available_on(["classic", "classic_era"])
     def handle_atlaslootclassic():
         utils.change_defaults("Addons/AtlasLootClassic/db.lua", "			shown = false,")
 
@@ -874,15 +874,6 @@ class Manager:
             return ret
 
         utils.process_file("Addons/UnitFramesPlus/UnitFramesPlus.lua", process)
-
-    @staticmethod
-    @available_on(["classic"])
-    def handle_vuhdo():
-        utils.remove("Addons/Vuhdo/Libs/LibBase64-1.0/LibStub")
-
-        utils.change_defaults(
-            "Addons/VuhDo/VuhDoDefaults.lua", '	["SHOW_MINIMAP"] = false,'
-        )
 
     @staticmethod
     def handle_wa():
