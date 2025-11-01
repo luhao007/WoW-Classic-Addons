@@ -1,0 +1,51 @@
+## Interface: 50502
+## Author: MysticalOS
+## Version: r256
+
+## Title: |cffffe00a<|r|cffff7d0aDBM Mod|r|cffffe00a>|r |cff10ff10World Bosses (Cata)|r
+## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r|cFFFFFFFF副本助手|r |cFF69CCF0户外|r |cFF22B14C大地的裂变|r
+
+## IconTexture: Interface\AddOns\DBM-Core\textures\dbm_airhorn
+
+## Category: DBM
+## Category-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r
+
+## RequiredDeps: DBM-Core
+## LoadOnDemand: 1
+
+## SavedVariables: DBMCataclysm_AllSavedVars
+## SavedVariablesPerCharacter: DBMCataclysm_SavedStats
+
+## X-Min-Interface: 50500
+## X-DBM-Mod: 1
+## X-DBM-Mod-Type: WORLDBOSS
+## X-DBM-Mod-Category: CATA
+## X-DBM-StatTypes: normal
+## X-DBM-Mod-Name: World Bosses (Cataclysm)
+## X-DBM-Mod-Name-koKR: 필드 보스 (대격변)
+## X-DBM-Mod-Name-ruRU: Мировые боссы (Катаклизм)
+## X-DBM-Mod-World-Boss: 1
+## X-DBM-Mod-Sort: 803
+## X-DBM-Mod-MapID: 0,1
+## X-DBM-Mod-LoadCID: 50063,50056,50089,50009,50061
+## X-DBM-Mod-MinCoreRevision: 20210721040757
+## X-DBM-Mod-MinExpansion: 3
+## X-Curse-Project-ID: 43971
+## X-WoWI-ID: 21469
+## X-Wago-ID: RBKpErGE
+## X-Part-Of: DBM-Core
+
+localization.en.lua
+localization.de.lua
+localization.es.lua
+localization.kr.lua
+localization.ru.lua
+localization.tw.lua
+localization.cn.lua
+localization.br.lua
+
+Akmahat.lua
+Garr.lua
+JulakDoom.lua
+Mobus.lua
+Xariona.lua

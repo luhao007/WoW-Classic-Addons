@@ -1,0 +1,18 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.blizzard.com/wow/ui/ https://raw.githubusercontent.com/Gethe/wow-ui-source/live/Interface/AddOns/Blizzard_SharedXML/UI.xsd">
+	<Include file="ListElements\DelveMapHeader.xml" />
+	<Script file="ListElements\DelveMapHeader.lua" />
+	<Include file="ListElements\DelveProgressWidget.xml" />
+	<Script file="ListElements\DelveProgressWidget.lua" />
+	<Include file="ListElements\DelveInstanceButton.xml" />
+	<Script file="ListElements\DelveInstanceButton.lua" />
+
+	<Include file="DelvesListFrame.xml" />
+	<Script file="DelvesListFrame.lua" />
+
+	<Include file="InfoFrame\DelveInfoFrame.xml" />
+	<Script file="InfoFrame\DelveInfoFrame.lua" />
+
+	<Script file="DelvesList.lua" />
+</Ui>

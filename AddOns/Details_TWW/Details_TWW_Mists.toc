@@ -1,0 +1,32 @@
+## Interface: 50502
+## Author: Karl-Heinz Schneider
+## Version: v1.3.9
+
+## Title: Details! Skin TWW |cff8080ffv1.3.9|r
+## Notes: Adds the 'The War Within' Skin to Details.|n|cffbbbbbbBy Karl-Heinz Schneider|r|n|n|TInterface/Addons/Details_TWW/Textures/coffee:12:12|t |cff82c5ffbuymeacoffee.com/karlheinzschneider|r
+## Title-zhCN: |cFFFFE00A<|r|cFFC79C6E战斗|r|cFFFFE00A>|r|cFFFFFFFF伤害统计|r |cFF69CCF0皮肤|r |cFF22B14C地心之战|r
+## Notes-zhCN: 地心之战皮肤
+
+## Category-zhCN: |cFFFFE00A<|r|cFFC79C6E战斗|r|cFFFFE00A>|r
+
+## Dependencies: Details
+## OptionalDeps: Ace3
+
+## X-Website: https://github.com/Karl-HeinzSchneider/WoW-Details-Skin-TheWarWithin
+## X-Curse-Project-ID: 1083704
+## X-Date: 20250927030426
+## X-Part-Of: Details
+
+# Libs
+Libs\LibStub\LibStub.lua
+Libs\CallbackHandler-1.0\CallbackHandler-1.0.xml
+Libs\AceAddon-3.0\AceAddon-3.0.xml
+Libs\AceDB-3.0\AceDB-3.0.xml
+Libs\AceDBOptions-3.0\AceDBOptions-3.0.xml
+Libs\AceConsole-3.0\AceConsole-3.0.xml
+Libs\AceGUI-3.0\AceGUI-3.0.xml
+Libs\AceConfig-3.0\AceConfig-3.0.xml
+Libs\LibSharedMedia-3.0\lib.xml
+
+Core.lua
+Profile_Default.lua

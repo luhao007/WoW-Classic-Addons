@@ -1,0 +1,18 @@
+## Interface: 50502
+## Author: Wowhead
+## Version: 50501
+
+## Title: Wowhead Looter
+## Notes: Gathers data for Wowhead while you play.
+## Title-zhCN: |cFFFFE00A<|r|cFFFFFFFF辅助|r|cFFFFE00A>|r|cFFFFFFFFWowhead数据采集|r |cFFFFE00A+Wowhead_Looter|r
+## Notes-zhCN: 收集各种游戏内数据并上传Wowhead
+
+## Category-zhCN: |cFFFFE00A<|r|cFFFFFFFF辅助|r|cFFFFE00A>|r
+
+## LoadOnDemand: 0
+## DefaultState: enabled
+
+## SavedVariables: wlTime, wlVersion, wlUploaded, wlStats, wlExportData, wlRealmList, wlAuction, wlEvent, wlItemSuffix, wlObject, wlProfile, wlProfileData, wlUnit, wlItemDurability, wlItemBonuses, wlTradeSkillDifficulty
+## SavedVariablesPerCharacter: wlScans, wlSetting, wlPetBlacklist, wlUIReloaded
+
+Wowhead_Looter.xml

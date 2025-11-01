@@ -1,0 +1,36 @@
+tag 7023f03d87c4ec2c0d4cb7b6539c0d5a4bfb21a0 v11.2.626
+Author:	Tercio Jose <terciob19@hotmail.com>
+Date:	Tue Oct 21 13:50:33 2025 -0300
+
+commit 87e21257d2b2c4f4081aaa9c3928ed2647099a30
+Author: Tercio Jose <terciob19@hotmail.com>
+Date:   Tue Oct 21 13:49:51 2025 -0300
+
+    Midnight Support
+
+commit f316af04ec6283090c81f861bd4b80942c9d9c6c
+Author: cont1nuity <continuity@gmx.net>
+Date:   Wed Oct 1 15:26:08 2025 +0200
+
+    - fix the at least mop check
+
+commit f6a43f2a816b108d10c4c5251b0e84096589d71e
+Author: cont1nuity <continuity@gmx.net>
+Date:   Tue Sep 30 21:10:38 2025 +0200
+
+    - don't check api but game version
+    
+    Cell_Unitframes adds this global API... Shame on them!
+
+commit 5c5d5b4b3559a8fa5c452c13775e177f5a881dde
+Author: Tercio Jose <terciob19@hotmail.com>
+Date:   Tue Sep 30 15:45:07 2025 -0300
+
+    Header Updates
+
+commit 51e2f9f31e53e89c336c972b2e3e1e4f3878e61a
+Author: Tercio Jose <terciob19@hotmail.com>
+Date:   Wed Sep 24 19:54:03 2025 -0300
+
+    Header implementations.
+

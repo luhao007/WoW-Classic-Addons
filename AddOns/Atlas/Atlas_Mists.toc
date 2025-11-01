@@ -1,0 +1,55 @@
+## Interface: 50502
+## Author: nanderson11
+## Version: v3.12.4
+
+## Title: Atlas
+## Notes: Instance Map Browser
+## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r|cFFFFFFFF副本地图|r |cFFFFE00AAtlas|r
+## Notes-zhCN: |cff00CC33副本地图浏览器|r
+
+## Category-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r
+
+## OptionalDeps: LibStub, CallbackHandler-1.0, Ace3, LibBabble-Boss-3.0, LibBabble-SubZone-3.0, LibBabble-Faction-3.0, LibDBIcon-1.0
+
+## SavedVariables: AtlasDB
+
+## X-Website: https://github.com/nanderson11/Atlas
+## X-Category: Map
+## X-License: GPLv2
+## X-Credits: Forked from Atlas
+## X-Localizations: enUS, deDE, esES, esMX, frFR, ruRU, zhTW, zhCN, ptBR, koKR
+## X-Curse-Project-ID: 1115649
+
+Data\Constants.lua
+Data\AreaIDs_ClassicEra.lua
+Libs\Libs.xml
+Locale\Locales.xml
+
+Core\FontsTemplates.xml
+Core\Templates.lua
+Core\Templates.xml
+Core\IngameLocales.lua
+
+# Core
+Core\Mixins.lua
+Core\Atlas.lua
+Core\AtlasFrame.lua
+Core\Atlas.xml
+Core\Config.lua
+
+Data\Maps_Association.lua
+Data\DropDownConfig.lua
+
+# Integration functions
+Integration\EJIntegration.lua
+Integration\EJLoot.xml
+Integration\WorldMap.xml
+Integration\WorldMap.lua
+Integration\Achievements.lua
+Integration\AtlasLootIntegration.lua
+
+Data\Classic-Classic.lua
+Data\BurningCrusade-Classic.lua
+Data\WrathoftheLichKing-Classic.lua
+Data\Cataclysm-Classic.lua
+Data\MistsofPandaria-Classic.lua

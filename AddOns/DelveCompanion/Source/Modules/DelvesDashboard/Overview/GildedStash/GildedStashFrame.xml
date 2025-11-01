@@ -1,0 +1,56 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.blizzard.com/wow/ui/ https://raw.githubusercontent.com/Gethe/wow-ui-source/live/Interface/AddOns/Blizzard_SharedXML/UI.xsd">
+    <Frame name="DelveCompanionOverviewGildedStashFrameTemplate"
+        mixin="DelveCompanion_OverviewGildedStashFrameMixin" virtual="true">
+        <Size x="140" y="80" />
+        <Layers>
+            <Layer level="ARTWORK">
+                <Texture name="Divider" atlas="delves-companion-divider"
+                    useAtlasSize="false">
+                    <Size x="130" y="5" />
+                    <Anchors>
+                        <Anchor point="BOTTOM" y="-3" />
+                    </Anchors>
+                </Texture>
+            </Layer>
+            <Layer level="OVERLAY">
+                <FontString parentKey="Name" inherits="GameFontNormal"
+                    text="GILDED_STASH" mixin="AutoScalingFontStringMixin"
+                    wordwrap="false" justifyV="MIDDLE" justifyH="CENTER">
+                    <Size x="130" y="25" />
+                    <Anchors>
+                        <Anchor point="TOP" x="0" y="-5" />
+                    </Anchors>
+                </FontString>
+                <FontString parentKey="ErrorLabel" inherits="GameFontDisableMed2"
+                    justifyH="CENTER" text="ERROR" mixin="AutoScalingFontStringMixin"
+                    wordwrap="true" maxLines="2" justifyV="MIDDLE" hidden="true">
+                    <Size x="120" y="40" />
+                    <Anchors>
+                        <Anchor point="TOP" relativeKey="$parent.Name"
+                            relativePoint="BOTTOM" x="0" y="0" />
+                    </Anchors>
+                </FontString>
+            </Layer>
+        </Layers>
+        <Frames>
+            <Frame parentKey="Container"
+                inherits="HorizontalLayoutFrame" hidden="true">
+                <Size y="70" />
+                <KeyValues>
+                    <KeyValue key="expand" value="false" type="boolean" />
+                    <KeyValue key="spacing" value="7" type="number" />
+                </KeyValues>
+                <Anchors>
+                    <Anchor point="TOP" relativeKey="$parent.Name" relativePoint="BOTTOM"
+                        y="-5" />
+                </Anchors>
+            </Frame>
+        </Frames>
+        <Scripts>
+            <OnLoad method="OnLoad" />
+            <OnShow method="OnShow" />
+        </Scripts>
+    </Frame>
+</Ui>

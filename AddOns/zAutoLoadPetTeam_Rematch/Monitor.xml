@@ -1,0 +1,232 @@
+﻿<Ui xmlns="http://www.blizzard.com/wow/ui/" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="Monitor.lua" />
+
+	<Button name="PBLMButtonTemplate" inherits="SecureActionButtonTemplate" virtual="true">
+		<Size x="70" y="70"/>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString parentKey="Count" inherits="NumberFont_Outline_Huge">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" x="-1" y="5"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture parentKey="Icon" file="Interface\Icons\INV_Misc_QuestionMark">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="2" y="-2"/>
+						<Anchor point="BOTTOMRIGHT" x="-2" y="2"/>
+					</Anchors>
+					<TexCoords left="0.075" right="0.925" top="0.075" bottom="0.925"/>
+				</Texture>
+			</Layer>
+			<!-- a standard grey border to make icons look consistent -->
+			<Layer level="BORDER" textureSubLevel="1">
+				<Texture parentKey="IconBorder" file="Interface\Buttons\UI-QuickSlot2" setAllPoints="true">
+					<TexCoords left="0.1875" right="0.796875" top="0.1875" bottom="0.796875"/>
+				</Texture>
+			</Layer>
+
+		</Layers>
+		<Frames>
+			<Cooldown parentKey="Cooldown" inherits="CooldownFrameTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="2" y="-2"/>
+					<Anchor point="BOTTOMRIGHT" x="-2" y="2"/>
+				</Anchors>
+			</Cooldown>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				if self.defaultIcon then
+					self.Icon:SetTexture(self.defaultIcon)
+					self.defaultIcon = nil
+				end
+				self:RegisterForDrag("LeftButton")
+			</OnLoad>
+			<OnDragStart>
+				PetBattleLevelUpMonitor_OnDragStart(self, button);
+			</OnDragStart>
+			<OnDragStop>
+				PetBattleLevelUpMonitor_OnDragStop(self);
+			</OnDragStop>
+		</Scripts>
+	</Button>
+
+	<FontFamily name="PBLMFont_H1" virtual="true">
+		<Member alphabet="roman">
+			<Font font="Fonts\FRIZQT__.TTF" height="72" outline="THICK"/>
+		</Member>
+		<Member alphabet="korean">
+			<Font font="Fonts\K_Pagetext.TTF" height="72" outline="THICK"/>
+		</Member>
+		<Member alphabet="simplifiedchinese">
+			<Font font="Fonts\ARKai_T.ttf" height="72" outline="THICK"/>
+		</Member>
+		<Member alphabet="traditionalchinese">
+			<Font font="Fonts\blei00d.TTF" height="72" outline="THICK"/>
+		</Member>
+		<Member alphabet="russian">
+			<Font font="Fonts\FRIZQT___CYR.TTF" height="72" outline="THICK"/>
+		</Member>
+	</FontFamily>
+
+	<FontFamily name="PBLMFont_H2" virtual="true">
+		<Member alphabet="roman">
+			<Font font="Fonts\FRIZQT__.TTF" height="18" outline="THICK"/>
+		</Member>
+		<Member alphabet="korean">
+			<Font font="Fonts\K_Pagetext.TTF" height="18" outline="THICK"/>
+		</Member>
+		<Member alphabet="simplifiedchinese">
+			<Font font="Fonts\ARKai_T.ttf" height="18" outline="THICK"/>
+		</Member>
+		<Member alphabet="traditionalchinese">
+			<Font font="Fonts\blei00d.TTF" height="18" outline="THICK"/>
+		</Member>
+		<Member alphabet="russian">
+			<Font font="Fonts\FRIZQT___CYR.TTF" height="18" outline="THICK"/>
+		</Member>
+	</FontFamily>
+
+
+	<Frame name="PetBattleLevelUpMonitorFrame" parent="UIParent" frameStrata="LOW" toplevel="true" enableMouse="true" movable="true" hidden="true">
+		<Size x="300" y="400"/>
+		<Anchors>
+			<Anchor point="RIGHT" x="-300"/>
+		</Anchors>
+
+		<!-- <Backdrop name="$parentBackdrop" bgFile="Interface\TutorialFrame\TutorialFrameBackground" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<EdgeSize>
+				<AbsValue val="16"/>
+			</EdgeSize>
+			<TileSize>
+				<AbsValue val="32"/>
+			</TileSize>
+			<BackgroundInsets>
+				<AbsInset left="5" right="5" top="5" bottom="5"/>
+			</BackgroundInsets>
+		</Backdrop> -->
+
+
+		<Frames>
+			<Button parentKey="Heal" name="PBLMhHealButton" inherits="PBLMButtonTemplate">
+				<KeyValues>
+					<KeyValue key="defaultIcon" value="Interface\Icons\spell_misc_petheal"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="150" y="0"/>
+				</Anchors>
+
+			</Button>
+			<Button parentKey="Bandage" name="PBLMBandageButton" inherits="PBLMButtonTemplate">
+				<KeyValues>
+					<KeyValue key="defaultIcon" value="Interface\Icons\inv_misc_bandage_05"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="225" y="0"/>
+				</Anchors>
+			</Button>
+		</Frames>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Timer" inherits="PBLMFont_H1" Text="0">
+					<Size>
+						<AbsDimension x="150" y="0"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="TOPLEFT" y="-2" x="0"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="PVP" inherits="PBLMFont_H2" Text="战争模式">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT"  relativePoint="TOPLEFT" x="150" y="10" />
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Hat" inherits="PBLMFont_H2" Text="狩猎帽">
+					<Anchors>
+						<Anchor point="LEFT"  relativeKey="$parent.PVP" relativePoint="LEFT" x="90" />
+					</Anchors>
+				</FontString>
+
+				<FontString parentKey="LabLevel" inherits="PBLMFont_H2" Text="当前人物等级：">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.PVP" relativePoint="BOTTOMLEFT" x="-130" y="-100" />
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Level" inherits="PBLMFont_H2" Text="">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.LabLevel" relativePoint="LEFT" x="150" y="-1" />
+					</Anchors>
+				</FontString>
+				<FontString parentKey="LabXpLast" inherits="PBLMFont_H2" Text="上把获取经验：">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.LabLevel" relativePoint="BOTTOMLEFT" x="0" y="-15" />
+					</Anchors>
+				</FontString>
+				<FontString parentKey="XpLast" inherits="PBLMFont_H2" Text="">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.LabXpLast" relativePoint="LEFT" x="150" y="-1" />
+					</Anchors>
+				</FontString>
+				<FontString parentKey="LabLeftCount" inherits="PBLMFont_H2" Text="预计升级场次：">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.LabXpLast" relativePoint="BOTTOMLEFT" x="0" y="-15" />
+					</Anchors>
+				</FontString>
+				<FontString parentKey="LeftCount" inherits="PBLMFont_H2" Text="">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.LabLeftCount" relativePoint="LEFT" x="150" y="-1" />
+					</Anchors>
+				</FontString>
+
+				<FontString parentKey="LabTeamName" inherits="PBLMFont_H2" Text="当前队伍名称:">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.LabLeftCount" relativePoint="BOTTOMLEFT" x="0" y="-15" />
+					</Anchors>
+				</FontString>
+				<FontString parentKey="TeamName" inherits="PBLMFont_H2" Text="">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.LabTeamName" relativePoint="LEFT" x="150" y="-1" />
+					</Anchors>
+				</FontString>
+				<FontString parentKey="LabTeamInfo" inherits="PBLMFont_H2" Text="队伍平均用时:">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.LabTeamName" relativePoint="BOTTOMLEFT" x="0" y="-15" />
+					</Anchors>
+				</FontString>
+				<FontString parentKey="TeamInfo" inherits="PBLMFont_H2" Text="">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.LabTeamInfo" relativePoint="LEFT" x="150" y="-1" />
+					</Anchors>
+				</FontString>
+				<FontString parentKey="LabQueue" inherits="PBLMFont_H2" Text="升级队列剩余:">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.LabTeamInfo" relativePoint="BOTTOMLEFT" x="0" y="-15" />
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Queue" inherits="PBLMFont_H2" Text="">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.LabQueue" relativePoint="LEFT" x="150" y="-1" />
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				PetBattleLevelUpMonitor_OnLoad(self);
+			</OnLoad>
+			<OnEvent>
+				PetBattleLevelUpMonitor_OnEvent(self, event, ...);
+			</OnEvent>
+			<OnUpdate>
+				PetBattleLevelUpMonitor_OnUpdate(self);
+			</OnUpdate>
+		</Scripts>
+
+
+	</Frame>
+
+</Ui>

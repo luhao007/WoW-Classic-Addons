@@ -1,0 +1,46 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.blizzard.com/wow/ui/ https://raw.githubusercontent.com/Gethe/wow-ui-source/live/Interface/AddOns/Blizzard_SharedXML/UI.xsd">
+    <Frame name="DelveCompanionDelveProgressWidgetTemplate"
+        mixin="DelveCompanion_DelveProgressWidgetMixin" virtual="true">
+        <Size x="174" y="26" />
+        <Frames>
+            <Frame parentKey="Story"
+                inherits="DelveCompanionCustomActionWidgetTemplate">
+                <Size x="40" y="26" />
+                <KeyValues>
+                    <KeyValue key="iconSizeX" value="20" type="number" />
+                    <KeyValue key="iconSizeY" value="20" type="number" />
+                    <KeyValue key="displayLabel" value="true" type="boolean" />
+                    <KeyValue key="labelRelPoint" value="RIGHT" type="string" />
+                    <KeyValue key="labelOffsetX" value="2" type="number" />
+                    <KeyValue key="frameType" value="achievement" type="string" />
+                    <KeyValue key="frameCode" value="300" type="number" />
+                </KeyValues>
+                <Anchors>
+                    <Anchor point="LEFT" x="-5" y="0" />
+                </Anchors>
+            </Frame>
+            <Frame parentKey="Chest"
+                inherits="DelveCompanionCustomActionWidgetTemplate">
+                <Size x="40" y="26" />
+                <KeyValues>
+                    <KeyValue key="iconSizeX" value="20" type="number" />
+                    <KeyValue key="iconSizeY" value="20" type="number" />
+                    <KeyValue key="displayLabel" value="true" type="boolean" />
+                    <KeyValue key="labelRelPoint" value="RIGHT" type="string" />
+                    <KeyValue key="labelOffsetX" value="2" type="number" />
+                    <KeyValue key="frameType" value="achievement" type="string" />
+                    <KeyValue key="frameCode" value="300" type="number" />
+                </KeyValues>
+                <Anchors>
+                    <Anchor point="LEFT" relativeKey="$parent.Story" relativePoint="RIGHT" x="15"
+                        y="0" />
+                </Anchors>
+            </Frame>
+        </Frames>
+        <Scripts>
+            <OnLoad method="OnLoad" />
+        </Scripts>
+    </Frame>
+</Ui>

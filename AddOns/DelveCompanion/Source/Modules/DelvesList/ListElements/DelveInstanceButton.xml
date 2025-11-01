@@ -1,0 +1,118 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.blizzard.com/wow/ui/ https://raw.githubusercontent.com/Gethe/wow-ui-source/live/Interface/AddOns/Blizzard_SharedXML/UI.xsd">
+    <Button name="DelveCompanionDelveInstanceButtonTemplate"
+        mixin="DelveCompanion_DelveInstanceButtonMixin"
+        registerForClicks="LeftButtonUp" virtual="true">
+        <Size x="174" y="96" />
+        <Layers>
+            <Layer level="BACKGROUND" textureSubLevel="-5">
+                <Texture parentKey="DefaultBg"
+                    file="Interface\DialogFrame\UI-DialogBox-Background">
+                    <Anchors>
+                        <Anchor point="TOPLEFT" x="7" y="-7" />
+                        <Anchor point="BOTTOMRIGHT" x="-7" y="7" />
+                    </Anchors>
+                </Texture>
+            </Layer>
+            <Layer level="ARTWORK" textureSubLevel="-1">
+                <Texture parentKey="DelveArtBg">
+                    <Anchors>
+                        <Anchor point="TOPLEFT" x="5" y="-5" />
+                        <Anchor point="BOTTOMRIGHT" x="-5" y="5" />
+                    </Anchors>
+                    <TexCoords left="0" right="0.6" top="0.1" bottom="0.8" />
+                </Texture>
+            </Layer>
+            <Layer level="OVERLAY">
+                <FontString parentKey="DelveName" inherits="QuestTitleFontBlackShadow"
+                    text="DELVE_NAME">
+                    <Size x="150" />
+                    <Anchors>
+                        <Anchor point="TOP" relativeKey="$parentBackground" relativePoint="CENTER"
+                            y="35" />
+                    </Anchors>
+                </FontString>
+                <Texture parentKey="BountifulIcon"
+                    atlas="delves-bountiful" hidden="true">
+                    <Size x="36" y="36" />
+                    <Anchors>
+                        <Anchor point="BOTTOMLEFT" relativeKey="$parentBackground"
+                            relativePoint="BOTTOMLEFT" x="3" y="2" />
+                    </Anchors>
+                </Texture>
+            </Layer>
+        </Layers>
+        <Frames>
+            <Frame parentKey="RightIconsContainer" inherits="HorizontalLayoutFrame">
+                <KeyValues>
+                    <KeyValue key="expand" value="false" type="boolean" />
+                    <KeyValue key="spacing" value="-8" type="number" />
+                    <KeyValue key="maximumWidth" value="140" type="number" />
+                    <KeyValue key="align" value="center" type="string" />
+                    <KeyValue key="childLayoutDirection" value="rightToLeft" type="string" />
+                </KeyValues>
+                <Anchors>
+                    <Anchor point="BOTTOMRIGHT" relativeKey="$parentBackground"
+                        relativePoint="BOTTOMRIGHT" x="-5" y="5" />
+                </Anchors>
+                <Frames>
+                    <Frame parentKey="WaypointIcon" hidden="true">
+                        <Size x="32" y="32" />
+                        <KeyValues>
+                            <KeyValue key="layoutIndex" value="1" type="number" />
+                        </KeyValues>
+                        <Layers>
+                            <Layer level="OVERLAY">
+                                <Texture parentKey="Icon"
+                                    atlas="Waypoint-MapPin-Minimap-Tracked">
+                                    <Size x="32" y="32" />
+                                    <Anchors>
+                                        <Anchor point="CENTER" />
+                                    </Anchors>
+                                </Texture>
+                            </Layer>
+                        </Layers>
+                    </Frame>
+                    <Frame parentKey="NotCompletedStoryIcon" hidden="true">
+                        <Size x="32" y="32" />
+                        <KeyValues>
+                            <KeyValue key="layoutIndex" value="2" type="number" />
+                        </KeyValues>
+                        <Layers>
+                            <Layer level="OVERLAY">
+                                <Texture parentKey="Icon"
+                                    atlas="QuestLegendary">
+                                    <Size x="20" y="20" />
+                                    <Anchors>
+                                        <Anchor point="CENTER" />
+                                    </Anchors>
+                                </Texture>
+                            </Layer>
+                        </Layers>
+                    </Frame>
+                </Frames>
+            </Frame>
+        </Frames>
+        <NormalTexture file="Interface\EncounterJournal\UI-EncounterJournalTextures">
+            <Size x="174" y="96" />
+            <TexCoords left="0.00195313" right="0.34179688" top="0.42871094" bottom="0.52246094" />
+        </NormalTexture>
+        <PushedTexture file="Interface\EncounterJournal\UI-EncounterJournalTextures">
+            <Size x="174" y="96" />
+            <TexCoords left="0.00195313" right="0.34179688" top="0.33300781" bottom="0.42675781" />
+        </PushedTexture>
+        <HighlightTexture file="Interface\EncounterJournal\UI-EncounterJournalTextures">
+            <Size x="174" y="96" />
+            <TexCoords left="0.34570313" right="0.68554688" top="0.33300781" bottom="0.42675781" />
+        </HighlightTexture>
+        <Scripts>
+            <OnShow method="OnShow" />
+            <OnHide method="OnHide" />
+            <OnEvent method="OnEvent" />
+            <OnEnter method="OnEnter" />
+            <OnLeave method="OnLeave" />
+            <OnClick method="OnClick" />
+        </Scripts>
+    </Button>
+</Ui>

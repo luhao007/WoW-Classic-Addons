@@ -1,0 +1,7 @@
+<Ui>
+	<Script file="LFGFrame.lua" />
+	<Script file="LFGList.lua" />
+	<Script file="LFGCreation.lua" />
+	<Script file="LFGList_Vanilla.lua" />
+	<Script file="LFGCreation_Vanilla.lua" />
+</Ui>

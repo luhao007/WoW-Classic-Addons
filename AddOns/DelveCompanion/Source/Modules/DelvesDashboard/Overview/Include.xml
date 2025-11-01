@@ -1,0 +1,19 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.blizzard.com/wow/ui/ https://raw.githubusercontent.com/Gethe/wow-ui-source/live/Interface/AddOns/Blizzard_SharedXML/UI.xsd">
+	<Include file="GildedStash\GildedStashItem.xml" />
+	<Script file="GildedStash\GildedStashItem.lua" />
+	<Include file="GildedStash\GildedStashFrame.xml" />
+	<Script file="GildedStash\GildedStashFrame.lua" />
+
+	<Include file="Bountiful\BountifulButton.xml" />
+	<Script file="Bountiful\BountifulButton.lua" />
+	<Include file="Bountiful\BountifulFrame.xml" />
+	<Script file="Bountiful\BountifulFrame.lua" />
+
+	<Include file="Consumables\ConsumablesFrame.xml" />
+	<Script file="Consumables\ConsumablesFrame.lua" />
+
+	<Include file="Overview.xml" />
+	<Script file="Overview.lua" />
+</Ui>

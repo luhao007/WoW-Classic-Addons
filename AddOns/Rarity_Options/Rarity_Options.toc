@@ -1,0 +1,20 @@
+## Interface: 50502
+## Author: Allara
+
+## Title: Rarity [|caaedc99fOptions|r]
+## Notes: Rarity configuration. Should be loaded automatically on demand.
+## Title-zhCN: |cFFFFE00A<|r|cFFA9D271收藏|r|cFFFFE00A>|r|cFFFFFFFF稀有物品追踪|r |cFF0055FF设置|r
+
+## IconTexture: Interface\Icons\spell_nature_forceofnature.blp
+
+## Category-zhCN: |cFFFFE00A<|r|cFFA9D271收藏|r|cFFFFE00A>|r
+
+## Dependencies: Rarity
+## LoadOnDemand: 1
+
+## X-Min-Interface: 110205, 50501, 11507
+## X-Part-Of: Rarity
+## X-LoadOn-Slash: /rarity, /rare
+## X-LoadOn-InterfaceOptions: Rarity
+
+Options.lua

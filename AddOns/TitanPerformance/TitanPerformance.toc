@@ -1,0 +1,18 @@
+## Interface: 50502
+## Author: Titan Panel Development Team (http://www.titanpanel.org)
+## Version: 8.4.1
+
+## Title: Titan Panel [|cffeda55fPerformance|r] |cff00aa008.4.1|r
+## Notes: Adds FPS and Garbage collection information to Titan Panel
+## Title-zhCN: |cFFFFE00A<|r|cFFA330C9界面|r|cFFFFE00A>|r|cFFFFFFFF泰坦面板|r |cFF69CCF0性能|r
+## Notes-zhCN: 泰坦面板的性能模块
+
+## IconTexture: Interface\AddOns\TitanPerformance\TitanPerformance
+
+## Category-zhCN: |cFFFFE00A<|r|cFFA330C9界面|r|cFFFFE00A>|r
+
+## Dependencies: Titan
+
+## X-Part-Of: Titan
+
+TitanPerformance.lua

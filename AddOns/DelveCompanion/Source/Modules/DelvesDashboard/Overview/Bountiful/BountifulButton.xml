@@ -1,0 +1,66 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.blizzard.com/wow/ui/ https://raw.githubusercontent.com/Gethe/wow-ui-source/live/Interface/AddOns/Blizzard_SharedXML/UI.xsd">
+    <Button name="DelveCompanionOverviewBountifulButtonTemplate" virtual="true"
+        mixin="DelveCompanion_OverviewBountifulButtonMixin"
+        registerForClicks="LeftButtonUp" hidden="true">
+        <Size x="27" y="27" />
+        <KeyValues>
+            <KeyValue key="layoutIndex" value="0" type="number" />
+            <KeyValue key="align" value="center" type="string" />
+        </KeyValues>
+        <Anchors>
+            <Anchor point="CENTER" />
+        </Anchors>
+        <Layers>
+            <Layer level="BACKGROUND" textureSubLevel="-5">
+                <Texture parentKey="Background" file="Interface\DialogFrame\UI-DialogBox-Background">
+                    <Anchors>
+                        <Anchor point="TOPLEFT" x="7" y="-7" />
+                        <Anchor point="BOTTOMRIGHT" x="-7" y="7" />
+                    </Anchors>
+                </Texture>
+            </Layer>
+            <Layer level="ARTWORK" textureSubLevel="-1">
+                <Texture parentKey="ArtBg">
+                    <Anchors>
+                        <Anchor point="TOPLEFT" x="0" y="0" />
+                        <Anchor point="BOTTOMRIGHT" x="0" y="0" />
+                    </Anchors>
+                    <TexCoords left="0" right="1" top="0" bottom="1" />
+                </Texture>
+            </Layer>
+            <Layer level="OVERLAY">
+                <Texture parentKey="WaypointIcon" atlas="Waypoint-MapPin-Minimap-Tracked"
+                    hidden="true">
+                    <Size x="25" y="25" />
+                    <Anchors>
+                        <Anchor point="BOTTOMRIGHT" relativeKey="$parentArtBg"
+                            relativePoint="BOTTOMRIGHT" x="3" y="-3" />
+                    </Anchors>
+                </Texture>
+            </Layer>
+        </Layers>
+        <NormalTexture file="Interface\EncounterJournal\UI-EncounterJournalTextures">
+            <Size x="40" y="40" />
+            <TexCoords left="0.00195313" right="0.34179688" top="0.42871094" bottom="0.52246094" />
+        </NormalTexture>
+        <PushedTexture file="Interface\EncounterJournal\UI-EncounterJournalTextures">
+            <Size x="40" y="40" />
+            <TexCoords left="0.00195313" right="0.34179688" top="0.33300781" bottom="0.42675781" />
+        </PushedTexture>
+        <HighlightTexture file="Interface\EncounterJournal\UI-EncounterJournalTextures">
+            <Size x="40" y="40" />
+            <TexCoords left="0.34570313" right="0.68554688" top="0.33300781" bottom="0.42675781" />
+        </HighlightTexture>
+        <Scripts>
+            <OnLoad method="OnLoad" />
+            <OnShow method="OnShow" />
+            <OnHide method="OnHide" />
+            <OnEnter method="OnEnter" />
+            <OnLeave method="OnLeave" />
+            <OnClick method="OnClick" />
+            <OnEvent method="OnEvent" />
+        </Scripts>
+    </Button>
+</Ui>

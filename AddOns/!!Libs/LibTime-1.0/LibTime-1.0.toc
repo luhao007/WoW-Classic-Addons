@@ -1,0 +1,26 @@
+## Interface: 110200, 50500, 11507
+## Title: Lib: LibTime-1.0
+## Notes: A little library around date, time and GetGameTime and more...
+## Author: Hizuro
+## IconTexture: 986485
+## Version: r61
+
+## Category-enUS: Libraries
+## Category-deDE: Bibliotheken
+## Category-esES: Bibliotecas
+## Category-esMX: Bibliotecas
+## Category-frFR: Bibliothèques
+## Category-itIT: Biblioteche
+## Category-koKR: 도서관
+## Category-ptBR: Bibliotecas
+## Category-ruRU: Библиотеки
+## Category-zhCN: 函数库
+## Category-zhTW: 函式庫
+
+
+## X-Curse-Project-ID: 279585
+
+#@no-lib-strip@
+#@end-no-lib-strip@
+
+LibTime-1.0.xml

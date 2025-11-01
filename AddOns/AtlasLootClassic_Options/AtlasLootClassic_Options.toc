@@ -1,0 +1,36 @@
+## Interface: 50502
+## Author: Snowflame0
+## Version: v5.0.4
+
+## Title: AtlasLootClassic |cFF33FFBDMoP|r |cFF0099FF[Options]|r
+## Notes: AtlasLootClassic Options module
+## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r|cFFFFFFFF副本掉落|r |cFF0055FF设置|r
+## Notes-zhCN: AtlasLoot 选项模块
+
+## Category-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r
+
+## Dependencies: AtlasLootClassic
+## LoadOnDemand: 1
+
+## X-Category: Map
+## X-License: GPL v2
+## X-Part-Of: AtlasLootClassic
+
+embeds.xml
+
+Locales\constants.cn.lua
+Locales\constants.de.lua
+Locales\constants.es.lua
+Locales\constants.fr.lua
+Locales\constants.it.lua
+Locales\constants.kr.lua
+Locales\constants.mx.lua
+Locales\constants.pt.lua
+Locales\constants.ru.lua
+Locales\constants.tw.lua
+
+Core.lua
+Main.lua
+Windows.lua
+MiniMapButton.lua
+Addons.lua

@@ -1,0 +1,166 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.blizzard.com/wow/ui/ https://raw.githubusercontent.com/Gethe/wow-ui-source/live/Interface/AddOns/Blizzard_SharedXML/UI.xsd">
+	<Frame name="DelveCompanionDelvesListFrameTemplate" mixin="DelveCompanion_DelvesListFrameMixin"
+		virtual="true" enableMouse="true" hidden="true">
+		<Size x="748" y="367" />
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="$parentInset" x="0" y="-2" />
+			<Anchor point="BOTTOMRIGHT" relativeTo="$parentInset" x="-3" y="0" />
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" atlas="UI-EJ-TheWarWithin" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="3" y="-1" />
+					</Anchors>
+				</Texture>
+			</Layer>
+			<!-- TODO: Try to add an extra texture above the content to make the scrolling
+			smoother
+			<Layer level="OVERLAY">
+				<Texture parentKey="BackgroundPatch" atlas="UI-EJ-TheWarWithin" useAtlasSize="false">
+					<Size y="25" />
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeTo="$parent.Background"
+							relativePoint="BOTTOMLEFT" />
+						<Anchor point="BOTTOMRIGHT" relativeTo="$parent.Background"
+							relativePoint="BOTTOMRIGHT" />
+					</Anchors>
+					<TexCoords left="0" right="1" top="0.9"
+						bottom="1" />
+				</Texture>
+			</Layer>
+			-->
+			<Layer level="OVERLAY">
+				<FontString parentKey="Title" inherits="GameFontNormalLarge2"
+					justifyH="LEFT" text="DELVES">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="20" y="-15" />
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="KeysWidget"
+				inherits="DelveCompanionCustomActionWidgetTemplate">
+				<Size x="30" y="30" />
+				<KeyValues>
+					<KeyValue key="iconSizeX" value="28" type="number" />
+					<KeyValue key="iconSizeY" value="28" type="number" />
+					<KeyValue key="displayLabel" value="true" type="boolean" />
+					<KeyValue key="frameType" value="currency" type="string" />
+					<KeyValue key="frameCode" value="300" type="number" />
+					<KeyValue key="fontOverride" value="GameFontHighlightLarge"
+						type="string" />
+					<KeyValue key="tooltipAnchor" value="ANCHOR_RIGHT" type="string" />
+				</KeyValues>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Title"
+						relativePoint="RIGHT" x="30" y="-1" />
+				</Anchors>
+			</Frame>
+
+			<Frame parentKey="DelveOBotWidget"
+				inherits="DelvelCompanionDelveOBotWidgetTemplate">
+				<Size x="40" y="40" />
+				<KeyValues>
+					<KeyValue key="iconSizeX" value="40" type="number" />
+					<KeyValue key="iconSizeY" value="40" type="number" />
+					<KeyValue key="displayLabel" value="false" type="boolean" />
+					<KeyValue key="frameType" value="toy" type="string" />
+					<KeyValue key="frameCode" value="300" type="number" />
+					<KeyValue key="tooltipAnchor" value="ANCHOR_RIGHT" type="string" />
+				</KeyValues>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.KeysWidget"
+						relativePoint="RIGHT" x="25" y="1" />
+				</Anchors>
+			</Frame>
+
+			<Frame parentKey="ModifiersContainer" inherits="HorizontalLayoutFrame">
+				<KeyValues>
+					<KeyValue key="fixedHeight" value="50" type="number" />
+					<KeyValue key="spacing" value="0" type="number" />
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="-25" y="2" />
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString parentKey="ModifiersLabel" font="GameFontHighlightLarge"
+							text="MODS">
+							<Anchors>
+								<Anchor point="RIGHT" relativeKey="$parent.AffixWidget"
+									relativePoint="LEFT" x="-5" y="0" />
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame parentKey="AffixWidget"
+						inherits="DelveCompanionCustomActionWidgetTemplate">
+						<Size x="50" y="50" />
+						<KeyValues>
+							<KeyValue key="layoutIndex" value="2" type="number" />
+							<KeyValue key="iconSizeX" value="50" type="number" />
+							<KeyValue key="iconSizeY" value="50" type="number" />
+							<KeyValue key="useMask" value="true" type="boolean" />
+							<KeyValue key="maskSizeOffset" value="20" type="number" />
+							<KeyValue key="displayLabel" value="false" type="boolean" />
+							<KeyValue key="tooltipAnchor" value="ANCHOR_RIGHT" type="string" />
+						</KeyValues>
+						<Layers>
+							<Layer level="OVERLAY">
+								<Texture parentKey="Ring" atlas="charactercreate-ring-metallight">
+									<Anchors>
+										<Anchor point="TOPLEFT" relativePoint="CENTER" x="-30"
+											y="30" />
+										<Anchor point="BOTTOMRIGHT" relativePoint="CENTER" x="30"
+											y="-30" />
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+					</Frame>
+				</Frames>
+			</Frame>
+
+			<ScrollFrame parentKey="DelvesListScroll" inherits="ScrollFrameTemplate">
+				<KeyValues>
+					<KeyValue key="scrollBarX" value="15" type="number" />
+					<KeyValue key="scrollBarTopY" value="4" type="number" />
+					<KeyValue key="scrollBarBottomY" value="-7" type="number" />
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="8" y="-60" />
+					<Anchor point="BOTTOMRIGHT" x="-30" y="15" />
+				</Anchors>
+				<ScrollChild>
+					<Frame parentKey="Content">
+						<Size x="748" y="367" />
+						<Layers>
+							<Layer level="BACKGROUND">
+								<!-- Extra visual for debugging
+									<Texture name="$parentDebugBackground"
+										file="Interface\Buttons\GoldGradiant">
+										<Anchors>
+											<Anchor point="TOPLEFT" x="0" y="0" />
+											<Anchor point="BOTTOMRIGHT" x="0" y="0" />
+										</Anchors>
+									</Texture>
+									 -->
+							</Layer>
+						</Layers>
+					</Frame>
+				</ScrollChild>
+			</ScrollFrame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad" />
+			<OnShow method="OnShow" />
+			<OnHide method="OnHide" />
+			<OnEvent method="OnEvent" />
+		</Scripts>
+	</Frame>
+</Ui>

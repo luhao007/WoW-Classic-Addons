@@ -1,0 +1,23 @@
+## Interface: 50502
+## Author: Titan Panel Dev Team
+## Version: 8.4.1
+
+## Title: Titan Panel [|cffeda55f_Classic_|r] |cff00aa008.4.1|r
+## Notes: Adds display bars to show and control information/launcher plugins.
+## Title-zhCN: |cFFFFE00A<|r|cFFA330C9界面|r|cFFFFE00A>|r|cFFFFFFFF泰坦面板|r |cFFFFE00ATitanClassic|r
+## Notes-zhCN: 在屏幕顶端/底端增加一个可视化侧边栏
+
+## IconTexture: Interface\Icons\Achievement_Dungeon_UlduarRaid_Titan_01
+
+## Category-zhCN: |cFFFFE00A<|r|cFFA330C9界面|r|cFFFFE00A>|r
+
+## Dependencies: Titan
+
+## X-Credits: TitanMod, Dark Imakuni, Adsertor, Titan Dev Team
+## X-Category: Interface Enhancements
+## X-Website: http://www.titanpanel.org
+## X-Email: honorgog@gmail.com
+## X-Localizations: enUS, ptBR, zhCN, deDE, esES, frFR, itIT, koKR, esMX, ruRU, zhTW
+## X-License: All rights reserved (See license.txt)
+## X-WoWI-ID: 8092
+

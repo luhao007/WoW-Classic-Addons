@@ -1,0 +1,27 @@
+## Interface: 40402
+## Title: Lib: LibDropDownMenu
+## Notes: Library providing downdown menu like blizzards DropDownMenu
+## Author: Hizuro
+## IconTexture: 986485
+## Version: r54
+
+## Category-enUS: Libraries
+## Category-deDE: Bibliotheken
+## Category-esES: Bibliotecas
+## Category-esMX: Bibliotecas
+## Category-frFR: Bibliothèques
+## Category-itIT: Biblioteche
+## Category-koKR: 도서관
+## Category-ptBR: Bibliotecas
+## Category-ruRU: Библиотеки
+## Category-zhCN: 函数库
+## Category-zhTW: 函式庫
+
+## OptionalDeps: LibStub, CallbackHandler-1.0
+
+## X-Curse-Project-ID: 298617
+
+#@no-lib-strip@
+#@end-no-lib-strip@
+
+LibDropDownMenu.xml

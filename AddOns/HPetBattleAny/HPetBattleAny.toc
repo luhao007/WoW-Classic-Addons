@@ -1,0 +1,26 @@
+## Interface: 50502
+## Author: Qshine
+## Version: 2.2.17
+
+## Title: |cFFBF00FF[H]|r Something About Pet Battle
+## Notes: Something About Pet Battle,Type /hpq to config
+## Title-zhCN: |cFFFFE00A<|r|cFFA9D271收藏|r|cFFFFE00A>|r|cFFFFFFFF宠物对战增强|r |cFFFFE00AHPetBattleAny|r
+## Notes-zhCN: 提醒野生宠物品质等,输入/hpq设置
+
+## Category-zhCN: |cFFFFE00A<|r|cFFA9D271收藏|r|cFFFFE00A>|r
+
+## SavedVariables: HPetSaves
+
+## X-Date: 2020-11-06
+
+Localization.lua
+
+HPetBattleAny.lua
+modules\PetData.lua
+modules\PetDataFrame.lua
+modules\Config.lua
+modules\Hook.lua
+modules\Search.lua
+modules\Ability.lua
+
+modules\AutoSelectPet.lua

@@ -1,0 +1,97 @@
+## Interface: 50502
+## Author: MysticalOS
+## Version: r183
+
+## Title: |cffffe00a<|r|cffff7d0aDBM Mod|r|cffffe00a>|r |cffff6010Raids (MoP)|r
+## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r|cFFFFFFFF副本助手|r |cFF69CCF0团队|r |cFF22B14C熊猫人之谜|r
+
+## IconTexture: Interface\AddOns\DBM-Core\textures\dbm_airhorn
+
+## Category: DBM
+## Category-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r
+
+## RequiredDeps: DBM-Core
+## LoadOnDemand: 1
+
+## SavedVariables: DBMRaidsMoP_AllSavedVars
+## SavedVariablesPerCharacter: DBMRaidsMoP_SavedStats
+
+## X-Min-Interface: 50500
+## X-DBM-Mod: 1
+## X-DBM-Mod-Type: RAID
+## X-DBM-Mod-Category: MOP
+## X-DBM-StatTypes: normal,normal25,heroic,heroic25,lfr
+## X-DBM-Mod-SubCategoriesID: 1136, 1098, 996, 1009, 1008
+## X-DBM-Mod-Name: Raids (MoP)
+## X-DBM-Mod-Name-koKR: 공격대 (판다)
+## X-DBM-Mod-Name-ruRU: Рейды (Пандария)
+## X-DBM-Mod-Sort: 701
+## X-DBM-Mod-MapID: 1136, 1098, 996, 1009, 1008
+## X-DBM-Mod-MinCoreRevision: 20230617000000
+## X-DBM-Mod-MinExpansion: 4
+## X-Curse-Project-ID: 85688
+## X-WoWI-ID: 23199
+## X-Wago-ID: 0mNwz4Go
+## X-Part-Of: DBM-Core
+
+localization.en.lua
+localization.br.lua
+localization.cn.lua
+localization.de.lua
+localization.es.lua
+localization.fr.lua
+localization.it.lua
+localization.kr.lua
+localization.ru.lua
+localization.tw.lua
+
+SiegeOfOrgrimmar\Immerseus.lua
+SiegeOfOrgrimmar\FallenProtectors.lua
+SiegeOfOrgrimmar\Norushen.lua
+SiegeOfOrgrimmar\ShaofPride.lua
+SiegeOfOrgrimmar\Galakras.lua
+SiegeOfOrgrimmar\IronJuggernaut.lua
+SiegeOfOrgrimmar\KorkronDarkShaman.lua
+SiegeOfOrgrimmar\GeneralNazgrim.lua
+SiegeOfOrgrimmar\Malkorok.lua
+SiegeOfOrgrimmar\SpoilsOfPandria.lua
+SiegeOfOrgrimmar\ThokTheBloodthirsty.lua
+SiegeOfOrgrimmar\SiegecrafterBlackfuse.lua
+SiegeOfOrgrimmar\ParagonsOfTheKlaxxi.lua
+SiegeOfOrgrimmar\GarroshHellscream.lua
+SiegeOfOrgrimmar\SoOTrash.lua
+
+ThroneofThunder\Jinrokh.lua
+ThroneofThunder\Horridon.lua
+ThroneofThunder\CouncilofElders.lua
+ThroneofThunder\Tortos.lua
+ThroneofThunder\Megaera.lua
+ThroneofThunder\JiKun.lua
+ThroneofThunder\Durumu.lua
+ThroneofThunder\Primordius.lua
+ThroneofThunder\DarkAnimus.lua
+ThroneofThunder\IronQon.lua
+ThroneofThunder\TwinEmpyreans.lua
+ThroneofThunder\LeiShen.lua
+ThroneofThunder\Raden.lua
+ThroneofThunder\ToTTrash.lua
+
+TerraceofEndlessSpring\ProtectorsofEndless.lua
+TerraceofEndlessSpring\Tsulong.lua
+TerraceofEndlessSpring\LeiShi.lua
+TerraceofEndlessSpring\ShaofFear.lua
+
+HeartofFear\Zorlok.lua
+HeartofFear\Tayak.lua
+HeartofFear\Garalon.lua
+HeartofFear\Meljarak.lua
+HeartofFear\Unsok.lua
+HeartofFear\Shekzeer.lua
+HeartofFear\HoFTrash.lua
+
+MogushanVaults\StoneGuard.lua
+MogushanVaults\Feng.lua
+MogushanVaults\GarajalTheSpiritbinder.lua
+MogushanVaults\SpiritKings.lua
+MogushanVaults\Elegon.lua
+MogushanVaults\WillofEmperor.lua

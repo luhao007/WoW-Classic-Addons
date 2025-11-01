@@ -1,0 +1,243 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.blizzard.com/wow/ui/ https://raw.githubusercontent.com/Gethe/wow-ui-source/live/Interface/AddOns/Blizzard_SharedXML/UI.xsd">
+    <Frame name="DelveCompanionSettingsFrameTemplate" mixin="DelveCompanionSettingsFrameMixin"
+        virtual="true" hidden="true">
+        <Frames>
+            <Frame parentKey="TitlePanel">
+                <Anchors>
+                    <Anchor point="TOPLEFT" />
+                    <Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" x="-10" y="-40" />
+                </Anchors>
+                <Layers>
+                    <Layer level="OVERLAY">
+                        <FontString parentKey="Text" inherits="GameFontNormalHuge2"
+                            justifyH="CENTER" text="ADDON">
+                            <Anchors>
+                                <Anchor point="TOP" />
+                            </Anchors>
+                        </FontString>
+                        <FontString parentKey="Version" inherits="GameFontNormalSmall"
+                            justifyH="RIGHT" text="VER">
+                            <Anchors>
+                                <Anchor point="TOPRIGHT" />
+                            </Anchors>
+                        </FontString>
+                    </Layer>
+                </Layers>
+            </Frame>
+
+            <Frame parentKey="LocalizationSection" inherits="VerticalLayoutFrame">
+                <KeyValues>
+                    <KeyValue key="maximumWidth" value="1000" type="number" />
+                    <KeyValue key="expand" value="true" type="boolean" />
+                    <KeyValue key="spacing" value="5" type="number" />
+                    <KeyValue key="topPadding" value="25" type="number" />
+                    <KeyValue key="bottomPadding" value="10" type="number" />
+                </KeyValues>
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeKey="$parent.TitlePanel"
+                        relativePoint="BOTTOMLEFT" y="-5" />
+                    <Anchor point="TOPRIGHT" relativeKey="$parent.TitlePanel"
+                        relativePoint="BOTTOMRIGHT" y="-5" />
+                </Anchors>
+                <Layers>
+                    <Layer level="OVERLAY">
+                        <FontString parentKey="Title" inherits="GameFontNormalLarge"
+                            justifyH="LEFT" text="THANKS">
+                            <Anchors>
+                                <Anchor point="TOPLEFT" />
+                            </Anchors>
+                        </FontString>
+                    </Layer>
+                </Layers>
+                <Frames>
+                    <Frame parentKey="ruRU">
+                        <Size x="100" y="25" />
+                        <KeyValues>
+                            <KeyValue key="layoutIndex" value="1" type="number" />
+                        </KeyValues>
+                        <Layers>
+                            <Layer level="OVERLAY">
+                                <Texture parentKey="FlagIcon"
+                                    file="Interface\AddOns\DelveCompanion\Images\lang_flag_russian">
+                                    <Size x="25" y="25" />
+                                    <Anchors>
+                                        <Anchor point="TOPLEFT" />
+                                    </Anchors>
+                                </Texture>
+                                <FontString parentKey="Name" inherits="GameFontHighlightLarge"
+                                    justifyH="LEFT" text="ZamestoTV, Hollicsh">
+                                    <Anchors>
+                                        <Anchor point="LEFT" relativeKey="$parent.FlagIcon"
+                                            relativePoint="RIGHT" x="10" />
+                                    </Anchors>
+                                </FontString>
+                            </Layer>
+                        </Layers>
+                    </Frame>
+                    <Frame parentKey="zhCN">
+                        <Size x="100" y="25" />
+                        <KeyValues>
+                            <KeyValue key="layoutIndex" value="2" type="number" />
+                        </KeyValues>
+                        <Layers>
+                            <Layer level="OVERLAY">
+                                <Texture parentKey="FlagIcon"
+                                    file="Interface\AddOns\DelveCompanion\Images\lang_flag_chinese">
+                                    <Size x="25" y="25" />
+                                    <Anchors>
+                                        <Anchor point="TOPLEFT" />
+                                    </Anchors>
+                                </Texture>
+                                <FontString parentKey="Name" inherits="GameFontHighlightLarge"
+                                    justifyH="LEFT" text="XingDvD">
+                                    <Anchors>
+                                        <Anchor point="LEFT" relativeKey="$parent.FlagIcon"
+                                            relativePoint="RIGHT" x="10" />
+                                    </Anchors>
+                                </FontString>
+                            </Layer>
+                        </Layers>
+                    </Frame>
+                    <Frame parentKey="zhTW">
+                        <Size x="100" y="25" />
+                        <KeyValues>
+                            <KeyValue key="layoutIndex" value="3" type="number" />
+                        </KeyValues>
+                        <Layers>
+                            <Layer level="OVERLAY">
+                                <Texture parentKey="FlagIcon"
+                                    file="Interface\AddOns\DelveCompanion\Images\lang_flag_chinese">
+                                    <Size x="25" y="25" />
+                                    <Anchors>
+                                        <Anchor point="TOPLEFT" />
+                                    </Anchors>
+                                </Texture>
+                                <FontString parentKey="Name" inherits="GameFontHighlightLarge"
+                                    justifyH="LEFT" text="BlueNightSky">
+                                    <Anchors>
+                                        <Anchor point="LEFT" relativeKey="$parent.FlagIcon"
+                                            relativePoint="RIGHT" x="10" />
+                                    </Anchors>
+                                </FontString>
+                            </Layer>
+                        </Layers>
+                    </Frame>
+                    <Frame parentKey="deDE">
+                        <Size x="100" y="25" />
+                        <KeyValues>
+                            <KeyValue key="layoutIndex" value="4" type="number" />
+                        </KeyValues>
+                        <Layers>
+                            <Layer level="OVERLAY">
+                                <Texture parentKey="FlagIcon"
+                                    file="Interface\AddOns\DelveCompanion\Images\lang_flag_german">
+                                    <Size x="25" y="25" />
+                                    <Anchors>
+                                        <Anchor point="TOPLEFT" />
+                                    </Anchors>
+                                </Texture>
+                                <FontString parentKey="Name" inherits="GameFontHighlightLarge"
+                                    justifyH="LEFT" text="Dionys">
+                                    <Anchors>
+                                        <Anchor point="LEFT" relativeKey="$parent.FlagIcon"
+                                            relativePoint="RIGHT" x="10" />
+                                    </Anchors>
+                                </FontString>
+                            </Layer>
+                        </Layers>
+                    </Frame>
+                    <Frame parentKey="esES">
+                        <Size x="100" y="25" />
+                        <KeyValues>
+                            <KeyValue key="layoutIndex" value="4" type="number" />
+                        </KeyValues>
+                        <Layers>
+                            <Layer level="OVERLAY">
+                                <Texture parentKey="FlagIcon"
+                                    file="Interface\AddOns\DelveCompanion\Images\lang_flag_spanish">
+                                    <Size x="25" y="25" />
+                                    <Anchors>
+                                        <Anchor point="TOPLEFT" />
+                                    </Anchors>
+                                </Texture>
+                                <FontString parentKey="Name" inherits="GameFontHighlightLarge"
+                                    justifyH="LEFT" text="Romanv">
+                                    <Anchors>
+                                        <Anchor point="LEFT" relativeKey="$parent.FlagIcon"
+                                            relativePoint="RIGHT" x="10" />
+                                    </Anchors>
+                                </FontString>
+                            </Layer>
+                        </Layers>
+                    </Frame>
+                </Frames>
+            </Frame>
+
+            <Frame parentKey="Footer" inherits="ResizeLayoutFrame">
+                <Anchors>
+                    <Anchor point="BOTTOMLEFT" />
+                    <Anchor point="BOTTOMRIGHT" x="-10" />
+                </Anchors>
+                <Frames>
+                    <Frame parentKey="Links" inherits="HorizontalLayoutFrame">
+                        <KeyValues>
+                            <KeyValue key="fixedHeight" value="50" type="number" />
+                            <KeyValue key="spacing" value="5" type="number" />
+                            <KeyValue key="topPadding" value="25" type="number" />
+                            <KeyValue key="bottomPadding" value="16" type="number" />
+                        </KeyValues>
+                        <Anchors>
+                            <Anchor point="BOTTOMLEFT" />
+                        </Anchors>
+                        <Layers>
+                            <Layer level="OVERLAY">
+                                <FontString parentKey="Text" inherits="GameFontNormalLarge"
+                                    justifyH="LEFT" text="LINKS">
+                                    <Anchors>
+                                        <Anchor point="TOPLEFT" />
+                                    </Anchors>
+                                </FontString>
+                            </Layer>
+                        </Layers>
+                        <Frames>
+                            <Button parentKey="CurseForge" inherits="MagicButtonTemplate">
+                                <KeyValues>
+                                    <KeyValue key="layoutIndex" value="1" type="number" />
+                                    <KeyValue key="align" value="center" type="string" />
+                                    <KeyValue key="fitTextWidthPadding" value="35" />
+                                </KeyValues>
+                            </Button>
+                            <Button parentKey="Wago" inherits="MagicButtonTemplate">
+                                <KeyValues>
+                                    <KeyValue key="layoutIndex" value="2" type="number" />
+                                    <KeyValue key="align" value="center" type="string" />
+                                    <KeyValue key="fitTextWidthPadding" value="35" />
+                                </KeyValues>
+                            </Button>
+                            <Button parentKey="WoWInt" inherits="MagicButtonTemplate">
+                                <KeyValues>
+                                    <KeyValue key="layoutIndex" value="3" type="number" />
+                                    <KeyValue key="align" value="center" type="string" />
+                                    <KeyValue key="fitTextWidthPadding" value="35" />
+                                </KeyValues>
+                            </Button>
+                            <Button parentKey="GitHub" inherits="MagicButtonTemplate">
+                                <KeyValues>
+                                    <KeyValue key="layoutIndex" value="4" type="number" />
+                                    <KeyValue key="align" value="center" type="string" />
+                                    <KeyValue key="fitTextWidthPadding" value="35" />
+                                </KeyValues>
+                            </Button>
+                        </Frames>
+                    </Frame>
+                </Frames>
+            </Frame>
+        </Frames>
+        <Scripts>
+            <OnLoad method="OnLoad" />
+            <OnShow method="OnShow" />
+        </Scripts>
+    </Frame>
+</Ui>

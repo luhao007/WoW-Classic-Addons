@@ -1,0 +1,116 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.blizzard.com/wow/ui/ https://raw.githubusercontent.com/Gethe/wow-ui-source/live/Interface/AddOns/Blizzard_SharedXML/UI.xsd">
+    <Frame name="DelveCompanionColumnWithTitleTemplate" virtual="true">
+        <Size x="200" y="300" />
+        <Anchors>
+            <Anchor point="CENTER" x="0" y="0" />
+        </Anchors>
+        <Layers>
+            <Layer level="OVERLAY">
+                <FontString parentKey="Title" inherits="GameFontNormalMed2"
+                    mixin="AutoScalingFontStringMixin" wordwrap="true" maxLines="2"
+                    justifyV="MIDDLE" justifyH="CENTER">
+                    <Size x="100" y="25" />
+                    <Anchors>
+                        <Anchor point="TOP" />
+                    </Anchors>
+                </FontString>
+                <FontString parentKey="Text" inherits="GameFontHighlightMed2"
+                    justifyH="CENTER" justifyV="MIDDLE" spacing="5">
+                    <Anchors>
+                        <Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM"
+                            y="-15" />
+                    </Anchors>
+                </FontString>
+            </Layer>
+        </Layers>
+    </Frame>
+
+    <Button name="DelveCompanionLootInfoButtonTemplate" inherits="MagicButtonTemplate"
+        virtual="true" frameLevel="20">
+        <Size x="50" y="20" />
+        <KeyValues>
+            <KeyValue key="fitTextWidthPadding" value="20" />
+        </KeyValues>
+        <Anchors>
+            <Anchor point="BOTTOMRIGHT" x="-5" y="5" />
+        </Anchors>
+    </Button>
+
+    <Frame name="DelveCompanionLootInfoFrameTemplate" mixin="DelveCompanion_LootInfoFrameMixin"
+        enableMouse="true" virtual="true"
+        hidden="true" inherits="DefaultPanelTemplate">
+        <Size x="380" y="428" />
+        <Anchors>
+            <Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPRIGHT" x="-4" y="0" />
+            <Anchor point="BOTTOMLEFT" relativeTo="$parent" relativePoint="BOTTOMRIGHT" x="-4" y="0" />
+        </Anchors>
+        <Layers>
+            <Layer level="OVERLAY">
+                <FontString parentKey="Header" inherits="GameFontNormalLarge2"
+                    justifyH="LEFT" text="DELVES">
+                    <Anchors>
+                        <Anchor point="TOPLEFT" x="20" y="-35" />
+                    </Anchors>
+                </FontString>
+            </Layer>
+        </Layers>
+        <Frames>
+            <Button parentKey="CloseButton" inherits="UIPanelCloseButtonDefaultAnchors" />
+            <Frame parentKey="DelveTiers" inherits="DelveCompanionColumnWithTitleTemplate">
+                <Size x="100" />
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="$parent"
+                        relativePoint="TOPLEFT" x="15" y="-70" />
+                </Anchors>
+            </Frame>
+            <Frame parentKey="BountifulGear" inherits="DelveCompanionColumnWithTitleTemplate">
+                <Size x="100" />
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeKey="$parent.DelveTiers"
+                        relativePoint="TOPRIGHT" x="15" />
+                </Anchors>
+            </Frame>
+            <Frame parentKey="VaultGear" inherits="DelveCompanionColumnWithTitleTemplate">
+                <Size x="100" />
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeKey="$parent.BountifulGear"
+                        relativePoint="TOPRIGHT" x="20" />
+                </Anchors>
+            </Frame>
+            <!-- TODO: Explore as an alternative
+                <Frame name="GridLayoutFrame" parentKey="lootInfoFrame"
+                    inherits="ResizeLayoutFrame" virtual="true"
+                    mixin="GridLayoutFrameMixin">
+                    
+Dynamically places child frames into a grid layout based on grid flow defined by KeyValue settings
+
+<KeyValues>
+  - Space in between laid out frames
+  <KeyValue key="childXPadding" value="0" type="number"/>
+  <KeyValue key="childYPadding" value="0" type="number"/>
+
+  - This is whether the layout is horizontal. If it is not horizontal then it will be vertical.
+  <KeyValue key="isHorizontal" value="true" type="boolean"/>
+
+  - This is the number of frames per row/column (based on whether the grid is horizontal or vertical)
+  <KeyValue key="stride" value="1" type="number"/>
+
+  - This is the direction the layout grows as it adds frames horizontally. If true, new frames will
+                    be added to the right. If false, new frames will be added to the left.
+  <KeyValue key="layoutFramesGoingRight" value="true" type="boolean"/>
+
+  - This is the direction the layout grows as it adds frames vertically. If true, new frames will be
+                    added to the top. If false, new frames will be added to the bottom.
+  <KeyValue key="layoutFramesGoingUp" value="true" type="boolean"/>
+</KeyValues>
+                </Frame>
+-->
+        </Frames>
+        <Scripts>
+            <OnLoad method="OnLoad" />
+            <OnShow method="OnShow" />
+        </Scripts>
+    </Frame>
+</Ui>

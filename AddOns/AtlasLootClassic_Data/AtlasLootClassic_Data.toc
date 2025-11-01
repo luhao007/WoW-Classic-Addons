@@ -1,0 +1,27 @@
+## Interface: 50502
+## Author: Snowflame0
+## Version: v5.0.4
+
+## Title: AtlasLootClassic |cFF33FFBDMoP|r |cFFFF0000[Data]|r
+## Notes: AtlasLoot Data module
+## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r|cFFFFFFFF副本掉落|r |cFF69CCF0数据|r
+## Notes-zhCN: AtlasLoot 物品数据
+
+## Category-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r
+
+## Dependencies: AtlasLootClassic
+## LoadOnDemand: 1
+
+## X-Category: Map
+## X-License: GPL v2
+## X-Part-Of: AtlasLootClassic
+
+core.lua
+
+locales.lua
+items.lua
+source.lua
+source-tbc.lua
+source-wrath.lua
+source-cata.lua
+source-mop.lua

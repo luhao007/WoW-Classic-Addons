@@ -1,0 +1,25 @@
+<Ui>
+    <Script file="FilterButton.lua"/>
+    <Script file="FilterButtonMixin.lua"/>
+    <Script file="FilterButtonClassicMixin.lua"/>
+
+	<DropDownToggleButton name="KrowiAF_AchievementFrameFilterButton_Template" mixin="KrowiAF_AchievementFrameFilterButtonClassicMixin" inherits="UIMenuButtonStretchTemplate" text="FILTER" virtual="true" hidden="true">
+		<Size x="116" y="22"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Icon" file="Interface\ChatFrame\ChatFrameExpandArrow">
+					<Size x="10" y="12"/>
+					<Anchors>
+						<Anchor point="RIGHT" relativeKey="$parent.Right" relativePoint="RIGHT" x="-5"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnMouseDown method="OnMouseDown"/>
+		</Scripts>
+	</DropDownToggleButton>
+</Ui>

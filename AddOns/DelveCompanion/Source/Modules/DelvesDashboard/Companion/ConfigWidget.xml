@@ -1,0 +1,52 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.blizzard.com/wow/ui/ https://raw.githubusercontent.com/Gethe/wow-ui-source/live/Interface/AddOns/Blizzard_SharedXML/UI.xsd">
+    <Frame name="DelveCompanionDashboardCompanionConfigWidgetTemplate"
+        mixin="DelveCompanion_DashboardCompanionConfigWidgetMixin" virtual="true">
+        <Frames>
+            <Button parentKey="RoleSlot" inherits="CompanionConfigSlotTemplate">
+                <KeyValues>
+                    <KeyValue type="string" key="type" value="Role" />
+                </KeyValues>
+            </Button>
+
+            <Button parentKey="CombatSlot" inherits="CompanionConfigSlotTemplate">
+                <KeyValues>
+                    <KeyValue type="string" key="type" value="Combat" />
+                </KeyValues>
+            </Button>
+
+            <Button parentKey="UtilitySlot" inherits="CompanionConfigSlotTemplate">
+                <KeyValues>
+                    <KeyValue type="string" key="type" value="Utility" />
+                </KeyValues>
+            </Button>
+        </Frames>
+        <Scripts>
+            <OnLoad method="OnLoad" />
+            <OnShow method="OnShow" />
+        </Scripts>
+    </Frame>
+
+    <Button name="DelveCompanionDashboardCompanionConfigButtonTemplate"
+        inherits="MagicButtonTemplate" mixin="CompanionConfigButtonPanelMixin"
+        virtual="true" frameLevel="20">
+        <Size x="30" y="30" />
+        <KeyValues>
+            <KeyValue key="fitTextWidthPadding" value="0" />
+        </KeyValues>
+        <Layers>
+            <Layer level="ARTWORK">
+                <Texture name="$parent.Arrow" rotation="180" atlas="bag-arrow" useAtlasSize="true">
+                    <Anchors>
+                        <Anchor point="CENTER" />
+                    </Anchors>
+                </Texture>
+            </Layer>
+        </Layers>
+        <Scripts>
+            <OnClick method="OnClick" />
+            <OnLeave function="GameTooltip_Hide" />
+        </Scripts>
+    </Button>
+</Ui>

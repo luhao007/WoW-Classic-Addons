@@ -1,0 +1,57 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.blizzard.com/wow/ui/ https://raw.githubusercontent.com/Gethe/wow-ui-source/live/Interface/AddOns/Blizzard_SharedXML/UI.xsd">
+    <StatusBar name="DelveCompanionDashboardCompanionExpBarTemplate" drawLayer="BORDER" minValue="0"
+        maxValue="1" defaultValue="1" mixin="DelveCompanion_DashboardExpBarMixin" virtual="true">
+        <Size x="150" y="15" />
+        <Layers>
+            <Layer level="BACKGROUND">
+                <Texture parentKey="Background" setAllPoints="true">
+                    <Color color="BLACK_FONT_COLOR" />
+                </Texture>
+            </Layer>
+            <Layer level="ARTWORK">
+                <Texture name="$parent.LeftTexture"
+                    file="Interface\PaperDollInfoFrame\UI-Character-ReputationBar">
+                    <Size x="60" y="15" />
+                    <Anchors>
+                        <Anchor point="LEFT" />
+                    </Anchors>
+                    <TexCoords left="0.765625" right="1" top="0.046875" bottom="0.28125" />
+                </Texture>
+                <Texture name="$parent.MiddleTexture"
+                    file="Interface\PaperDollInfoFrame\UI-Character-ReputationBar">
+                    <Size x="51" y="15" />
+                    <Anchors>
+                        <Anchor point="LEFT" relativeTo="$parent.LeftTexture" relativePoint="RIGHT" />
+                    </Anchors>
+                    <TexCoords left="0.9" right="1" top="0.046875" bottom="0.28125" />
+                </Texture>
+                <Texture name="$parent.RightTexture"
+                    file="Interface\PaperDollInfoFrame\UI-Character-ReputationBar">
+                    <Size x="39" y="15" />
+                    <Anchors>
+                        <Anchor point="RIGHT" />
+                    </Anchors>
+                    <TexCoords left="0.0" right="0.15234375" top="0.390625" bottom="0.625" />
+                </Texture>
+                <FontString parentKey="BarText" inherits="GameFontHighlightSmall"
+                    text="LEVEL" mixin="AutoScalingFontStringMixin" wordwrap="false"
+                    justifyV="MIDDLE" justifyH="CENTER">
+                    <Size x="150" />
+                    <Anchors>
+                        <Anchor point="CENTER" x="0" y="0" />
+                    </Anchors>
+                </FontString>
+            </Layer>
+        </Layers>
+        <BarTexture file="Interface\PaperDollInfoFrame\UI-Character-Skills-Bar" />
+        <BarColor r="0.0" g="0.6" b="0.102" />
+        <Scripts>
+            <OnLoad method="OnLoad" />
+            <OnShow method="OnShow" />
+            <OnEnter method="OnEnter" />
+            <OnLeave method="OnLeave" />
+        </Scripts>
+    </StatusBar>
+</Ui>

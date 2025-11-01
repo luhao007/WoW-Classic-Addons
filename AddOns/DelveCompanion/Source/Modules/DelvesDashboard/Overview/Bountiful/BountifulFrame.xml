@@ -1,0 +1,86 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.blizzard.com/wow/ui/ https://raw.githubusercontent.com/Gethe/wow-ui-source/live/Interface/AddOns/Blizzard_SharedXML/UI.xsd">
+    <Frame name="DelveCompanionOverviewBountifulFrameTemplate"
+        mixin="DelveCompanion_OverviewBountifulFrameMixin"
+        virtual="true">
+        <Size x="150" y="65" />
+        <Layers>
+            <Layer level="ARTWORK">
+                <Texture parentKey="Divider" atlas="delves-companion-divider"
+                    useAtlasSize="false">
+                    <Size x="130" y="5" />
+                    <Anchors>
+                        <Anchor point="BOTTOM" y="-3" />
+                    </Anchors>
+                </Texture>
+            </Layer>
+            <Layer level="OVERLAY">
+                <FontString parentKey="Title" inherits="GameFontNormal"
+                    text="BOUNTIFUL" mixin="AutoScalingFontStringMixin"
+                    justifyH="LEFT" wordwrap="true" justifyV="MIDDLE" maxLines="2">
+                    <Size x="95" y="25" />
+                    <Anchors>
+                        <Anchor point="TOPLEFT" x="14" y="-3" />
+                    </Anchors>
+                </FontString>
+            </Layer>
+        </Layers>
+        <Frames>
+
+            <Frame parentKey="DelveOBotWidget"
+                inherits="DelvelCompanionDelveOBotWidgetTemplate">
+                <Size x="25" y="25" />
+                <KeyValues>
+                    <KeyValue key="iconSizeX" value="25" type="number" />
+                    <KeyValue key="iconSizeY" value="25" type="number" />
+                    <KeyValue key="displayLabel" value="false" type="boolean" />
+                    <KeyValue key="frameType" value="toy" type="string" />
+                    <KeyValue key="frameCode" value="300" type="number" />
+                    <KeyValue key="tooltipAnchor" value="ANCHOR_RIGHT" type="string" />
+                </KeyValues>
+                <Anchors>
+                    <Anchor point="LEFT" relativeKey="$parent.Title"
+                        relativePoint="RIGHT" x="4" y="-1" />
+                </Anchors>
+            </Frame>
+
+            <Frame parentKey="ActiveDelves">
+                <Size x="140" y="35" />
+                <Anchors>
+                    <Anchor point="BOTTOM" y="2"/>
+                </Anchors>
+                <Layers>
+                    <Layer level="OVERLAY">
+                        <FontString parentKey="NoBountifulLabel"
+                            inherits="GameFontHighlightMed2" text="KEYS_COUNT"
+                            mixin="AutoScalingFontStringMixin" justifyH="CENTER"
+                            justifyV="MIDDLE" wordwrap="true" maxLines="2" hidden="true">
+                            <Size x="140" />
+                            <Anchors>
+                                <Anchor point="CENTER" />
+                            </Anchors>
+                        </FontString>
+                    </Layer>
+                </Layers>
+                <Frames>
+                    <Frame parentKey="Container" inherits="HorizontalLayoutFrame">
+                        <KeyValues>
+                            <KeyValue key="expand" value="false" type="boolean" />
+                            <KeyValue key="spacing" value="5" type="number" />
+                            <KeyValue key="maximumWidth" value="140" type="number" />
+                        </KeyValues>
+                        <Anchors>
+                            <Anchor point="CENTER" />
+                        </Anchors>
+                    </Frame>
+                </Frames>
+            </Frame>
+        </Frames>
+        <Scripts>
+            <OnLoad method="OnLoad" />
+            <OnShow method="OnShow" />
+            <OnHide method="OnHide" />
+        </Scripts>
+    </Frame>
+</Ui>

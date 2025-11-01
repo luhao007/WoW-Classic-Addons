@@ -1,0 +1,71 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.blizzard.com/wow/ui/ https://raw.githubusercontent.com/Gethe/wow-ui-source/live/Interface/AddOns/Blizzard_SharedXML/UI.xsd">
+    <Frame name="DelveCompanionOverviewConsumablesFrameTemplate"
+        mixin="DelveCompanion_OverviewConsumablesFrameMixin" virtual="true">
+        <Size x="110" y="40" />
+        <Frames>
+            <Frame parentKey="Keys"
+                inherits="DelveCompanionCustomActionWidgetTemplate">
+                <Size x="40" y="26" />
+                <KeyValues>
+                    <KeyValue key="iconSizeX" value="26" type="number" />
+                    <KeyValue key="iconSizeY" value="26" type="number" />
+                    <KeyValue key="frameType" value="currency" type="string" />
+                    <KeyValue key="tooltipAnchor" value="ANCHOR_RIGHT" type="string" />
+                </KeyValues>
+                <Anchors>
+                    <Anchor point="LEFT" x="18" />
+                </Anchors>
+            </Frame>
+            <Frame parentKey="Shards"
+                inherits="DelveCompanionCustomActionWidgetTemplate">
+                <Size x="40" y="26" />
+                <KeyValues>
+                    <KeyValue key="iconSizeX" value="26" type="number" />
+                    <KeyValue key="iconSizeY" value="26" type="number" />
+                    <KeyValue key="frameType" value="item" type="string" />
+                    <KeyValue key="useAutoScaling" value="true" type="boolean" />
+                    <KeyValue key="tooltipAnchor" value="ANCHOR_RIGHT" type="string" />
+                </KeyValues>
+                <Anchors>
+                    <Anchor point="TOP" relativeKey="$parent.Keys"
+                        relativePoint="BOTTOM" y="-5" />
+                </Anchors>
+            </Frame>
+            <Frame parentKey="BountyMap"
+                inherits="DelveCompanionCustomActionWidgetTemplate">
+                <Size x="40" y="26" />
+                <KeyValues>
+                    <KeyValue key="iconSizeX" value="26" type="number" />
+                    <KeyValue key="iconSizeY" value="26" type="number" />
+                    <KeyValue key="frameType" value="item" type="string" />
+                    <KeyValue key="tooltipAnchor" value="ANCHOR_RIGHT" type="string" />
+                </KeyValues>
+                <Anchors>
+                    <Anchor point="RIGHT" />
+                </Anchors>
+            </Frame>
+            <Frame parentKey="Echoes"
+                inherits="DelveCompanionCustomActionWidgetTemplate">
+                <Size x="40" y="26" />
+                <KeyValues>
+                    <KeyValue key="iconSizeX" value="26" type="number" />
+                    <KeyValue key="iconSizeY" value="26" type="number" />
+                    <KeyValue key="frameType" value="item" type="string" />
+                    <KeyValue key="tooltipAnchor" value="ANCHOR_RIGHT" type="string" />
+                </KeyValues>
+                <Anchors>
+                    <Anchor point="TOP" relativeKey="$parent.BountyMap"
+                        relativePoint="BOTTOM" y="-5" />
+                </Anchors>
+            </Frame>
+        </Frames>
+        <Scripts>
+            <OnLoad method="OnLoad" />
+            <OnShow method="OnShow" />
+            <OnHide method="OnHide" />
+            <OnEvent method="OnEvent" />
+        </Scripts>
+    </Frame>
+</Ui>

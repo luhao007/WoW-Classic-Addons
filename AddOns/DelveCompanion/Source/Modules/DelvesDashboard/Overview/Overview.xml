@@ -1,0 +1,58 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.blizzard.com/wow/ui/ https://raw.githubusercontent.com/Gethe/wow-ui-source/live/Interface/AddOns/Blizzard_SharedXML/UI.xsd">
+    <Frame name="DelveCompanionDashboardOverviewFrame"
+        mixin="DelveCompanion_DashboardOverviewMixin" inherits="DelvesDashboardButtonPanelFrame"
+        virtual="true" hidden="false">
+        <Size x="180" y="283" />
+        <KeyValues>
+            <KeyValue key="layoutIndex" value="3" type="number" />
+            <KeyValue type="boolean" key="isCompanionButtonPanelFrame" value="true" />
+        </KeyValues>
+        <Frames>
+            <Frame parentKey="GildedStashFrame"
+                inherits="DelveCompanionOverviewGildedStashFrameTemplate">
+                <Anchors>
+                    <Anchor point="TOP" y="-15" />
+                </Anchors>
+            </Frame>
+
+            <Frame parentKey="BountifulFrame"
+                inherits="DelveCompanionOverviewBountifulFrameTemplate">
+                <Anchors>
+                    <Anchor point="TOP" relativeKey="$parent.GildedStashFrame"
+                        relativePoint="BOTTOM" y="0" />
+                </Anchors>
+            </Frame>
+
+            <Frame parentKey="ConsumablesFrame"
+                inherits="DelveCompanionOverviewConsumablesFrameTemplate">
+                <Anchors>
+                    <Anchor point="TOP" relativeKey="$parent.BountifulFrame"
+                        relativePoint="BOTTOM" y="0" />
+                </Anchors>
+            </Frame>
+
+            <Button parentKey="WorldMapButton"
+                inherits="MagicButtonTemplate" text="MAP">
+                <Size x="130" y="30" />
+                <KeyValues>
+                    <KeyValue key="fitTextWidthPadding" value="10" type="number" />
+                </KeyValues>
+                <Anchors>
+                    <Anchor point="BOTTOM" relativeTo="$parent" x="0" y="27" />
+                </Anchors>
+                <Scripts>
+                    <OnClick>
+                        ToggleQuestLog()
+                        QuestMapFrame:SetDisplayMode(QuestLogDisplayMode.Events)
+                    </OnClick>
+                </Scripts>
+            </Button>
+        </Frames>
+        <Scripts>
+            <OnLoad method="OnLoad" />
+            <OnShow method="OnShow" />
+        </Scripts>
+    </Frame>
+</Ui>

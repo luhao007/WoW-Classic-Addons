@@ -1,0 +1,29 @@
+## Interface: 50502
+## Author: Gyula Pataki, Joseph O'Connor, Josef Drexler
+## Version: 11.2.2
+
+## Title: Minimal Archaeology
+## Notes: Archaeology UI replacement, Archaeology History and more... - Mainline version
+## Title-zhCN: |cFFFFE00A<|r|cFF0070DE专业|r|cFFFFE00A>|r|cFFFFFFFF考古助手|r |cFFFFE00AMinimalArchaeology|r
+## Notes-zhCN: 独立考古窗口
+
+## IconTexture: Interface\Icons\Trade_Archaeology_Dinosaurskeleton
+
+## Category-zhCN: |cFFFFE00A<|r|cFF0070DE专业|r|cFFFFE00A>|r
+
+## AddonCompartmentFunc: MinArch_OnAddonCompartmentClick
+## AddonCompartmentFuncOnEnter: MinArch_OnAddonCompartmentEnter
+## AddonCompartmentFuncOnLeave: MinArch_OnAddonCompartmentLeave
+
+## LoadOnDemand: 0
+## DefaultState: Enabled
+
+## SavedVariables: MinArchDB, MinArchDigsitesGlobalDB
+## SavedVariablesPerCharacter: MinArchOptions
+
+## X-Curse-Project-ID: 28160
+## X-Wago-ID: nGvpwe6x
+
+# Special thanks to joevt for the contribution
+embeds.xml
+addon\addon.xml

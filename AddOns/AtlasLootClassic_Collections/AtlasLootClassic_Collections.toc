@@ -1,0 +1,27 @@
+## Interface: 50502
+## Author: Snowflame0
+## Version: v5.0.4
+
+## Title: AtlasLootClassic |cFF33FFBDMoP|r |cFF0099FF[Collections]|r
+## Notes: AtlasLoot Collections loot tables
+## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r|cFFFFFFFF副本掉落|r |cFF69CCF0套装|r
+## Notes-zhCN: AtlasLoot 套装列表
+
+## Category-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r
+
+## Dependencies: AtlasLootClassic
+## LoadOnDemand: 1
+
+## X-Category: Map
+## X-License: GPL v2
+## X-AtlasLootClassic-LootModule: 1
+## X-Part-Of: AtlasLootClassic
+
+Locales\Locales.xml
+
+private.lua
+data.lua
+data-tbc.lua
+data-wrath.lua
+data-cata.lua
+data-mop.lua

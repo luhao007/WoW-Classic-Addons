@@ -1,0 +1,770 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.blizzard.com/wow/ui/ https://raw.githubusercontent.com/Gethe/wow-ui-source/live/Interface/AddOns/Blizzard_SharedXML/UI.xsd">
+    <Frame name="DelveCompanionDelveInfoFrameTemplate" frameStrata="HIGH" enableMouse="true"
+        hidden="true" mixin="DelveCompanion_DelveInfoFrameMixin" virtual="true">
+        <Size x="785" y="425" />
+        <Anchors>
+            <Anchor point="BOTTOMRIGHT" x="-1" y="2" />
+        </Anchors>
+        <Layers>
+            <Layer level="BACKGROUND">
+                <Texture parentKey="Bg" file="Interface\EncounterJournal\UI-EJ-JournalBG">
+                    <Size x="785" y="425" />
+                    <Anchors>
+                        <Anchor point="BOTTOMRIGHT" x="0" y="0" />
+                    </Anchors>
+                    <TexCoords left="0" right="0.766601562" top="0" bottom="0.830078125" />
+                </Texture>
+            </Layer>
+        </Layers>
+        <Frames>
+            <Button inherits="UIPanelCloseButtonDefaultAnchors" /> <!-- TEMP -->
+
+            <Frame parentKey="LeftPage">
+                <Size x="392" y="425" />
+                <Anchors>
+                    <Anchor point="TOPLEFT" />
+                </Anchors>
+                <Layers>
+                    <Layer level="BACKGROUND" textureSubLevel="3">
+                        <Texture parentKey="Shadow" inherits="UI-EJ-LeftPageHeader">
+                            <Anchors>
+                                <Anchor point="TOP" x="0" y="-11" />
+                            </Anchors>
+                        </Texture>
+                    </Layer>
+                    <Layer level="ARTWORK">
+                        <Texture parentKey="DelveBg">
+                            <Size x="300" y="165" />
+                            <Anchors>
+                                <Anchor point="TOP" relativeKey="$parent.Shadow"
+                                    relativePoint="BOTTOM" x="0" y="-20" />
+                            </Anchors>
+                            <TexCoords left="0" right="0.6" top="0.1" bottom="0.8" />
+                        </Texture>
+                    </Layer>
+                    <Layer level="OVERLAY">
+                        <FontString parentKey="Title" inherits="GameFontNormalLarge"
+                            justifyH="CENTER">
+                            <Size x="290" y="12" />
+                            <Anchors>
+                                <Anchor point="CENTER" relativeKey="$parent.Shadow" y="5" />
+                            </Anchors>
+                            <Color r="0.902" g="0.788" b="0.671" />
+                        </FontString>
+                    </Layer>
+                </Layers>
+                <Frames>
+                    <Button parentKey="StoryButton">
+                        <Size x="300" y="55" />
+                        <Anchors>
+                            <Anchor point="TOP" relativeKey="$parent.DelveBg"
+                                relativePoint="BOTTOM" y="-15" />
+                        </Anchors>
+                        <NormalTexture
+                            file="Interface\EncounterJournal\UI-EncounterJournalTextures">
+                            <TexCoords left="0.00195313" right="0.63671875" top="0.21386719"
+                                bottom="0.26757813" />
+                        </NormalTexture>
+                        <PushedTexture
+                            file="Interface\EncounterJournal\UI-EncounterJournalTextures">
+                            <TexCoords left="0.00195313" right="0.63671875" top="0.10253906"
+                                bottom="0.15625000" />
+                        </PushedTexture>
+                        <HighlightTexture
+                            file="Interface\EncounterJournal\UI-EncounterJournalTextures">
+                            <TexCoords left="0.00195313" right="0.63671875" top="0.15820313"
+                                bottom="0.21191406" />
+                        </HighlightTexture>
+                        <ButtonText parentKey="Text" justifyH="LEFT" justifyV="MIDDLE">
+                            <Size x="160" y="40" />
+                            <Anchors>
+                                <Anchor point="LEFT" x="105" y="-3" />
+                            </Anchors>
+                            <Color r="0.827" g="0.659" b="0.463" />
+                        </ButtonText>
+                        <NormalFont style="GameFontNormalMed3" />
+                        <HighlightFont style="GameFontNormalMed3" />
+                        <DisabledFont style="GameFontHighlightMedium" />
+                    </Button>
+
+                    <Button parentKey="EnemyButton">
+                        <Size x="300" y="55" />
+                        <Anchors>
+                            <Anchor point="TOP" relativeKey="$parent.StoryButton"
+                                relativePoint="BOTTOM" y="-15" />
+                        </Anchors>
+                        <NormalTexture
+                            file="Interface\EncounterJournal\UI-EncounterJournalTextures">
+                            <TexCoords left="0.00195313" right="0.63671875" top="0.21386719"
+                                bottom="0.26757813" />
+                        </NormalTexture>
+                        <PushedTexture
+                            file="Interface\EncounterJournal\UI-EncounterJournalTextures">
+                            <TexCoords left="0.00195313" right="0.63671875" top="0.10253906"
+                                bottom="0.15625000" />
+                        </PushedTexture>
+                        <HighlightTexture
+                            file="Interface\EncounterJournal\UI-EncounterJournalTextures">
+                            <TexCoords left="0.00195313" right="0.63671875" top="0.15820313"
+                                bottom="0.21191406" />
+                        </HighlightTexture>
+                        <ButtonText parentKey="Text" justifyH="LEFT" justifyV="MIDDLE">
+                            <Size x="160" y="40" />
+                            <Anchors>
+                                <Anchor point="LEFT" x="105" y="-3" />
+                            </Anchors>
+                            <Color r="0.827" g="0.659" b="0.463" />
+                        </ButtonText>
+                        <NormalFont style="GameFontNormalMed3" />
+                        <HighlightFont style="GameFontNormalMed3" />
+                        <DisabledFont style="GameFontHighlightMedium" />
+                    </Button>
+                </Frames>
+            </Frame>
+
+            <Frame parentKey="RightPage">
+                <Size x="392" y="425" />
+                <Anchors>
+                    <Anchor point="TOPRIGHT" />
+                </Anchors>
+                <Layers>
+                    <Layer level="BACKGROUND" textureSubLevel="3">
+                        <Texture parentKey="Shadow" inherits="UI-EJ-RightPageHeader"
+                            hidden="false">
+                            <Anchors>
+                                <Anchor point="TOP" x="0" y="-11" />
+                            </Anchors>
+                        </Texture>
+                    </Layer>
+                </Layers>
+                <Frames>
+                    <Frame parentKey="AbilitiesScrollBox" inherits="WowScrollBoxList">
+                        <Size x="345" y="382" />
+                        <Anchors>
+                            <Anchor point="BOTTOMRIGHT" x="-20" y="1" />
+                        </Anchors>
+                    </Frame>
+                    <EventFrame parentKey="AbilitiesScrollBar" inherits="MinimalScrollBar">
+                        <Anchors>
+                            <Anchor point="TOPLEFT" relativeKey="$parent.AbilitiesScrollBox"
+                                relativePoint="TOPRIGHT" x="5" y="-5" />
+                            <Anchor point="BOTTOMLEFT" relativeKey="$parent.AbilitiesScrollBox"
+                                relativePoint="BOTTOMRIGHT" x="5" y="5" />
+                        </Anchors>
+                    </EventFrame>
+                    <ScrollFrame parentKey="AbilitiesScroll" inherits="ScrollFrameTemplate">
+                        <Size x="350" y="383" />
+                        <KeyValues>
+                            <KeyValue key="scrollBarX" value="-15" type="number" />
+                            <KeyValue key="scrollBarTopY" value="-6" type="number" />
+                            <KeyValue key="scrollBarBottomY" value="6" type="number" />
+                        </KeyValues>
+                        <Anchors>
+                            <Anchor point="BOTTOMRIGHT" x="-5" y="1" />
+                        </Anchors>
+                        <Layers>
+                            <Layer level="BACKGROUND">
+                                <!-- Extra visual for debugging
+                                <Texture name="$parentDebugBackground"
+                                    file="interface/buttons/greengradiant">
+                                    <Anchors>
+                                        <Anchor point="TOPLEFT" x="0" y="0" />
+                                        <Anchor point="BOTTOMRIGHT" x="0" y="0" />
+                                    </Anchors>
+                                </Texture>
+                                -->
+                            </Layer>
+                        </Layers>
+                        <ScrollChild>
+                            <Frame parentKey="Content">
+                                <Size x="320" y="372" />
+                                <Layers>
+                                    <Layer level="BACKGROUND">
+                                        <!-- Extra visual for debugging
+									    -->
+                                        <Texture name="$parentDebugBackground"
+                                            file="Interface\Buttons\GoldGradiant">
+                                            <Anchors>
+                                                <Anchor point="TOPLEFT" x="0" y="0" />
+                                                <Anchor point="BOTTOMRIGHT" x="0" y="0" />
+                                            </Anchors>
+                                        </Texture>
+                                    </Layer>
+                                </Layers>
+                            </Frame>
+                        </ScrollChild>
+                    </ScrollFrame>
+                </Frames>
+            </Frame>
+        </Frames>
+        <Scripts>
+            <OnLoad method="OnLoad" />
+            <OnShow method="OnShow" />
+            <OnHide method="OnHide" />
+        </Scripts>
+    </Frame>
+
+    <!-- Based on Blizzard `EncounterInfoTemplate`:
+    https://www.townlong-yak.com/framexml/live/Blizzard_EncounterJournal/Blizzard_EncounterJournal.xml#752 -->
+    <Frame name="DelveCompanionEncounterInfoTemplate" virtual="true">
+        <Layers>
+            <Layer level="ARTWORK">
+                <FontString parentKey="Description" inherits="GameFontBlack" justifyH="LEFT">
+                    <Anchors>
+                        <Anchor point="TOP" relativeKey="$parent.HeaderButton"
+                            relativePoint="BOTTOM" x="0" y="-9" />
+                    </Anchors>
+                    <Color r="0.25" g="0.1484375" b=".02" a="1" />
+                </FontString>
+            </Layer>
+            <Layer level="BACKGROUND">
+                <Texture parentKey="DescriptionBG" inherits="UI-PaperOverlay-AbilityTextBG">
+                    <Anchors>
+                        <Anchor point="TOPLEFT" relativeKey="$parent.Description" x="-9" y="12" />
+                        <Anchor point="BOTTOMRIGHT" relativeKey="$parent.Description" x="9" y="-11" />
+                    </Anchors>
+                </Texture>
+                <Texture parentKey="DescriptionBGBottom"
+                    inherits="UI-PaperOverlay-AbilityTextBottomBorder">
+                    <Anchors>
+                        <Anchor point="LEFT" relativeKey="$parent.DescriptionBG"
+                            relativePoint="BOTTOMLEFT" x="0" y="0" />
+                        <Anchor point="RIGHT" relativeKey="$parent.DescriptionBG"
+                            relativePoint="BOTTOMRIGHT" x="0" y="0" />
+                    </Anchors>
+                </Texture>
+            </Layer>
+        </Layers>
+        <Frames>
+            <Button parentKey="HeaderButton">
+                <Anchors>
+                    <Anchor point="TOPLEFT" x="0" y="0" />
+                    <Anchor point="RIGHT" x="0" y="0" />
+                </Anchors>
+                <Layers>
+                    <Layer level="OVERLAY">
+                        <!-- Collapsed color: PAPER_FRAME_COLLAPSED_COLOR -->
+                        <FontString parentKey="ExpandedIcon" inherits="GameFontNormalLarge"
+                            hidden="true">
+                            <Size x="12" y="12" />
+                            <Anchors>
+                                <Anchor point="LEFT" x="5" y="1" />
+                            </Anchors>
+                            <Color color="PAPER_FRAME_EXPANDED_COLOR" />
+                        </FontString>
+                        <Texture parentKey="AbilityIcon">
+                            <Size x="18" y="18" />
+                            <Anchors>
+                                <Anchor point="LEFT" relativeKey="$parent.ExpandedIcon"
+                                    relativePoint="RIGHT" x="5" />
+                            </Anchors>
+                        </Texture>
+                        <FontString parentKey="Title" inherits="GameFontNormal" justifyH="LEFT">
+                            <!-- <Size x="5" y="10" /> -->
+                            <Anchors>
+                                <Anchor point="LEFT" relativeKey="$parent.AbilityIcon"
+                                    relativePoint="RIGHT" x="5" y="-1" />
+                            </Anchors>
+                            <Color color="PAPER_FRAME_EXPANDED_COLOR" />
+                        </FontString>
+                    </Layer>
+                    <!-- Left/Right textures -->
+                    <Layer level="BACKGROUND">
+                        <!-- Expanded state -->
+                        <Texture name="$parentELeftUp"
+                            inherits="UI-PaperOverlay-PaperHeader-SelectUp-Left" parentKey="eLeftUp">
+                            <Anchors>
+                                <Anchor point="LEFT" x="0" y="0" />
+                            </Anchors>
+                        </Texture>
+                        <Texture name="$parentERightUp"
+                            inherits="UI-PaperOverlay-PaperHeader-SelectUp-Right"
+                            parentKey="eRightUp">
+                            <Anchors>
+                                <Anchor point="RIGHT" x="2" y="0" />
+                            </Anchors>
+                        </Texture>
+                        <!-- Click textures -->
+                        <!-- <Texture name="$parentELeftDown"
+                            inherits="UI-EJ-PaperHeader-SelectDown-Left" parentKey="eLeftDown"
+                            hidden="true">
+                            <Anchors>
+                                <Anchor point="LEFT" relativeTo="$parentELeftUp" x="0" y="0" />
+                            </Anchors>
+                        </Texture>
+                        <Texture name="$parentERightDown"
+                            inherits="UI-EJ-PaperHeader-SelectDown-Right" parentKey="eRightDown"
+                            hidden="true">
+                            <Anchors>
+                                <Anchor point="RIGHT" relativeTo="$parentERightUp" x="0" y="0" />
+                            </Anchors>
+                        </Texture> -->
+
+                        <!-- Collapsed state -->
+                        <!-- <Texture name="$parentCLeftUp"
+                        inherits="UI-EJ-PaperHeader-UnSelectUp-Left"
+                            parentKey="cLeftUp" hidden="true">
+                            <Anchors>
+                                <Anchor point="LEFT" relativeTo="$parentELeftUp" x="0" y="0" />
+                            </Anchors>
+                        </Texture>
+                        <Texture name="$parentCRightUp"
+                            inherits="UI-EJ-PaperHeader-UnSelectUp-Right" parentKey="cRightUp"
+                            hidden="true">
+                            <Anchors>
+                                <Anchor point="RIGHT" relativeTo="$parentERightUp" x="0" y="0" />
+                            </Anchors>
+                        </Texture> -->
+                        <!-- Click textures -->
+                        <!-- <Texture name="$parentCLeftDown"
+                            inherits="UI-EJ-PaperHeader-UnSelectDown-Left" parentKey="cLeftDown"
+                            hidden="true">
+                            <Anchors>
+                                <Anchor point="LEFT" relativeTo="$parentELeftUp" x="0" y="0" />
+                            </Anchors>
+                        </Texture>
+                        <Texture name="$parentCRightDown"
+                            inherits="UI-EJ-PaperHeader-UnSelectDown-Right" parentKey="cRightDown"
+                            hidden="true">
+                            <Anchors>
+                                <Anchor point="RIGHT" relativeTo="$parentERightUp" x="0" y="0" />
+                            </Anchors>
+                        </Texture> -->
+                    </Layer>
+                    <!-- Middle textures -->
+                    <Layer level="BACKGROUND" textureSubLevel="-2">
+                        <!-- Expanded state -->
+                        <Texture name="$parentEMidUp"
+                            inherits="UI-PaperOverlay-PaperHeader-SelectUp-Mid" parentKey="eMidUp">
+                            <Anchors>
+                                <Anchor point="LEFT" relativeTo="$parentELeftUp"
+                                    relativePoint="RIGHT" x="-32" y="0" />
+                                <Anchor point="RIGHT" relativeTo="$parentERightUp"
+                                    relativePoint="LEFT" x="32" y="0" />
+                            </Anchors>
+                        </Texture>
+                        <!-- Click textures -->
+                        <!-- <Texture name="$parentEMidDown" inherits="_PaperHeader-SelectDown-Mid"
+                            parentKey="eMidDown" hidden="true">
+                            <Anchors>
+                                <Anchor point="LEFT" relativeTo="$parentELeftDown"
+                                    relativePoint="RIGHT" x="-32" y="0" />
+                                <Anchor point="RIGHT" relativeTo="$parentERightDown"
+                                    relativePoint="LEFT" x="32" y="0" />
+                            </Anchors>
+                        </Texture> -->
+
+                        <!-- Collapsed state -->
+                        <!-- <Texture name="$parentCMidUp" inherits="_PaperHeader-UnSelectUp-Mid"
+                            parentKey="cMidUp" hidden="true">
+                            <Anchors>
+                                <Anchor point="LEFT" relativeTo="$parentELeftUp"
+                                    relativePoint="RIGHT" x="-32" y="0" />
+                                <Anchor point="RIGHT" relativeTo="$parentERightUp"
+                                    relativePoint="LEFT" x="32" y="0" />
+                            </Anchors>
+                        </Texture> -->
+                        <!-- Click textures -->
+                        <!-- <Texture name="$parentCMidDown"
+                        inherits="_PaperHeader-UnSelectDown-Mid"
+                            parentKey="cMidDown" hidden="true">
+                            <Anchors>
+                                <Anchor point="LEFT" relativeTo="$parentELeftDown"
+                                    relativePoint="RIGHT" x="-32" y="0" />
+                                <Anchor point="RIGHT" relativeTo="$parentERightDown"
+                                    relativePoint="LEFT" x="32" y="0" />
+                            </Anchors>
+                        </Texture> -->
+                    </Layer>
+                    <!-- Button highlight OnEnter -->
+                    <!-- <Layer level="HIGHLIGHT">
+                        <Texture name="$parentHighlightLeft"
+                            inherits="UI-EJ-PaperHeader-Highlight-Left">
+                            <Anchors>
+                                <Anchor point="LEFT" x="-1" y="-1" />
+                            </Anchors>
+                        </Texture>
+                        <Texture name="$parentHighlightRight"
+                            inherits="UI-EJ-PaperHeader-Highlight-Right">
+                            <Anchors>
+                                <Anchor point="RIGHT" x="3" y="-1" />
+                            </Anchors>
+                        </Texture>
+                        <Texture name="$parentHighlightMid" inherits="_PaperHeader-Highlight-Mid">
+                            <Anchors>
+                                <Anchor point="LEFT" relativeTo="$parentHighlightLeft"
+                                    relativePoint="RIGHT" x="-32" y="0" />
+                                <Anchor point="RIGHT" relativeTo="$parentHighlightRight"
+                                    relativePoint="LEFT" x="32" y="0" />
+                            </Anchors>
+                        </Texture>
+                    </Layer> -->
+                </Layers>
+            </Button>
+        </Frames>
+    </Frame>
+
+    <Frame name="TempEncounterInfoTemplate" virtual="true"
+        inherits="InlineHyperlinkFrameTemplate">
+        <Animations>
+            <AnimationGroup parentKey="flashAnim">
+                <Alpha target="$parentHeaderButtonGlow" fromAlpha="0" toAlpha="1" duration="0.6"
+                    order="1" />
+                <Alpha target="$parentHeaderButtonGlow" fromAlpha="1" toAlpha="0" duration="0.6"
+                    order="2" />
+                <Alpha target="$parentHeaderButtonGlow" fromAlpha="0" toAlpha="1" duration="0.6"
+                    order="3" />
+                <Alpha target="$parentHeaderButtonGlow" fromAlpha="1" toAlpha="0" duration="0.9"
+                    order="4" />
+            </AnimationGroup>
+        </Animations>
+        <Size x="5" y="24" />
+        <Frames>
+            <Button name="$parentHeaderButton" parentKey="button">
+                <Size x="5" y="24" />
+                <Anchors>
+                    <Anchor point="TOPLEFT" x="0" y="0" />
+                    <Anchor point="RIGHT" x="0" y="0" />
+                </Anchors>
+                <Layers>
+                    <Layer level="OVERLAY">
+                        <FontString name="$parentExpandedIcon" inherits="GameFontNormalLarge"
+                            parentKey="expandedIcon">
+                            <Size x="12" y="12" />
+                            <Anchors>
+                                <Anchor point="LEFT" x="5" y="0" />
+                            </Anchors>
+                        </FontString>
+                        <Texture name="$parentAbilityIcon" parentKey="abilityIcon">
+                            <Size x="18" y="18" />
+                            <Anchors>
+                                <Anchor point="LEFT" relativeTo="$parentExpandedIcon"
+                                    relativePoint="RIGHT" x="5" y="0" />
+                            </Anchors>
+                        </Texture>
+                        <FontString name="$parentTitle" inherits="GameFontNormal" parentKey="title"
+                            justifyH="LEFT">
+                            <Size x="5" y="10" />
+                            <Anchors>
+                                <Anchor point="LEFT" relativeTo="$parentAbilityIcon"
+                                    relativePoint="RIGHT" x="5" y="-1" />
+                            </Anchors>
+                        </FontString>
+                    </Layer>
+                    <Layer level="BACKGROUND">
+                        <Texture name="$parentELeftUp"
+                            inherits="UI-PaperOverlay-PaperHeader-SelectUp-Left" parentKey="eLeftUp"
+                            hidden="true">
+                            <Anchors>
+                                <Anchor point="LEFT" x="-1" y="-1" />
+                            </Anchors>
+                        </Texture>
+                        <Texture name="$parentERightUp"
+                            inherits="UI-PaperOverlay-PaperHeader-SelectUp-Right"
+                            parentKey="eRightUp" hidden="true">
+                            <Anchors>
+                                <Anchor point="RIGHT" x="3" y="-1" />
+                            </Anchors>
+                        </Texture>
+                        <Texture name="$parentELeftDown"
+                            inherits="UI-EJ-PaperHeader-SelectDown-Left" parentKey="eLeftDown"
+                            hidden="true">
+                            <Anchors>
+                                <Anchor point="LEFT" relativeTo="$parentELeftUp" x="0" y="0" />
+                            </Anchors>
+                        </Texture>
+                        <Texture name="$parentERightDown"
+                            inherits="UI-EJ-PaperHeader-SelectDown-Right" parentKey="eRightDown"
+                            hidden="true">
+                            <Anchors>
+                                <Anchor point="RIGHT" relativeTo="$parentERightUp" x="0" y="0" />
+                            </Anchors>
+                        </Texture>
+                        <Texture name="$parentCLeftUp" inherits="UI-EJ-PaperHeader-UnSelectUp-Left"
+                            parentKey="cLeftUp">
+                            <Anchors>
+                                <Anchor point="LEFT" relativeTo="$parentELeftUp" x="0" y="0" />
+                            </Anchors>
+                        </Texture>
+                        <Texture name="$parentCRightUp"
+                            inherits="UI-EJ-PaperHeader-UnSelectUp-Right" parentKey="cRightUp">
+                            <Anchors>
+                                <Anchor point="RIGHT" relativeTo="$parentERightUp" x="0" y="0" />
+                            </Anchors>
+                        </Texture>
+                        <Texture name="$parentCLeftDown"
+                            inherits="UI-EJ-PaperHeader-UnSelectDown-Left" parentKey="cLeftDown"
+                            hidden="true">
+                            <Anchors>
+                                <Anchor point="LEFT" relativeTo="$parentELeftUp" x="0" y="0" />
+                            </Anchors>
+                        </Texture>
+                        <Texture name="$parentCRightDown"
+                            inherits="UI-EJ-PaperHeader-UnSelectDown-Right" parentKey="cRightDown"
+                            hidden="true">
+                            <Anchors>
+                                <Anchor point="RIGHT" relativeTo="$parentERightUp" x="0" y="0" />
+                            </Anchors>
+                        </Texture>
+                    </Layer>
+                    <Layer level="BACKGROUND" textureSubLevel="-2">
+                        <Texture name="$parentEMidUp"
+                            inherits="UI-PaperOverlay-PaperHeader-SelectUp-Mid" parentKey="eMidUp"
+                            hidden="true">
+                            <Anchors>
+                                <Anchor point="LEFT" relativeTo="$parentELeftUp"
+                                    relativePoint="RIGHT" x="-32" y="0" />
+                                <Anchor point="RIGHT" relativeTo="$parentERightUp"
+                                    relativePoint="LEFT" x="32" y="0" />
+                            </Anchors>
+                        </Texture>
+                        <Texture name="$parentEMidDown" inherits="_PaperHeader-SelectDown-Mid"
+                            parentKey="eMidDown" hidden="true">
+                            <Anchors>
+                                <Anchor point="LEFT" relativeTo="$parentELeftDown"
+                                    relativePoint="RIGHT" x="-32" y="0" />
+                                <Anchor point="RIGHT" relativeTo="$parentERightDown"
+                                    relativePoint="LEFT" x="32" y="0" />
+                            </Anchors>
+                        </Texture>
+                        <Texture name="$parentCMidUp" inherits="_PaperHeader-UnSelectUp-Mid"
+                            parentKey="cMidUp">
+                            <Anchors>
+                                <Anchor point="LEFT" relativeTo="$parentELeftUp"
+                                    relativePoint="RIGHT" x="-32" y="0" />
+                                <Anchor point="RIGHT" relativeTo="$parentERightUp"
+                                    relativePoint="LEFT" x="32" y="0" />
+                            </Anchors>
+                        </Texture>
+                        <Texture name="$parentCMidDown" inherits="_PaperHeader-UnSelectDown-Mid"
+                            parentKey="cMidDown" hidden="true">
+                            <Anchors>
+                                <Anchor point="LEFT" relativeTo="$parentELeftDown"
+                                    relativePoint="RIGHT" x="-32" y="0" />
+                                <Anchor point="RIGHT" relativeTo="$parentERightDown"
+                                    relativePoint="LEFT" x="32" y="0" />
+                            </Anchors>
+                        </Texture>
+                    </Layer>
+                    <Layer level="HIGHLIGHT">
+                        <Texture name="$parentHighlightLeft"
+                            inherits="UI-EJ-PaperHeader-Highlight-Left">
+                            <Anchors>
+                                <Anchor point="LEFT" x="-1" y="-1" />
+                            </Anchors>
+                        </Texture>
+                        <Texture name="$parentHighlightRight"
+                            inherits="UI-EJ-PaperHeader-Highlight-Right">
+                            <Anchors>
+                                <Anchor point="RIGHT" x="3" y="-1" />
+                            </Anchors>
+                        </Texture>
+                        <Texture name="$parentHighlightMid" inherits="_PaperHeader-Highlight-Mid">
+                            <Anchors>
+                                <Anchor point="LEFT" relativeTo="$parentHighlightLeft"
+                                    relativePoint="RIGHT" x="-32" y="0" />
+                                <Anchor point="RIGHT" relativeTo="$parentHighlightRight"
+                                    relativePoint="LEFT" x="32" y="0" />
+                            </Anchors>
+                        </Texture>
+                    </Layer>
+                </Layers>
+                <Frames>
+                    <Frame name="$parentGlow" alpha="0">
+                        <Anchors>
+                            <Anchor point="TOPLEFT" x="0" y="0" />
+                            <Anchor point="BOTTOMRIGHT" x="0" y="0" />
+                        </Anchors>
+                        <Layers>
+                            <Layer level="OVERLAY">
+                                <Texture name="$parentHighlightLeft"
+                                    inherits="UI-EJ-PaperHeader-Highlight-Left">
+                                    <Anchors>
+                                        <Anchor point="LEFT" x="-1" y="-1" />
+                                    </Anchors>
+                                </Texture>
+                                <Texture name="$parentHighlightRight"
+                                    inherits="UI-EJ-PaperHeader-Highlight-Right">
+                                    <Anchors>
+                                        <Anchor point="RIGHT" x="3" y="-1" />
+                                    </Anchors>
+                                </Texture>
+                                <Texture name="$parentHighlightMid"
+                                    inherits="_PaperHeader-Highlight-Mid">
+                                    <Anchors>
+                                        <Anchor point="LEFT" relativeTo="$parentHighlightLeft"
+                                            relativePoint="RIGHT" x="-32" y="0" />
+                                        <Anchor point="RIGHT" relativeTo="$parentHighlightRight"
+                                            relativePoint="LEFT" x="32" y="0" />
+                                    </Anchors>
+                                </Texture>
+                            </Layer>
+                        </Layers>
+                    </Frame>
+                    <Frame name="$parentIcon1" inherits="EncounterSectionIconTemplate"
+                        parentKey="icon1" parentArray="icons" hidden="true">
+                        <Anchors>
+                            <Anchor point="RIGHT" x="5" y="0" />
+                        </Anchors>
+                    </Frame>
+                    <Frame name="$parentIcon2" inherits="EncounterSectionIconTemplate"
+                        parentKey="icon2" parentArray="icons" hidden="true">
+                        <Anchors>
+                            <Anchor point="RIGHT" relativeTo="$parentIcon1" relativePoint="LEFT"
+                                x="10" y="0" />
+                        </Anchors>
+                    </Frame>
+                    <Frame name="$parentIcon3" inherits="EncounterSectionIconTemplate"
+                        parentKey="icon3" parentArray="icons" hidden="true">
+                        <Anchors>
+                            <Anchor point="RIGHT" relativeTo="$parentIcon2" relativePoint="LEFT"
+                                x="10" y="0" />
+                        </Anchors>
+                    </Frame>
+                    <Frame name="$parentIcon4" inherits="EncounterSectionIconTemplate"
+                        parentKey="icon4" parentArray="icons" hidden="true">
+                        <Anchors>
+                            <Anchor point="RIGHT" relativeTo="$parentIcon3" relativePoint="LEFT"
+                                x="19" y="0" />
+                        </Anchors>
+                    </Frame>
+                    <Button name="$parentPortrait" parentKey="portrait" hidden="true">
+                        <Size x="26" y="26" />
+                        <Anchors>
+                            <Anchor point="CENTER" relativeTo="$parentAbilityIcon" x="0" y="0" />
+                        </Anchors>
+                        <Layers>
+                            <Layer level="OVERLAY">
+                                <Texture name="$parentIcon" parentKey="icon">
+                                    <Size x="26" y="26" />
+                                    <Anchors>
+                                        <Anchor point="CENTER" x="0" y="0" />
+                                    </Anchors>
+                                </Texture>
+                            </Layer>
+                            <Layer level="OVERLAY" textureSubLevel="2">
+                                <Texture name="$parentFrame" inherits="UI-EJ-CreatureHeaderFrameSm">
+                                    <Anchors>
+                                        <Anchor point="CENTER" relativeTo="$parentIcon" x="0" y="0" />
+                                    </Anchors>
+                                </Texture>
+                            </Layer>
+                            <Layer level="HIGHLIGHT">
+                                <Texture name="$parentFrameHighlight"
+                                    inherits="UI-EJ-CreatureHeaderFrameSm" alphaMode="ADD">
+                                    <Anchors>
+                                        <Anchor point="CENTER" relativeTo="$parentIcon" x="0" y="0" />
+                                    </Anchors>
+                                </Texture>
+                            </Layer>
+                        </Layers>
+                        <Scripts>
+                            <!-- <OnClick>
+                                if self.displayInfo then
+                                    EncounterJournal.encounter.info.modelTab:Click();
+                                    EncounterJournal_DisplayCreature(self);
+                                end
+                                self:Enable();
+                                PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+                            </OnClick> -->
+                        </Scripts>
+                    </Button>
+                </Frames>
+                <Scripts>
+                    <OnLoad>
+                        self.textures = {
+                            expanded = {
+                                up = {self.eLeftUp, self.eMidUp, self.eRightUp},
+                                down = {self.eLeftDown, self.eMidDown, self.eRightDown}
+                            },
+                            collapsed = {
+                                up = {self.cLeftUp, self.cMidUp, self.cRightUp},
+                                down = {self.cLeftDown, self.cMidDown, self.cRightDown}
+                            },
+                        }
+                        self.tex = self.textures.collapsed;
+                    </OnLoad>
+                    <OnShow function="EncounterJournal_UpdateButtonState" />
+                    <OnClick function="EncounterJournal_OnClick" />
+                    <OnMouseDown>
+                        self.tex.up[1]:Hide();
+                        self.tex.up[2]:Hide();
+                        self.tex.up[3]:Hide();
+            
+                        self.tex.down[1]:Show();
+                        self.tex.down[2]:Show();
+                        self.tex.down[3]:Show();
+                    </OnMouseDown>
+                    <OnMouseUp>
+                        self.tex.up[1]:Show();
+                        self.tex.up[2]:Show();
+                        self.tex.up[3]:Show();
+            
+                        self.tex.down[1]:Hide();
+                        self.tex.down[2]:Hide();
+                        self.tex.down[3]:Hide();
+                    </OnMouseUp>
+                    <OnEnter>
+                        if ( self.title:IsTruncated() ) then
+                            GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+                            GameTooltip:SetText(self.title:GetText(), nil, nil, nil, nil, true);
+                        end
+                    </OnEnter>
+                    <OnLeave>GameTooltip:Hide();</OnLeave>
+                </Scripts>
+            </Button>
+            <Frame parentKey="overviewDescription" inherits="EncounterDescriptionTemplate">
+                <Size x="95" y="10" />
+                <Anchors>
+                    <Anchor point="TOP" relativePoint="BOTTOM" relativeTo="$parentHeaderButton"
+                        x="0" y="-9" />
+                </Anchors>
+            </Frame>
+            <Frame inherits="EncounterOverviewBulletTemplate">
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT"
+                        relativeTo="$parentHeaderButton" x="13" y="-9" />
+                </Anchors>
+            </Frame>
+        </Frames>
+        <Layers>
+            <Layer level="ARTWORK">
+                <FontString name="$parentDescription" inherits="GameFontBlack" justifyH="LEFT"
+                    parentKey="description">
+                    <Size x="0" y="0" />
+                    <Anchors>
+                        <Anchor point="TOP" relativePoint="BOTTOM" relativeTo="$parentHeaderButton"
+                            x="0" y="-9" />
+                    </Anchors>
+                    <Color r="0.25" g="0.1484375" b=".02" a="1" />
+                </FontString>
+            </Layer>
+            <Layer level="BACKGROUND">
+                <Texture name="$parentDescriptionBG" inherits="UI-PaperOverlay-AbilityTextBG"
+                    parentKey="descriptionBG">
+                    <Size x="12" y="12" />
+                    <Anchors>
+                        <Anchor point="TOPLEFT" relativeTo="$parentDescription" x="-9" y="12" />
+                        <Anchor point="BOTTOMRIGHT" relativeTo="$parentDescription" x="9" y="-11" />
+                    </Anchors>
+                </Texture>
+                <Texture inherits="UI-PaperOverlay-AbilityTextBottomBorder"
+                    parentKey="descriptionBGBottom">
+                    <Anchors>
+                        <Anchor point="LEFT" relativeTo="$parentDescriptionBG"
+                            relativePoint="BOTTOMLEFT" x="0" y="0" />
+                        <Anchor point="RIGHT" relativeTo="$parentDescriptionBG"
+                            relativePoint="BOTTOMRIGHT" x="0" y="0" />
+                    </Anchors>
+                </Texture>
+            </Layer>
+        </Layers>
+        <Scripts>
+            <OnHide>
+                self:SetScript("OnUpdate", nil);
+            </OnHide>
+            <OnHyperlinkEnter function="EncounterJournal_OnHyperlinkEnter" />
+        </Scripts>
+    </Frame>
+</Ui>

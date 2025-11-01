@@ -1,0 +1,26 @@
+## Interface: 50502
+## Author: BadBoyBarny
+## Version: 3.1.4
+
+## Title: HandyNotes: |cffff0000Map|r|cff00ccffNotes|r
+## Notes: Shows instance entrances/exits and passageways, portals, ships and zeppelin symbols and many other things
+## Title-zhCN: |cFFFFE00A<|r|cFF40C7EB探索|r|cFFFFE00A>|r|cFFFFFFFF地图标记|r |cFF69CCF0地图标记|r
+## Notes-zhCN: 显示副本入口，主城NPC等信息
+
+## IconTexture: Interface\AddOns\HandyNotes_MapNotes\Images\MNL4
+
+## Category-zhCN: |cFFFFE00A<|r|cFF40C7EB探索|r|cFFFFE00A>|r
+
+## RequiredDeps: HandyNotes
+
+## SavedVariables: HandyNotes_MapNotesRetailDB, MNMiniMapButtonRetailDB, FogOfWarColorDB, HandyNotes_MapNotesRetailChangelogDB, HandyNotes_MapNotesRetailNpcCacheDB
+
+## X-License: All Rights Reserved
+## X-Curse-Project-ID: 912524
+## X-Localizations: enUS, enGB, deDE, esES, esMX, frFR, ruRU, itIT, ptBR, koKR, zhCN, zhTW
+## X-Part-Of: HandyNotes
+
+ExternalLibs\ExternalLibs.xml
+Locales\Locales.xml
+Nodes\NodesRetail.xml
+Core\CoreRetail.xml

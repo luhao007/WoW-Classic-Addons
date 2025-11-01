@@ -1,0 +1,22 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.blizzard.com/wow/ui/ https://raw.githubusercontent.com/Gethe/wow-ui-source/live/Interface/AddOns/Blizzard_SharedXML/UI.xsd">
+	<Script file="DelvesDashboard.lua" />
+
+	<Script file="Companion\Companion.lua" />
+	<Include file="Companion\ExpBar.xml" />
+	<Script file="Companion\ExpBar.lua" />
+	<Include file="Companion\ConfigWidget.xml" />
+	<Script file="Companion\ConfigWidget.lua" />
+
+	<Include file="LootInfo\LootInfoFrame.xml" />
+	<Script file="LootInfo\LootInfoFrame.lua" />
+
+	<Script file="GreatVault\GreatVault.lua" />
+	<Include file="GreatVault\GreatVaultDetailsItem.xml" />
+	<Script file="GreatVault\GreatVaultDetailsItem.lua" />
+	<Include file="GreatVault\GreatVaultDetails.xml" />
+	<Script file="GreatVault\GreatVaultDetails.lua" />
+
+	<Include file="Overview\Include.xml" />
+</Ui>

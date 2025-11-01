@@ -1,0 +1,29 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.blizzard.com/wow/ui/ https://raw.githubusercontent.com/Gethe/wow-ui-source/live/Interface/AddOns/Blizzard_SharedXML/UI.xsd">
+    <Frame name="DelveCompanionDelveMapHeaderTemplate"
+        mixin="DelveCompanion_DelvesListMapHeaderMixin" virtual="true">
+        <Size x="748" y="30" />
+        <Layers>
+            <Layer level="BACKGROUND">
+                <Texture parentKey="Background"
+                    file="Interface\EncounterJournal\UI-EncounterJournalTextures">
+                    <Anchors>
+                        <Anchor point="TOPLEFT" x="0" y="0" />
+                        <Anchor point="BOTTOMRIGHT" x="0" y="0" />
+                    </Anchors>
+                    <TexCoords left="0.02" right="0.635" top="0.58886719" bottom="0.61621094" />
+                </Texture>
+            </Layer>
+            <Layer level="OVERLAY">
+                <FontString parentKey="MapName" inherits="GameFontNormal"
+                    text="MAP_NAME">
+                    <Anchors>
+                        <Anchor point="CENTER" relativeKey="$parentBackground"
+                            relativePoint="CENTER" y="4" />
+                    </Anchors>
+                </FontString>
+            </Layer>
+        </Layers>
+    </Frame>
+</Ui>

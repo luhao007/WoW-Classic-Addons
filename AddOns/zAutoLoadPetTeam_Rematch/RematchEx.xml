@@ -1,0 +1,452 @@
+<Ui>
+	<Script File="RematchEx.lua"/>
+	<EditBox name="ALPTInputBoxTemplate" enableMouse="true" autoFocus="false" virtual="true" inherits="RematchBorderBackdropTemplate">
+		<Size x="50" y="24"/>
+		<TextInsets>
+			<AbsInset left="6" right="6"/>
+		</TextInsets>
+
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="3" y="-3"/>
+						<Anchor point="BOTTOMRIGHT" x="-3" y="3"/>
+					</Anchors>
+					<Color r="0" g="0" b="0"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Label" inherits="GameFontNormal">
+					<Anchors>
+						<Anchor point="RIGHT" relativePoint="LEFT" x="-2" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="LabelR" inherits="GameFontNormal">
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="RIGHT" x="-2" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEscapePressed>
+				self:ClearFocus()
+				Rematch.dialog:HideDialog()
+			</OnEscapePressed>
+			<OnChar>
+				ALPTRematch.PreferencesOnChar(self)
+			</OnChar>
+			<OnTextChanged>
+				ALPTRematch.PreferencesOnTextChanged(self)
+			</OnTextChanged>
+		</Scripts>
+		<FontString inherits="GameFontHighlight" justifyV="MIDDLE" justifyH="CENTER" />
+	</EditBox>
+
+	<Frame parentKey="ALPTCConfigs" parent="RematchDialogCanvas" hidden="true">
+		<Size x="590" y="500"/>
+		<Frames>
+			<Frame parentKey="Top">
+				<Size x="580" y="1"/>
+				<Anchors>
+					<Anchor point="TOP"/>
+				</Anchors>
+				 
+			</Frame>			<!-- Top -->
+		</Frames>
+		<Layers>
+			<Layer level="ARTWORK">
+				 
+				<FontString parentKey="TeamName" inherits="GameFontGreen">
+	 				<Color r="1" g="1" b="1" a="1"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Top" relativePoint="CENTER" x="0" y="-10" />
+					</Anchors>
+				</FontString>
+
+				<Texture inherits="_UI-Frame-InnerBotTile" parentKey="Line1">
+					<Size x="580" y="3"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Top" relativePoint="BOTTOMLEFT" x="0" y="-30"/>
+					</Anchors>
+				</Texture>
+
+				<FontString parentKey="Lab1" inherits="GameFontNormal" Text="一号宠：">
+					<Color r="1" g="1" b="1" a="1"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Line1" relativePoint="BOTTOMLEFT" x="15" y="-20" />
+					</Anchors>
+				</FontString>
+
+
+				<Texture inherits="_UI-Frame-InnerBotTile" parentKey="Line2">
+					<Size x="580" y="3"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Line1" relativePoint="BOTTOMLEFT" x="0" y="-130"/>
+					</Anchors>
+				</Texture>
+
+				<FontString parentKey="Lab2" inherits="GameFontNormal" Text="二号宠：">
+					<Color r="1" g="1" b="1" a="1"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Line2" relativePoint="BOTTOMLEFT" x="15" y="-20" />
+					</Anchors>
+				</FontString>
+
+				<Texture inherits="_UI-Frame-InnerBotTile" parentKey="Line3">
+					<Size x="580" y="3"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Line2" relativePoint="BOTTOMLEFT" x="0" y="-130"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Lab3" inherits="GameFontNormal" Text="三号宠：">
+					<Color r="1" g="1" b="1" a="1"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Line3" relativePoint="BOTTOMLEFT" x="15" y="-20" />
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<!-- ***************all*************** -->
+
+			<CheckButton parentKey="Disable" inherits="UICheckButtonTemplate,RematchTooltipScripts">
+				<Size x="28" y="28"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.Top" relativePoint="RIGHT" x="-85" y="-10"/>
+				</Anchors>
+			</CheckButton>
+
+			<!-- *****************slot1******************** -->
+
+			<EditBox parentKey="HP1" inherits="ALPTInputBoxTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Lab1" relativePoint="LEFT" x="250" y="0"/>
+				</Anchors>
+			</EditBox>
+
+			<CheckButton parentKey="Breed1" inherits="UICheckButtonTemplate,RematchTooltipScripts">
+				<Size x="28" y="28"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.HP1" relativePoint="RIGHT" x="30" y="0"/>
+				</Anchors>
+			</CheckButton>
+			<EditBox parentKey="MinLvl1" inherits="ALPTInputBoxTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Breed1" relativePoint="RIGHT" x="110" y="0"/>
+				</Anchors>
+			</EditBox>
+
+
+			<CheckButton parentKey="NoAlt1" inherits="UICheckButtonTemplate,RematchTooltipScripts">
+				<Size x="28" y="28"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Lab1" relativePoint="LEFT" x="0" y="-35"/>
+				</Anchors>
+			</CheckButton>
+
+			<CheckButton parentKey="Highest1" inherits="UICheckButtonTemplate,RematchTooltipScripts">
+				<Size x="28" y="28"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.NoAlt1" relativePoint="RIGHT" x="70" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						ALPTRematch_HighestCheck(1)
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+
+			<CheckButton parentKey="Lowest1" inherits="UICheckButtonTemplate,RematchTooltipScripts">
+				<Size x="28" y="28"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Highest1" relativePoint="RIGHT" x="70" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						ALPTRematch_LowestCheck(1)
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+
+			<CheckButton parentKey="UseGroup1" inherits="UICheckButtonTemplate,RematchTooltipScripts">
+				<Size x="28" y="28"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Lowest1" relativePoint="RIGHT" x="70" y="0"/>
+				</Anchors>
+			</CheckButton>
+
+			<Button parentKey="Groups1" inherits="UIDropDownMenuTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.UseGroup1" relativePoint="RIGHT" x="70" y="-2"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						UIDropDownMenu_Initialize(self, ALPTRematch_DropDown1);
+						self.selectedName = "无";
+						self.selectedValue ="无";
+						UIDropDownMenu_SetText(self, self.selectedName);
+					</OnLoad>
+				</Scripts>
+			</Button>
+
+			<EditBox parentKey="FilterHP1_1" inherits="ALPTInputBoxTemplate">
+				<Size x="65" y="24"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.NoAlt1" relativePoint="LEFT" x="40" y="-35"/>
+				</Anchors>
+			</EditBox>
+			<EditBox parentKey="FilterHP1_2" inherits="ALPTInputBoxTemplate">
+				<Size x="65" y="24"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.FilterHP1_1" relativePoint="RIGHT" x="15" y="0"/>
+				</Anchors>
+			</EditBox>
+
+			<EditBox parentKey="FilterAttack1_1" inherits="ALPTInputBoxTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.FilterHP1_2" relativePoint="RIGHT" x="62" y="0"/>
+				</Anchors>
+			</EditBox>
+			<EditBox parentKey="FilterAttack1_2" inherits="ALPTInputBoxTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.FilterAttack1_1" relativePoint="RIGHT" x="15" y="0"/>
+				</Anchors>
+			</EditBox>
+
+			<EditBox parentKey="FilterSpeed1_1" inherits="ALPTInputBoxTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.FilterAttack1_2" relativePoint="RIGHT" x="63" y="0"/>
+				</Anchors>
+			</EditBox>
+			<EditBox parentKey="FilterSpeed1_2" inherits="ALPTInputBoxTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.FilterSpeed1_1" relativePoint="RIGHT" x="15" y="0"/>
+				</Anchors>
+			</EditBox>
+
+
+			<!-- ******************slot2******************** -->
+
+			<EditBox parentKey="HP2" inherits="ALPTInputBoxTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Lab2" relativePoint="LEFT" x="250" y="0"/>
+				</Anchors>
+			</EditBox>
+
+			<CheckButton parentKey="Breed2" inherits="UICheckButtonTemplate,RematchTooltipScripts">
+				<Size x="28" y="28"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.HP2" relativePoint="RIGHT" x="30" y="0"/>
+				</Anchors>
+			</CheckButton>
+			<EditBox parentKey="MinLvl2" inherits="ALPTInputBoxTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Breed2" relativePoint="RIGHT" x="110" y="0"/>
+				</Anchors>
+			</EditBox>
+
+
+			<CheckButton parentKey="NoAlt2" inherits="UICheckButtonTemplate,RematchTooltipScripts">
+				<Size x="28" y="28"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Lab2" relativePoint="LEFT" x="0" y="-35"/>
+				</Anchors>
+			</CheckButton>
+
+			<CheckButton parentKey="Highest2" inherits="UICheckButtonTemplate,RematchTooltipScripts">
+				<Size x="28" y="28"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.NoAlt2" relativePoint="RIGHT" x="70" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						ALPTRematch_HighestCheck(2)
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+
+			<CheckButton parentKey="Lowest2" inherits="UICheckButtonTemplate,RematchTooltipScripts">
+				<Size x="28" y="28"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Highest2" relativePoint="RIGHT" x="70" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						ALPTRematch_LowestCheck(2)
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+
+			<CheckButton parentKey="UseGroup2" inherits="UICheckButtonTemplate,RematchTooltipScripts">
+				<Size x="28" y="28"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Lowest2" relativePoint="RIGHT" x="70" y="0"/>
+				</Anchors>
+			</CheckButton>
+
+			<Button parentKey="Groups2" inherits="UIDropDownMenuTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.UseGroup2" relativePoint="RIGHT" x="70" y="-2"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						UIDropDownMenu_Initialize(self, ALPTRematch_DropDown2);
+						self.selectedName = "无";
+						self.selectedValue = 0;
+						UIDropDownMenu_SetText(self, self.selectedName);
+					</OnLoad>
+				</Scripts>
+			</Button>
+
+			<EditBox parentKey="FilterHP2_1" inherits="ALPTInputBoxTemplate">
+				<Size x="65" y="24"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.NoAlt2" relativePoint="LEFT" x="40" y="-35"/>
+				</Anchors>
+			</EditBox>
+			<EditBox parentKey="FilterHP2_2" inherits="ALPTInputBoxTemplate">
+				<Size x="65" y="24"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.FilterHP2_1" relativePoint="RIGHT" x="15" y="0"/>
+				</Anchors>
+			</EditBox>
+
+			<EditBox parentKey="FilterAttack2_1" inherits="ALPTInputBoxTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.FilterHP2_2" relativePoint="RIGHT" x="62" y="0"/>
+				</Anchors>
+			</EditBox>
+			<EditBox parentKey="FilterAttack2_2" inherits="ALPTInputBoxTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.FilterAttack2_1" relativePoint="RIGHT" x="15" y="0"/>
+				</Anchors>
+			</EditBox>
+
+			<EditBox parentKey="FilterSpeed2_1" inherits="ALPTInputBoxTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.FilterAttack2_2" relativePoint="RIGHT" x="63" y="0"/>
+				</Anchors>
+			</EditBox>
+			<EditBox parentKey="FilterSpeed2_2" inherits="ALPTInputBoxTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.FilterSpeed2_1" relativePoint="RIGHT" x="15" y="0"/>
+				</Anchors>
+			</EditBox>
+
+
+			<!-- ******************slot3******************** -->
+
+			<EditBox parentKey="HP3" inherits="ALPTInputBoxTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Lab3" relativePoint="LEFT" x="250" y="0"/>
+				</Anchors>
+			</EditBox>
+
+			<CheckButton parentKey="Breed3" inherits="UICheckButtonTemplate,RematchTooltipScripts">
+				<Size x="28" y="28"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.HP3" relativePoint="RIGHT" x="30" y="0"/>
+				</Anchors>
+			</CheckButton>
+			<EditBox parentKey="MinLvl3" inherits="ALPTInputBoxTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Breed3" relativePoint="RIGHT" x="110" y="0"/>
+				</Anchors>
+			</EditBox>
+
+
+			<CheckButton parentKey="NoAlt3" inherits="UICheckButtonTemplate,RematchTooltipScripts">
+				<Size x="28" y="28"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Lab3" relativePoint="LEFT" x="0" y="-35"/>
+				</Anchors>
+			</CheckButton>
+
+			<CheckButton parentKey="Highest3" inherits="UICheckButtonTemplate,RematchTooltipScripts">
+				<Size x="28" y="28"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.NoAlt3" relativePoint="RIGHT" x="70" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						ALPTRematch_HighestCheck(3)
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+
+			<CheckButton parentKey="Lowest3" inherits="UICheckButtonTemplate,RematchTooltipScripts">
+				<Size x="28" y="28"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Highest3" relativePoint="RIGHT" x="70" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						ALPTRematch_LowestCheck(3)
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+
+			<CheckButton parentKey="UseGroup3" inherits="UICheckButtonTemplate,RematchTooltipScripts">
+				<Size x="28" y="28"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Lowest3" relativePoint="RIGHT" x="70" y="0"/>
+				</Anchors>
+			</CheckButton>
+
+			<Button parentKey="Groups3" inherits="UIDropDownMenuTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.UseGroup3" relativePoint="RIGHT" x="70" y="-2"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						UIDropDownMenu_Initialize(self, ALPTRematch_DropDown3);
+						self.selectedName = "无";
+						self.selectedValue = 0;
+						UIDropDownMenu_SetText(self, self.selectedName);
+					</OnLoad>
+				</Scripts>
+			</Button>
+
+			<EditBox parentKey="FilterHP3_1" inherits="ALPTInputBoxTemplate">
+				<Size x="65" y="24"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.NoAlt3" relativePoint="LEFT" x="40" y="-35"/>
+				</Anchors>
+			</EditBox>
+			<EditBox parentKey="FilterHP3_2" inherits="ALPTInputBoxTemplate">
+				<Size x="65" y="24"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.FilterHP3_1" relativePoint="RIGHT" x="15" y="0"/>
+				</Anchors>
+			</EditBox>
+
+			<EditBox parentKey="FilterAttack3_1" inherits="ALPTInputBoxTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.FilterHP3_2" relativePoint="RIGHT" x="62" y="0"/>
+				</Anchors>
+			</EditBox>
+			<EditBox parentKey="FilterAttack3_2" inherits="ALPTInputBoxTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.FilterAttack3_1" relativePoint="RIGHT" x="15" y="0"/>
+				</Anchors>
+			</EditBox>
+
+			<EditBox parentKey="FilterSpeed3_1" inherits="ALPTInputBoxTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.FilterAttack3_2" relativePoint="RIGHT" x="63" y="0"/>
+				</Anchors>
+			</EditBox>
+			<EditBox parentKey="FilterSpeed3_2" inherits="ALPTInputBoxTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.FilterSpeed3_1" relativePoint="RIGHT" x="15" y="0"/>
+				</Anchors>
+			</EditBox>
+
+			<!-- ****************************************** -->
+		</Frames>
+
+	</Frame>
+
+</Ui>

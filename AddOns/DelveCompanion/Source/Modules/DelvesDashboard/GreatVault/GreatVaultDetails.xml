@@ -1,0 +1,62 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.blizzard.com/wow/ui/ https://raw.githubusercontent.com/Gethe/wow-ui-source/live/Interface/AddOns/Blizzard_SharedXML/UI.xsd">
+    <Frame name="DelveCompanionGreatVaultDetailsFrame"
+        mixin="DelveCompanion_GreatVaultDetailsMixin" virtual="true">
+        <Size x="180" y="300" />
+        <Anchors>
+            <Anchor point="BOTTOM" relativeKey="$parent" relativePoint="BOTTOM" x="0" y="0" />
+        </Anchors>
+        <Layers>
+            <Layer level="OVERLAY">
+                <FontString parentKey="LoadingLabel" inherits="GameFontNormalLarge2"
+                    justifyH="CENTER" text="LOADING..." hidden="true">
+                    <Anchors>
+                        <Anchor point="CENTER" x="0" y="0" />
+                    </Anchors>
+                </FontString>
+            </Layer>
+        </Layers>
+        <Frames>
+            <Button parentKey="GVButton" inherits="MagicButtonTemplate" text="VAULT" hidden="true">
+                <Size x="130" y="30" />
+                <KeyValues>
+                    <KeyValue key="fitTextWidthPadding" value="20" type="number" />
+                </KeyValues>
+                <Anchors>
+                    <Anchor point="BOTTOM" x="0" y="27" />
+                </Anchors>
+                <Scripts>
+                    <!-- <OnEnter>
+                        GameTooltip:SetOwner(self, "ANCHOR_TOP")
+                        GameTooltip:AddLine(_G["WEEKLY_REWARDS_CLICK_TO_PREVIEW_INSTRUCTIONS"], 1,
+                        1, 1)
+                        GameTooltip:Show()
+                    </OnEnter>
+                    <OnLeave>
+                        GameTooltip:Hide()
+                    </OnLeave> -->
+                    <OnClick>
+                        WeeklyRewards_ShowUI()
+                    </OnClick>
+                </Scripts>
+            </Button>
+            <Frame parentKey="Rewards" inherits="VerticalLayoutFrame" hidden="true">
+                <KeyValues>
+                    <KeyValue key="maximumWidth" value="180" type="number" />
+                    <KeyValue key="maximumHeight" value="200" type="number" />
+                    <KeyValue key="expand" value="true" type="boolean" />
+                    <KeyValue key="spacing" value="5" type="number" />
+                </KeyValues>
+                <Anchors>
+                    <Anchor point="CENTER" x="0" y="-5" />
+                </Anchors>
+            </Frame>
+        </Frames>
+        <Scripts>
+            <OnLoad method="OnLoad" />
+            <OnShow method="OnShow" />
+            <OnHide method="OnHide" />
+        </Scripts>
+    </Frame>
+</Ui>
