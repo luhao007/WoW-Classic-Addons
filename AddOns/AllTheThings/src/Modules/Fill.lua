@@ -576,10 +576,10 @@ local FillGroups = function(group, options)
 		SkipLevel = app.GetSkipLevel(),
 		Root = group,
 		FillRecipes = group.recipeID or app.ReagentsDB[group.itemID or 0],
-		-- Debug = group.itemID == 207026
+		-- Debug = group.itemID == 24368
 	};
 
-	-- app.PrintDebug("FillGroups",group.__type,group,"Fillers",fillScope,app:SearchLink(group))
+	-- app.PrintDebug("FillGroups",group.__type,group,"Fillers",fillers,app:SearchLink(group))
 	-- app.PrintTable(FillData)
 
 	-- Fill the group with all nestable content

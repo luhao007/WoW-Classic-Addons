@@ -388,7 +388,7 @@ app.GetLinkReference = function(link)
 	end
 	-- Search for the Link in the database
 	app.SetSkipLevel(2)
-	local group = app.GetCachedSearchResults(app.SearchForLink, link, nil, {IgnoreCache=true})
+	local group = app.GetCachedSearchResults(app.SearchForLink, link, nil, {ShortCache=true})
 	app.SetSkipLevel(0)
 	return group
 end

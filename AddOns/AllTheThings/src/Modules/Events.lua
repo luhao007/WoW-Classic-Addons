@@ -415,13 +415,35 @@ if PlayerGetTimerunningSeasonID and IsTimerunningActive then
 	local TimerunningEventIDs = {}
 	local TimerunningSeasonEventID
 	local ThingKeys
+	local function CheckNestedTimerunning(group)
+		if group.e == TimerunningSeasonEventID then
+			return true
+		end
+
+		local nestedTimerunning = group.nestedTimerunning
+		if nestedTimerunning ~= nil then
+			return nestedTimerunning
+		end
+
+		local g = group.g
+		if not g then return end
+
+		local o
+		for i=1,#g do
+			o = g[i]
+			if CheckNestedTimerunning(o) then
+				group.nestedTimerunning = true
+				return true
+			end
+		end
+		group.nestedTimerunning = false
+	end
 	local function OnlyTimerunning(group)
 		-- app.PrintDebug("F:TR",group.e,TimerunningSeasonEventID,group.__type,ThingKeys[group.key],group.e == TimerunningSeasonEventID)
 		if not ThingKeys[group.key] then return true end
-		-- don't filter any container groups in case they are NOT part of Timerunning but contain Timerunning Things
-		-- TODO: this isn't quite right still
-		if group.g then return true end
-		return group.e == TimerunningSeasonEventID
+
+		-- Things which are NOT Timerunning need to recusrively see if they should be included due to nested Timerunning Things
+		return CheckNestedTimerunning(group)
 	end
 	local function NotTimerunning(group)
 		local e = group.e

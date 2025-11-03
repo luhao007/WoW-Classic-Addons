@@ -346,10 +346,10 @@ local function SwitchAchievementTabs()
     addon.Options.db.profile.Tabs["Blizzard_AchievementUI"]["Achievements"].Order = addonAchId;
     addon.Options.db.profile.Tabs[addonName]["Achievements"].Order = blizzAchId;
     addon.Options.db.profile.MicroButtonTab = addonAchId;
-    local binding = GetBindingByKey("Y")
+    local binding = GetBindingByKey("Y");
     if binding == KrowiAF_SavedData.Tabs[blizzAchId].BindingName then
-        SetBinding("Y", KrowiAF_SavedData.Tabs[addonAchId].BindingName)
-        SaveBindings(GetCurrentBindingSet())
+        SetBinding("Y", KrowiAF_SavedData.Tabs[addonAchId].BindingName);
+        SaveBindings(GetCurrentBindingSet());
     end
 end
 

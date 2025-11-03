@@ -2,8 +2,8 @@
 local appName, app = ...;
 local L = app.L
 
-local wipe,ipairs,pairs,math,pcall,type,rawget,tostring,select,tremove,CreateFrame,GetCursorPosition,SetPortraitTexture,math_floor
-	= wipe,ipairs,pairs,math,pcall,type,rawget,tostring,select,tremove,CreateFrame,GetCursorPosition,SetPortraitTexture,math.floor
+local wipe,pairs,math,pcall,type,rawget,tostring,select,tremove,CreateFrame,GetCursorPosition,SetPortraitTexture,math_floor
+	= wipe,pairs,math,pcall,type,rawget,tostring,select,tremove,CreateFrame,GetCursorPosition,SetPortraitTexture,math.floor
 
 ---@class ATTGameTooltip: GameTooltip
 local GameTooltip = GameTooltip
@@ -80,7 +80,8 @@ local function SkipAutoExpand(group)
 end
 local function ExpandGroupsRecursively(group, expanded, manual)
 	-- expand if there is any sub-group
-	if group.g then
+	local g = group.g
+	if g then
 		-- app.PrintDebug("EGR",group.hash,expanded,manual);
 		-- if manually expanding
 		if (manual or (
@@ -93,8 +94,8 @@ local function ExpandGroupsRecursively(group, expanded, manual)
 			) then
 			-- app.PrintDebug("EGR:expand");
 			group.expanded = expanded;
-			for _,subgroup in ipairs(group.g) do
-				ExpandGroupsRecursively(subgroup, expanded, manual);
+			for i=1,#g do
+				ExpandGroupsRecursively(g[i], expanded, manual);
 			end
 		end
 	end
@@ -109,8 +110,8 @@ local function ProcessGroup(data, object)
 		-- Delayed sort operation for this group prior to being shown
 		local sortType = object.SortType;
 		if sortType then SortGroup(object, sortType); end
-		for _,group in ipairs(g) do
-			ProcessGroup(data, group);
+		for i=1,#g do
+			ProcessGroup(data, g[i]);
 		end
 	end
 end
@@ -343,16 +344,14 @@ local function GetCatalystIcon(data, iconOnly)
 	end
 end
 local function GetCostIconForRow(data, iconOnly)
-	-- cost only for filled groups, or if itself is a cost
-	-- temp, added filledCost back due to some discrepancies discovered based on Fillers not accounted for in Cost calculations
-	if data.isCost or data.filledCost or (data.progress == data.total and data.costTotal > 0) then
+	-- cost only if itself is a cost
+	if data.isCost then
 		return L[iconOnly and "COST_ICON" or "COST_TEXT"];
 	end
 end
 local function GetCostIconForTooltip(data, iconOnly)
 	-- cost only if itself is a cost
-	-- temp, added filledCost back due to some discrepancies discovered based on Fillers not accounted for in Cost calculations
-	if data.isCost or data.filledCost then
+	if data.isCost then
 		return L[iconOnly and "COST_ICON" or "COST_TEXT"];
 	end
 end
@@ -417,10 +416,9 @@ local function GetProgressTextForRow(data)
 		__Text[#__Text + 1] = stateIcon
 	end
 	-- Container
-	local total = data.total;
-	local isContainer = total and (total > 1 or (total > 0 and not data.collectible));
+	local isContainer = data.isContainer
 	if isContainer then
-		__Text[#__Text + 1] = GetProgressColorText(data.progress or 0, total)
+		__Text[#__Text + 1] = GetProgressColorText(data.progress or 0, data.total)
 	end
 	-- Non-collectible/total Container (only contains visible, non-collectibles...)
 	local g = data.g;
@@ -484,10 +482,9 @@ local function GetProgressTextForTooltip(data)
 		end
 	end
 	-- Container
-	local total = data.total;
-	local isContainer = total and (total > 1 or (total > 0 and not data.collectible));
+	local isContainer = data.isContainer
 	if isContainer then
-		__Text[#__Text + 1] = GetProgressColorText(data.progress or 0, total)
+		__Text[#__Text + 1] = GetProgressColorText(data.progress or 0, data.total)
 	end
 
 	-- Trackable (Only if no other text available)
@@ -980,9 +977,10 @@ local function AddEventHandler(self, event, handler)
 end
 -- allows a window to remove all event handlers it created
 local function RemoveEventHandlers(self)
-	if self.Handlers then
-		for _,handler in ipairs(self.Handlers) do
-			app.RemoveEventHandler(handler)
+	local handlers = self.Handlers
+	if handlers then
+		for i=1,#handlers do
+			app.RemoveEventHandler(handlers[i])
 		end
 	end
 end
@@ -1374,7 +1372,7 @@ function app:CreateMiniListForGroup(group, forceFresh)
 				-- app.PrintDebug("Expire Refreshed",popout.Suffix)
 			end
 			-- Add Timerunning filter to the popout
-			popout.Filters = app.Settings:GetTooltipSetting("Filter:MiniList:Timerunning") and { Timerunning = true } or nil
+			popout.Filters = not popout.isQuestChain and app.Settings:GetTooltipSetting("Filter:MiniList:Timerunning") and { Timerunning = true } or nil
 			self:BaseUpdate(force or got, got);
 		end
 
@@ -1456,37 +1454,41 @@ else
 end
 -- Adds ATT information about the list of Quests into the provided tooltip
 local function AddQuestInfoToTooltip(info, quests, reference)
-	if quests then
-		local text, mapID;
-		for _,q in ipairs(quests) do
-			text = q.text;
-			if not text then
-				text = RETRIEVING_DATA;
-				reference.working = true;
-			end
-			text = app.GetCompletionIcon(q.saved) .. " [" .. q.questID .. "] " .. text;
-			mapID = q.mapID
-				or (q.maps and q.maps[1])
-				or (q.coord and q.coord[3])
-				or (q.coords and q.coords[1] and q.coords[1][3]);
-			if mapID then
-				text = text .. " (" .. app.GetMapName(mapID) .. ")";
-			end
-			info[#info + 1] = {
-				left = text
-			}
+	if not quests then return end
+
+	local text, mapID, q
+	for i=1,#quests do
+		q = quests[i]
+		text = q.text;
+		if IsRetrieving(text) then
+			text = RETRIEVING_DATA;
+			reference.working = true;
 		end
+		text = app.GetCompletionIcon(q.saved) .. " [" .. q.questID .. "] " .. text;
+		mapID = q.mapID
+			or (q.maps and q.maps[1])
+			or (q.coord and q.coord[3])
+			or (q.coords and q.coords[1] and q.coords[1][3]);
+		if mapID then
+			text = text .. " (" .. app.GetMapName(mapID) .. ")";
+		end
+		info[#info + 1] = {
+			left = text
+		}
 	end
 end
 
 -- Returns true if any subgroup of the provided group is currently expanded, otherwise nil
 local function HasExpandedSubgroup(group)
-	if group and group.g then
-		for _,subgroup in ipairs(group.g) do
-			-- dont need recursion since a group has to be expanded for a subgroup to be visible within it
-			if subgroup.expanded then
-				return true;
-			end
+	if not group then return end
+
+	local g = group.g
+	if not g then return end
+
+	for i=1,#g do
+		-- dont need recursion since a group has to be expanded for a subgroup to be visible within it
+		if g[i].expanded then
+			return true;
 		end
 	end
 end
@@ -1545,8 +1547,9 @@ app.AddEventHandler("RowOnClick", function(self, button)
 					if count > 0 then
 						if isTSMOpen then
 							-- This is the new, unusable POS API that I don't understand. lol
-							local dict, path, itemString = {}, nil, nil;
-							for i,group in ipairs(missingItems) do
+							local dict, path, itemString, group = {}, nil, nil, nil
+							for i=1,#missingItems do
+								group = missingItems[i]
 								path = app.GenerateSourcePathForTSM(group, 0);
 								if path then
 									itemString = dict[path];
@@ -1570,9 +1573,9 @@ app.AddEventHandler("RowOnClick", function(self, button)
 							return true;
 						elseif Auctionator and Auctionator.API and (AuctionatorShoppingFrame and (AuctionatorShoppingFrame:IsVisible() or count > 1)) then
 							-- Auctionator needs unique Item Names. Nothing else.
-							local uniqueNames = {};
-							for i,group in ipairs(missingItems) do
-								local name = group.name;
+							local uniqueNames = {}
+							for i=1,#missingItems do
+								local name = missingItems[i].name;
 								if name then uniqueNames[name] = 1; end
 							end
 
@@ -1585,8 +1588,9 @@ app.AddEventHandler("RowOnClick", function(self, button)
 							return;
 						elseif TSMAPI and TSMAPI.Auction then
 							-- This was the old, better, TSM API that made sense.
-							local itemList, search = {}, nil;
-							for i,group in ipairs(missingItems) do
+							local itemList, search, group = {}, nil, nil
+							for i=1,#missingItems do
+								group = missingItems[i]
 								search = group.tsm or TSMAPI.Item:ToItemString(group.link or group.itemID);
 								if search then itemList[search] = app.GenerateSourcePathForTSM(group, 0); end
 							end
@@ -1703,7 +1707,7 @@ app.AddEventHandler("RowOnEnter", function(self)
 		window.HightlightDatas[reference] = nil
 		self:SetHighlightLocked(false)
 	end
-	reference.working = nil;
+	local working
 	local tooltip = GameTooltip;
 	if not tooltip then return end;
 	local modifier = IsModifierKeyDown();
@@ -1722,7 +1726,7 @@ app.AddEventHandler("RowOnEnter", function(self)
 		tooltip.ATT_IsRefreshing = true;
 		tooltip:ClearATTReferenceTexture();
 	end
-	-- app.PrintDebug("RowOnEnter", "Rebuilding...");
+	-- app.PrintDebug("RowOnEnter Rebuilding...", tooltip.ATT_IsModifierKeyDown, tooltip.ATT_IsRefreshing, tooltip.ATT_AttachComplete);
 
 	-- Always display tooltip data when viewing information from our windows.
 	local wereTooltipIntegrationsDisabled = not app.Settings:GetTooltipSetting("Enabled");
@@ -1731,6 +1735,7 @@ app.AddEventHandler("RowOnEnter", function(self)
 	-- Build tooltip information.
 	local tooltipInfo = {};
 	tooltip:ClearLines();
+	tooltip.ATT_AttachComplete = nil
 	app.ActiveRowReference = reference;
 	local owner;
 	if self:GetCenter() > (UIParent:GetWidth() / 2) and (not AuctionFrame or not AuctionFrame:IsVisible()) then
@@ -1741,14 +1746,14 @@ app.AddEventHandler("RowOnEnter", function(self)
 	tooltip:SetOwner(self, owner);
 
 	-- Attempt to show the object as a hyperlink in the tooltip
-	local linkSuccessful;
+	local linkSuccessful
+	local link = reference.link or reference.tooltipLink or reference.silentLink
 	local refkey = reference.key
 	-- Items always use their links
 	if reference.itemID
 		-- Quest links are ignored if 'Objectives' is enabled
 		or (refkey ~= (app.Settings:GetTooltipSetting("Objectives") and "questID" or "_Z_"))
 	then
-		local link = reference.link or reference.tooltipLink or reference.silentLink
 		if link and link:sub(1, 1) ~= "[" then
 			-- app.PrintDebug("SetHyperlink!", link);
 			local ok, result = pcall(tooltip.SetHyperlink, tooltip, link);
@@ -1768,6 +1773,21 @@ app.AddEventHandler("RowOnEnter", function(self)
 		if (not linkSuccessful or tooltip.ATT_AttachComplete == nil) and reference.currencyID then
 			---@diagnostic disable-next-line: redundant-parameter
 			tooltip:SetCurrencyByID(reference.currencyID, 1);
+		end
+	end
+
+	-- if nothing was rendered into tooltip using an actual link, then use the search result logic to replace our reference
+	-- after capturing relative field values
+	if not linkSuccessful and link then
+		local searchreference = app.GetCachedSearchResults(app.SearchForLink, link)
+		if searchreference then
+			local parent = rawget(reference, "parent")
+			local sourceParent = rawget(reference, "sourceParent")
+			reference = searchreference
+			reference.parent = parent
+			reference.sourceParent = sourceParent
+			app.ActiveRowReference = reference;
+			-- app.PrintDebug("Used search due to no link rendering",reference.working)
 		end
 	end
 
@@ -1851,7 +1871,9 @@ app.AddEventHandler("RowOnEnter", function(self)
 				local encounterCache = SearchForField("encounterID", encounterID);
 				if #encounterCache > 0 then
 					local itemList = {};
-					for i,encounter in ipairs(encounterCache) do
+					local encounter
+					for i=1,#encounterCache do
+						encounter = encounterCache[i]
 						if encounter.g and GetRelativeValue(encounter.parent, "difficultyID") == difficultyID then
 							app.SearchForRelativeItems(encounter, itemList);
 						end
@@ -1864,10 +1886,12 @@ app.AddEventHandler("RowOnEnter", function(self)
 						end
 					end
 					local specHits = {};
-					for _,item in ipairs(itemList) do
-						local specs = item.specs;
+					for i=1,#itemList do
+						local specs = itemList[i].specs;
 						if specs then
-							for j,spec in ipairs(specs) do
+							local spec
+							for i=1,#specs do
+								spec = specs[i]
 								specHits[spec] = (specHits[spec] or 0) + 1;
 							end
 						end
@@ -1896,7 +1920,9 @@ app.AddEventHandler("RowOnEnter", function(self)
 					if specs and #specs > 0 then
 						-- Available for one or more loot specialization.
 						local least, bestSpecs = 999, {};
-						for _,spec in ipairs(specs) do
+						local spec
+						for i=1,#specs do
+							spec = specs[i]
 							local specHit = specHits[spec] or 0;
 							-- For Personal Loot!
 							if specHit > 0 and specHit <= least then
@@ -1958,10 +1984,12 @@ app.AddEventHandler("RowOnEnter", function(self)
 
 	-- Show info about if this Thing cannot be collected due to a custom collectibility
 	-- restriction on the Thing which this character does not meet
-	if reference.customCollect then
-		local customCollectEx;
+	local customCollect = reference.customCollect
+	if customCollect then
+		local customCollectEx, c
 		local requires = L.REQUIRES;
-		for i,c in ipairs(reference.customCollect) do
+		for i=1,#customCollect do
+			c = customCollect[i]
 			customCollectEx = L.CUSTOM_COLLECTS_REASONS[c];
 			local icon_color_str = customCollectEx.icon.." |c"..customCollectEx.color..(customCollectEx.text or "[MISSING_LOCALE_KEY]");
 			if not app.CurrentCharacter.CustomCollects[c] then
@@ -1980,14 +2008,18 @@ app.AddEventHandler("RowOnEnter", function(self)
 
 	-- Show Quest Prereqs
 	local isDebugMode, sqs, bestMatch = app.MODE_DEBUG, nil, nil;
-	if reference.sourceQuests and (not reference.saved or isDebugMode) then
+	local sourceQuests = reference.sourceQuests
+	if sourceQuests and (not reference.saved or isDebugMode) then
 		local prereqs, bc = {}, {};
-		for i,sourceQuestID in ipairs(reference.sourceQuests) do
+		local sourceQuestID, sq
+		for i=1,#sourceQuests do
+			sourceQuestID = sourceQuests[i]
 			if sourceQuestID > 0 and (isDebugMode or not IsQuestFlaggedCompleted(sourceQuestID)) then
 				sqs = SearchForField("questID", sourceQuestID);
 				if #sqs > 0 then
 					bestMatch = nil;
-					for j,sq in ipairs(sqs) do
+					for j=1,#sqs do
+						sq = sqs[j]
 						if sq.questID == sourceQuestID then
 							if isDebugMode or (not IsQuestFlaggedCompleted(sourceQuestID) and app.GroupFilter(sq)) then
 								if sq.sourceQuests then
@@ -2033,10 +2065,13 @@ app.AddEventHandler("RowOnEnter", function(self)
 			left = L.THIS_IS_BREADCRUMB,
 			color = app.Colors.Breadcrumb,
 		}
-		if reference.nextQuests then
+		local nextQuests = reference.nextQuests
+		if nextQuests then
 			local isBreadcrumbAvailable = true;
 			local nextq, nq = {}, nil;
-			for _,nextQuestID in ipairs(reference.nextQuests) do
+			local nextQuestID
+			for i=1,#nextQuests do
+				nextQuestID = nextQuests[i]
 				if nextQuestID > 0 then
 					nq = SearchForObject("questID", nextQuestID, "field");
 					-- existing quest group
@@ -2099,8 +2134,8 @@ app.AddEventHandler("RowOnEnter", function(self)
 				local label = critFuncs["label_"..critKey];
 				local text = tostring(critFuncs["text_"..critKey](critValue))
 				-- TODO: probably a more general way to check this on lines that can be retrieving
-				if not reference.working and IsRetrieving(text) then
-					reference.working = true
+				if not working and IsRetrieving(text) then
+					working = true
 				end
 				tooltipInfo[#tooltipInfo + 1] = {
 					left = app.GetCompletionIcon(critFunc(critValue)).." "..label..": "..text,
@@ -2270,7 +2305,10 @@ app.AddEventHandler("RowOnEnter", function(self)
 	app.ActiveRowReference = nil;
 
 	-- Tooltip for something which was not attached via search, so mark it as complete here
-	tooltip.ATT_AttachComplete = not reference.working;
+	working = working or reference.working
+	-- don't capture working in the reference itself
+	reference.working = nil
+	tooltip.ATT_AttachComplete = not working
 end)
 
 -- TODO: move to Minilist window UI file once split

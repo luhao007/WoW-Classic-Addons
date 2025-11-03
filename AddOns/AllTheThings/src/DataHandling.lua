@@ -179,7 +179,7 @@ end
 local function UpdateGroup(group, parent)
 	group.visible = nil
 
-	-- local debug = group.currencyID == 1220
+	-- local debug = group.itemID == 202183
 	-- if debug then app.PrintDebug("UG",group.hash,parent and parent.hash) end
 
 	-- Determine if this user can enter the instance or acquire the item and item is equippable/usable
@@ -187,9 +187,7 @@ local function UpdateGroup(group, parent)
 	-- be shown anyway, so don't need to undergo a filtering pass
 	local isCost = group.isCost
 	local valid = isCost or group.forceShow or group.wasFilled
-	-- if valid then
-	-- 	if debug then app.PrintDebug("Pre-valid group as from cost/forceShow/wasFilled/upgrade",group.isCost,group.forceShow,group.wasFilled,group.isUpgrade,app:SearchLink(group)) end
-	-- end
+	-- if valid and debug then app.PrintDebug("Pre-valid group as from cost/forceShow/wasFilled/upgrade",group.isCost,group.forceShow,group.wasFilled,group.isUpgrade,app:SearchLink(group)) end
 	-- A group with a source parent means it has a different 'real' heirarchy than in the current window
 	-- so need to verify filtering based on that instead of only itself
 	if not valid then
@@ -208,7 +206,7 @@ local function UpdateGroup(group, parent)
 		local customProgress = customTotal > 0 and group.customProgress or 0
 		local total, progress = customTotal, customProgress
 
-		-- if debug then print("UG.Init","custom",customProgress,customTotal,"=>",progress,total) end
+		-- if debug then app.PrintDebug("UG.Init","custom",customProgress,customTotal,"=>",progress,total) end
 
 		-- If this item is collectible, then mark it as such.
 		if group.collectible then
@@ -228,7 +226,7 @@ local function UpdateGroup(group, parent)
 		-- Check if this is a group
 		local g = group.g
 		if g then
-			-- if debug then print("UpdateGroup.g",group.progress,group.total,group.__type) end
+			-- if debug then app.PrintDebug("UpdateGroup.g",group.progress,group.total,group.__type) end
 
 			-- skip Character filtering for sub-groups if this Item meets the Ignore BoE filter logic, since it can be moved to the designated character
 			-- local ItemBindFilter, NoFilter = app.ItemBindFilter, app.NoFilter
@@ -249,7 +247,7 @@ local function UpdateGroup(group, parent)
 				UpdateGroups(group, g)
 			end
 
-			-- app.PrintDebug("UpdateGroup.g.Updated",group.progress,group.total,group.__type)
+			-- if debug then app.PrintDebug("UpdateGroup.g.Updated",group.progress,group.total,group.__type) end
 			SetGroupVisibility(parent, group)
 		else
 			SetThingVisibility(parent, group)
@@ -266,7 +264,7 @@ local function UpdateGroup(group, parent)
 		end
 	end
 
-	-- if debug then print("UpdateGroup.Done",group.progress,group.total,group.visible,group.__type) end
+	-- if debug then app.PrintDebug("UpdateGroup.Done",group.progress,group.total,group.visible,group.__type) end
 	-- debug = nil
 	-- return group.visible
 end

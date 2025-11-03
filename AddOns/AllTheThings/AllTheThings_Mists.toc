@@ -1,6 +1,6 @@
 ## Interface: 50502
 ## Author: Crieve
-## Version: 4.7.5
+## Version: 4.7.7
 
 ## Title: AllTheThings |cfd9b9b9b(Mists)|r
 ## Title-zhCN: |cFFFFE00A<|r|cFFA9D271收藏|r|cFFFFE00A>|r|cFFFFFFFF收集控助手|r |cFFFFE00AAllTheThings|r
@@ -17,14 +17,11 @@
 ## SavedVariables: ATTCharacterData, ATTAccountWideData, AllTheThingsSavedVariables, AllTheThingsSettings, AllTheThingsAD, AllTheThingsProfiles, AllTheThingsAuctionData, AllTheThingsDebugData, AllTheThingsHarvestItems
 ## SavedVariablesPerCharacter: AllTheThingsSettingsPerCharacter
 
-## X-Interface: 50501, 50502
+## X-Interface: 50502, 50503
 ## X-Wago-ID: yQKyY5K7
 ## X-Curse-Project-ID: 267285
 
 #src\PerformanceTracking.lua
-lib\LibStub\LibStub.lua
-lib\CallbackHandler-1.0\CallbackHandler-1.0.lua
-lib\LibDataBroker-1.1\LibDataBroker-1.1.lua
 src\WoW API Wrappers.lua
 
 # Raw DBs

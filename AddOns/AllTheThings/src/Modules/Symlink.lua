@@ -19,7 +19,7 @@ local api = {};
 app.Modules.Symlink = api;
 
 -- Module locals
-local ResolveSymbolicLink, FinalizeModID, PruneFinalized, FillFinalized, SelectMod, CreateObject, NestObject, NestObjects, CleanInheritingGroups, MergeProperties, ExpandGroupsRecursively, MergeObjects, PriorityNestObjects, GetGroupItemIDWithModID, GetItemIDAndModID, FillGroups, NPCExpandHeaders
+local ResolveSymbolicLink, FinalizeModID, PruneFinalized, FillFinalized, SelectMod, CreateObject, NestObject, NestObjects, MergeProperties, ExpandGroupsRecursively, MergeObjects, PriorityNestObjects, GetGroupItemIDWithModID, GetItemIDAndModID, FillGroups, NPCExpandHeaders
 
 app.AddEventHandler("OnLoad", function()
 	CreateObject = app.__CreateObject
@@ -42,10 +42,6 @@ app.AddEventHandler("OnLoad", function()
 	PriorityNestObjects = app.PriorityNestObjects
 	if not PriorityNestObjects then
 		error("Symlink Module requires app.PriorityNestObjects definition!")
-	end
-	CleanInheritingGroups = app.CleanInheritingGroups
-	if not CleanInheritingGroups then
-		error("Symlink Module requires app.CleanInheritingGroups definition!")
 	end
 	MergeProperties = app.MergeProperties
 	if not MergeProperties then
@@ -426,7 +422,7 @@ local ResolveFunctions = {
 		local cache, value;
 		for i=1,vals do
 			value = select(i, ...);
-			cache = CleanInheritingGroups(Search("achievementID", value, "key", true), "sourceIgnored")
+			cache = Search("achievementID", value, "key", true)
 			local mergeAch = cache[1]
 			-- multiple achievements match the selection, make sure to merge them together so we don't lose fields
 			-- that only exist in the original Source (Achievements source prunes some data)

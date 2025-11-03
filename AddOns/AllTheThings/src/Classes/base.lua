@@ -173,6 +173,16 @@ local DefaultFields = {
     ["upgradeTotal"] = returnZero,
 	["progress"] = returnZero,
     ["total"] = returnZero,
+	["isContainer"] = function(t)
+		local total = t.total
+		return total and (total > 1 or (total > 0 and not t.collectible))
+	end,
+	-- some calculated properties can let fall-through to the merge source of a group instead of needing to re-calculate in every copy
+	isCost = function(t)
+		local merge = t.__merge
+		if not merge then return end
+		return merge.isCost
+	end,
 	["nmc"] = function(t)
 		local c = t.c;
 		local nmc = c and not containsValue(c, app.ClassIndex) or false;

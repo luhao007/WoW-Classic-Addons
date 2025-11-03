@@ -1679,7 +1679,6 @@ _.Modules.Events.SetEventInformation(242, {
 	_.Modules.Events.CreateSchedule({["hour"]=10,["minute"]=0,["month"]=11,["monthDay"]=16,["weekday"]=2,["year"]=2026},{["hour"]=10,["minute"]=0,["month"]=12,["monthDay"]=7,["weekday"]=2,["year"]=2026})
 });
 _.Modules.Events.SetEventInformation(133900, {
-	_.Modules.Events.CreateSchedule({["hour"]=21,["month"]=10,["monthDay"]=26,["weekday"]=1,["year"]=2025},{["hour"]=23,["month"]=10,["monthDay"]=26,["weekday"]=1,["year"]=2025}),
 	_.Modules.Events.CreateSchedule({["hour"]=21,["month"]=11,["monthDay"]=2,["weekday"]=1,["year"]=2025},{["hour"]=23,["month"]=11,["monthDay"]=2,["weekday"]=1,["year"]=2025}),
 	_.Modules.Events.CreateSchedule({["hour"]=21,["month"]=11,["monthDay"]=9,["weekday"]=1,["year"]=2025},{["hour"]=23,["month"]=11,["monthDay"]=9,["weekday"]=1,["year"]=2025}),
 	_.Modules.Events.CreateSchedule({["hour"]=21,["month"]=11,["monthDay"]=16,["weekday"]=1,["year"]=2025},{["hour"]=23,["month"]=11,["monthDay"]=16,["weekday"]=1,["year"]=2025}),
@@ -1731,7 +1730,8 @@ _.Modules.Events.SetEventInformation(133900, {
 	_.Modules.Events.CreateSchedule({["hour"]=21,["month"]=10,["monthDay"]=4,["weekday"]=1,["year"]=2026},{["hour"]=23,["month"]=10,["monthDay"]=4,["weekday"]=1,["year"]=2026}),
 	_.Modules.Events.CreateSchedule({["hour"]=21,["month"]=10,["monthDay"]=11,["weekday"]=1,["year"]=2026},{["hour"]=23,["month"]=10,["monthDay"]=11,["weekday"]=1,["year"]=2026}),
 	_.Modules.Events.CreateSchedule({["hour"]=21,["month"]=10,["monthDay"]=18,["weekday"]=1,["year"]=2026},{["hour"]=23,["month"]=10,["monthDay"]=18,["weekday"]=1,["year"]=2026}),
-	_.Modules.Events.CreateSchedule({["hour"]=21,["month"]=10,["monthDay"]=25,["weekday"]=1,["year"]=2026},{["hour"]=23,["month"]=10,["monthDay"]=25,["weekday"]=1,["year"]=2026})
+	_.Modules.Events.CreateSchedule({["hour"]=21,["month"]=10,["monthDay"]=25,["weekday"]=1,["year"]=2026},{["hour"]=23,["month"]=10,["monthDay"]=25,["weekday"]=1,["year"]=2026}),
+	_.Modules.Events.CreateSchedule({["hour"]=21,["month"]=11,["monthDay"]=1,["weekday"]=1,["year"]=2026},{["hour"]=23,["month"]=11,["monthDay"]=1,["weekday"]=1,["year"]=2026})
 });
 _.Modules.Events.SetEventInformation(133899, {
 	_.Modules.Events.CreateSchedule({["hour"]=0,["minute"]=0,["month"]=9,["monthDay"]=23,["weekday"]=2,["year"]=2024},{["hour"]=23,["minute"]=59,["month"]=3,["monthDay"]=19,["weekday"]=4,["year"]=2025}),
@@ -9854,6 +9854,7 @@ localize(L.HEADER_NAMES, {
 	[-648] = "Erinnerung an Scholomance",
 	[-654] = "Abbauen",
 	[-655] = "Himmlischen Dungeons",
+	[-656] = "Kampfgilde",
 	[-659] = "Zwielicht-Assistent",
 	[-660] = "Zwielicht-Duo",
 	[-661] = "Zwielichtzone",
@@ -12441,6 +12442,7 @@ for i,objectID in ipairs(CANDY_BUCKETS) do ObjectNames[objectID] = "Eimer mit S�
 for i,objectID in ipairs(HORDE_BONFIRES) do ObjectNames[objectID] = "Freudenfeuer der Horde"; end
 for key,value in pairs({
 	[3] = "Battle.net-Guthaben",
+	[7] = "Handelsposten",
 })
 do phases[key].name = value; end
 for key,value in pairs({
@@ -12885,6 +12887,7 @@ localize(L.HEADER_NAMES, {
 	[-648] = "Souvenir de Scholomance",
 	[-654] = "Récolte",
 	[-655] = "Donjons astraux",
+	[-656] = "Les Bastonneurs",
 	[-659] = "Aide Crépusculaire",
 	[-660] = "Duo Crépusculaire",
 	[-661] = "Chroniques des Crépusculaires",
@@ -15480,6 +15483,7 @@ for i,objectID in ipairs(CANDY_BUCKETS) do ObjectNames[objectID] = "Seau de bonb
 for i,objectID in ipairs(HORDE_BONFIRES) do ObjectNames[objectID] = "Feu de joie de la Horde"; end
 for key,value in pairs({
 	[3] = "Porte-monnaie Battle.net",
+	[7] = "Comptoir",
 })
 do phases[key].name = value; end
 for key,value in pairs({
@@ -15592,6 +15596,7 @@ localize(L.HEADER_NAMES, {
 	[-591] = "Festa del Nomade",
 	[-648] = "Ricordo di Scholomance",
 	[-654] = "Raccolta",
+	[-656] = "Circolo dei Combattenti",
 	[-659] = "Assist Crepuscolare",
 	[-660] = "Doppietta Crepuscolare",
 	[-661] = "Zona del Crepuscolo",
@@ -17759,6 +17764,7 @@ for i,objectID in ipairs(CANDY_BUCKETS) do ObjectNames[objectID] = "Secchio dell
 for i,objectID in ipairs(HORDE_BONFIRES) do ObjectNames[objectID] = "Falò dell'Orda"; end
 for key,value in pairs({
 	[3] = "Saldo Battle.net",
+	[7] = "Emporio",
 })
 do phases[key].name = value; end
 for key,value in pairs({
@@ -17940,6 +17946,7 @@ localize(L.HEADER_NAMES, {
 	[-648] = "Lembrança de Scolomântia",
 	[-654] = "Colhendo",
 	[-655] = "Masmorras Celestiais",
+	[-656] = "Guilda dos Brigões",
 	[-659] = "Assistente do Crepúsculo",
 	[-660] = "Dupla do Crepúsculo",
 	[-661] = "Além da Imaginação",
@@ -20428,6 +20435,7 @@ for i,objectID in ipairs(CANDY_BUCKETS) do ObjectNames[objectID] = "Balde de Bal
 for i,objectID in ipairs(HORDE_BONFIRES) do ObjectNames[objectID] = "Fogueira da Horda"; end
 for key,value in pairs({
 	[3] = "Saldo Battle.net",
+	[7] = "Posto Comercial",
 })
 do phases[key].name = value; end
 for key,value in pairs({
@@ -21231,6 +21239,7 @@ localize(L.HEADER_NAMES, {
 	[-592] = "Годовщина WoW",
 	[-648] = "Воспоминание о Некроситете",
 	[-654] = "Сбор",
+	[-656] = "Бойцовская гильдия",
 	[-659] = "Сумеречные помощники",
 	[-660] = "Сумеречный дуэт",
 	[-661] = "Зона сумерек",
@@ -23845,6 +23854,7 @@ for key,value in pairs({
 	[4] = "ПвП Элита / Гладиатор",
 	[5] = "Неизучаемые",
 	[6] = "Требуются предметы для призыва",
+	[7] = "Торговая лавка",
 })
 do phases[key].name = value; end
 for key,value in pairs({
@@ -24012,6 +24022,7 @@ localize(L.HEADER_NAMES, {
 	[-591] = "유랑객의 축제",
 	[-648] = "스칼로맨스의 기억",
 	[-654] = "채취",
+	[-656] = "싸움꾼 조합",
 	[-659] = "황혼의 지원",
 	[-660] = "황혼의 2인조",
 	[-661] = "황혼 지대",
@@ -26489,6 +26500,7 @@ for i,objectID in ipairs(CANDY_BUCKETS) do ObjectNames[objectID] = "사탕 바�
 for i,objectID in ipairs(HORDE_BONFIRES) do ObjectNames[objectID] = "호드 화톳불"; end
 for key,value in pairs({
 	[3] = "배틀코인",
+	[7] = "교역소",
 })
 do phases[key].name = value; end
 for key,value in pairs({
@@ -27493,6 +27505,7 @@ localize(L.HEADER_NAMES, {
 	[-652] = "Incursiones zandalari",
 	[-654] = "Cosecha",
 	[-655] = "Mazmorras celestiales",
+	[-656] = "Hermandad de camorristas",
 	[-659] = "Ayuda Crepuscular",
 	[-660] = "Dúo Crepuscular",
 	[-661] = "Dimensión Desconocida",
@@ -30518,6 +30531,7 @@ localize(L.HEADER_NAMES, {
 	[-591] = "Festival del errante",
 	[-654] = "Cosechando",
 	[-655] = "Calabozos celestiales",
+	[-656] = "Gremio de luchadores",
 });
 localize(L.HEADER_DESCRIPTIONS, {
 	[-44] = "Esta sección solo mostrará las profesiones de tu personaje actual fuera del modo Cuenta y Debug.",
@@ -30806,10 +30820,15 @@ L.FACTION_MODE_TOOLTIP = "如果你想只看到你当前阵营的种族和职业
 L.FACTION_SPECIFIC_REP = "并非所有声望都可以在单个角色上查看。例：联盟玩家无法看到战歌骑手，部落玩家无法查看银翼哨兵。";
 L.FACTIONS = "阵营";
 L.FAILED_ITEM_INFO = "未能获得物品信息。该物品可能是无效的或者可能还没有被缓存在你的服务器上。";
+L.FILL_CATALYST_DATA_CHECKBOX_TOOLTIP = "将当前物品可能且通过 ATT 判定的化生 |T" .. _.asset("Interface_Catalyst") .. ":0|t 结果填入。\n\n注意：此填充器不适用于 ATT 迷你列表。";
+L.FILL_COST_DATA_CHECKBOX_TOOLTIP = "将可用指定消耗 |T".._.asset("Currency")..":0|t 购买的所有物品填入。\n\n注意：“购买”在此为广义概念，本质上指需要消耗/使用/扣除该“成本”才能获取的物品。";
 L.FILL_DYNAMIC_QUESTS_CHECKBOX = "显示可回收成本组";
 L.FILL_DYNAMIC_QUESTS_CHECKBOX_TOOLTIP = "如果您想让用于购买收藏品的物品/货币被视为收藏品并显示在动态填充的任务下，请启用此选项。 ";
 L.FILL_NPC_DATA_CHECKBOX = "显示嵌套 NPC 数据";
 L.FILL_NPC_DATA_CHECKBOX_TOOLTIP = "如果希望在迷你列表中显示时将所有相关数据嵌套到给定的 NPC（常见首领掉落、掉落等），请启用此选项。此选项可能会导致大量重复，但其想法是该 NPC 将在迷你列表中保持可见，就好像需要特定于该 NPC 的内容一样。\n\n默认：关闭";
+L.FILL_OBJECT_DATA_CHECKBOX_TOOLTIP = "填入由源对象提供的通用数据（例如采矿/采药/钓鱼点）。";
+L.FILL_SYMLINK_DATA_CHECKBOX_TOOLTIP = "填入在额外来源中具有替代性及显著获取途径的内容。\n此功能主要用于：当某项内容在主列表中可能被归类至通用“奖励”（或类似）分组下时，若在迷你列表或悬浮提示中显示，则能更清晰地展示其具体来源（多个供应商等）。\n\n注意：存在符号链接的悬浮提示将显示以下文本：\n%s";
+L.FILL_UPGRADE_DATA_CHECKBOX_TOOLTIP = "填入适用于指定物品的所有升级选项 |T".._.asset("Interface_Upgrade")..":0|t。n\n在 ATT 列表中，这通常显示物品在默认来源状态下可用的升级；而在悬浮提示中，它基于显示的原始物品数据。";
 L.FILLERS_EXPLANATION = "|cffFFFFFF填充项是一种机制，通过它可以在各种界面元素中的其他 ATT 内容内或下方“填充”额外数据，以展示某个事物的进一步用途或作用。例如，显示某个物品可购买的结果就是由“填充项”提供的。\n此标签页允许你修改在 ATT 中将启用哪些填充项。|r";
 L.FILLERS_LABEL = "填充项";
 L.FILTER_ID = "滤镜 ID";
@@ -30992,6 +31011,7 @@ L.NOT_DISPLAY_IN_COMBAT_NPCS_CHECKBOX = "排除 NPC";
 L.NOT_DISPLAY_IN_COMBAT_NPCS_CHECKBOX_TOOLTIP = "启用此选项可在战斗中忽略显示 NPC 的提示。";
 L.NOT_TRADEABLE = "不可交易";
 L.NOTHING_TO_SELECT_FROM = "没有什么可以随意选择的。如果在“设置”中启用了“临时更新”，则必须在使用此窗口之前更新主列表（/att）。";
+L.OBJECT = "物件";
 L.OBJECT_ID = "道具 ID";
 L.OBJECT_TYPE = "目标类型";
 L.OBJECTIVES = "目标";
@@ -31022,13 +31042,13 @@ L.PLAY_DEATH_SOUND_CHECKBOX = "死亡时播放音效";
 L.PLAY_DEATH_SOUND_CHECKBOX_TOOLTIP = "如果你想在死亡时听到音效，请启用此选项。";
 L.PLAYER_COORDINATES = "玩家坐标";
 L.PLAYER_RANK_AUTHOR = "|T" .. _.asset("logo_32x32") .. ":0|t |c" .. _.DefaultColors.White .. "作者|r";
-L.PLAYER_RANK_COLLECTOR = "|T" .. _.asset("logo_32x32") .. ":0|t |c" .. _.DefaultColors.White .. "集电极|r";
+L.PLAYER_RANK_COLLECTOR = "|T" .. _.asset("logo_32x32") .. ":0|t |c" .. _.DefaultColors.White .. "收藏家|r";
 L.PLAYER_RANK_CONTRIBUTOR = "|T" .. _.asset("logo_32x32") .. ":0|t |c" .. _.DefaultColors.White .. "贡献者|r";
 L.PLAYER_TITLE_BRINGER_OF_FLAMES = "|cffa335ee%s，火焰使者|r";
 L.PLAYER_TITLE_GOLD_TYCOON = "|c" .. _.DefaultColors.Raid .. "黄金大亨%s|r";
 L.PLAYER_TITLE_KING_OF_THE_ASYLUM = "|cffa335ee%s，庇护所之王|r";
-L.PLAYER_TITLE_LORD_KING = "|cffa335ee国王大人%s|r";
-L.PLAYER_TITLE_LORD_QUEEN = "|cffa335ee女王陛下%s|r";
+L.PLAYER_TITLE_LORD_KING = "|cffa335ee%s国王大人|r";
+L.PLAYER_TITLE_LORD_QUEEN = "|cffa335ee%s女王陛下|r";
 L.PLAYER_TITLE_SCARAB_LORD = "|c" .. _.DefaultColors.Raid .. "甲虫之王 %s|r";
 L.PLAYER_TITLE_THE_COMPLETIONIST = "|c" .. _.DefaultColors.Raid .. "%s 完美主义者|r";
 L.PLAYER_TITLE_THE_EXTERMINATOR = "|cffa335ee%s消灭者|r";
@@ -31170,6 +31190,7 @@ L.SHOW_ALL_SEASONAL = "所有季节性事件";
 L.SHOW_ALL_SEASONAL_TOOLTIP = "启用此设置可显示所有季节性事件，而不是仅显示当前活动的季节性事件。\n\n注意：季节性活动将提前7天自动显示为活动状态。";
 L.SHOW_BOE_CHECKBOX = "装备绑定/战团绑定物品";
 L.SHOW_BOE_CHECKBOX_TOOLTIP = "启用此选项以显示装备绑定/战团绑定物品。\n\n如果你在为某个角色刷一些经典地下城，而且不想在那些之后能用其他小号刷，或者在拍卖行获取的物品，禁用此选项会很有用。\n\n即：别在刷厄运钟摆时磨失了智。";
+L.SHOW_CHALLENGE_MASTER_CHECKBOX_TOOLTIP = "启用此设置可显示需要达成挑战模式服务器最佳成绩的内容。";
 L.SHOW_COLLECTED_THINGS_CHECKBOX = "显示已收藏事物";
 L.SHOW_COLLECTED_THINGS_CHECKBOX_TOOLTIP = "启用此选项可以看到已经收藏事物。\n\n建议关闭此设置因为它可以节省小列表中的空间并允许快速查看在该区域遗漏的内容。";
 L.SHOW_COLLECTION_PROGRESS_CHECKBOX = "收藏进度";
@@ -31387,6 +31408,7 @@ localize(L.HEADER_NAMES, {
 	[-342] = "独特外观",
 	[-343] = "赏金任务",
 	[-344] = "随机副本商人",
+	[-345] = "灵活供应商",
 	[-346] = "团队副本商人",
 	[-347] = "英雄副本商人",
 	[-349] = "船长",
@@ -31450,6 +31472,7 @@ localize(L.HEADER_NAMES, {
 	[-652] = "赞达拉入侵",
 	[-654] = "收获",
 	[-655] = "天神地下城",
+	[-656] = "搏击俱乐部",
 	[-659] = "暮光帮凶",
 	[-660] = "暮光二重奏",
 	[-661] = "暮光领域",
@@ -33708,6 +33731,7 @@ localize(ObjectNames, {
 	[307277] = "旧酒壶",
 	[307307] = "破损的桶",
 	[307330] = "船长的手提箱",
+	[100000000] = "考古学家的车",
 	[100000001] = "未点燃的火把",
 });
 for i,objectID in ipairs(ALLIANCE_BONFIRES) do ObjectNames[objectID] = "联盟篝火"; end
@@ -33720,14 +33744,17 @@ for key,value in pairs({
 	[4] = "PvP 精良/角斗士",
 	[5] = "不可学",
 	[6] = "需要召唤物品",
+	[7] = "货栈",
 })
 do phases[key].name = value; end
 for key,value in pairs({
 	[1] = "|cFFFF0000此项玩家永远无法获得。|r",
 	[2] = "|cFFFF0000此项已从游戏中删除。|r",
+	[3] = "|cFFAAFFAA该物品需要付费解锁，需使用战网余额或真实货币购买。|r",
 	[4] = "|cFFFFAAAA除非您拥有所需的 PvP 头衔、所需的 PvP 等级或处于该赛季的前 %，否则无法再购买或解锁幻化。|r",
 	[5] = "|cFFFFAAAA这不能永久收集、学习或用于幻化。|r",
 	[6] = "|cFFFFAAAA除非您认识可以使用用于召唤首领的物品的人，否则这将不再可用。|r",
+	[7] = "|cFFAAFFAA该物品可在货栈购买。|r",
 	[11] = "|cFFAAFFAA该功能直到 Phase 1 的 WoW Classic 才可用。|r",
 	[12] = "|cFFAAFFAA该功能直到 Phase 2 的 WoW Classic 才可用。|r",
 	[13] = "|cFFAAFFAA该功能直到 Phase 3 的 WoW Classic 才可用。|r",
@@ -33760,6 +33787,7 @@ for key,value in pairs({
 })
 do phases[key].description = value; end
 for key,value in pairs({
+	[3] = "|cFFFFAAAA在游戏的任何版本中，鼓励使用真实货币的行为均不受认可。参与此类内容需自行承担风险。|r",
 	[6] = "|cFFFFAAAA注意：如果过去拥有大多数召唤物品，则可以通过与相应的 NPC 交谈来重新获得它们。|r",
 })
 do phases[key].lore = value; end
@@ -34051,6 +34079,7 @@ L.LOCK_CRITERIA_QUEST_LABEL = "已完成任務";
 L.LOCK_CRITERIA_SPELL_LABEL = "已學法術/坐騎/配方";
 L.LOCKED_QUESTS = "鎖定任務";
 L.LOCKOUT = "鎖定";
+L.LOCKOUTS = "鎖定";
 L.LOOT_MODE_TOOLTIP = "啟用此選項可以顯示來自所有來源的戰利品。\n\n您可以依據“篩選器”標籤更改顯示的戰利品類型。";
 L.LOOT_SPEC = "拾取專精";
 L.LOOT_SPEC_DESC = "在個人拾取地城，副本和戶外事件中，此設定將決定哪些物品可供使用。\n\n點擊此行可立即更改！";
@@ -34064,6 +34093,7 @@ L.MAIN_LIST_SLIDER_LABEL = "主列表縮放";
 L.MAIN_ONLY = "僅主要";
 L.MAIN_ONLY_TOOLTIP = "如果你還想讓 ATT *假裝*你贏得了所有未被其他種族或職業鎖定的共享外觀，請啟用此設定。\n\n例如，如果你從冰冠城塞收藏了一個僅限獵人使用的物品，並且在沒有職業/種族限制的情況下，有一個來自副本的共享外觀，那麼 ATT 將*假裝*你也獲得了該外觀來源。\n\n注意：以這種方式解鎖時，切換到其他種族/職業將錯誤地回報你已經獲得了尚未為新角色收藏的外觀來源。";
 L.MAP_ID = "地圖 ID";
+L.MAPS = "地圖";
 L.MARKS_OF_HONOR_DESC = "榮耀印記必須在彈出視窗中查看才能看到所有正常的'包含'內容。\n(在聊天中輸入'/att' 然後 " .. SHIFT_KEY_TEXT .. "點擊連接的物品)\n\n|cFFfe040f之後購買和一起使用，重新登入和強制 ATT 刷新（按此順序）\n可能需要正確註冊所有物品。|r";
 L.MAX_TOOLTIP_TOP_LINE_LENGTH_LABEL = "最大頂線長度";
 L.MAXIMUM_STANDING_WITH_FACTION = "最高陣營聲望等級 %s 和 %s。";
@@ -34079,6 +34109,7 @@ L.MINIMAP_MOUSEOVER_TEXT = "右鍵改變設定。\n左鍵打開主列表。\n" .
 L.MINIMAP_SLIDER = "小地圖按鈕尺寸";
 L.MINIMAP_SLIDER_TOOLTIP = "使用此選項可自訂小地圖按鈕的大小。\n\n預設：36";
 L.MINUMUM_STANDING_WITH_FACTION = "最低陣營聲望等級 %s 和 %s。";
+L.MISSION_ID = "任務 ID";
 L.MODE_EXPLAIN_LABEL = "|cffFFFFFF您收藏的內容總結在這裡。啟用所有 |c" .. _.DefaultColors.Insane .. "彩色選項|r 解鎖 |c" .. _.DefaultColors.Insane .. "瘋狂模式|r。|r";
 L.MODULES = "模組";
 L.MODULES_LABEL = "模組和小列表";
@@ -34108,6 +34139,7 @@ L.NO_SEARCH_METHOD = "未指定搜尋方法。";
 L.NOT_AVAILABLE_IN_PL = "在個人拾取中不可用。";
 L.NOTHING_TO_SELECT_FROM = "沒有什麼可以隨意選擇的。如果在“設定”中啟用了“臨時更新”，則必須在使用此視窗之前更新主列表（/att）。";
 L.OBJECT_TYPE = "目標類型";
+L.OBJECTIVES = "目標";
 L.ONLY_NOT_TRASH = "排除垃圾物品";
 L.ONLY_NOT_TRASH_TOOLTIP = "啟用此選項可忽略白色/灰色物品。暴雪尚未在經典懷舊服中提供 API。";
 L.ONLY_RELEVANT_CHECKBOX = "僅相關";
@@ -34120,6 +34152,7 @@ L.OPPOSITE_FACTION_EQ = "與敵對陣營對應：";
 L.OTHER_ROW_INSTRUCTIONS = "|cff3399ff左鍵展開/折疊\n右鍵彈出小列表\n" .. SHIFT_KEY_TEXT .. "左鍵刷新收藏\n" .. CTRL_KEY_TEXT .. "左鍵展開/折疊列表\n" .. SHIFT_KEY_TEXT .. "點擊右鍵排序組/彈出列表\n" .. ALT_KEY_TEXT .. "右鍵設定路線點|r";
 L.OTHER_ROW_INSTRUCTIONS_AH = "|cff3399ff左鍵展開/折疊\n右鍵彈出小列表\n" .. SHIFT_KEY_TEXT .. "左鍵搜尋拍賣行|r";
 L.OWNED_BY = "擁有者 %s";
+L.OWNED_PETS = "已擁有寵物";
 L.PATREON_BUTTON_TOOLTIP = "點擊按鈕複製 URL 以進入 All The Things Patreon 頁面。\n\n在這裡您可以看到如何在經濟上支援此插件！";
 L.PERCENTAGES_CHECKBOX = "顯示完成百分比";
 L.PERCENTAGES_CHECKBOX_TOOLTIP = "如果想查看每行的完成百分比請啟用此選項。\n\n按完成度對組進行著色不受影響。";
@@ -34128,12 +34161,10 @@ L.PET_DESC = "點擊此按鈕可依據缺少的內容選擇隨機寵物。";
 L.PLAY_DEATH_SOUND_CHECKBOX = "死亡時播放音效";
 L.PLAY_DEATH_SOUND_CHECKBOX_TOOLTIP = "如果你想在死亡時聽到音效，請啟用此選項。";
 L.PLAYER_COORDINATES = "玩家座標";
-L.PLAYER_RANK_COLLECTOR = "|T" .. _.asset("logo_32x32") .. ":0|t |c" .. _.DefaultColors.White .. "集電極|r";
 L.PLAYER_RANK_CONTRIBUTOR = "|T" .. _.asset("logo_32x32") .. ":0|t |c" .. _.DefaultColors.White .. "貢獻者|r";
 L.PLAYER_TITLE_GOLD_TYCOON = "|c" .. _.DefaultColors.Raid .. "黃金大亨%s|r";
 L.PLAYER_TITLE_KING_OF_THE_ASYLUM = "|cffa335ee%s，庇護所之王|r";
-L.PLAYER_TITLE_LORD_KING = "|cffa335ee國王大人%s|r";
-L.PLAYER_TITLE_LORD_QUEEN = "|cffa335ee%女王陛下s|r";
+L.PLAYER_TITLE_LORD_KING = "|cffa335ee%s國王大人|r";
 L.PLAYER_TITLE_SCARAB_LORD = "|c" .. _.DefaultColors.Raid .. "聖甲蟲領主 %s|r";
 L.PLAYER_TITLE_THE_COMPLETIONIST = "|c" .. _.DefaultColors.Raid .. "%s 完美主義者|r";
 L.PLAYER_TITLE_THE_EXTERMINATOR = "|cffa335ee%s消滅者|r";
@@ -34468,6 +34499,7 @@ localize(L.HEADER_NAMES, {
 	[-592] = "《魔獸世界》週年紀念",
 	[-654] = "採集",
 	[-655] = "天尊地城",
+	[-656] = "鬥陣俱樂部",
 	[-659] = "暮光協助",
 	[-660] = "暮光雙人組",
 	[-661] = "暮光地帶",
@@ -34568,6 +34600,7 @@ for key,value in pairs({
 	[4] = "PvP 精良/鬥士",
 	[5] = "不可學",
 	[6] = "需要召喚物品",
+	[7] = "貿易站",
 	[1604] = "大師賽季",
 	[1610] = "第6階段",
 	[17] = "第1階段",

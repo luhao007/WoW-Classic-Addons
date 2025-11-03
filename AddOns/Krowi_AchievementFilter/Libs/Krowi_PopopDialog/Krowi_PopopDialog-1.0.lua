@@ -38,6 +38,7 @@ StaticPopupDialogs[externalLinkDialog] = { -- Needs to be added to the Blizzard 
 	preferredIndex = 3,
 	OnShow = function(self)
 		local editBox = self.editBox or self.EditBox;
+		editBox:SetMaxLetters(0);
 		editBox:SetText(externalLink);
 		editBox:HighlightText();
 	end,
@@ -50,6 +51,7 @@ StaticPopupDialogs[externalLinkDialog] = { -- Needs to be added to the Blizzard 
 		if self:GetText():len() < 1 then
 			button:Click();
 		else
+			self:SetMaxLetters(0);
 			self:SetText(externalLink);
 			self:HighlightText();
 		end
@@ -57,6 +59,6 @@ StaticPopupDialogs[externalLinkDialog] = { -- Needs to be added to the Blizzard 
 }
 
 function lib.ShowExternalLink(link)
-    externalLink = link;
-    StaticPopup_Show(externalLinkDialog);
+	externalLink = link;
+	StaticPopup_Show(externalLinkDialog);
 end

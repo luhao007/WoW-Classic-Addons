@@ -1453,18 +1453,6 @@ local function QuestWithReputationDescription(t)
 		return L.ITEM_GIVES_REP .. (GetFactionName(factionID) or ("Faction #" .. tostring(factionID))) .. "'";
 	end
 end
-local function QuestWithReputationCollectibleAsCost(t)
-	-- TODO: maybe some better way to cache this result for the quest
-	-- If Collectible by providing reputation towards a Faction with which the character is below the rep-granting Standing
-	-- and the Faction itself is Collectible & Not Collected
-	-- and the Quest is not completed and not locked from being completed
-	if app.Settings.Collectibles.Reputations and not t.saved and not t.locked then
-		local faction = app.CreateFaction(t.maxReputation[1]);
-		if faction.collected then return end
-		faction.maxReputation = t.maxReputation;
-		return faction.maxstanding > faction.standing;
-	end
-end
 -- Basically anything in ATT which has QuestID needs to also support being Locked...
 -- Guess it's easiest for now to make a global variant and just 'remember' to
 -- add it in every possible Class which could have a questID...
@@ -1564,6 +1552,16 @@ local FactionCache = setmetatable({}, {
 		local faction = app.CreateFaction(factionID);
 		t[factionID] = faction;
 		return faction;
+	end,
+});
+local QuestWithReputationCostCollectibles = setmetatable({}, {
+	__index = function(t, quest)
+		local costCollectibles
+		-- TODO: adjust when givesReputation exists
+		local maxReputation = quest.maxReputation
+		costCollectibles = maxReputation and { FactionCache[maxReputation[1]] } or app.EmptyTable
+		t[quest.questID] = costCollectibles
+		return costCollectibles
 	end,
 });
 local createQuest = app.CreateClass("Quest", "questID", {
@@ -1745,7 +1743,10 @@ local createQuest = app.CreateClass("Quest", "questID", {
 	end or nil,
 	description = QuestWithReputationDescription,
 	-- Retail: Quests which have a maxrepuation can be considered a Cost for the respective Faction
-	collectibleAsCost = not app.IsClassic and QuestWithReputationCollectibleAsCost or nil,
+	collectibleAsCost = app.IsRetail and app.CollectibleAsCost or nil,
+	costCollectibles = function(t)
+		return QuestWithReputationCostCollectibles[t]
+	end,
 	variants = {
 		app.GlobalVariants.AndLockCriteriaWithAutoName,
 		app.GlobalVariants.AndLockCriteria,
@@ -1996,7 +1997,7 @@ local softRefresh = function()
 end;
 if app.IsClassic then
 	-- Way too spammy to be used without a Callback or combat protection
-	app.AddEventRegistration("CRITERIA_UPDATE", softRefresh)
+	app.AddEventRegistration("CRITERIA_UPDATE", app.WipeSearchCache)
 	-- This triggers in many situations where nothing actually changes... (like opening Quest Log)
 	app.AddEventRegistration("QUEST_LOG_UPDATE", RefreshAllQuestInfo)
 else

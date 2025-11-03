@@ -50,6 +50,8 @@ if app.IsRetail then
 		-- Uses a provided 'name' and scans the ObjectDB to find potentially matching ObjectID's,
 		-- then correlate those search results by closest distance to the player's current position
 		name = name and name:trim():lower()
+		if not name or name == "" then return end
+
 		local o = objectNamesToIDs[name] or objectNamesToIDs[CleanColor(name)]
 		if not o or #o == 0 then return end
 
@@ -124,6 +126,8 @@ else
 		-- Uses a provided 'name' and scans the ObjectDB to find potentially matching ObjectID's,
 		-- then correlate those search results by closest distance to the player's current position
 		--print("GetBestObjectIDForName:", "'" .. (name or RETRIEVING_DATA) .. "'");
+		if not name or name == "" then return end
+
 		local o = objectNamesToIDs[name and name:trim():lower()]
 		if o and #o > 0 then
 			local objects = {};

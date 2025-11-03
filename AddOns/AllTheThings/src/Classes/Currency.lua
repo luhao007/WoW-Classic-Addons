@@ -60,12 +60,6 @@ app.CreateCurrencyClass = app.CreateClass(CLASS, KEY, {
 		return cache.GetCachedField(t, "costCollectibles", default_costCollectibles);
 	end,
 	collectibleAsCost = app.CollectibleAsCost,
-	-- some calculated properties can let fall-through to the merge source of a group instead of needing to re-calculate in every copy
-	isCost = function(t)
-		local merge = t.__merge
-		if not merge then return end
-		return merge.isCost
-	end,
 	statistic = function(t)
 		local info = C_CurrencyInfo_GetCurrencyInfo(t.currencyID)
 		if not info then return end

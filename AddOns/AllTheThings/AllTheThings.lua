@@ -7,8 +7,8 @@
 local appName, app = ...;
 local L = app.L;
 
-local AssignChildren, GetRelativeValue, IsQuestFlaggedCompleted
-	= app.AssignChildren, app.GetRelativeValue, app.IsQuestFlaggedCompleted
+local AssignChildren, GetRelativeValue, IsQuestFlaggedCompleted, GetRelativeGroup
+	= app.AssignChildren, app.GetRelativeValue, app.IsQuestFlaggedCompleted, app.GetRelativeGroup
 
 -- Abbreviations
 L.ABBREVIATIONS[L.UNSORTED .. " %> " .. L.UNSORTED] = "|T" .. app.asset("WindowIcon_Unsorted") .. ":0|t " .. L.SHORTTITLE .. " %> " .. L.UNSORTED;
@@ -38,8 +38,8 @@ BINDING_NAME_ALLTHETHINGS_TOGGLERANDOM = L.TOGGLE_RANDOM
 BINDING_NAME_ALLTHETHINGS_REROLL_RANDOM = L.REROLL_RANDOM
 
 -- Performance Cache
-local print, rawget, rawset, tostring, ipairs, pairs, tonumber, wipe, select, setmetatable, getmetatable, tinsert, tremove, type, math_floor
-	= print, rawget, rawset, tostring, ipairs, pairs, tonumber, wipe, select, setmetatable, getmetatable, tinsert, tremove, type, math.floor
+local print,rawget,rawset,tostring,ipairs,pairs,tonumber,wipe,select,setmetatable,getmetatable,tinsert,tremove,type,math_floor,GetTime
+	= print,rawget,rawset,tostring,ipairs,pairs,tonumber,wipe,select,setmetatable,getmetatable,tinsert,tremove,type,math.floor,GetTime
 
 -- Global WoW API Cache
 local C_Map_GetMapInfo = C_Map.GetMapInfo;
@@ -160,32 +160,6 @@ end -- TradeSkill Functionality
 
 local GetSpecsString, GetGroupItemIDWithModID, GroupMatchesParams, GetClassesString
 	= app.GetSpecsString, app.GetGroupItemIDWithModID, app.GroupMatchesParams, app.GetClassesString
-
-local function CleanInheritingGroups(groups, ...)
-	-- Cleans any groups which are nested under any group with any specified fields
-	local arrs = select("#", ...);
-	if groups and arrs > 0 then
-		local refined, f, match = {}, nil, nil;
-		-- app.PrintDebug("CIG:Start",#groups,...)
-		for _,j in ipairs(groups) do
-			match = nil;
-			for n=1,arrs do
-				f = select(n, ...);
-				if GetRelativeValue(j, f) then
-					match = true;
-					-- app.PrintDebug("CIG:Skip",j.hash,f)
-					break;
-				end
-			end
-			if not match then
-				tinsert(refined, j);
-			end
-		end
-		-- app.PrintDebug("CIG:End",#refined)
-		return refined;
-	end
-end
-app.CleanInheritingGroups = CleanInheritingGroups
 
 do
 local ContainsLimit, ContainsExceeded;
@@ -952,8 +926,17 @@ local function GetSearchResults(method, paramA, paramB, options)
 	return group, group.working
 end
 app.GetCachedSearchResults = function(method, paramA, paramB, options)
-	if options and options.IgnoreCache then
-		return GetSearchResults(method, paramA, paramB, options)
+	-- app.print("GCSR",paramA,paramB,options and options.IgnoreCache)
+	if options then
+		if options.IgnoreCache then
+			return GetSearchResults(method, paramA, paramB, options)
+		end
+		-- add a 10sec cache window to lookups
+		-- probably long enough that any repeated use is smoother, but short enough that user actions would typically result in fresh lookups
+		if options.ShortCache then
+			local time = math_floor(GetTime() / 10)
+			return app.GetCachedData((paramB and paramA..":"..paramB or paramA)..time, GetSearchResults, method, paramA, paramB, options);
+		end
 	end
 	return app.GetCachedData(paramB and paramA..":"..paramB or paramA, GetSearchResults, method, paramA, paramB, options);
 end
@@ -1704,6 +1687,7 @@ function app:GetDataCache()
 	if app.Categories.Holidays then
 		db = app.CreateCustomHeader(app.HeaderConstants.HOLIDAYS, app.Categories.Holidays);
 		db.isHolidayCategory = true;
+		db.difficultyID = 19	-- 'Event' difficulty, allows auto-expand logic to find it when queueing special holiday dungeons
 		db.SortType = "EventStart";
 		tinsert(g, db);
 	end
@@ -1760,6 +1744,11 @@ function app:GetDataCache()
 	if app.Categories.Secrets then
 		db = app.CreateCustomHeader(app.HeaderConstants.SECRETS, app.Categories.Secrets);
 		tinsert(g, db);
+	end
+
+	-- Housing
+	if app.Categories.Housing then
+		tinsert(g, app.CreateCustomHeader(app.HeaderConstants.HOUSING, app.Categories.Housing));
 	end
 
 	-----------------------------------------
@@ -1830,6 +1819,7 @@ function app:GetDataCache()
 		for _, o in ipairs(db.g) do
 			o.sourceIgnored = nil
 		end
+		CacheFields(db, true, "Achievements")
 		tinsert(g, db);
 	end
 
@@ -2644,7 +2634,7 @@ customWindowUpdates.CurrentInstance = function(self, force, got)
 		end
 
 		(function()
-		local results, groups, nested, header, headerKeys, difficultyID, nextParent, headerID, isInInstance
+		local results, groups, nested, header, headerKeys, difficultyGroup, nextParent, headerID, isInInstance
 		local rootGroups, mapGroups = {}, {};
 
 		self.MapCache = setmetatable({}, { __mode = "kv" })
@@ -2696,7 +2686,7 @@ customWindowUpdates.CurrentInstance = function(self, force, got)
 			local currentMaps, mapID = {}, self.mapID
 
 			-- Get all results for this map, without any results that have been cloned into Source Ignored groups or are under Unsorted
-			results = CleanInheritingGroups(SearchForField("mapID", mapID), "sourceIgnored");
+			results = SearchForField("mapID", mapID)
 			-- app.PrintDebug("Rebuild#",#results);
 			if results and #results > 0 then
 
@@ -2707,7 +2697,7 @@ customWindowUpdates.CurrentInstance = function(self, force, got)
 				-- local submapinfos = ArrayAppend(C_Map_GetMapChildrenInfo(mapID, 5), C_Map_GetMapChildrenInfo(mapID, 6))
 				-- if submapinfos then
 					-- for _,mapInfo in ipairs(submapinfos) do
-						-- subresults = CleanInheritingGroups(SearchForField("mapID", mapInfo.mapID), "sourceIgnored")
+						-- subresults = SearchForField("mapID", mapInfo.mapID)
 						-- app.PrintDebug("Adding Sub-Map Results:",mapInfo.mapID,mapInfo.mapType,#subresults)
 						-- results = ArrayAppend(results, subresults)
 					-- end
@@ -2724,7 +2714,7 @@ customWindowUpdates.CurrentInstance = function(self, force, got)
 					local subresults
 					for _,subMapID in ipairs(rootMap.maps) do
 						if subMapID ~= mapID then
-							subresults = CleanInheritingGroups(SearchForField("mapID", subMapID), "sourceIgnored")
+							subresults = SearchForField("mapID", subMapID)
 							-- app.PrintDebug("Adding Sub-Map Results:",subMapID,#subresults)
 							results = ArrayAppend(results, subresults)
 						end
@@ -2772,8 +2762,10 @@ customWindowUpdates.CurrentInstance = function(self, force, got)
 					-- Get the header chain for the group
 					nextParent = group.parent;
 
-					-- Cache the difficultyID, if there is one and we are in an actual instance where the group is being mapped
-					difficultyID = isInInstance and GetRelativeValue(nextParent, "difficultyID");
+					-- Cache the difficultyGroup, if there is one and we are in an actual instance where the group is being mapped
+					if isInInstance then
+						difficultyGroup = GetRelativeGroup(nextParent, "difficultyID")
+					end
 
 					-- Building the header chain for each mapped Thing
 					while nextParent do
@@ -2806,8 +2798,12 @@ customWindowUpdates.CurrentInstance = function(self, force, got)
 						group = app.CreateFilter(101, CreateHeaderData(group));
 					end
 
-					-- If relative to a difficultyID, then merge it into one.
-					if difficultyID then group = app.CreateDifficulty(difficultyID, { g = { group } }); end
+					-- If relative to a difficultyGroup, then merge it into one.
+					if difficultyGroup then
+						group = CreateHeaderData(group, difficultyGroup);
+						-- remove the name sorttype from the difficulty-based header
+						group.SortType = nil
+					end
 
 					-- If we're trying to map in another 'map', nest it into a special group for external maps
 					if group.instanceID or group.mapID then
@@ -6071,7 +6067,6 @@ app.Startup = function()
 	-- Account Wide Data Storage
 	ATTAccountWideData = LocalizeGlobalIfAllowed("ATTAccountWideData", true);
 	local accountWideData = ATTAccountWideData;
-	if not accountWideData.FactionBonus then accountWideData.FactionBonus = {}; end
 	if not accountWideData.HeirloomRanks then accountWideData.HeirloomRanks = {}; end
 
 	-- Old unused data

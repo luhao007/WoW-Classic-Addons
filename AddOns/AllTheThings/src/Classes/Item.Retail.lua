@@ -17,7 +17,6 @@ local ItemEventListener = ItemEventListener
 local GetItemInfo = app.WOWAPI.GetItemInfo;
 local GetItemIcon = app.WOWAPI.GetItemIcon;
 local GetItemCount = app.WOWAPI.GetItemCount;
-local GetFactionBonusReputation = app.WOWAPI.GetFactionBonusReputation;
 local IsBoAOverride = C_Item.IsItemBindToAccountUntilEquip
 
 -- Class locals
@@ -431,11 +430,6 @@ local itemFields = {
 		return bonuses
 	end,
 	-- some calculated properties can let fall-through to the merge source of a group instead of needing to re-calculate in every copy
-	isCost = function(t)
-		local merge = t.__merge
-		if not merge then return end
-		return merge.isCost
-	end,
 	isUpgrade = function(t)
 		local merge = t.__merge
 		if not merge then return end
@@ -448,21 +442,6 @@ local itemFields = {
 -- Module imports
 itemFields.collectibleAsUpgrade = app.Modules.Upgrade.CollectibleAsUpgrade;
 
--- This is used for the Grand Commendations unlocking Bonus Reputation
-local ItemWithFactionBonus = {
-	__name = "AndFactionBonus",
-	collected = function(t)
-		local factionID = t.factionID;
-		if ATTAccountWideData.FactionBonus[factionID] then return 1; end
-		if GetFactionBonusReputation(factionID) then
-			ATTAccountWideData.FactionBonus[factionID] = 1;
-			return 1;
-		end
-	end,
-	__condition = function(t)
-		return not t.repeatable;
-	end,
-}
 app.CreateItem = app.CreateClass(CLASS, KEY, itemFields,
 "AsHQT", {
 	CollectibleType = function() return "QuestsHidden" end,
@@ -499,18 +478,10 @@ app.CreateItem = app.CreateClass(CLASS, KEY, itemFields,
 		return app.Settings.Collectibles.Reputations;
 	end,
 	collected = function(t)
-		local factionID = t.factionID;
-		-- This is used by reputation tokens. (turn in items)
-		-- quick cache checks
-		if app.CurrentCharacter.Factions[factionID] then return 1; end
-		if app.Settings.AccountWide.Reputations and ATTAccountWideData.Factions[factionID] then return 2; end
-
-		-- use the extended faction logic from the associated Faction for consistency
-		local cachedFaction = app.SearchForObject("factionID", factionID, "key") or app.CreateFaction(factionID);
-		return cachedFaction.collected;
+		return app.TypicalCharacterCollected("Factions", t.factionID, "Reputations")
 	end,
 	variants = {
-		ItemWithFactionBonus,
+		app.GlobalVariants.AndFactionBonus,
 	},
 }, (function(t) return t.factionID; end));
 

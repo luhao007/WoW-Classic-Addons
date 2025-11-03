@@ -146,16 +146,16 @@ end;
 local mapKeyUncachers = {
 	["mapID"] = uncacheMap,
 	["maps"] = function(group, maps)
-		for _,mapID in ipairs(maps) do
-			uncacheMap(group, mapID);
+		for i=1,#maps do
+			uncacheMap(group, maps[i]);
 		end
 	end,
 	["coord"] = function(group, coord)
 		uncacheMap(group, coord[3]);
 	end,
 	["coords"] = function(group, coords)
-		for i,coord in ipairs(coords) do
-			uncacheMap(group, coord[3]);
+		for i=1,#coords do
+			uncacheMap(group, coords[i][3]);
 		end
 	end,
 };
@@ -178,8 +178,8 @@ local function assignZoneAreaIDs(originalMapID, mapID, ids)
 			areaIDs = {};
 			remap.areaIDs = areaIDs;
 		end
-		for j,areaID in ipairs(ids) do
-			areaIDs[areaID] = mapID;
+		for i=1,#ids do
+			areaIDs[ids[i]] = mapID;
 		end
 	end
 end
@@ -218,15 +218,15 @@ local function zoneArtIDRunner(group, value)
 			artIDs = {};
 			remap.artIDs = artIDs;
 		end
-		for j,artID in ipairs(value) do
-			artIDs[artID] = mapID;
+		for i=1,#value do
+			artIDs[value[i]] = mapID;
 		end
 
 		-- Uncache the original mapID
 		local mapIDCache = currentCache.mapID;
 		mapIDCache = mapIDCache[originalMapID];
-		for i,o in ipairs(mapIDCache) do
-			if o == group then
+		for i=#mapIDCache,1,-1 do
+			if mapIDCache[i] == group then
 				tremove(mapIDCache, i)
 				break;
 			end
@@ -258,9 +258,10 @@ local function zoneTextAreasRunner(group, value)
 
 	-- Remap the original mapID to the new mapID when it encounters any of these artIDs.
 	local mapIDs, parentMapID, info = {}, nil, nil;
-	if group.coords then
-		for index,coord in ipairs(group.coords) do
-			parentMapID = coord[3];
+	local coords = group.coords
+	if coords then
+		for i=1,#coords do
+			parentMapID = coords[i][3];
 			if parentMapID and not mapIDs[parentMapID] then
 				mapIDs[parentMapID] = 1;
 				info = C_Map_GetMapInfo(parentMapID);
@@ -279,8 +280,11 @@ local function zoneTextAreasRunner(group, value)
 			end
 		end
 	end
-	if group.maps then
-		for i,parentMapID in ipairs(group.maps) do
+	local maps = group.maps
+	if maps then
+		local parentMapID
+		for i=1,#maps do
+			parentMapID = maps[i]
 			if not mapIDs[parentMapID] then
 				mapIDs[parentMapID] = 1;
 				info = C_Map_GetMapInfo(parentMapID);
@@ -336,8 +340,8 @@ local function zoneTextNamesRunner(group, value)
 			names = {};
 			remap.names = names;
 		end
-		for j,name in ipairs(value) do
-			names[name] = mapID;
+		for i=1,#value do
+			names[value[i]] = mapID;
 		end
 
 		--local info = C_Map_GetMapInfo(originalMapID);
@@ -500,8 +504,8 @@ local fieldConverters = {
 		-- don't cache mapID from coord for anything which is itself an actual instance or a map
 		-- if currentInstance ~= group and not rawget(group, "mapID") and not rawget(group, "difficultyID") then
 		if not (group.instanceID or group.mapID or group.objectiveID or group.difficultyID or (group.headerID and group.parent and group.parent.instanceID)) then
-			for i,coord in ipairs(coords) do
-				cacheMapID(group, coord[3]);
+			for i=1,#coords do
+				cacheMapID(group, coords[i][3]);
 			end
 			return true;
 		end
@@ -644,8 +648,8 @@ if app.IsRetail then
 			end
 		end
 		if hasG then
-			for _,subgroup in ipairs(hasG) do
-				_CacheFields(subgroup);
+			for i=1,#hasG do
+				_CacheFields(hasG[i]);
 			end
 		end
 		if mapKeys then
@@ -691,8 +695,8 @@ if app.IsRetail then
 		-- don't cache mapID from coord for anything which is itself an actual instance or a map
 		if rawget(group, "instanceID") or rawget(group, "mapID") or rawget(group, "difficultyID") or (group.headerID and group.parent and group.parent.instanceID) then return end
 		local any
-		for i,coord in ipairs(coords) do
-			any = cacheMapID(group, coord[3]) or any
+		for i=1,#coords do
+			any = cacheMapID(group, coords[i][3]) or any
 		end
 		return any;
 	end
@@ -715,9 +719,17 @@ else
 	end
 end
 
-CacheFields = function(group, skipMapCaching)
+CacheFields = function(group, skipMapCaching, cacheName)
 	allowMapCaching = not skipMapCaching
-	_CacheFields(group);
+	if cacheName then
+		local cache = cacheName and AllCaches[cacheName]
+		if not cache then
+			cache = CreateDataCache(cacheName, skipMapCaching)
+		end
+		cache.CacheFields(group)
+	else
+		_CacheFields(group)
+	end
 	for i=1,#runners do
 		runners[i]()
 	end
@@ -821,12 +833,15 @@ end
 -- end
 local function SearchForRelativeItems(group, listing)
 	-- Search a group for all items relative to the given group. (excluding the group passed in)
-	if group and group.g then
-		for i,subgroup in ipairs(group.g) do
-			SearchForRelativeItems(subgroup, listing);
-			if subgroup.itemID then
-				listing[#listing + 1] = subgroup
-			end
+	local g = group and group.g
+	if not g then return end
+
+	local subgroup
+	for i=1,#g do
+		subgroup = g[i]
+		SearchForRelativeItems(subgroup, listing);
+		if subgroup.itemID then
+			listing[#listing + 1] = subgroup
 		end
 	end
 end
@@ -972,8 +987,8 @@ local function SearchForManyInAllCaches(field, ids)
 	local fieldCache;
 	for _,cache in pairs(AllCaches) do
 		fieldCache = cache[field];
-		for _,id in ipairs(ids) do
-			ArrayAppend(groups, fieldCache[id]);
+		for i=1,#ids do
+			ArrayAppend(groups, fieldCache[ids[i]]);
 		end
 	end
 	return groups;
@@ -981,14 +996,16 @@ end
 
 -- Hash-Based Searching
 local function SearchForSourcePath(g, hashes, level, count)
-	if g then
-		local hash = hashes[level];
-		if hash then
-			for i,o in ipairs(g) do
-				if (o.hash or o.name or o.text) == hash then
-					if level == count then return o; end
-					return SearchForSourcePath(o.g, hashes, level + 1, count);
-				end
+	if not g then return end
+
+	local hash = hashes[level];
+	if hash then
+		local o
+		for i=1,#g do
+			o = g[i]
+			if (o.hash or o.name or o.text) == hash then
+				if level == count then return o; end
+				return SearchForSourcePath(o.g, hashes, level + 1, count);
 			end
 		end
 	end
@@ -1001,8 +1018,8 @@ local function SearchForSpecificGroups(t, group, hashes)
 		end
 		local g = group.g;
 		if g then
-			for _,o in ipairs(g) do
-				SearchForSpecificGroups(t, o, hashes);
+			for i=1,#g do
+				SearchForSpecificGroups(t, g[i], hashes);
 			end
 		end
 	end

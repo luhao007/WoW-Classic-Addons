@@ -1,6 +1,6 @@
 ## Interface: 50502
 ## Author: MysticalOS, QartemisT
-## Version: 12.0.2
+## Version: 12.0.3
 
 ## Title: |cffffe00a<|r|cffff7d0aDBM Core|r|cffffe00a>|r |cff69ccf0Main Core|r
 ## Notes: Deadly Boss Mods
@@ -27,19 +27,7 @@
 ## X-Website: https://deadlybossmods.com
 ## X-Part-Of: DBM-Core
 
-Libs\LibStub\LibStub.lua
-Libs\CallbackHandler-1.0\CallbackHandler-1.0.xml
 Libs\ChatThrottleLib\ChatThrottleLib.lua
-Libs\LibChatAnims\LibChatAnims.xml
-Libs\LibSharedMedia-3.0\lib.xml
-Libs\LibLatency\LibLatency.xml
-Libs\LibDurability\LibDurability.xml
-Libs\LibDataBroker-1.1\LibDataBroker-1.1.lua
-Libs\LibDBIcon-1.0\lib.xml
-Libs\LibDeflate\LibDeflate.lua
-Libs\LibSerialize\lib.xml
-Libs\LibSpecialization\LibSpecialization.lua
-Libs\LibCustomGlow-1.0\LibCustomGlow-1.0.xml
 
 localization.en.lua
 localization.br.lua

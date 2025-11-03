@@ -97,7 +97,7 @@ local L = {
 			["lore"] = "The War Within is the tenth expansion for World of Warcraft and the beginning of the Worldsoul Saga. Journey through never-before-seen subterranean worlds filled with hidden wonders and lurking perils, down to the dark depths of the nerubian empire, where the malicious Harbinger of the Void is gathering arachnid forces to bring Azeroth to its knees.",
 		},
 		{	-- Midnight
-			["icon"] = app.asset("Expansion_MD"),
+			["icon"] = app.asset("Expansion_MN"),
 			["lore"] = "Midnight is the eleventh expansion for World of Warcraft and the second chapter of the Worldsoul Saga. Return to Quel'Thalas, where the forces of the Void have invaded Azeroth, intent on claiming the Sunwell and plunging the world into darkness and fear. Reunify the scattered elven tribes of Azeroth and ultimately fight alongside the forces of the Light to banish the Shadow forever.",
 		},
 		{	-- The Last Titan

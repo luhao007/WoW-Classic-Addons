@@ -87,6 +87,7 @@ local KeyMaps = setmetatable({
 	species = "speciesID",
 	spell = "spellID",
 	talent = "spellID",
+	transmogappearance = "sourceID",
 	q = "questID",
 	quest = "questID",
 }, { __index = function(t,key) return key.."ID" end})

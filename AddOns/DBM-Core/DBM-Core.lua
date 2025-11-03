@@ -76,16 +76,16 @@ end
 ---@class DBM
 local DBM = private:GetPrototype("DBM")
 _G.DBM = DBM
-DBM.Revision = parseCurseDate("20251028144609")
+DBM.Revision = parseCurseDate("20251101204125")
 DBM.TaintedByTests = false -- Tests may mess with some internal state, you probably don't want to rely on DBM for an important boss fight after running it in test mode
 
 local fakeBWVersion, fakeBWHash = 398, "3d79f92"--398.5
 local PForceDisable
 -- The string that is shown as version
-DBM.DisplayVersion = "12.0.2"--Core version
+DBM.DisplayVersion = "12.0.3"--Core version
 DBM.classicSubVersion = 0
 DBM.dungeonSubVersion = 0
-DBM.ReleaseRevision = releaseDate(2025, 10, 28) -- the date of the latest stable version that is available, optionally pass hours, minutes, and seconds for multiple releases in one day
+DBM.ReleaseRevision = releaseDate(2025, 11, 1) -- the date of the latest stable version that is available, optionally pass hours, minutes, and seconds for multiple releases in one day
 PForceDisable = 19--When this is incremented, trigger force disable regardless of major patch
 DBM.HighestRelease = DBM.ReleaseRevision --Updated if newer version is detected, used by update nags to reflect critical fixes user is missing on boss pulls
 
@@ -4578,7 +4578,11 @@ end
 do
 	local GetItemInfo = C_Item and C_Item.GetItemInfo or GetItemInfo
 	local function checkForActualPull()
-		if (DBM.Options.RecordOnlyBosses and #inCombat == 0) or (not private.isRetail and difficulties.difficultyIndex ~= 8) then
+		-- We don't need to check `RecordOnlyBosses` as it's already checked in where this function is called
+		-- If you have more than 1 mob, keep logging
+		-- If you're in mythic+, keep logging
+		-- Otherwise, stop logging post-pull timer ended
+		if #inCombat == 0 and difficulties.difficultyIndex ~= 8 then
 			DBM:StopLogging()
 		end
 	end
@@ -9426,7 +9430,7 @@ function bossModPrototype:ReceiveSync(event, sender, revision, ...)
 	end
 end
 
----@param revision number|string Either a number in the format "202101010000" (year, month, day, hour, minute) or string "20251028144609" to be auto set by packager
+---@param revision number|string Either a number in the format "202101010000" (year, month, day, hour, minute) or string "20251101204125" to be auto set by packager
 function bossModPrototype:SetRevision(revision)
 	revision = parseCurseDate(revision or "")
 	if not revision or type(revision) == "string" then
