@@ -54,7 +54,7 @@ ns.currentSourceFile = "RetailAzerothNodesLocation.lua"
           end
 
         -- Azeroth Kalimdor Passage
-          if self.db.profile.showAzerothPassage and not db.activate.ClassicIcons then
+          if self.db.profile.showAzerothPassage and not db.activate.noPassages then
             nodes[947][14564585] = { id = 227, mnID = 63, type = "PassageDungeon", showInZone = true } -- Blackfathom Deeps
             nodes[947][11895663] = { id = 232, mnID = 66, type = "PassageDungeon", showInZone = true } -- Maraudon
             --nodes[947][20985086] = { id = 226, type = "PassageDungeon", showInZone = true } -- Ragefire
@@ -65,17 +65,17 @@ ns.currentSourceFile = "RetailAzerothNodesLocation.lua"
           end
 
         -- Azeroth Kalimdor PetBattleDungeons
-          if (self.db.profile.showAzerothPassage and self.db.profile.showAzerothPetBattleDungeons) and not db.activate.ClassicIcons then
+          if (self.db.profile.showAzerothPassage and self.db.profile.showAzerothPetBattleDungeons) and not db.activate.noPassages then
             nodes[947][18475536] = { id = 240, mnID = 10, TransportName = "+ " .. TOOLTIP_BATTLE_PET .. " " .. LFG_TYPE_DUNGEON, type = "PassageDungeon", showInZone = true } -- Wailing Caverns
           end
 
-        --Kalimdor Passage without ClassicIcons and without MapNotesIcons
-          if self.db.profile.showAzerothPassage and not db.activate.ClassicIcons and not self.db.profile.showAzerothMapNotes then
+        --Kalimdor Passage without noPassages and without MapNotesIcons
+          if self.db.profile.showAzerothPassage and not db.activate.noPassages and not self.db.profile.showAzerothMapNotes then
             nodes[947][20985086] = { id = 226, mnID = 85, type = "PassageDungeon", showInZone = true } -- Ragefire
           end
 
         --Kalimdor Passage without AzerothEnemyFaction and MapNotesIcons
-          if not db.activate.AzerothEnemyFaction and self.db.profile.showAzerothMapNotes and not db.activate.ClassicIcons then
+          if not db.activate.AzerothEnemyFaction and self.db.profile.showAzerothMapNotes and not db.activate.noPassages then
 
             if self.faction == "Alliance" or db.activate.AzerothEnemyFaction then
               nodes[947][20985086] = { id = 226, mnID = 85, type = "PassageDungeon", showInZone = true } -- Ragefire
@@ -83,7 +83,7 @@ ns.currentSourceFile = "RetailAzerothNodesLocation.lua"
           end
 
         --Kalimdor Passage without AzerothEnemyFaction and MapNotesIcons
-          if not db.activate.AzerothEnemyFaction and self.db.profile.showAzerothMapNotes and db.activate.ClassicIcons then
+          if not db.activate.AzerothEnemyFaction and self.db.profile.showAzerothMapNotes and db.activate.noPassages then
 
             if self.faction == "Alliance" or db.activate.AzerothEnemyFaction then
               nodes[947][2098086] = { id = 226, mnID = 85, type = "Dungeon", showInZone = true } -- Ragefire
@@ -91,8 +91,8 @@ ns.currentSourceFile = "RetailAzerothNodesLocation.lua"
           end
 
 
-        -- Azeroth Kalimdor ClassicIcons 
-          if db.activate.ClassicIcons then
+        -- Azeroth Kalimdor noPassages 
+          if db.activate.noPassages then
 
             if self.db.profile.showAzerothMultiple then
               nodes[947][21846911] = { id = {187, 279, 255, 251, 750, 184, 185, 186 }, mnID = 75, type = "MultipleM", showInZone = true } -- Dragon Soul, The Battle for Mount Hyjal, The Culling of Stratholme, Black Morass, Old Hillsbrad Foothills, End Time, Well of Eternity, Hour of Twilight Heroic
@@ -111,8 +111,8 @@ ns.currentSourceFile = "RetailAzerothNodesLocation.lua"
             nodes[947][18475536] = { id = 240, mnID = 10, TransportName = "+ " .. TOOLTIP_BATTLE_PET .. " " .. LFG_TYPE_DUNGEON, type = "Dungeon", showInZone = true } -- Wailing Caverns
           end
 
-        --Kalimdor ClassicIcons without MapNotesIcons
-          if db.activate.ClassicIcons and not self.db.profile.showAzerothMapNotes then
+        --Kalimdor noPassages without MapNotesIcons
+          if db.activate.noPassages and not self.db.profile.showAzerothMapNotes then
 
             if self.db.profile.showAzerothDungeons then
               nodes[947][20985086] = { id = 226, mnID = 85, type = "Dungeon", showInZone = true } -- Ragefire
@@ -264,7 +264,7 @@ ns.currentSourceFile = "RetailAzerothNodesLocation.lua"
           end
     
         -- Azeroth Eastern Kingdom Passage
-          if self.db.profile.showAzerothPassage and not db.activate.ClassicIcons then
+          if self.db.profile.showAzerothPassage and not db.activate.noPassages then
             nodes[947][84445688] = { id = 231, mnID = 27, type = "PassageDungeon", showInZone = true } -- Gnomeregan
             nodes[947][90366709] = { id = 237, mnID = 51, type = "PassageDungeon", showInZone = true } -- The Temple of Atal'hakkar
             nodes[947][83226850] = { id = 63, mnID = 52, type = "PassageDungeon", showInZone = true } -- Deadmines
@@ -274,15 +274,15 @@ ns.currentSourceFile = "RetailAzerothNodesLocation.lua"
           end
 
         -- Azeroth Eastern Kingdom PetBattleDungeons
-          if (self.db.profile.showAzerothPassage and self.db.profile.showAzerothPetBattleDungeons) and not db.activate.ClassicIcons then
+          if (self.db.profile.showAzerothPassage and self.db.profile.showAzerothPetBattleDungeons) and not db.activate.noPassages then
             nodes[947][84445688] = { id = 231, mnID = 27, TransportName = "+ " .. TOOLTIP_BATTLE_PET .. " " .. LFG_TYPE_DUNGEON, type = "PassageDungeon", showInZone = true } -- Gnomeregan
             nodes[947][83226850] = { id = 63, mnID = 52, TransportName = "+ " .. TOOLTIP_BATTLE_PET .. " " .. LFG_TYPE_DUNGEON, type = "PassageDungeon", showInZone = true } -- Deadmines
             nodes[947][90503929] = { id = 1292, mnID = 23, TransportName = "+ " .. TOOLTIP_BATTLE_PET .. " " .. LFG_TYPE_DUNGEON, type = "PassageDungeon", showInZone = true } -- Stratholme Service Entrance
             nodes[947][86536189] = { id = { 73, 741, 742, 66, 228, 229, 559 }, mnID = 33, name = ns.BlackrockDeeps .. " (" .. TOOLTIP_BATTLE_PET .. " " .. LFG_TYPE_DUNGEON .. ")", type = "PassageDungeonRaidMulti", showInZone = true } -- Blackwind Descent, Molten Core, Blackwing Lair, Blackrock Caverns, Blackrock Depths, Lower Blackrock Spire, Upper Blackrock Spire
           end
 
-        -- Azeroth Eastern Kingdom ClassicIcons
-          if db.activate.ClassicIcons then
+        -- Azeroth Eastern Kingdom noPassages
+          if db.activate.noPassages then
 
             if self.db.profile.showAzerothDungeons then
               nodes[947][84445688] = { id = 231, mnID = 27, type = "Dungeon", showInZone = true } -- Gnomeregan
@@ -782,13 +782,13 @@ ns.currentSourceFile = "RetailAzerothNodesLocation.lua"
     
 
          -- Azeroth Dragon Isles Passage 
-          if self.db.profile.showAzerothPassage and not db.activate.ClassicIcons then
+          if self.db.profile.showAzerothPassage and not db.activate.noPassages then
             nodes[947][70332274] = { id = 1207,  mnID = 2200, type = "PassageRaid", showInZone = true } -- Amirdrassil, the Dream's Hope  
           end
 
 
-        -- Azeroth Dragon Isles ClassicIcons  
-          if db.activate.ClassicIcons then
+        -- Azeroth Dragon Isles noPassages  
+          if db.activate.noPassages then
 
             if self.db.profile.showAzerothRaids then
               nodes[947][70332274] = { id = 1207,  mnID = 2200, type = "Raid", showInZone = true } -- Amirdrassil, the Dream's Hope

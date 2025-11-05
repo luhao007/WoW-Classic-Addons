@@ -126,7 +126,7 @@ if not db.activate.HideMapNote then
                 if self.db.profile.activate.CapitalsTransporting then
 
                     if self.db.profile.showCapitalsPortals then
-                        nodes[85][57278961] = { name = "", type = "PassageHPortal", showInZone = true, showOnContinent = false, showOnMinimap = false, TransportName = L["Portalroom"] .. "\n" .. "\n" .. " ==> " .. ns.Silvermoon .. "\n" .. " ==> " .. ns.Valdrakken .. "\n" .. " ==> " .. ns.Oribos .. "\n" .. " ==> " .. ns.Azsuna .. "\n" .. " ==> " .. ns.Zuldazar .. "\n" .. " ==> " .. ns.Dalaran .. " - " .. ns.Northrend .. "\n" .. " ==> " .. ns.Hyjal .. "\n" .. "\n" .. " ==> " .. ns.CavernsOfTime .. " - " .. L["in the basement"] .. "\n" .. " ==> " .. ns.Shattrath .. " - " .. L["in the basement"] .. "\n" .. " ==> " .. ns.Warspear .. " - " .. L["in the basement"] .. "\n" .. " ==> " .. ns.DarkPortal .. " - " .. L["in the basement"] .. "\n" .. "      (" .. L["talk to"] .. ": " .. ns.ThrallmarMage .. " )" .. "\n" .. " ==> " .. ns.Dornogal .. " - " .. L["in the basement"]} -- Portalroom from Orgrimmar
+                        nodes[85][57278961] = { name = "", type = "HPortal", showInZone = true, showOnContinent = false, showOnMinimap = false, TransportName = L["Portalroom"] .. "\n" .. "\n" .. " ==> " .. ns.Silvermoon .. "\n" .. " ==> " .. ns.Valdrakken .. "\n" .. " ==> " .. ns.Oribos .. "\n" .. " ==> " .. ns.Azsuna .. "\n" .. " ==> " .. ns.Zuldazar .. "\n" .. " ==> " .. ns.Dalaran .. " - " .. ns.Northrend .. "\n" .. " ==> " .. ns.Hyjal .. "\n" .. "\n" .. " ==> " .. ns.CavernsOfTime .. " - " .. L["in the basement"] .. "\n" .. " ==> " .. ns.Shattrath .. " - " .. L["in the basement"] .. "\n" .. " ==> " .. ns.Warspear .. " - " .. L["in the basement"] .. "\n" .. " ==> " .. ns.DarkPortal .. " - " .. L["in the basement"] .. "\n" .. "      (" .. L["talk to"] .. ": " .. ns.ThrallmarMage .. " )" .. "\n" .. " ==> " .. ns.Dornogal .. " - " .. L["in the basement"]} -- Portalroom from Orgrimmar
                         nodes[85][50765561] = { mnID = 18, name = L["Portal"], dnID = " ==> " .. ns.RuinsofLordaeron, type = "HPortal", showInZone = true, showOnContinent = false, showOnMinimap = false } -- Ruins of Lordaeron 
                         nodes[85][47393928] = { mnID = 245, name = L["Portal"], type = "HPortalS", showInZone = true, showOnContinent = false, showOnMinimap = false } --  Portal to Tol Barad
                         nodes[85][48863851] = { mnID = 1527, name = L["Portal"], type = "HPortalS", showInZone = true, showOnContinent = false, showOnMinimap = false} -- Portal to Uldum
@@ -159,11 +159,11 @@ if not db.activate.HideMapNote then
                         nodes[86][66715154] = { id = 226, type = "Dungeon", showInZone = true, showOnContinent = false, showOnMinimap = false } -- Ragefire - Chasm of shadows
                     end
 
-                    if self.db.profile.showCapitalsDungeons and db.activate.ClassicIcons then
+                    if self.db.profile.showCapitalsDungeons and db.activate.noPassages then
                         nodes[85][51685850] = { id = 226, TransportName = L["in the basement"], type = "Dungeon", showInZone = true, showOnContinent = false, showOnMinimap = false } -- Ragefire
                     end
 
-                    if self.db.profile.showCapitalsInstancePassage and not db.activate.ClassicIcons then
+                    if self.db.profile.showCapitalsInstancePassage and not db.activate.noPassages then
                        nodes[85][55895097] = { mnID = 86, id = 226, TransportName = L["Way to the Instance Entrance"], name = "", type = "PassageDungeon", showInZone = true, showOnContinent = false, showOnMinimap = false } -- Ragefire   
                        nodes[85][46116716] = { mnID = 86, id = 226, TransportName = L["Way to the Instance Entrance"], name = "", type = "PassageDungeon", showInZone = true, showOnContinent = false, showOnMinimap = false } -- Ragefire  
                        nodes[85][42396160] = { mnID = 86, id = 226, TransportName = L["Way to the Instance Entrance"], name = "", type = "PassageDungeon", showInZone = true, showOnContinent = false, showOnMinimap = false } -- Ragefire    
@@ -1167,7 +1167,7 @@ if not db.activate.HideMapNote then
                         nodes[84][76211869] = { mnID = 198, name = "", type = "APortalS", showInZone = true, showOnContinent = false, showOnMinimap = false, TransportName = L["Portal"] .. " ==> " .. ns.Hyjal } -- Portal to Hyjal
                         nodes[84][73171966] = { mnID = 207, name = "", type = "APortalS", showInZone = true, showOnContinent = false, showOnMinimap = false, TransportName = L["Portal"] .. " ==> " .. ARTIFACT_SHAMAN_TITLECARD_DEEPHOLM } -- Portal to Deepholm
                         nodes[84][73301687] = { mnID = 203, name = "", type = "APortalS", showInZone = true, showOnContinent = false, showOnMinimap = false, TransportName = L["Portal"] .. " ==> " .. ns.Vashjir } -- Portal to Vashjir
-                        nodes[84][48728798] = { name = "", type = "PassageAPortal", showInZone = true, showOnContinent = false, showOnMinimap = false, TransportName = ns.Stormwind .. " " .. L["Portalroom"] .. "\n" .. " ==> " .. ns.Ashran .. "\n" .. " ==> " .. ns.Valdrakken .. "\n" .. " ==> " .. ns.Boralus .. "\n" .. " ==> " .. ns.Oribos .. "\n" .. " ==> " .. ns.Azsuna .. "\n" .. " ==> " .. ns.Shattrath .. "\n" .. " ==> " .. ns.JadeForest .. "\n" .. " ==> " .. ns.Dalaran .. "\n" .. " ==> " .. ns.CavernsOfTime .. "\n" .. " ==> " .. ns.Exodar .. "\n" ..  " ==> " .. ns.Amirdrassil .. "\n" .. " ==> " .. ns.DarkPortal .. "\n" .. " ==> " .. ns.Dornogal } -- Portalroom from Stormwind
+                        nodes[84][48728798] = { name = "", type = "APortal", showInZone = true, showOnContinent = false, showOnMinimap = false, TransportName = ns.Stormwind .. " " .. L["Portalroom"] .. "\n" .. " ==> " .. ns.Ashran .. "\n" .. " ==> " .. ns.Valdrakken .. "\n" .. " ==> " .. ns.Boralus .. "\n" .. " ==> " .. ns.Oribos .. "\n" .. " ==> " .. ns.Azsuna .. "\n" .. " ==> " .. ns.Shattrath .. "\n" .. " ==> " .. ns.JadeForest .. "\n" .. " ==> " .. ns.Dalaran .. "\n" .. " ==> " .. ns.CavernsOfTime .. "\n" .. " ==> " .. ns.Exodar .. "\n" ..  " ==> " .. ns.Amirdrassil .. "\n" .. " ==> " .. ns.DarkPortal .. "\n" .. " ==> " .. ns.Dornogal } -- Portalroom from Stormwind
                         nodes[84][23865611] = { mnID = 89, name = "", type = "APortal", showInZone = true, showOnContinent = false, showOnMinimap = false, TransportName = L["Portal"] .. " ==> " .. ns.Darnassus } -- Portal to Darnassus 
                         nodes[84][63197339] = { npcID = 54334, mnID = 407, name = "", dnID = L["Transport"] .. " ==> " .. CALENDAR_FILTER_DARKMOON .. "\n\n" .. REQUIRES_LABEL .. " " .. CALENDAR_FILTER_DARKMOON .. "\n" .. L["Starting on the first Sunday of each month for one week"], type = "DarkMoon", showInZone = true, showOnContinent = false, showOnMinimap = false }
                         nodes[84][62043235] = { npcID = 54334, mnID = 407, name = "", dnID = L["Transport"] .. " ==> " .. CALENDAR_FILTER_DARKMOON .. "\n\n" .. REQUIRES_LABEL .. " " .. CALENDAR_FILTER_DARKMOON .. "\n" .. L["Starting on the first Sunday of each month for one week"], type = "DarkMoon", showInZone = true, showOnContinent = false, showOnMinimap = false }
@@ -3326,7 +3326,7 @@ if not db.activate.HideMapNote then
                 end
 
                 if self.db.profile.showCapitalsTransport then
-                    nodes[2339][40722239] = { name = "", type = "Tport2", showInZone = true, showOnContinent = false, showOnMinimap = false, TransportName = L["Transport"] .. " ==> " .. L["(on the tower)"]  } -- Oribos to The Maw
+                    --nodes[2339][40722239] = { name = "", type = "Tport2", showInZone = true, showOnContinent = false, showOnMinimap = false, TransportName = L["Transport"] .. " ==> " .. L["(on the tower)"]  } -- Oribos to The Maw
                 end
 
                 if self.db.profile.showCapitalsFP then

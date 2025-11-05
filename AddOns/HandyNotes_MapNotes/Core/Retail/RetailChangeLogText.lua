@@ -1,7 +1,7 @@
 local ADDON_NAME, ns = ...
 
-ns.CurrentAddonVersion = "3.1.4"
-ns.PreviousAddonVersion_1 = "3.1.3"
+ns.CurrentAddonVersion = "3.1.5"
+ns.PreviousAddonVersion_1 = "3.1.4"
 
 ns.LOCALE_CHANGELOG_3_1_ = { -- empty backup file
   deDE = [[
@@ -46,6 +46,107 @@ ns.LOCALE_CHANGELOG_3_1_ = { -- empty backup file
 
   koKR = [[
 
+]],
+}
+
+ns.LOCALE_CHANGELOG_3_1_5 = {
+  deDE = [[ 
+• Der Anzeigefehler der Ruhmreichen-Händler-Symbole auf der „Scherbenwelt“-Minikarte wurde behoben.
+
+• Viele Symbole von MapNotes haben eine höhere Auflösung bekommen und manche zusätzlich ein neues optisches Design.
+
+• Das Änderungsprotokoll zeigt nun sowohl neue als auch ältere Versionsinformationen an.
+  • Dadurch können Spieler, die eine Version ausgelassen haben, alle Änderungen zusammengefasst in einem Fenster nachlesen.
+]],
+
+  enUS = [[
+• Fixed the display issue with Glorious Vendor icons on the Outland minimap.
+
+• Many MapNotes icons have received higher resolution and some have also been given a new visual design.
+
+• The changelog now shows both new and older version information.
+  • This allows players who skipped a version to view all changes summarized in one window.
+]],
+
+  frFR = [[
+• Correction du problème d’affichage des icônes de marchands glorieux sur la minicarte de l’Outreterre.
+
+• De nombreuses icônes de MapNotes ont été améliorées avec une résolution plus élevée, et certaines ont également reçu un nouveau design visuel.
+
+• Le journal des modifications affiche désormais à la fois les informations des nouvelles et des anciennes versions.
+  • Les joueurs ayant sauté une version peuvent ainsi consulter toutes les modifications résumées dans une seule fenêtre.
+]],
+
+  itIT = [[
+• Corretto un problema di visualizzazione delle icone dei Mercanti Gloriosi sulla minimappa delle Terre Esterne.
+
+• Molte icone di MapNotes hanno ricevuto una risoluzione più alta e alcune anche un nuovo design visivo.
+
+• Il registro delle modifiche ora mostra sia le informazioni delle versioni nuove che di quelle precedenti.
+  • I giocatori che hanno saltato una versione possono ora visualizzare tutte le modifiche riassunte in una sola finestra.
+]],
+
+  esES = [[
+• Se corrigió el error de visualización de los iconos de Vendedores Gloriosos en el minimapa de Terrallende.
+
+• Muchos iconos de MapNotes han recibido una mayor resolución y algunos también un nuevo diseño visual.
+
+• El registro de cambios ahora muestra tanto la información de las versiones nuevas como la de las anteriores.
+  • De este modo, los jugadores que se hayan saltado una versión pueden consultar todos los cambios resumidos en una sola ventana.
+]],
+
+  esMX = [[
+• Se corrigió el error de visualización de los íconos de Vendedores Gloriosos en el minimapa de Terrallende.
+
+• Muchos íconos de MapNotes ahora tienen una resolución más alta y algunos también un nuevo diseño visual.
+
+• El registro de cambios ahora muestra tanto la información de las versiones nuevas como la de las anteriores.
+  • Así, los jugadores que se hayan saltado una versión pueden ver todos los cambios resumidos en una sola ventana.
+]],
+
+  ptBR = [[
+• Corrigido o erro de exibição dos ícones dos Comerciantes Gloriosos no minimapa de Terralém.
+
+• Muitos ícones do MapNotes receberam uma resolução mais alta e alguns também ganharam um novo design visual.
+
+• O registro de alterações agora mostra tanto as informações das versões novas quanto das antigas.
+  • Isso permite que jogadores que pularam uma versão vejam todas as mudanças resumidas em uma única janela.
+]],
+
+  ruRU = [[
+• Исправлена ошибка отображения значков Славных торговцев на миникарте Запределья.
+
+• Многие значки MapNotes получили более высокое разрешение, а некоторые также новый визуальный дизайн.
+
+• Журнал изменений теперь показывает как новую, так и старую информацию о версиях.
+  • Это позволяет игрокам, пропустившим версию, увидеть все изменения в одном окне.
+]],
+
+  zhCN = [[
+• 修复了外域小地图上荣耀商人图标的显示问题。
+
+• 许多 MapNotes 图标已获得更高的分辨率，其中一些还采用了全新的视觉设计。
+
+• 更新日志现在会同时显示新版本和旧版本的信息。
+  • 这样，跳过某个版本的玩家也可以在一个窗口中查看所有更新内容。
+]],
+
+  zhTW = [[
+• 修正外域小地圖上榮耀商人圖示的顯示問題。
+
+• 許多 MapNotes 圖示已提升解析度，其中一些也採用了全新的視覺設計。
+
+• 更新日誌現在會同時顯示新版本與舊版本的資訊。
+  • 如此一來，跳過某個版本的玩家也能在同一個視窗中查看所有更新內容。
+]],
+
+  koKR = [[
+• 아웃랜드 미니맵에서 영광의 상인 아이콘이 잘못 표시되던 문제를 수정했습니다.
+
+• 많은 MapNotes 아이콘의 해상도가 향상되었으며, 일부는 새로운 시각적 디자인으로 변경되었습니다.
+
+• 변경 로그가 이제 새로운 버전과 이전 버전의 정보를 모두 표시합니다.
+  • 버전을 건너뛴 플레이어도 모든 변경 사항을 하나의 창에서 확인할 수 있습니다.
 ]],
 }
 
@@ -805,9 +906,9 @@ ns.LOCALE_CHANGELOG_3_1_1 = {
 ]],
 }
 
-ns.LOCALE_CHANGELOG_NEW = ns.LOCALE_CHANGELOG_3_1_4
-
-ns.LOCALE_OLDER_CHANGELOGS = {
+ns.LOCALE_CHANGELOGS = {
+  { version = "3.1.5", table = ns.LOCALE_CHANGELOG_3_1_5 },
+  { version = "3.1.4", table = ns.LOCALE_CHANGELOG_3_1_4 },
   { version = "3.1.3", table = ns.LOCALE_CHANGELOG_3_1_3 },
   { version = "3.1.2", table = ns.LOCALE_CHANGELOG_3_1_2 },
   { version = "3.1.1", table = ns.LOCALE_CHANGELOG_3_1_1 },

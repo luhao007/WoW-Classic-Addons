@@ -77,8 +77,8 @@ ns.currentSourceFile = "RetailZoneMiniMapDungeonminimapLocation.lua"
             minimap[11][23518124] = { npcID = 116781, name = "", mnID = 825, type = "PetBattleDungeon", showInZone = false, showOnContinent = false, showOnMinimap = true } -- Wailing Caverns
           end
 
-        -- Kalimdor Dungeons without ClassicIcons is activ
-          if self.db.profile.showMiniMapDungeons and not db.activate.ClassicIcons then
+        -- Kalimdor Dungeons without noPassages is activ
+          if self.db.profile.showMiniMapDungeons and not db.activate.noPassages then
             minimap[69][60323015] = { id = 230, type = "Dungeon", showInZone = false, showOnContinent = false, showOnMinimap = true } -- Dire Maul - Capital Gardens - West left Entrance 
             minimap[69][60303130] = { id = 230, type = "Dungeon", showInZone = false, showOnContinent = false, showOnMinimap = true } -- Dire Maul - Capital Gardens - West right Entrance 
             minimap[69][62502490] = { id = 1277, type = "Dungeon", showInZone = false, showOnContinent = false, showOnMinimap = true } -- Dire Maul - Gordok Commons - North  
@@ -112,8 +112,8 @@ ns.currentSourceFile = "RetailZoneMiniMapDungeonminimapLocation.lua"
 
           end
 
-        --Kalimdor Passage without ClassicIcons
-          if self.db.profile.showMiniMapPassage and not db.activate.ClassicIcons then
+        --Kalimdor Passage without noPassages
+          if self.db.profile.showMiniMapPassage and not db.activate.noPassages then
             minimap[199][45089400] = { dnID = L["Way to the Instance Entrance"], id = 233, type = "PassageDungeon", showInZone = false, showOnContinent = false, showOnMinimap = true } -- Razorfen Downs
             minimap[64][41662882] = { dnID = L["Way to the Instance Entrance"], id = 233, type = "PassageDungeon", showInZone = false, showOnContinent = false, showOnMinimap = true } -- Razorfen Downs
             minimap[1527][71755222] = { dnID = L["Way to the Instance Entrance"], id = 70, type = "PassageDungeon", showInZone = false, showOnContinent = false, showOnMinimap = true } -- Halls of Origination  
@@ -125,8 +125,8 @@ ns.currentSourceFile = "RetailZoneMiniMapDungeonminimapLocation.lua"
           end
 
 
-        --Kalimdor ClassicIcons
-          if db.activate.ClassicIcons then  
+        --Kalimdor noPassages
+          if db.activate.noPassages then  
 
             if self.db.profile.showMiniMapDungeons then 
               minimap[199][45089400] = { dnID = L["Way to the Instance Entrance"], id = 233, type = "Dungeon", showInZone = false, showOnContinent = false, showOnMinimap = true } -- Razorfen Downs
@@ -144,7 +144,7 @@ ns.currentSourceFile = "RetailZoneMiniMapDungeonminimapLocation.lua"
           end
 
         --Kalimdor Multiple
-          if self.db.profile.showMiniMapMultiple and not db.activate.ClassicIcons then  
+          if self.db.profile.showMiniMapMultiple and not db.activate.noPassages then  
             minimap[71][64864997] = { mnID = 75, id = { 187, 750, 279, 255, 251, 184, 185, 186, }, type = "PassageDungeonRaidMulti", showInZone = false, showOnContinent = false, showOnMinimap = true } -- Dragon Soul, The Battle for Mount Hyjal, The Culling of Stratholme, Black Morass, Old Hillsbrad Foothills, End Time, Well of Eternity, Hour of Twilight Heroic
             minimap[74][30857356] = { mnID = 75, id = { 187, 750, 279, 255, 251, 184, 185, 186, }, type = "PassageDungeonRaidMulti", showInZone = false, showOnContinent = false, showOnMinimap = true } -- Dragon Soul, The Battle for Mount Hyjal, The Culling of Stratholme, Black Morass, Old Hillsbrad Foothills, End Time, Well of Eternity, Hour of Twilight Heroic
           end
@@ -239,7 +239,7 @@ ns.currentSourceFile = "RetailZoneMiniMapDungeonminimapLocation.lua"
           end
             
           -- Eastern Kingdom Passage
-          if self.db.profile.showMiniMapPassage and not db.activate.ClassicIcons then  
+          if self.db.profile.showMiniMapPassage and not db.activate.noPassages then  
             minimap[15][42031147] = { dnID = L["Way to the Instance Entrance"], id = 239, type = "PassageDungeon", showInZone = false, showOnContinent = false, showOnMinimap = true } -- Uldaman
             minimap[469][32793702] = { mnID = 30, dnID = L["Way to the Instance Entrance"], id = 231, type = "PassageDungeon", showInZone = false, showOnContinent = false, showOnMinimap = true } -- Gnomeregan
             minimap[27][31393804] = { mnID = 30, dnID = L["Way to the Instance Entrance"], id = 231, type = "PassageDungeon", showInZone = false, showOnContinent = false, showOnMinimap = true } -- Gnomeregan     
@@ -259,8 +259,8 @@ ns.currentSourceFile = "RetailZoneMiniMapDungeonminimapLocation.lua"
           end
 
 
-          -- Eastern Kingdom ClassicIcons
-          if db.activate.ClassicIcons then
+          -- Eastern Kingdom noPassages
+          if db.activate.noPassages then
 
             if self.db.profile.showMiniMapDungeons then
               minimap[15][42031147] = { dnID = L["Way to the Instance Entrance"], id = 239, type = "Dungeon", showInZone = false, showOnContinent = false, showOnMinimap = true } -- Uldaman
@@ -535,14 +535,14 @@ ns.currentSourceFile = "RetailZoneMiniMapDungeonminimapLocation.lua"
           end
 
 
-        --Broken Isles Raids without ClassicIcons
-          if self.db.profile.showMiniMapPassage and not db.activate.ClassicIcons then
+        --Broken Isles Raids without noPassages
+          if self.db.profile.showMiniMapPassage and not db.activate.noPassages then
             minimap[680][43346230] = { name = L["Way to the Instance Entrance"], id = { 726, 786 }, type = "PassageDungeonRaidMulti", showInZone = false, showOnContinent = false, showOnMinimap = true } -- The Arcway
           end
 
 
-        --Broken Isles ClassicIcons
-          if db.activate.ClassicIcons then
+        --Broken Isles noPassages
+          if db.activate.noPassages then
 
             if self.db.profile.showMiniMapMultiple then
               minimap[680][43346230] = { name = L["Way to the Instance Entrance"], id = { 726, 786 }, type = "MultipleM", showInZone = false, showOnContinent = false, showOnMinimap = true } -- The Arcway
@@ -583,14 +583,14 @@ ns.currentSourceFile = "RetailZoneMiniMapDungeonminimapLocation.lua"
           end
 
 
-        --Zandalar Raids without ClassicIcons
-          if self.db.profile.showMiniMapPassage and not db.activate.ClassicIcons then
+        --Zandalar Raids without noPassages
+          if self.db.profile.showMiniMapPassage and not db.activate.noPassages then
             minimap[1355][50341233] = {  id = 1179, type = "PassageRaid", showInZone = false, showOnContinent = false, showOnMinimap = true } -- The Eternal Palace
           end
 
 
-        --Zandalar ClassicIcons
-          if db.activate.ClassicIcons then
+        --Zandalar noPassages
+          if db.activate.noPassages then
 
             if self.db.profile.showMiniMapRaids then
               minimap[1355][50341233] = {  id = 1179, type = "Raid", showInZone = false, showOnContinent = false, showOnMinimap = true } -- The Eternal Palace
@@ -723,13 +723,13 @@ ns.currentSourceFile = "RetailZoneMiniMapDungeonminimapLocation.lua"
 
 
         -- Dragonflight Passage
-          if self.db.profile.showMiniMapPassage and not db.activate.ClassicIcons then
+          if self.db.profile.showMiniMapPassage and not db.activate.noPassages then
             minimap[2023][18855124] = { id = 1207, type = "PassageRaid", showInZone = false, showOnContinent = false, showOnMinimap = true }-- Amirdrassil, the Dream's Hope
           end
 
 
-        -- Dragonflight ClassicIcons
-          if db.activate.ClassicIcons then
+        -- Dragonflight noPassages
+          if db.activate.noPassages then
 
             if self.db.profile.showMiniMapRaids then
               minimap[2023][18855124] = { id = 1207, type = "Raid", showInZone = false, showOnContinent = false, showOnMinimap = true }-- Amirdrassil, the Dream's Hope

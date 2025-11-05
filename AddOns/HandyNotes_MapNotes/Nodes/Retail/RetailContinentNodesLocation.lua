@@ -41,8 +41,8 @@ ns.currentSourceFile = "RetailContinentNodesLocation.lua"
             nodes[12][51985246] = { npcID = 116781, name = "", mnID = 10, type = "PetBattleDungeon", showOnContinent = true, showInZone = false, showOnMinimap = false } -- Wailing Caverns
           end
 
-        -- Kalimdor Dungeons hidden if ClassicIcons is activ
-          if self.db.profile.showContinentDungeons and not db.activate.ClassicIcons then 
+        -- Kalimdor Dungeons hidden if noPassages is activ
+          if self.db.profile.showContinentDungeons and not db.activate.noPassages then 
             nodes[12][42856552] = { id = 1277, type = "Dungeon", showOnContinent = true, showInZone = false, showOnMinimap = false } -- Dire Maul - Gordok Commons - North  
           end
     
@@ -57,7 +57,7 @@ ns.currentSourceFile = "RetailContinentNodesLocation.lua"
           end
     
         --Kalimdor Passage
-          if self.db.profile.showContinentPassage and not db.activate.ClassicIcons then
+          if self.db.profile.showContinentPassage and not db.activate.noPassages then
             nodes[12][59228331] = { mnID = 75, id = { 187, 750, 279, 255, 251, 184, 185, 186 }, type = "PassageDungeonRaidMulti", showOnContinent = true, showInZone = false, showOnMinimap = false } -- Dragon Soul, The Battle for Mount Hyjal, The Culling of Stratholme, Black Morass, Old Hillsbrad Foothills, End Time, Well of Eternity, Hour of Twilight Heroic
             nodes[12][46106657] = { id = 1276, type = "PassageDungeon", showOnContinent = true, showInZone = false, showOnMinimap = false } -- Dire Maul - Warpwood Quarter - East above Camp Mojache   
             nodes[12][43906613] = { id = 1276, type = "PassageDungeon", showOnContinent = true, showInZone = false, showOnMinimap = false } -- Dire Maul - Warpwood Quarter - East above Camp Mojache 
@@ -67,8 +67,8 @@ ns.currentSourceFile = "RetailContinentNodesLocation.lua"
             --nodes[12][58324232] = { id = 226, type = "PassageDungeon", showOnContinent = true, showInZone = false, showOnMinimap = false } -- Ragefire 
           end
 
-        --Kalimdor Passage without ClassicIcons and without MapNotesIcons
-          if self.db.profile.showContinentPassage and not db.activate.ClassicIcons and not self.db.profile.showContinentMapNotes then
+        --Kalimdor Passage without noPassages and without MapNotesIcons
+          if self.db.profile.showContinentPassage and not db.activate.noPassages and not self.db.profile.showContinentMapNotes then
             nodes[12][58324232] = { id = 226, type = "PassageDungeon", showOnContinent = true, showInZone = false, showOnMinimap = false } -- Ragefire 
           end
 
@@ -80,13 +80,13 @@ ns.currentSourceFile = "RetailContinentNodesLocation.lua"
             end
           end
 
-        --Kalimdor Passage without ContinentEnemyFaction and with MapNotesIcons with ClassicIcons
-          if not db.activate.ContinentEnemyFaction and self.db.profile.showContinentMapNotes and db.activate.ClassicIcons then
-            nodes[12][58324232] = { id = 226, type = "Dungeon", showOnContinent = true, showInZone = false, showOnMinimap = false } -- Ragefire
+        --Kalimdor Passage without ContinentEnemyFaction and with MapNotesIcons with noPassages
+          if not db.activate.ContinentEnemyFaction and self.db.profile.showContinentMapNotes and db.activate.noPassages then
+            --nodes[12][58324232] = { id = 226, type = "Dungeon", showOnContinent = true, showInZone = false, showOnMinimap = false } -- Ragefire
           end
 
-        --Kalimdor ClassicIcons
-         if db.activate.ClassicIcons then
+        --Kalimdor noPassages
+         if db.activate.noPassages then
 
           if self.db.profile.showContinentDungeons then
             --nodes[12][46106657] = { id = 1276, type = "Dungeon", showOnContinent = true, showInZone = false, showOnMinimap = false } -- Dire Maul - Warpwood Quarter - East above Camp Mojache   
@@ -96,8 +96,8 @@ ns.currentSourceFile = "RetailContinentNodesLocation.lua"
             nodes[12][38395594] = { id = 232, type = "Dungeon", showOnContinent = true, showInZone = false, showOnMinimap = false } -- Maraudon 
           end
 
-        --Kalimdor ClassicIcons without MapNotesIcons
-          if db.activate.ClassicIcons and not self.db.profile.showContinentMapNotes then
+        --Kalimdor noPassages without MapNotesIcons
+          if db.activate.noPassages and not self.db.profile.showContinentMapNotes then
 
             if self.db.profile.showContinentDungeons then
               nodes[12][58324232] = { id = 226, type = "Dungeon", showOnContinent = true, showInZone = false, showOnMinimap = false } -- Ragefire 
@@ -260,7 +260,7 @@ ns.currentSourceFile = "RetailContinentNodesLocation.lua"
 
 
         --Eastern  Kingdom Passage
-          if self.db.profile.showContinentPassage and not db.activate.ClassicIcons then
+          if self.db.profile.showContinentPassage and not db.activate.noPassages then
             nodes[13][53977927] = { id = 237, type = "PassageDungeon", showOnContinent = true, showInZone = false, showOnMinimap = false } -- The Temple of Atal'hakkar 
             nodes[13][40808194] = { id = 63, type = "PassageDungeon", showOnContinent = true, showInZone = false, showOnMinimap = false } -- Deadmines
             nodes[13][42915972] = { id = 231, type = "PassageDungeon", showOnContinent = true, showInZone = false, showOnMinimap = false } -- Gnomeregan             
@@ -270,8 +270,8 @@ ns.currentSourceFile = "RetailContinentNodesLocation.lua"
             nodes[13][46886972] = { mnID = 33, name = TOOLTIP_BATTLE_PET .. " " .. LFG_TYPE_DUNGEON, id = { 741, 742, 66, 228, 229, 559 }, type = "PassageDungeonRaidMulti", showOnContinent = true, showInZone = false, showOnMinimap = false } -- Molten Core, Blackwing Lair, Blackrock Caverns, Blackrock Depths, Lower Blackrock Spire, Upper Blackrock Spire 
           end
     
-        --Kalimdor Passage without ClassicIcons and without MapNotesIcons
-          if self.db.profile.showContinentDungeons and not db.activate.ClassicIcons and not self.db.profile.showContinentMapNotes then
+        --Kalimdor Passage without noPassages and without MapNotesIcons
+          if self.db.profile.showContinentDungeons and not db.activate.noPassages and not self.db.profile.showContinentMapNotes then
             nodes[13][42787097] = { id = 238, type = "Dungeon", showOnContinent = true, showInZone = false, showOnMinimap = false } -- The Stockade  
           end
 
@@ -283,9 +283,9 @@ ns.currentSourceFile = "RetailContinentNodesLocation.lua"
             end
           end
 
-        --Eastern Kingdom ClassicIcons
+        --Eastern Kingdom noPassages
 
-        if db.activate.ClassicIcons then
+        if db.activate.noPassages then
 
           if self.db.profile.showContinentDungeons then
             nodes[13][53977927] = { id = 237, type = "Dungeon", showOnContinent = true, showInZone = false, showOnMinimap = false } -- The Temple of Atal'hakkar 
@@ -1185,13 +1185,13 @@ ns.currentSourceFile = "RetailContinentNodesLocation.lua"
     
 
         -- Dragonflight Passage          
-          if self.db.profile.showContinentPassage and not db.activate.ClassicIcons then
+          if self.db.profile.showContinentPassage and not db.activate.noPassages then
             nodes[1978][31065686] = { id = 1207, type = "PassageRaid", showOnContinent = true, showInZone = false, showOnMinimap = false } -- Amirdrassil, the Dream's Hope
           end
     
 
-        -- Dragonflight ClassicIcons
-          if db.activate.ClassicIcons then
+        -- Dragonflight noPassages
+          if db.activate.noPassages then
 
             if self.db.profile.showContinentRaids then
               nodes[1978][31065686] = { id = 1207, type = "Raid", showOnContinent = true, showInZone = false, showOnMinimap = false } -- Amirdrassil, the Dream's Hope
@@ -1248,7 +1248,7 @@ ns.currentSourceFile = "RetailContinentNodesLocation.lua"
         -- Khaz Algar Raids
           if self.db.profile.showContinentRaids then
             nodes[2274][41469096] = { id = 1273, type = "Raid", showOnContinent = true, showInZone = false, showOnMinimap = false } -- Nerub-ar Palace     
-            nodes[2274][82217245] = { id = 1296, type = "Raid", showOnContinent = true, showInZone = false, showOnMinimap = false } -- Liberation of Undermine  
+            nodes[2274][81917514] = { id = 1296, type = "Raid", showOnContinent = true, showInZone = false, showOnMinimap = false } -- Liberation of Undermine  
             nodes[2274][17931205] = { id = 1302, type = "Raid", showOnContinent = true, showInZone = false, showOnMinimap = false } -- Manaforge Omega
           end
 

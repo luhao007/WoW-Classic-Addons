@@ -10,7 +10,7 @@ local ipairs, pairs = ipairs, pairs
 
 function ns.FogOfWar:SyncColorsFromDB(doRefresh)
   local db = ns.Addon and ns.Addon.db and ns.Addon.db.profile
-  local t  = db and db.FogOfWarColor
+  local t = db and db.FogOfWarColor
   if not t then return end
   self.colorR = t.colorR or 1
   self.colorG = t.colorG or 1
@@ -71,9 +71,10 @@ end
 
 local mapData = ns.FogOfWarDataClassic or {}
 function ns.FogOfWar:MapExplorationPin_RefreshOverlays(pin, fullUpdate)
+  local db = ns.Addon and ns.Addon.db and ns.Addon.db.profile
+  local fogOn = db and db.activate and db.activate.FogOfWar
   for overlay in pin.overlayTexturePool:EnumerateActive() do
-    overlay:SetVertexColor(1,1,1)
-    overlay:SetAlpha(1)
+    overlay:SetAlpha(fogOn and 0 or 1)
   end
 
   local mapCanvas = pin:GetMap()
@@ -142,7 +143,7 @@ function ns.FogOfWar:MapExplorationPin_RefreshOverlays(pin, fullUpdate)
 
           if ns.Addon and ns.Addon.db and ns.Addon.db.profile and ns.Addon.db.profile.activate.FogOfWar then
             texture:Show()
-            texture:SetVertexColor(r, g, b)
+            texture:SetVertexColor(1, 1, 1)
             texture:SetAlpha(a)
             texture:SetWidth(texPixW)
             texture:SetHeight(texPixH)

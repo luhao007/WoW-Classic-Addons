@@ -68,14 +68,18 @@ ns.currentSourceFile = "RetailZoneDungeonNodesLocation.lua"
             nodes[10][40496868] = { id = 240, type = "Dungeon", showInZone = true, showOnContinent = false, showOnMinimap = false } -- Wailing Caverns
           end
 
+          if self.db.profile.showZoneDungeons and ns.Addon.db.profile.activate.noPassages and not self.db.profile.showZonePetBattleDungeons then 
+            nodes[10][40496868] = { id = 240, type = "Dungeon", showInZone = true, showOnContinent = false, showOnMinimap = false } -- Wailing Caverns
+          end
+
           -- Kalimdor PetBattleDungeons
           if self.db.profile.showZonePetBattleDungeons then
             nodes[10][38776816] = { npcID = 116781, name = "", mnID = 825, type = "PetBattleDungeon", showInZone = true, showOnContinent = false, showOnMinimap = false } -- Wailing Caverns
             nodes[11][23518124] = { npcID = 116781, name = "", mnID = 825, type = "PetBattleDungeon", showInZone = true, showOnContinent = false, showOnMinimap = false } -- Wailing Caverns
           end
 
-        -- Kalimdor Dungeons without ClassicIcons is activ
-          if self.db.profile.showZoneDungeons and not db.activate.ClassicIcons then
+        -- Kalimdor Dungeons without noPassages is activ
+          if self.db.profile.showZoneDungeons and not db.activate.noPassages then
             nodes[69][60323015] = { id = 230, type = "Dungeon", showInZone = true, showOnContinent = false, showOnMinimap = false } -- Dire Maul - Capital Gardens - West left Entrance 
             nodes[69][60303130] = { id = 230, type = "Dungeon", showInZone = true, showOnContinent = false, showOnMinimap = false } -- Dire Maul - Capital Gardens - West right Entrance 
             nodes[69][62502490] = { id = 1277, type = "Dungeon", showInZone = true, showOnContinent = false, showOnMinimap = false } -- Dire Maul - Gordok Commons - North  
@@ -108,8 +112,8 @@ ns.currentSourceFile = "RetailZoneDungeonNodesLocation.lua"
           nodes[75][60872115] = { id = 187, type = "Raid", showInZone = true, showOnContinent = false, showOnMinimap = false } -- Dragon Soul
           end
 
-        --Kalimdor Passage without ClassicIcons
-          if self.db.profile.showZonePassage and not db.activate.ClassicIcons then
+        --Kalimdor Passage without noPassages
+          if self.db.profile.showZonePassage and not db.activate.noPassages then
             nodes[199][45089400] = { dnID = L["Way to the Instance Entrance"], id = 233, type = "PassageDungeon", showInZone = true, showOnContinent = false, showOnMinimap = false } -- Razorfen Downs
             nodes[64][41662882] = { dnID = L["Way to the Instance Entrance"], id = 233, type = "PassageDungeon", showInZone = true, showOnContinent = false, showOnMinimap = false } -- Razorfen Downs
             nodes[1527][71755222] = { dnID = L["Way to the Instance Entrance"], id = 70, type = "PassageDungeon", showInZone = true, showOnContinent = false, showOnMinimap = false } -- Halls of Origination
@@ -121,8 +125,8 @@ ns.currentSourceFile = "RetailZoneDungeonNodesLocation.lua"
           end
 
 
-        --Kalimdor ClassicIcons
-          if db.activate.ClassicIcons then  
+        --Kalimdor noPassages
+          if db.activate.noPassages then  
 
             if self.db.profile.showZoneDungeons then 
               nodes[199][45089400] = { dnID = L["Way to the Instance Entrance"], id = 233, type = "Dungeon", showInZone = true, showOnContinent = false, showOnMinimap = false } -- Razorfen Downs
@@ -140,7 +144,7 @@ ns.currentSourceFile = "RetailZoneDungeonNodesLocation.lua"
           end
 
         --Kalimdor Multiple
-          if self.db.profile.showZoneMultiple and not db.activate.ClassicIcons then  
+          if self.db.profile.showZoneMultiple and not db.activate.noPassages then  
             nodes[71][64864997] = { mnID = 75, id = { 187, 750, 279, 255, 251, 184, 185, 186, }, type = "PassageDungeonRaidMulti", showInZone = true, showOnContinent = false, showOnMinimap = false } -- Dragon Soul, The Battle for Mount Hyjal, The Culling of Stratholme, Black Morass, Old Hillsbrad Foothills, End Time, Well of Eternity, Hour of Twilight Heroic
             nodes[74][30857356] = { mnID = 75, id = { 187, 750, 279, 255, 251, 184, 185, 186, }, type = "PassageDungeonRaidMulti", showInZone = true, showOnContinent = false, showOnMinimap = false } -- Dragon Soul, The Battle for Mount Hyjal, The Culling of Stratholme, Black Morass, Old Hillsbrad Foothills, End Time, Well of Eternity, Hour of Twilight Heroic
           end
@@ -236,7 +240,7 @@ ns.currentSourceFile = "RetailZoneDungeonNodesLocation.lua"
           end
 
           -- Eastern Kingdom Passage
-          if self.db.profile.showZonePassage and not db.activate.ClassicIcons then  
+          if self.db.profile.showZonePassage and not db.activate.noPassages then  
             nodes[15][42031147] = { dnID = L["Way to the Instance Entrance"], id = 239, type = "PassageDungeon", showInZone = true, showOnContinent = false, showOnMinimap = false } -- Uldaman
             nodes[469][32793702] = { mnID = 30, dnID = L["Way to the Instance Entrance"], id = 231, type = "PassageDungeon", showInZone = true, showOnContinent = false, showOnMinimap = false } -- Gnomeregan
             nodes[27][31393804] = { mnID = 30, dnID = L["Way to the Instance Entrance"], id = 231, type = "PassageDungeon", showInZone = true, showOnContinent = false, showOnMinimap = false } -- Gnomeregan     
@@ -255,8 +259,8 @@ ns.currentSourceFile = "RetailZoneDungeonNodesLocation.lua"
             nodes[52][42527168] = { mnID = 55, dnID = L["Way to the Instance Entrance"], id = 63, type = "PassageDungeon", showInZone = true, showOnContinent = false, showOnMinimap = false } -- Deadmines   
           end
 
-          -- Eastern Kingdom ClassicIcons
-          if db.activate.ClassicIcons then
+          -- Eastern Kingdom noPassages
+          if db.activate.noPassages then
 
             if self.db.profile.showZoneDungeons then
               nodes[15][42031147] = { dnID = L["Way to the Instance Entrance"], id = 239, type = "Dungeon", showInZone = true, showOnContinent = false, showOnMinimap = false } -- Uldaman
@@ -528,14 +532,14 @@ ns.currentSourceFile = "RetailZoneDungeonNodesLocation.lua"
           end
 
 
-        -- Broken Isles Raids without ClassicIcons
-          if self.db.profile.showZonePassage and not db.activate.ClassicIcons then
+        -- Broken Isles Raids without noPassages
+          if self.db.profile.showZonePassage and not db.activate.noPassages then
             nodes[680][43346230] = { name = L["Way to the Instance Entrance"], id = { 726, 786 }, type = "PassageDungeonRaidMulti", showInZone = true, showOnContinent = false, showOnMinimap = false } -- The Arcway
           end
 
 
-        -- Broken Isles ClassicIcons
-          if db.activate.ClassicIcons then
+        -- Broken Isles noPassages
+          if db.activate.noPassages then
 
             if self.db.profile.showZoneMultiple then
               nodes[680][43346230] = { name = L["Way to the Instance Entrance"], id = { 726, 786 }, type = "MultipleM", showInZone = true, showOnContinent = false, showOnMinimap = false } -- The Arcway
@@ -580,14 +584,14 @@ ns.currentSourceFile = "RetailZoneDungeonNodesLocation.lua"
           end
 
 
-        --Zandalar Raids without ClassicIcons
-          if self.db.profile.showZonePassage and not db.activate.ClassicIcons then
+        --Zandalar Raids without noPassages
+          if self.db.profile.showZonePassage and not db.activate.noPassages then
             nodes[1355][50341233] = { id = 1179, type = "PassageRaid", showInZone = true, showOnContinent = false, showOnMinimap = false } -- The Eternal Palace
           end
 
 
-        --Zandalar ClassicIcons
-          if db.activate.ClassicIcons then
+        --Zandalar noPassages
+          if db.activate.noPassages then
 
             if self.db.profile.showZoneRaids then
               nodes[1355][50341233] = {  id = 1179, type = "Raid", showInZone = true, showOnContinent = false, showOnMinimap = false } -- The Eternal Palace
@@ -720,13 +724,13 @@ ns.currentSourceFile = "RetailZoneDungeonNodesLocation.lua"
 
 
         -- Dragonflight Passage
-          if self.db.profile.showZonePassage and not db.activate.ClassicIcons then
+          if self.db.profile.showZonePassage and not db.activate.noPassages then
             nodes[2023][18855124] = { id = 1207, type = "PassageRaid", showInZone = true, showOnContinent = false, showOnMinimap = false }-- Amirdrassil, the Dream's Hope
           end
 
 
-        -- Dragonflight ClassicIcons
-          if db.activate.ClassicIcons then
+        -- Dragonflight noPassages
+          if db.activate.noPassages then
 
             if self.db.profile.showZoneRaids then
               nodes[2023][18855124] = { id = 1207, type = "Raid", showInZone = true, showOnContinent = false, showOnMinimap = false }-- Amirdrassil, the Dream's Hope

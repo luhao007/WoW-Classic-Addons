@@ -9,8 +9,6 @@ local LEFT, RIGHT = 12, 12 -- distance textframe to outer frame
 function ns.ShowLoginChangelogWindow()
   if (MapNotesChangelogFrame and MapNotesChangelogFrame:IsShown()) 
     or (MapNotesChangelogFrameMenu and MapNotesChangelogFrameMenu:IsShown()) 
-    or (MapNotesOldChangelogFrameMenu1 and MapNotesOldChangelogFrameMenu1:IsShown())
-    or (MapNotesOldChangelogFrameMenu2 and MapNotesOldChangelogFrameMenu2:IsShown())
     then
     return
   end
@@ -51,8 +49,8 @@ function ns.ShowLoginChangelogWindow()
     LoginChangeLogFrame.editBox:SetPoint("RIGHT", content, "RIGHT", -edge, 0)
     LoginChangeLogFrame.editBox:SetAutoFocus(false)
 
-    local changelogText = ns.LOCALE_CHANGELOG_NEW[GetLocale()] or ns.LOCALE_CHANGELOG_NEW["enUS"]
-    LoginChangeLogFrame.editBox:SetText("|cffffd700" .. changelogText)
+    local changelogText = ns.BuildAllChangelogText()
+    LoginChangeLogFrame.editBox:SetText(changelogText)
     LoginChangeLogFrame.editBox:SetScript("OnEscapePressed", function() end)
     LoginChangeLogFrame.editBox:SetScript("OnEnterPressed", function() end)
     LoginChangeLogFrame.editBox:EnableMouse(false)
@@ -89,11 +87,9 @@ function ns.ShowLoginChangelogWindow()
   table.insert(UISpecialFrames, "MapNotesChangelogFrame")
 end
 
-function ns.ShowMenuChangelogWindowNew()
+function ns.ShowMenuChangelogWindow()
   if (MapNotesChangelogFrame and MapNotesChangelogFrame:IsShown()) 
     or (MapNotesChangelogFrameMenu and MapNotesChangelogFrameMenu:IsShown()) 
-    or (MapNotesOldChangelogFrameMenu1 and MapNotesOldChangelogFrameMenu1:IsShown())
-    or (MapNotesOldChangelogFrameMenu2 and MapNotesOldChangelogFrameMenu2:IsShown())
     then
     return
   end
@@ -117,13 +113,13 @@ function ns.ShowMenuChangelogWindowNew()
 
   ChangeLogFrameMenu.fixedVersionText = ChangeLogFrameMenu:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
   ChangeLogFrameMenu.fixedVersionText:SetPoint("TOPLEFT", 10, -5)
-  ChangeLogFrameMenu.fixedVersionText:SetText("|cffffd700" .. GAME_VERSION_LABEL .. ":|r " .. "|cffff0000" .. ns.CurrentAddonVersion)
+  ChangeLogFrameMenu.fixedVersionText:SetText("|cffffd700" .. GAME_VERSION_LABEL .. ":|r " .. "|cffff0000" .. ns.PreviousAddonVersion_1 .. " + " .. PREVIOUS)
 
   ChangeLogFrameMenu.scrollFrame = CreateFrame("ScrollFrame", nil, ChangeLogFrameMenu, "UIPanelScrollFrameTemplate")
   ChangeLogFrameMenu.scrollFrame:SetPoint("TOPLEFT", 10, -40)
   ChangeLogFrameMenu.scrollFrame:SetPoint("BOTTOMRIGHT", -30, 40)
 
-  local content = CreateFrame("Frame", nil, ChangeLogFrameMenu.scrollFrame) -- EditBox with padding inside frame
+  local content = CreateFrame("Frame", nil, ChangeLogFrameMenu.scrollFrame)
   content:SetSize(textwindowWidths, 1)
   ChangeLogFrameMenu.editBox = CreateFrame("EditBox", nil, content)
   ChangeLogFrameMenu.editBox:SetMultiLine(true)
@@ -132,8 +128,8 @@ function ns.ShowMenuChangelogWindowNew()
   ChangeLogFrameMenu.editBox:SetPoint("RIGHT", content, "RIGHT", -edge, 0)
   ChangeLogFrameMenu.editBox:SetAutoFocus(false)
 
-  local changelogText = ns.LOCALE_CHANGELOG_NEW[GetLocale()] or ns.LOCALE_CHANGELOG_NEW["enUS"]
-  ChangeLogFrameMenu.editBox:SetText("|cffffd700" .. changelogText)
+  local changelogText = ns.BuildAllChangelogText()
+  ChangeLogFrameMenu.editBox:SetText(changelogText)
   ChangeLogFrameMenu.editBox:SetScript("OnEscapePressed", function() end)
   ChangeLogFrameMenu.editBox:SetScript("OnEnterPressed", function() end)
   ChangeLogFrameMenu.editBox:EnableMouse(false)
@@ -160,79 +156,6 @@ function ns.ShowMenuChangelogWindowNew()
   end)
 
   table.insert(UISpecialFrames, "MapNotesChangelogFrameMenu")
-end
-
-function ns.ShowMenuChangelogWindowOld()
-  if (MapNotesChangelogFrame and MapNotesChangelogFrame:IsShown()) 
-    or (MapNotesChangelogFrameMenu and MapNotesChangelogFrameMenu:IsShown()) 
-    or (MapNotesOldChangelogFrameMenu1 and MapNotesOldChangelogFrameMenu1:IsShown())
-    or (MapNotesOldChangelogFrameMenu2 and MapNotesOldChangelogFrameMenu2:IsShown())
-    then
-    return
-  end
-
-  local ChangeLogFrameMenu = CreateFrame("Frame", "MapNotesOldChangelogFrameMenu1", UIParent, "BasicFrameTemplateWithInset")
-  ChangeLogFrameMenu:SetSize(frameWidths, frameHeights)
-  local textwindowWidths = frameWidths - (LEFT + RIGHT)
-  ChangeLogFrameMenu:SetPoint("CENTER")
-  ChangeLogFrameMenu:SetMovable(true)
-  ChangeLogFrameMenu:EnableMouse(true)
-  ChangeLogFrameMenu:RegisterForDrag("LeftButton")
-  ChangeLogFrameMenu:SetScript("OnDragStart", ChangeLogFrameMenu.StartMoving)
-  ChangeLogFrameMenu:SetScript("OnDragStop", ChangeLogFrameMenu.StopMovingOrSizing)
-  ChangeLogFrameMenu:SetFrameStrata("DIALOG")
-  ChangeLogFrameMenu:SetToplevel(true)
-  ChangeLogFrameMenu:SetClampedToScreen(true)
-
-  ChangeLogFrameMenu.title = ChangeLogFrameMenu:CreateFontString(nil, "OVERLAY", "GameFontHighlightLarge")
-  ChangeLogFrameMenu.title:SetPoint("TOP", 0, -3)
-  ChangeLogFrameMenu.title:SetText(ns.COLORED_ADDON_NAME .. "|cffffd700 " .. L["Changelog"])
-
-  ChangeLogFrameMenu.fixedVersionText = ChangeLogFrameMenu:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
-  ChangeLogFrameMenu.fixedVersionText:SetPoint("TOPLEFT", 10, -5)
-  ChangeLogFrameMenu.fixedVersionText:SetText("|cffffd700" .. GAME_VERSION_LABEL .. ":|r " .. "|cffff0000" .. ns.PreviousAddonVersion_1 .. " & " .. PREVIOUS)
-
-  ChangeLogFrameMenu.scrollFrame = CreateFrame("ScrollFrame", nil, ChangeLogFrameMenu, "UIPanelScrollFrameTemplate")
-  ChangeLogFrameMenu.scrollFrame:SetPoint("TOPLEFT", 10, -40)
-  ChangeLogFrameMenu.scrollFrame:SetPoint("BOTTOMRIGHT", -30, 40)
-
-  local content = CreateFrame("Frame", nil, ChangeLogFrameMenu.scrollFrame)
-  content:SetSize(textwindowWidths, 1)
-  ChangeLogFrameMenu.editBox = CreateFrame("EditBox", nil, content)
-  ChangeLogFrameMenu.editBox:SetMultiLine(true)
-  ChangeLogFrameMenu.editBox:SetFontObject(GameFontHighlight)
-  ChangeLogFrameMenu.editBox:SetPoint("TOPLEFT", edge, 0)
-  ChangeLogFrameMenu.editBox:SetPoint("RIGHT", content, "RIGHT", -edge, 0)
-  ChangeLogFrameMenu.editBox:SetAutoFocus(false)
-
-  local changelogText = ns.BuildOlderChangelogText()
-  ChangeLogFrameMenu.editBox:SetText(changelogText ~= "" and changelogText or "|cffffd700missing Changelogs|r")
-  ChangeLogFrameMenu.editBox:SetScript("OnEscapePressed", function() end)
-  ChangeLogFrameMenu.editBox:SetScript("OnEnterPressed", function() end)
-  ChangeLogFrameMenu.editBox:EnableMouse(false)
-  ChangeLogFrameMenu.editBox:SetCursorPosition(0)
-  ChangeLogFrameMenu.editBox:ClearFocus()
-  ChangeLogFrameMenu.editBox:SetScript("OnEditFocusGained", function(self)
-      self:ClearFocus()
-  end)
-
-  ChangeLogFrameMenu.scrollFrame:SetScrollChild(content)
-
-  ChangeLogFrameMenu.closeButton = CreateFrame("Button", nil, ChangeLogFrameMenu, "GameMenuButtonTemplate")
-  ChangeLogFrameMenu.closeButton:SetPoint("BOTTOMRIGHT", -10, -10)
-  ChangeLogFrameMenu.closeButton:SetSize(100, 25)
-  ChangeLogFrameMenu.closeButton:SetText(CLOSE)
-
-  ChangeLogFrameMenu.closeButton:SetScript("OnClick", function()
-    ChangeLogFrameMenu:Hide()
-    LibStub("AceConfigDialog-3.0"):Open("MapNotes")
-  end)
-
-  ChangeLogFrameMenu:SetScript("OnHide", function()
-    LibStub("AceConfigDialog-3.0"):Open("MapNotes")
-  end)
-
-  table.insert(UISpecialFrames, "MapNotesOldChangelogFrameMenu1")
 end
 
 local DBFrame = CreateFrame("Frame")
@@ -267,14 +190,14 @@ end
 local function MN_FormatVersionBlock(version, localeTable)
   local text = MN_GetLocaleText(localeTable)
   if not text or text == "" then return "" end
-  return string.format("|cffffd700%s: %s|r\n\n%s", GAME_VERSION_LABEL, tostring(version or ""), text)
+  return string.format("|cffffd700%s %s:|r\n\n%s", GAME_VERSION_LABEL, tostring(version or ""), text)
 end
 
-function ns.BuildOlderChangelogText()
-  if type(ns.LOCALE_OLDER_CHANGELOGS) ~= "table" then return "" end
+function ns.BuildAllChangelogText()
+  if type(ns.LOCALE_CHANGELOGS) ~= "table" then return "" end
   local allVersionTexts = {}
 
-  for _, entry in ipairs(ns.LOCALE_OLDER_CHANGELOGS) do
+  for _, entry in ipairs(ns.LOCALE_CHANGELOGS) do
     local versionText = MN_FormatVersionBlock(entry and entry.version, entry and entry.table)
     if versionText ~= "" then
       table.insert(allVersionTexts, versionText)

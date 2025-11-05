@@ -240,17 +240,17 @@ ns.options = {
                 if ns.Addon.db.profile.CoreChatMassage and not ns.Addon.db.profile.WayPointsShift then print(TextIconMNL4:GetIconString() .. " " .. ns.COLORED_ADDON_NAME .. " " .. TextIconMNL4:GetIconString() .. "|cffffff00", L["Waypoints"] .. " +", "|cffff0000" .. L["is deactivated"]) else
                 if ns.Addon.db.profile.CoreChatMassage and ns.Addon.db.profile.WayPointsShift then print(TextIconMNL4:GetIconString() .. " " .. ns.COLORED_ADDON_NAME .. " " .. TextIconMNL4:GetIconString() .. "|cffffff00", L["Waypoints"] .. " +", "|cff00ff00" .. L["is activated"]) end end end,
               },
-            ClassicIcons = {
+            noPassages = { -- no passage icon
               disabled = function() return ns.Addon.db.profile.activate.HideMapNote end,
               type = "toggle",
               name = AUCTION_HOUSE_FILTER_DROPDOWN_NONE .. " " .. TextIconPassageDungeonM:GetIconString() .. " " .. TextIconPassageRaidMultiM:GetIconString() .. " " .. L["Passages"],
               desc = INSTANCE .. " " .. L["Passage"] .. " " .. L["icons"] .. "\n" .. TextIconPassageRaidM:GetIconString() .. " " .. TextIconPassageDungeonM:GetIconString() .. " " .. TextIconPassageRaidMultiM:GetIconString() .. " " .. TextIconPassageDungeonMultiM:GetIconString() .. "\n\n" .. L["Only affects passage icons to instances and not path icons to zones"] .. "\n\n" .. L["Changes all passage symbols on all maps to dungeon, raid or multiple symbols. In addition, the passage option will be disabled everywhere and the symbols will be added to the respective raids, dungeons or multiple options (The dungeon map remains unchanged from all this)"] .. "\n\n" .. L["At the same time, all icons representing additional instance inputs are removed"],
               order = 2.3,
               width = 1.20,
-              get = function() return ns.Addon.db.profile.activate.ClassicIcons end,
-              set = function(info, v) ns.Addon.db.profile.activate.ClassicIcons = v self:FullUpdate() HandyNotes:SendMessage("HandyNotes_NotifyUpdate", "MapNotes")
-                if ns.Addon.db.profile.CoreChatMassage and not ns.Addon.db.profile.activate.ClassicIcons then print(TextIconMNL4:GetIconString() .. " " .. ns.COLORED_ADDON_NAME .. " " .. TextIconMNL4:GetIconString() .. "|cffffff00", AUCTION_HOUSE_FILTER_DROPDOWN_NONE, L["Passages"], L["icons"], "|cffff0000" .. L["is deactivated"]) else
-                if ns.Addon.db.profile.CoreChatMassage and ns.Addon.db.profile.activate.ClassicIcons then print(TextIconMNL4:GetIconString() .. " " .. ns.COLORED_ADDON_NAME .. " " .. TextIconMNL4:GetIconString() .. "|cffffff00", AUCTION_HOUSE_FILTER_DROPDOWN_NONE, L["Passages"], L["icons"], "|cff00ff00" .. L["is activated"]) end end end,
+              get = function() return ns.Addon.db.profile.activate.noPassages end,
+              set = function(info, v) ns.Addon.db.profile.activate.noPassages = v self:FullUpdate() HandyNotes:SendMessage("HandyNotes_NotifyUpdate", "MapNotes")
+                if ns.Addon.db.profile.CoreChatMassage and not ns.Addon.db.profile.activate.noPassages then print(TextIconMNL4:GetIconString() .. " " .. ns.COLORED_ADDON_NAME .. " " .. TextIconMNL4:GetIconString() .. "|cffffff00", AUCTION_HOUSE_FILTER_DROPDOWN_NONE, L["Passages"], L["icons"], "|cffff0000" .. L["is deactivated"]) else
+                if ns.Addon.db.profile.CoreChatMassage and ns.Addon.db.profile.activate.noPassages then print(TextIconMNL4:GetIconString() .. " " .. ns.COLORED_ADDON_NAME .. " " .. TextIconMNL4:GetIconString() .. "|cffffff00", AUCTION_HOUSE_FILTER_DROPDOWN_NONE, L["Passages"], L["icons"], "|cff00ff00" .. L["is activated"]) end end end,
               },
             DeleteIcons = {
               disabled = function() return ns.Addon.db.profile.activate.HideMapNote end,
@@ -1787,7 +1787,7 @@ ns.options = {
                     if ns.Addon.db.profile.ChatMassage and not ns.Addon.db.profile.showCapitalsRaids then print(TextIconMNL4:GetIconString() .. " " .. ns.COLORED_ADDON_NAME .. " " .. TextIconMNL4:GetIconString() .. " " .. "|cffffff00" .. L["Capitals"], L["Raids"], L["icons"], "|cffff0000" .. L["are hidden"])end end end,
                   },
                 showCapitalsInstancePassage = {
-                  disabled = function() return not ns.Addon.db.profile.activate.Capitals or not ns.Addon.db.profile.activate.CapitalsInstances or ns.Addon.db.profile.activate.ClassicIcons end,
+                  disabled = function() return not ns.Addon.db.profile.activate.Capitals or not ns.Addon.db.profile.activate.CapitalsInstances or ns.Addon.db.profile.activate.noPassages end,
                   type = "toggle",
                   name = TextIconPassageRaidM:GetIconString() .. " " .. TextIconPassageDungeonM:GetIconString() .. " " .. TextIconPassageRaidMultiM:GetIconString() .. " " .. TextIconPassageDungeonMultiM:GetIconString() .. " " ..L["Passages"],
                   desc = L["Show icons of passage to raids and dungeons on this map"],
@@ -3097,7 +3097,7 @@ ns.options = {
                         if ns.Addon.db.profile.ChatMassage and not ns.Addon.db.profile.showMinimapCapitalsRaids then print(TextIconMNL4:GetIconString() .. " " .. ns.COLORED_ADDON_NAME .. " " .. TextIconMNL4:GetIconString() .. " " .. "|cffffff00" .. MINIMAP_LABEL .. " " .. L["Capitals"], L["Raids"], L["icons"], "|cffff0000" .. L["are hidden"])end end end,
                   },
                 showMinimapCapitalsInstancePassage = {
-                  disabled = function() return not ns.Addon.db.profile.activate.MinimapCapitals or not ns.Addon.db.profile.activate.MinimapCapitalsInstances or ns.Addon.db.profile.activate.SyncCapitalsAndMinimap or ns.Addon.db.profile.activate.ClassicIcons end,
+                  disabled = function() return not ns.Addon.db.profile.activate.MinimapCapitals or not ns.Addon.db.profile.activate.MinimapCapitalsInstances or ns.Addon.db.profile.activate.SyncCapitalsAndMinimap or ns.Addon.db.profile.activate.noPassages end,
                   type = "toggle",
                   name = TextIconPassageRaidM:GetIconString() .. " " .. TextIconPassageDungeonM:GetIconString() .. " " .. TextIconPassageRaidMultiM:GetIconString() .. " " .. TextIconPassageDungeonMultiM:GetIconString() .. " " ..L["Passages"],
                   desc = L["Show icons of passage to raids and dungeons on this map"],
@@ -4719,7 +4719,7 @@ ns.options = {
                   order = 4.0,
                   },
                 showZonePassage = {
-                  disabled = function() return ns.Addon.db.profile.activate.HideMapNote or not ns.Addon.db.profile.activate.ZoneMap or ns.Addon.db.profile.activate.ClassicIcons or not ns.Addon.db.profile.activate.ZoneInstances end,
+                  disabled = function() return ns.Addon.db.profile.activate.HideMapNote or not ns.Addon.db.profile.activate.ZoneMap or ns.Addon.db.profile.activate.noPassages or not ns.Addon.db.profile.activate.ZoneInstances end,
                   type = "toggle",
                   name = TextIconPassageRaidM:GetIconString() .. " " .. TextIconPassageDungeonM:GetIconString() .. " " .. TextIconPassageRaidMultiM:GetIconString() .. " " .. TextIconDelvesPassage:GetIconString(),
                   desc = L["Passages"] .. "\n\n" .. L["Show icons of passage to raids and dungeons on this map"],
@@ -8203,7 +8203,7 @@ ns.options = {
                 if ns.Addon.db.profile.ChatMassage and not ns.Addon.db.profile.showContinentDungeons then print(TextIconMNL4:GetIconString() .. " " .. ns.COLORED_ADDON_NAME .. " " .. TextIconMNL4:GetIconString() .. " " .. "|cffffff00" .. L["Continent map"], L["Dungeons"], L["icons"], "|cffff0000" .. L["are hidden"])end end end,
           },
         showContinentPassage = {
-          disabled = function() return ns.Addon.db.profile.activate.HideMapNote or not ns.Addon.db.profile.activate.Continent or ns.Addon.db.profile.activate.ClassicIcons end,
+          disabled = function() return ns.Addon.db.profile.activate.HideMapNote or not ns.Addon.db.profile.activate.Continent or ns.Addon.db.profile.activate.noPassages end,
           type = "toggle",
           name = TextIconPassageRaidM:GetIconString() .. " " .. TextIconPassageDungeonM:GetIconString() .. " " .. TextIconPassageRaidMultiM:GetIconString() .. " " .. TextIconPassageDungeonMultiM:GetIconString() .. " " .. L["Passages"],
           desc = L["Show icons of passage to raids and dungeons on this map"],
@@ -8599,7 +8599,7 @@ ns.options = {
             if ns.Addon.db.profile.ChatMassage and not ns.Addon.db.profile.showAzerothDungeons then print(TextIconMNL4:GetIconString() .. " " .. ns.COLORED_ADDON_NAME .. " " .. TextIconMNL4:GetIconString() .. " " .. "|cffffff00" .. L["Azeroth map"], L["Dungeons"], L["icons"], "|cffff0000" .. L["are hidden"])end end end,
           },
         showAzerothPassage = {
-          disabled = function() return ns.Addon.db.profile.activate.HideMapNote or not ns.Addon.db.profile.activate.Azeroth or ns.Addon.db.profile.activate.ClassicIcons end,
+          disabled = function() return ns.Addon.db.profile.activate.HideMapNote or not ns.Addon.db.profile.activate.Azeroth or ns.Addon.db.profile.activate.noPassages end,
           type = "toggle",
           name = TextIconPassageRaidM:GetIconString() .. " " .. TextIconPassageDungeonM:GetIconString() .. " " .. TextIconPassageRaidMultiM:GetIconString() .. " " .. TextIconPassageDungeonMultiM:GetIconString() .. " " ..L["Passages"],
           desc = L["Show icons of passage to raids and dungeons on this map"],
@@ -9316,25 +9316,14 @@ ns.options = {
               name = L["Changelog"],
               order = 1.1,
               },
-            MNChangeLogNew = {
+            MNChangeLogs = {
               type = "execute",
-              name = GAME_VERSION_LABEL .. " " .. ns.CurrentAddonVersion,
+              name = GAME_VERSION_LABEL .. " " .. ns.CurrentAddonVersion .. " + " .. PREVIOUS,
               desc = L["Show MapNotes Changelog again"],
-              width = 0.85,
+              width = "full",
               order = 1.2,
               func = function(info, v) self:FullUpdate() HandyNotes:SendMessage("HandyNotes_NotifyUpdate", "MapNotes")
-                ns.ShowMenuChangelogWindowNew() 
-                LibStub("AceConfigDialog-3.0"):Close("MapNotes")
-                end,
-              },
-            MNChangeLogOld_1 = {
-              type = "execute",
-              name = PREVIOUS .. " " .. GAME_VERSION_LABEL,
-              desc = L["Show MapNotes Changelog again"],
-              width = 0.85,
-              order = 1.3,
-              func = function(info, v) self:FullUpdate() HandyNotes:SendMessage("HandyNotes_NotifyUpdate", "MapNotes")
-                ns.ShowMenuChangelogWindowOld() 
+                ns.ShowMenuChangelogWindow() 
                 LibStub("AceConfigDialog-3.0"):Close("MapNotes")
                 end,
               },

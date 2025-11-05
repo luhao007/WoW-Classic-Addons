@@ -514,7 +514,7 @@ ns.currentSourceFile = "RetailGeneralMiniMapminimap.lua"
                 minimap[109][33006420] = { npcIDs1 = 58152, npcIDs2 = 54648, npcIDs3 = 40209, npcIDs4 = 23396, npcIDs5 = 54649, npcIDs6 = 107619, npcIDs7 = 107610, npcIDs8 = 107599, npcIDs9 = 54650, name = TRANSMOG_SET_PVP .. " " .. MERCHANT, type = "PvPVendor", showInZone = false, showOnContinent = false, showOnMinimap = true }
             end
 
-            if self.db.profile.showMinimapRenownQuartermaster then
+            if self.db.profile.showMiniMapRenownQuartermaster then
                 minimap[109][43663432] = { npcID = 20242, name = "", type = "RenownQuartermaster", showInZone = false, showOnContinent = false, showOnMinimap = true }
                 minimap[105][28075874] = { npcID = 23428, name = "", type = "RenownQuartermaster", showInZone = false, showOnContinent = false, showOnMinimap = true }
                 minimap[102][79256366] = { npcID = 17904, name = "", type = "RenownQuartermaster", showInZone = false, showOnContinent = false, showOnMinimap = true }

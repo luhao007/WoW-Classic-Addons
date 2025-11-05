@@ -21,7 +21,7 @@ local hooksecurefunc, tinsert, pairs, wipe = _G.hooksecurefunc, _G.table.insert,
 local ipairs = _G.ipairs
 local C_PetJournal = _G.C_PetJournal
 --- --------
-local VERSION = GetAddOnMetadata("HPetBattleAny","Version")
+local VERSION = C_AddOns.GetAddOnMetadata("HPetBattleAny","Version")
 local H_PET_BATTLE_CHAT_FRAME={}
 local LEVEL_COLLECTED = "(%s)"--"(lv:%s)"
 local addonname,addon = ...
@@ -43,10 +43,10 @@ function HPetBattleAny:Init_HPET()
 		self.initialized_HPET = true
 		printt("test:载入HPET部分")
 
-		self:Loadinginfo()
+		-- self:Loadinginfo()
 		self:LoadSomeAny()
 		if self.hook then self.hook:init() end
-		self:RegisterEvent("PLAYER_ENTERING_WORLD")
+		self:RegisterEvent("PLAYER_LOGIN")
 		if PetJournal then
 			HPetBattleAny:Init_BPET()
 		end
@@ -275,7 +275,7 @@ function HPetBattleAny.CreateLinkByInfo(petID,...)		---...=usecustom,level,healt
 		rarity=rarity+HPetSaves.lie
 	end
 	
-	link=ITEM_QUALITY_COLORS[rarity].hex.."\124Hbattlepet:"
+	local link=ITEM_QUALITY_COLORS[rarity].hex.."\124Hbattlepet:"
 	link=link..speciesID..":"..level..":"..rarity..":"..health..":"..power..":"..speed..":"..(petID or "BattlePet-0-000000000000")..":"..displayID
 	link=link.."\124h["..(customname or name).."]\124h\124r"
 	return link
@@ -397,7 +397,7 @@ function HPetBattleAny:GetPetCollectedInfo(speciesID,enemypet,islink,mini)
 			end
 		end
 	else
-		if C_PetBattles.IsPlayerNPC(2) and (select(2,C_PetBattles.IsTrapAvailable())==6 or select(2,C_PetBattles.IsTrapAvailable())==7) then
+		if C_PetBattles.IsPlayerNPC() and (select(2,C_PetBattles.IsTrapAvailable())==6 or select(2,C_PetBattles.IsTrapAvailable())==7) then
 			str1=str1.."|cffffff00".._G["PET_BATTLE_TRAP_ERR_"..select(2,C_PetBattles.IsTrapAvailable())]
 		else
 			if enemypet and not HPetBattleAny:CanTrapBySpeciesID(speciesID) then
@@ -424,15 +424,15 @@ function HPetBattleAny:PET_BATTLE_OPENING_START(...)
 			if not (
 			GetTime() - HPetBattleAny.LoadedTime > 5 or
 			isdateLoaded or
---~ 				(C_PetBattles.IsPlayerNPC(2) and (select(2,C_PetBattles.IsTrapAvailable())==6 or select(2,C_PetBattles.IsTrapAvailable())==7)) or
+--~ 				(C_PetBattles.IsPlayerNPC() and (select(2,C_PetBattles.IsTrapAvailable())==6 or select(2,C_PetBattles.IsTrapAvailable())==7)) or
 --~ 				(pets) or
 				(... == "lock")
 			) then HPetBattleAny:RunLagFunc("HPetBattleAny:PET_BATTLE_OPENING_START('lock')",2);printt("test:|cffffff00延迟调用|r"..GetTime());return end
 			local name = C_PetBattles.GetName(petOwner, petIndex);
 			local level = C_PetBattles.GetLevel(petOwner, petIndex);
 			local power = C_PetBattles.GetPower(petOwner, petIndex);
-			local rarity=C_PetBattles.GetBreedQuality(petOwner,petIndex);
-			if rarity>=4 and rarity~=6 and C_PetBattles.IsPlayerNPC(2) and HPetBattleAny:CanTrapBySpeciesID(speciesID) then
+			local rarity = C_PetBattles.GetBreedQuality(petOwner,petIndex) + 1;
+			if rarity>=4 and rarity~=6 and C_PetBattles.IsPlayerNPC() and HPetBattleAny:CanTrapBySpeciesID(speciesID) then
 				self.EnemyPetInfo.FindBlue=true
 			end;
 			local health = C_PetBattles.GetMaxHealth(petOwner, petIndex)
@@ -456,6 +456,7 @@ function HPetBattleAny:PET_BATTLE_OPENING_START(...)
 
 			self.EnemyPetInfo[petIndex].breedID=breedID
 
+			local tmprint
 			if HPetSaves.MiniTip then
 				tmprint=" "..petIndex..":"
 				tmprint=tmprint..HPetBattleAny.ICON_LIST[breedID]
@@ -477,7 +478,7 @@ function HPetBattleAny:PET_BATTLE_OPENING_START(...)
 			end
 		end
 
-		if HPetSaves.Sound and self.EnemyPetInfo.FindBlue then --C_PetBattles.IsPlayerNPC(2) and select(2,C_PetBattles.IsTrapAvailable())~=7 then
+		if HPetSaves.Sound and self.EnemyPetInfo.FindBlue then --C_PetBattles.IsPlayerNPC() and select(2,C_PetBattles.IsTrapAvailable())~=7 then
 --- 		PlaySoundFile( [[Sound\Event Sounds\Event_wardrum_ogre.wav]], "Master" );
 			self:PlaySoundFile()
 		end
@@ -608,12 +609,13 @@ function HPetBattleAny:ADDON_LOADED(_, name)
 		self:UnregisterEvent("ADDON_LOADED")
 	end
 end
-function HPetBattleAny:PLAYER_ENTERING_WORLD()
+function HPetBattleAny:PLAYER_LOGIN()
 	self:RegisterEvent("PET_BATTLE_OPENING_START")
 end
 function HPetBattleAny:VARIABLES_LOADED()
 	if HPetSaves.Ver ~= VERSION then
 		local newSaves={}
+		self:Loadinginfo()
 		self:PetPrintEX("HPetBattleAny更新, 设置内容可能出现改变.")
 		---检测Saves异常
 		for v,t in pairs(self.Default) do

@@ -1,5 +1,5 @@
 ## Interface: 50502
-## Version: #Details.20251023.13811.166
+## Version: #Details.20251105.13857.166
 
 ## Title: Details! Damage Meter
 ## Notes: Essential tool to impress that chick in your raid.

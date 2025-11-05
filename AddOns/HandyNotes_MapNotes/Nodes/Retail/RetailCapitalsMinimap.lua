@@ -158,11 +158,11 @@ if not db.activate.HideMapNote then
                         minimap[86][66715154] = { id = 226, type = "Dungeon", showInZone = false, showOnContinent = false, showOnMinimap = true } -- Ragefire - Chasm of shadows
                     end
 
-                    if self.db.profile.showMinimapCapitalsDungeons and db.activate.ClassicIcons then
+                    if self.db.profile.showMinimapCapitalsDungeons and db.activate.noPassages then
                         minimap[85][51685850] = { id = 226, TransportName = L["in the basement"], type = "Dungeon", showInZone = false, showOnContinent = false, showOnMinimap = true } -- Ragefire
                     end
 
-                    if self.db.profile.showMinimapCapitalsInstancePassage and not db.activate.ClassicIcons then
+                    if self.db.profile.showMinimapCapitalsInstancePassage and not db.activate.noPassages then
                        minimap[85][55895097] = { mnID = 86, id = 226, TransportName = L["Way to the Instance Entrance"], name = "", type = "PassageDungeon", showInZone = false, showOnContinent = false, showOnMinimap = true } -- Ragefire   
                        minimap[85][46116716] = { mnID = 86, id = 226, TransportName = L["Way to the Instance Entrance"], name = "", type = "PassageDungeon", showInZone = false, showOnContinent = false, showOnMinimap = true } -- Ragefire  
                        minimap[85][42396160] = { mnID = 86, id = 226, TransportName = L["Way to the Instance Entrance"], name = "", type = "PassageDungeon", showInZone = false, showOnContinent = false, showOnMinimap = true } -- Ragefire    
@@ -3329,7 +3329,7 @@ if not db.activate.HideMapNote then
                 end
 
                 if self.db.profile.showMinimapCapitalsTransport then
-                    minimap[2339][40722239] = { name = "", type = "Tport2", showInZone = false, showOnContinent = false, showOnMinimap = true, TransportName = L["Transport"] .. " ==> " .. L["(on the tower)"]  } -- Oribos to The Maw
+                    --minimap[2339][40722239] = { name = "", type = "Tport2", showInZone = false, showOnContinent = false, showOnMinimap = true, TransportName = L["Transport"] .. " ==> " .. L["(on the tower)"]  } -- Oribos to The Maw
                 end
 
                 if self.db.profile.showMinimapCapitalsFP then

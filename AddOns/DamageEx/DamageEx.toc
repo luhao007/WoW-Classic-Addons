@@ -1,0 +1,24 @@
+## Interface: 50502
+## Author: Dennie
+## Version: 3.01
+
+## Title: |CFFFF0000[战斗]|R 战斗指示器 伤害显示
+## Title-zhCN: |cFFFFE00A<|r|cFFA330C9界面|r|cFFFFE00A>|r|cFFFFFFFF伤害增强|r |cFFFFE00ADamageEx|r
+## Notes-zhCN: 显示你对敌人的伤害，对目标的治疗量，并可显示技能名字|n命令:/dex
+
+## Category-zhCN: |cFFFFE00A<|r|cFFA330C9界面|r|cFFFFE00A>|r
+
+## OptionalDeps: myAddOns
+
+## SavedVariablesPerCharacter: DEX_SAVE
+
+localization.lua
+localization_zhCN.lua
+localization_zhTW.lua
+
+DamageEx.Lua
+DEXoptions.lua
+DEX_ui_path.lua
+
+DamageEx.xml
+DEXoptions.xml

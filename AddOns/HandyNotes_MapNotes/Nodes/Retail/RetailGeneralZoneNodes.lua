@@ -1746,14 +1746,17 @@ ns.currentSourceFile = "RetailGeneralZoneNodes.lua"
 
             if self.db.profile.showZonePvPVendor and not self.db.profile.showZoneMapNotesIcons then
                 nodes[2255][51408082] = { npcID = 224267, name = TRANSMOG_SET_PVP .. " " .. MERCHANT .. " " .. TRANSMOG_SET_PVP .. " " .. MERCHANT .. "\n" .. WORLD_QUEST_REWARD_FILTERS_EQUIPMENT .. SLASH_EQUIP_SET1, type = "PvPVendor", showInZone = true, showOnContinent = false, showOnMinimap = false }
+                nodes[2256][51408082] = { npcID = 224267, name = TRANSMOG_SET_PVP .. " " .. MERCHANT .. " " .. TRANSMOG_SET_PVP .. " " .. MERCHANT .. "\n" .. WORLD_QUEST_REWARD_FILTERS_EQUIPMENT .. SLASH_EQUIP_SET1, type = "PvPVendor", showInZone = true, showOnContinent = false, showOnMinimap = false }
             end
 
             if self.db.profile.showZonePvEVendor and not self.db.profile.showZoneMapNotesIcons then
                 nodes[2255][51408082] = { npcID = 224270, name = TRANSMOG_SET_PVE .. " " .. MERCHANT .. "\n" .. WORLD_QUEST_REWARD_FILTERS_EQUIPMENT .. SLASH_EQUIP_SET1, type = "PvEVendor", showInZone = true, showOnContinent = false, showOnMinimap = false }
+                nodes[2256][51408082] = { npcID = 224270, name = TRANSMOG_SET_PVE .. " " .. MERCHANT .. "\n" .. WORLD_QUEST_REWARD_FILTERS_EQUIPMENT .. SLASH_EQUIP_SET1, type = "PvEVendor", showInZone = true, showOnContinent = false, showOnMinimap = false }
             end
 
             if self.db.profile.showZoneMapNotesIcons and (self.db.profile.showZonePvEVendor or self.db.profile.showZonePvPVendor) then
                 nodes[2255][51408082] = { name = "", dnID = TRANSMOG_SET_PVE .. " / " .. TRANSMOG_SET_PVP .. " " .. MERCHANT .. "\n" .. WORLD_QUEST_REWARD_FILTERS_EQUIPMENT .. SLASH_EQUIP_SET1, type = "MNL", showInZone = true, showOnContinent = false, showOnMinimap = false }
+                nodes[2256][51408082] = { name = "", dnID = TRANSMOG_SET_PVE .. " / " .. TRANSMOG_SET_PVP .. " " .. MERCHANT .. "\n" .. WORLD_QUEST_REWARD_FILTERS_EQUIPMENT .. SLASH_EQUIP_SET1, type = "MNL", showInZone = true, showOnContinent = false, showOnMinimap = false }
             end
 
             if self.db.profile.showZoneMailbox and not self.db.profile.showZoneMapNotesIcons then

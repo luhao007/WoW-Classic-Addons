@@ -769,6 +769,7 @@ ns.currentSourceFile = "RetailZoneMiniMapLocation.lua"
             -- Khaz Algar Portals
             if self.db.profile.showMiniMapPortals then
               minimap[2255][57344184] = { mnID = 2339, name = L["Portal"], dnID = "",  achievementID = 19559, showWWW = true, wwwName = LOOT_JOURNAL_LEGENDARIES_SOURCE_ACHIEVEMENT .. " " .. REQUIRES_LABEL, wwwLink = "https://wowhead.com/achievement=19559", type = "Portal", showInZone = false, showOnContinent = false, showOnMinimap = true } -- Portal from Dornogal to Azj-Kahet if u finished the achievement=19559
+              minimap[2256][57344184] = { mnID = 2339, name = L["Portal"], dnID = "",  achievementID = 19559, showWWW = true, wwwName = LOOT_JOURNAL_LEGENDARIES_SOURCE_ACHIEVEMENT .. " " .. REQUIRES_LABEL, wwwLink = "https://wowhead.com/achievement=19559", type = "Portal", showInZone = false, showOnContinent = false, showOnMinimap = true } -- Portal from Dornogal to Azj-Kahet if u finished the achievement=19559
               minimap[2367][49953591] = { mnID = 2339, name = L["Portal"], dnID = "",  achievementID = 40725, showWWW = true, wwwName = LOOT_JOURNAL_LEGENDARIES_SOURCE_ACHIEVEMENT .. " " .. REQUIRES_LABEL, wwwLink = "https://wowhead.com/achievement=40725",  type = "Portal", showInZone = false, showOnContinent = false, showOnMinimap = true } -- Chamber of Memory
               minimap[2248][53024511] = { mnID = 2339, name = L["Portal"], dnID = "",  achievementID = 19559, showWWW = true, wwwName = LOOT_JOURNAL_LEGENDARIES_SOURCE_ACHIEVEMENT .. " " .. REQUIRES_LABEL, wwwLink = "https://wowhead.com/achievement=19559", type = "Portal", showInZone = false, showOnContinent = false, showOnMinimap = true } -- Portal from Dornogal to Azj-Kahet if u finished the achievement=19559
               minimap[2248][50554183] = { mnID = 2266, name = "", type = "WayGateGolden", showInZone = false, showOnContinent = false, showOnMinimap = true, TransportName = L["The Timeways"] .. " " .. L["Portals"] .. "\n" .. "\n" .. " ==> " .. C_Map.GetMapInfo(2472).name .. "\n" .. " ==> " .. C_Map.GetMapInfo(1525).name } --  Portal from Dornogal to the Timeways
@@ -821,6 +822,7 @@ ns.currentSourceFile = "RetailZoneMiniMapLocation.lua"
               minimap[2216][67423141] = { npcID = 225611, name = "", type = "Alchemy", showInZone = false, showOnContinent = false, showOnMinimap = true, dnID = L["(inside building)"] }
               minimap[2213][67423141] = { npcID = 225611, name = "", type = "Alchemy", showInZone = false, showOnContinent = false, showOnMinimap = true, dnID = L["(inside building)"] }
               minimap[2255][54837585] = { npcID = 225611, name = "", type = "Alchemy", showInZone = false, showOnContinent = false, showOnMinimap = true, dnID = L["(inside building)"] }
+              minimap[2256][54837585] = { npcID = 225611, name = "", type = "Alchemy", showInZone = false, showOnContinent = false, showOnMinimap = true, dnID = L["(inside building)"] }
             end
             
             if self.db.profile.showMiniMapLeatherworking then
@@ -832,6 +834,7 @@ ns.currentSourceFile = "RetailZoneMiniMapLocation.lua"
               minimap[2216][57503277] = { npcID = 218186, name = "", type = "Engineer", showInZone = false, showOnContinent = false, showOnMinimap = true }
               minimap[2213][57503277] = { npcID = 218186, name = "", type = "Engineer", showInZone = false, showOnContinent = false, showOnMinimap = true }
               minimap[2255][51387631] = { npcID = 218186, name = "", type = "Engineer", showInZone = false, showOnContinent = false, showOnMinimap = true }
+              minimap[2256][51387631] = { npcID = 218186, name = "", type = "Engineer", showInZone = false, showOnContinent = false, showOnMinimap = true }
             end
           
             if self.db.profile.showMiniMapSkinning then
@@ -870,6 +873,7 @@ ns.currentSourceFile = "RetailZoneMiniMapLocation.lua"
               minimap[2216][45573452] = { npcID = 218177, name = "", type = "Enchanting", showInZone = false, showOnContinent = false, showOnMinimap = true, dnID = L["(inside building)"] }
               minimap[2213][45573452] = { npcID = 218177, name = "", type = "Enchanting", showInZone = false, showOnContinent = false, showOnMinimap = true, dnID = L["(inside building)"] }
               minimap[2255][47207694] = { npcID = 218177, name = "", type = "Enchanting", showInZone = false, showOnContinent = false, showOnMinimap = true, dnID = L["(inside building)"] }
+              minimap[2256][47207694] = { npcID = 218177, name = "", type = "Enchanting", showInZone = false, showOnContinent = false, showOnMinimap = true, dnID = L["(inside building)"] }
             end
           
             if self.db.profile.showMiniMapJewelcrafting then
@@ -886,10 +890,12 @@ ns.currentSourceFile = "RetailZoneMiniMapLocation.lua"
               minimap[2216][41752650] = { npcID = 218178, name = "", type = "Inscription", showInZone = false, showOnContinent = false, showOnMinimap = true, dnID = L["(inside building)"] }
               minimap[2213][41752650] = { npcID = 218178, name = "", type = "Inscription", showInZone = false, showOnContinent = false, showOnMinimap = true, dnID = L["(inside building)"] }
               minimap[2255][45837409] = { npcID = 218178, name = "", type = "Inscription", showInZone = false, showOnContinent = false, showOnMinimap = true, dnID = L["(inside building)"] }
+              minimap[2256][45837409] = { npcID = 218178, name = "", type = "Inscription", showInZone = false, showOnContinent = false, showOnMinimap = true, dnID = L["(inside building)"] }
             end
           
             if self.db.profile.ZoneProfessionsMixed and ( self.db.profile.showMiniMapAlchemy or self.db.profile.showMiniMapMining or self.db.profile.showMiniMapBlacksmith or self.db.profile.showMiniMapLeatherworking or self.db.profile.showMiniMapJewelcrafting or self.db.profile.showMiniMapHerbalism or self.db.profile.showMiniMapTailoring or self.db.profile.showMiniMapFishing or self.db.profile.showMiniMapCooking or self.db.profile.showMiniMapSkinning ) then
               minimap[2255][47697093] = { name = MINIMAP_TRACKING_TRAINER_PROFESSION, type = "ProfessionsMixed", showInZone = false, showOnContinent = false, showOnMinimap = true, TransportName = TextIconAlchemy:GetIconString() .. " " .. L["Alchemy"] .. "\n" .. TextIconMining:GetIconString() .. " " .. L["Mining"] .. "\n" .. TextIconBlacksmith:GetIconString() .. " " .. L["Blacksmithing"] .. "\n" .. TextIconLeatherworking:GetIconString() .. " " .. L["Leatherworking"] .. "\n" .. TextIconJewelcrafting:GetIconString() .. " " .. L["Jewelcrafting"] .. "\n" .. TextIconHerbalism:GetIconString() .. " " .. L["Herbalism"] .. "\n" .. TextIconTailoring:GetIconString() .. " " .. L["Tailoring"] .. "\n" .. TextIconLeatherworking:GetIconString() .. " " .. L["Leatherworking"] .. "\n" .. TextIconFishing:GetIconString() .. " " .. PROFESSIONS_FISHING .. "\n" .. TextIconCooking:GetIconString() .. " " .. PROFESSIONS_COOKING } -- City of Fades
+              minimap[2256][47697093] = { name = MINIMAP_TRACKING_TRAINER_PROFESSION, type = "ProfessionsMixed", showInZone = false, showOnContinent = false, showOnMinimap = true, TransportName = TextIconAlchemy:GetIconString() .. " " .. L["Alchemy"] .. "\n" .. TextIconMining:GetIconString() .. " " .. L["Mining"] .. "\n" .. TextIconBlacksmith:GetIconString() .. " " .. L["Blacksmithing"] .. "\n" .. TextIconLeatherworking:GetIconString() .. " " .. L["Leatherworking"] .. "\n" .. TextIconJewelcrafting:GetIconString() .. " " .. L["Jewelcrafting"] .. "\n" .. TextIconHerbalism:GetIconString() .. " " .. L["Herbalism"] .. "\n" .. TextIconTailoring:GetIconString() .. " " .. L["Tailoring"] .. "\n" .. TextIconLeatherworking:GetIconString() .. " " .. L["Leatherworking"] .. "\n" .. TextIconFishing:GetIconString() .. " " .. PROFESSIONS_FISHING .. "\n" .. TextIconCooking:GetIconString() .. " " .. PROFESSIONS_COOKING } -- City of Fades
             end
 
           end

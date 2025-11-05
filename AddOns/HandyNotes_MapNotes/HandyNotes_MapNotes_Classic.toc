@@ -1,6 +1,6 @@
 ## Interface: 50502
 ## Author: BadBoyBarny
-## Version: 3.1.4
+## Version: 3.1.5
 
 ## Title: HandyNotes: |cffff0000Map|r|cff00ccffNotes|r
 ## Notes: Displays instance entrances, ships and zeppelin icons

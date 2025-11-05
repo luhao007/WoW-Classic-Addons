@@ -739,7 +739,7 @@ do
                         or value.type == "MMMailboxH" or value.type == "MMMailboxA" or value.type == "MMPvPVendorH" or value.type == "MMPvPVendorA" or value.type == "MMPvEVendorH" or value.type == "MMPvEVendorA" 
                         or value.type == "ContinentPvPVendorH" or value.type == "ContinentPvPVendorA" or value.type == "ContinentPvEVendorH" or value.type == "ContinentPvEVendorA"
                         or value.type == "ZonePvEVendorH" or value.type == "ZonePvPVendorH" or value.type == "ZonePvEVendorA" or value.type == "ZonePvPVendorA" or value.type == "TradingPost" or value.type == "PassageCaveUp"
-                        or value.type == "PassageCaveDown" or value.type == "MountMerchant" or value.type == "Upgrade" or value.type == "ScoutingMap" or value.type == "RenownQuartermaster" or value.type == "RenownQuartermasterH" or value.type == "RenownQuartermasterA"
+                        or value.type == "PassageCaveDown" or value.type == "MountMerchant" or value.type == "ScoutingMap" or value.type == "RenownQuartermaster" or value.type == "RenownQuartermasterH" or value.type == "RenownQuartermasterA"
                         or value.type == "MMRenownQuartermasterH" or value.type == "MMRenownQuartermasterA" or value.type == "ZoneRenownQuartermasterH" or value.type == "ZoneRenownQuartermasterA" or value.type == "ContinentRenownQuartermasterH" or value.type == "ContinentRenownQuartermasterA"
                         or value.type == "PassageElevatorUp" or value.type == "PassageElevatorDown"
 
