@@ -783,7 +783,7 @@ function HPetOption:Open()
 	self:LoadOptions()
 end
 
-function HPetOption:Toggle() 
+function HPetOption:Toggle()
     Settings.OpenToCategory(addon.settingsCategory.ID)
 	-- InterfaceOptionsFrame_OpenToCategory(HPetOption)
 end
@@ -911,22 +911,22 @@ local InitSwathButton = function()
 	)
 	button:RegisterEvent("BAG_UPDATE")
 
-	button:SetPoint("RIGHT", PetJournalHealPetButton, "LEFT", -4)
+	-- button:SetPoint("RIGHT", PetJournalHealPetButton, "LEFT", -4)
 
-	hooksecurefunc(
-		button,
-		"Show",
-		function()
-			PetJournalHealPetButton.spellname:SetPoint("RIGHT", button, "LEFT")
-		end
-	)
-	hooksecurefunc(
-		button,
-		"Hide",
-		function()
-			PetJournalHealPetButton.spellname:SetPoint("RIGHT", PetJournalHealPetButtonBorder, "LEFT", -2, 0)
-		end
-	)
+	-- hooksecurefunc(
+	-- 	button,
+	-- 	"Show",
+	-- 	function()
+	-- 		PetJournalHealPetButton.spellname:SetPoint("RIGHT", button, "LEFT")
+	-- 	end
+	-- )
+	-- hooksecurefunc(
+	-- 	button,
+	-- 	"Hide",
+	-- 	function()
+	-- 		PetJournalHealPetButton.spellname:SetPoint("RIGHT", PetJournalHealPetButtonBorder, "LEFT", -2, 0)
+	-- 	end
+	-- )
 
 	if HPetSaves.ShowBandageButton then
 		button:Show()

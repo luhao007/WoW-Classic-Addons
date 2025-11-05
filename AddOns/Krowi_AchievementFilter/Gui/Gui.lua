@@ -20,7 +20,7 @@ local function ResetAchievementWindowPosition()
         X = 96,
         Y = -116
     };
-	addon.Gui:SetFrameToLastPosition(AchievementFrame, "AchievementWindow");
+    addon.Gui:SetFrameToLastPosition(AchievementFrame, "AchievementWindow");
 end
 
 local function AddDataToBlizzardTabs()
@@ -32,7 +32,8 @@ local function AddDataToBlizzardTabs()
             AchievementFrameTab_OnClick(2);
         end);
     end
-    KrowiAF_RegisterTabButton("Blizzard_AchievementUI", "Statistics", addon.Util.IsWrathClassic and AchievementFrameTab2 or AchievementFrameTab3, function()
+    KrowiAF_RegisterTabButton("Blizzard_AchievementUI", "Statistics",
+        addon.Util.IsWrathClassic and AchievementFrameTab2 or AchievementFrameTab3, function()
         AchievementFrameTab_OnClick(addon.Util.IsWrathClassic and 2 or 3);
     end);
 end
@@ -55,16 +56,16 @@ end
 
 local function ShowSubFrame(self, ...)
     local show;
-	for _, subFrame in ipairs(self.SubFrames) do
-		show = false;
-		for i = 1, select("#", ...) do
-			if subFrame == select(i, ...) then
-				show = true;
-				break;
-			end
-		end
-		subFrame:SetShown(show);
-	end
+    for _, subFrame in ipairs(self.SubFrames) do
+        show = false;
+        for i = 1, select("#", ...) do
+            if subFrame == select(i, ...) then
+                show = true;
+                break;
+            end
+        end
+        subFrame:SetShown(show);
+    end
 end
 
 local function LoadHooks(self)
@@ -110,7 +111,7 @@ function gui:LoadWithBlizzard_AchievementUI()
     self.BrowsingHistory:Load();
 
     AchievementFrame.ResetPosition = ResetAchievementWindowPosition;
-	self:SetFrameToLastPosition(AchievementFrame, "AchievementWindow");
+    self:SetFrameToLastPosition(AchievementFrame, "AchievementWindow");
 
     AddDataToBlizzardTabs();
 
@@ -123,7 +124,9 @@ function gui:LoadWithBlizzard_AchievementUI()
         media .. "kaf_special"
     };
     for i, t in next, addon.TabsOrder do
-        addon.Tabs[t].Button = self.AchievementFrameTabButtonFactory:GetNew(t, addon.Tabs[t].Text, {KrowiAF_AchievementFrameFilterButton, KrowiAF_SearchBoxFrame, KrowiAF_CategoriesFrame}, addon.Tabs[t].Categories, addon.Tabs[t].Filters, waterMarks[i]);
+        addon.Tabs[t].Button = self.AchievementFrameTabButtonFactory:GetNew(t, addon.Tabs[t].Text,
+            { KrowiAF_AchievementFrameFilterButton, KrowiAF_SearchBoxFrame, KrowiAF_CategoriesFrame },
+            addon.Tabs[t].Categories, addon.Tabs[t].Filters, waterMarks[i]);
         KrowiAF_RegisterTabButton(addonName, addon.Tabs[t].Name, addon.Tabs[t].Button);
     end
     LoadOldAchievementFrameTabsCompatibility();
@@ -135,7 +138,8 @@ function gui:LoadWithBlizzard_AchievementUI()
 end
 
 function gui:SetAchievementFrameWidth()
-    AchievementFrame:SetWidth(defaultAchievementFrameWidth + addon.Options.db.profile.Window.CategoriesFrameWidthOffset + addon.Options.db.profile.Window.AchievementsFrameWidthOffset);
+    AchievementFrame:SetWidth(defaultAchievementFrameWidth + addon.Options.db.profile.Window.CategoriesFrameWidthOffset +
+    addon.Options.db.profile.Window.AchievementsFrameWidthOffset);
     KrowiAF_CategoriesFrame:SetRightPoint();
 end
 
@@ -162,7 +166,7 @@ local function SelectTab(self, _addonName, tabName)
         if button.Select then
             button:Select(); -- Addon tabs
         else
-            button:Click(); -- Other tabs
+            button:Click();  -- Other tabs
         end
     end
 end
@@ -241,7 +245,8 @@ function gui:ShowHideTabs(_addonName, tabName)
         if not addon.Options.db.profile.Tabs[_addonName] or not addon.Options.db.profile.Tabs[_addonName][tabName] then
             return;
         end
-        addon.Options.db.profile.Tabs[_addonName][tabName].Show = not addon.Options.db.profile.Tabs[_addonName][tabName].Show;
+        addon.Options.db.profile.Tabs[_addonName][tabName].Show = not addon.Options.db.profile.Tabs[_addonName][tabName]
+        .Show;
         if not C_AddOns.IsAddOnLoaded(_addonName) or not addon.Gui.Tabs[_addonName] or not addon.Gui.Tabs[_addonName][tabName] then
             return;
         end
@@ -271,30 +276,31 @@ function gui:ShowHideTabs(_addonName, tabName)
 end
 
 function gui.ShowStatusBarTooltip(frame, anchor, extraText, color) -- . instead of : because it needs to work for the frame
-	GameTooltip:SetOwner(frame, anchor or "ANCHOR_NONE");
+    GameTooltip:SetOwner(frame, anchor or "ANCHOR_NONE");
     if anchor == nil then
-	    GameTooltip:SetPoint("TOPLEFT", frame, "TOPRIGHT", -3, -3);
+        GameTooltip:SetPoint("TOPLEFT", frame, "TOPRIGHT", -3, -3);
     end
-	GameTooltip:SetMinimumWidth(128, true);
+    GameTooltip:SetMinimumWidth(128, true);
     GameTooltip_SetTitle(GameTooltip, frame.Text);
 
     local text = "";
     local numOfNotObtAch = frame.NumOfNotObtAch;
-	if numOfNotObtAch > 0 and addon.Options.db.profile.Tooltip.Categories.ShowNotObtainable then
-		text = " (+" .. numOfNotObtAch .. ")";
+    if numOfNotObtAch > 0 and addon.Options.db.profile.Tooltip.Categories.ShowNotObtainable then
+        text = " (+" .. numOfNotObtAch .. ")";
     else
         numOfNotObtAch = 0;
-	end
-	text = frame.NumOfCompAch .. text .. " / " .. frame.NumOfAch;
+    end
+    text = frame.NumOfCompAch .. text .. " / " .. frame.NumOfAch;
 
-	LibStub("Krowi_GameTooltipWithProgressBar-2.0"):Show(GameTooltip, 0, frame.NumOfAch, frame.NumOfCompAch, numOfNotObtAch, 0, 0, addon.Util.Colors.GreenRGB, addon.Util.Colors.RedRGB, nil, nil, text);
+    LibStub("Krowi_GameTooltipWithProgressBar-2.0"):Show(GameTooltip, 0, frame.NumOfAch, frame.NumOfCompAch,
+        numOfNotObtAch, 0, 0, addon.Util.Colors.GreenRGB, addon.Util.Colors.RedRGB, nil, nil, text);
 
     if extraText then
         GameTooltip_AddBlankLineToTooltip(GameTooltip);
         GameTooltip_AddColoredLine(GameTooltip, extraText, color or NORMAL_FONT_COLOR);
     end
 
-	GameTooltip:SetMinimumWidth(140);
+    GameTooltip:SetMinimumWidth(140);
     GameTooltip:Show();
 end
 
@@ -346,7 +352,7 @@ local function SwitchAchievementTabs()
     addon.Options.db.profile.Tabs["Blizzard_AchievementUI"]["Achievements"].Order = addonAchId;
     addon.Options.db.profile.Tabs[addonName]["Achievements"].Order = blizzAchId;
     addon.Options.db.profile.MicroButtonTab = addonAchId;
-    local binding = GetBindingByKey("Y");
+    local binding = C_KeyBindings.GetBindingByKey("Y");
     if binding == KrowiAF_SavedData.Tabs[blizzAchId].BindingName then
         SetBinding("Y", KrowiAF_SavedData.Tabs[addonAchId].BindingName);
         SaveBindings(GetCurrentBindingSet());
@@ -384,8 +390,8 @@ function gui:SetFrameToLastPosition(frame, rememberLastPositionOption)
     end
 
     local pos = KrowiAF_SavedData.RememberLastPosition[rememberLastPositionOption];
-	frame:ClearAllPoints();
-	frame:SetPoint(pos.Point or "TOPLEFT", pos.X, pos.Y);
+    frame:ClearAllPoints();
+    frame:SetPoint(pos.Point or "TOPLEFT", pos.X, pos.Y);
 end
 
 function gui:RefreshView()
@@ -412,31 +418,33 @@ function gui:RegisterFrameForClosing(frame)
 end
 
 local function AdjustQueuedAnchors(self, relativeAlert)
-	for alertFrame in self.alertFramePool:EnumerateActive() do
-		alertFrame:ClearAllPoints()
-		alertFrame:SetPoint(KrowiAF_SavedData.AlertSystem.GrowDirection.Point, relativeAlert, KrowiAF_SavedData.AlertSystem.GrowDirection.RelativePoint, 0, KrowiAF_SavedData.AlertSystem.GrowDirection.Offset)
-		relativeAlert = alertFrame
-	end
-	return relativeAlert
+    for alertFrame in self.alertFramePool:EnumerateActive() do
+        alertFrame:ClearAllPoints()
+        alertFrame:SetPoint(KrowiAF_SavedData.AlertSystem.GrowDirection.Point, relativeAlert,
+            KrowiAF_SavedData.AlertSystem.GrowDirection.RelativePoint, 0,
+            KrowiAF_SavedData.AlertSystem.GrowDirection.Offset)
+        relativeAlert = alertFrame
+    end
+    return relativeAlert
 end
 
 -- Credits to ElvUI
 local function OverwriteAdjustAnchors(alertFrameSubSystem)
-	if alertFrameSubSystem.alertFramePool then -- Queued alert system
-		alertFrameSubSystem.AdjustAnchors = AdjustQueuedAnchors;
-	end
+    if alertFrameSubSystem.alertFramePool then -- Queued alert system
+        alertFrameSubSystem.AdjustAnchors = AdjustQueuedAnchors;
+    end
 end
 
 function gui:OverwriteAdjustAnchors()
-     -- Credits to ElvUI for this for loop
+    -- Credits to ElvUI for this for loop
     -- Overwrites AdjustAnchors functions to allow alerts to grow down if needed.
-	for _, alertFrameSubSystem in ipairs(AlertFrame.alertFrameSubSystems) do
-		OverwriteAdjustAnchors(alertFrameSubSystem)
-	end
+    for _, alertFrameSubSystem in ipairs(AlertFrame.alertFrameSubSystems) do
+        OverwriteAdjustAnchors(alertFrameSubSystem)
+    end
 
     -- Credits to ElvUI for this hook
-	-- This should catch any alert systems that are created by other addons.
-	hooksecurefunc(AlertFrame, 'AddAlertFrameSubSystem', function(_, alertFrameSubSystem)
-		OverwriteAdjustAnchors(alertFrameSubSystem);
-	end);
+    -- This should catch any alert systems that are created by other addons.
+    hooksecurefunc(AlertFrame, 'AddAlertFrameSubSystem', function(_, alertFrameSubSystem)
+        OverwriteAdjustAnchors(alertFrameSubSystem);
+    end);
 end
