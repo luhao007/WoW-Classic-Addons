@@ -1,16 +1,20 @@
-## Interface: 110205, 110207, 120000
-## Category: DBM
+## Interface: 50502
+## Version: r218
 
-## Title:|cffffe00a<|r|cffff7d0aDBM Mod|r|cffffe00a>|r |cffc030c0Dungeons (Midnight)|r
-## Title-koKR:|cffffe00a<|r|cffff7d0aDBM Mod|r|cffffe00a>|r |cffc030c0던전 (미드나이트)|r
-## Title-ruRU:|cffffe00a<|r|cffff7d0aDBM Мод|r|cffffe00a>|r |cffc030c0Подземелья (Полночь)|r
-## Title-zhCN:|cffffe00a<|r|cffff7d0aDBM 模组|r|cffffe00a>|r |cffc030c0队伍首领 (午夜)|r
-## Title-zhTW:|cffffe00a<|r|cffff7d0aDBM 模組|r|cffffe00a>|r |cffc030c0隊伍首領 (午夜)|r
-## LoadOnDemand: 1
+## Title: |cffffe00a<|r|cffff7d0aDBM Mod|r|cffffe00a>|r |cffc030c0Dungeons (Midnight)|r
+## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r|cFFFFFFFF副本助手|r |cFF69CCF0小队|r |cFF22B14C至暗之夜|r
+
+## IconTexture: Interface\AddOns\DBM-Core\textures\dbm_airhorn
+
+## Category: DBM
+## Category-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r
+
 ## RequiredDeps: DBM-Core
+## LoadOnDemand: 1
+
 ## SavedVariables: DBMPartyMidnight_AllSavedVars
 ## SavedVariablesPerCharacter: DBMPartyMidnight_SavedStats
-## IconTexture: Interface\AddOns\DBM-Core\textures\dbm_airhorn
+
 ## X-DBM-Mod: 1
 ## X-DBM-Mod-Type: PARTY
 ## X-DBM-Mod-Category: MIDNIGHT
@@ -28,10 +32,9 @@
 ## X-Curse-Project-ID: 314994
 ## X-WoWI-ID: 24904
 ## X-Wago-ID: xZKxZENk
-## Version: r218
+## X-Part-Of: DBM-Core
 
 # localization.en.lua
-
 WindrunnerSpire\Emberdawn.lua
 WindrunnerSpire\DerelictDuo.lua
 WindrunnerSpire\CommanderKroluk.lua

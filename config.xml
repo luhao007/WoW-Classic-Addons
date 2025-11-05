@@ -720,6 +720,10 @@
 				<Title>小队</Title>
 				<TitleExtra>军团再临</TitleExtra>
 			</SubAddon>
+			<SubAddon name="DBM-Party-Midnight">
+				<Title>小队</Title>
+				<TitleExtra>至暗之夜</TitleExtra>
+			</SubAddon>
 			<SubAddon name="DBM-Party-MoP">
 				<Title>小队</Title>
 				<TitleExtra>熊猫人之谜</TitleExtra>
