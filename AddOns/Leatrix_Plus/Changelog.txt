@@ -1,4 +1,7 @@
-﻿5.1.07 - 26th October 2025
+﻿5.1.08 - 5th November 2025
+- PTR (5.5.3): Updated for Mists of Pandaria game patch 5.5.3.
+
+5.1.07 - 26th October 2025
 - Updated for Mists of Pandaria game patch 5.5.2.
 - For 'Enhance tooltip' ('Interface'), world map tooltips (such as quest objectives) will now be scaled.
 - Updated deprecated functions.
