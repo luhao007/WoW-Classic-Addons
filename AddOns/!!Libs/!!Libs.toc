@@ -64,6 +64,7 @@ DRData-1.0\DRData-1.0.xml
 
 # Other Libs
 DF\load.xml
+Krowi_WorldMapButtons\Krowi_WorldMapButtons-1.4.xml
 Krowi_WorldMapButtons-1.4\Krowi_WorldMapButtons-1.4.xml
 LibAHTab\LibAHTab.xml
 LibAlts-1.0\lib.xml
