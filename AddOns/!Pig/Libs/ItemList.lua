@@ -50,9 +50,12 @@ local function _GetGemSocket(Link)
 end
 local function Update_GemBut(itemLink,id,GemBut,nulltishi)
 	local _, GemitemLink = GetItemGem(itemLink, id)
-	GemBut.getnum=GemBut.getnum+1
-	if not GemitemLink and GemBut.getnum<5 then
-		Update_GemBut(itemLink,id,GemBut,nulltishi)
+	if not GemitemLink and GemBut.getnum<10 then
+		GemBut.getnum=GemBut.getnum+1
+		if GemBut.EgetnInfoC then GemBut.EgetnInfoC:Cancel() end
+		GemBut.EgetnInfoC=C_Timer.NewTimer(0.2,function()
+			Update_GemBut(itemLink,id,GemBut,nulltishi)
+		end)
 	else
 		if GemitemLink then
 			GemBut.icon:SetDesaturated(false)
@@ -87,7 +90,7 @@ local function Update_GemBut(itemLink,id,GemBut,nulltishi)
 		end);
 	end
 end
-local function Update_GemList(framef,itemLink)
+local function Update_GemListInfo(framef,itemLink)
 	local GemDatax=_GetGemSocket(itemLink)
 	if PIG_MaxTocversion() and PIG_MaxTocversion(29999,true) and Slot==6 then table.insert(GemDatax,55655) end
     local baoshiNUM=#GemDatax
@@ -108,7 +111,7 @@ local function PIGGetEnchantID(itemLink)
 	end
 	return 0
 end
-local function ShowEnchantInfo(EnchantBut,fumoid)
+local function Update_EnchantInfo(EnchantBut,fumoid)
 	local Newdata = {}
 	if type(EnchantItemID[fumoid])=="table" then
 		Newdata.ItemID=EnchantItemID[fumoid][1]
@@ -145,7 +148,7 @@ local function ShowEnchantInfo(EnchantBut,fumoid)
 			if EnchantBut.getnum<5 then
 				if EnchantBut.EnchantInfo then EnchantBut.EnchantInfo:Cancel() end
 				EnchantBut.EnchantInfo=C_Timer.NewTimer(0.2,function()
-					ShowEnchantInfo(EnchantBut,fumoid)
+					Update_EnchantInfo(EnchantBut,fumoid)
 				end)
 			end
 		end
@@ -228,7 +231,7 @@ local function Update_SlotButton(SlotBut,SlotID,zbData)
 		SlotBut.itemlink.t:SetText(itemLink)
 		SlotBut.t:SetTextColor(0, 1, 1, 0.8);
 		SlotBut:SetBackdropBorderColor(0, 1, 1, 0.5)
-		Update_GemList(SlotBut,itemLink)
+		Update_GemListInfo(SlotBut,itemLink)
 		local fumoid = PIGGetEnchantID(itemLink)
 		local Enchantui=SlotBut.ButGem[5]
 		if fumoid>0 then
@@ -238,15 +241,19 @@ local function Update_SlotButton(SlotBut,SlotID,zbData)
 			Enchantui.icon:SetDesaturated(false)
 			if EnchantItemID[fumoid] then
 				Enchantui.getnum=0
-				ShowEnchantInfo(Enchantui,fumoid)
+				Update_EnchantInfo(Enchantui,fumoid)
 			elseif EnchantSpellID[fumoid] then
 				local name, texture = PIGGetSpellInfo(EnchantSpellID[fumoid])
-				Enchantui.icon:SetTexture(texture)
+				Enchantui.icon:SetTexture(texture or 134400)
 				Enchantui:SetBackdropBorderColor(1, 0.843, 0, 0.8);
 				Enchantui:SetScript("OnEnter", function (self)
 					GameTooltip:ClearLines();
 					GameTooltip:SetOwner(self, "ANCHOR_RIGHT",0,0);
-					GameTooltip:SetSpellByID(EnchantSpellID[fumoid])
+					if texture then
+						GameTooltip:SetSpellByID(EnchantSpellID[fumoid])
+					else
+						GameTooltip:AddLine("附魔法术"..EnchantSpellID[fumoid].."已移除")
+					end
 					GameTooltip:Show();
 				end);
 			elseif EnchantSlotID[fumoid] then
@@ -273,10 +280,10 @@ local function Update_SlotButton(SlotBut,SlotID,zbData)
 				end);
 			end
 		else
-			if EnchantSlot[Slot] then
+			if EnchantSlot[SlotID] then
 				SlotBut.GemNums=SlotBut.GemNums+1
 				local itemID, itemType, itemSubType, itemEquipLoc = GetItemInfoInstant(itemLink)
-				if Slot==17 and itemEquipLoc=="INVTYPE_HOLDABLE" then 
+				if SlotID==17 and itemEquipLoc=="INVTYPE_HOLDABLE" then 
 				else
 					Enchantui:SetWidth(ListWWWHHH[3])
 					Enchantui:SetAlpha(1)
@@ -286,7 +293,7 @@ local function Update_SlotButton(SlotBut,SlotID,zbData)
 					Enchantui:SetScript("OnEnter", function (self)
 						GameTooltip:ClearLines();
 						GameTooltip:SetOwner(self, "ANCHOR_RIGHT",0,0);
-						GameTooltip:AddLine("|cff00FFFF["..addonName.."]:|r|cffFF0000"..InvSlot["Name"][Slot][2]..NONE..ENCHANTS.."|r")
+						GameTooltip:AddLine("|cff00FFFF["..addonName.."]:|r|cffFF0000"..InvSlot["Name"][SlotID][2]..NONE..ENCHANTS.."|r")
 						GameTooltip:Show();
 					end);
 				end
@@ -387,7 +394,7 @@ local function add_ItemList(fujik,miaodian,ZBLsit_C,TalentUI)
 		PointXY[1]=-34
 		PointXY[2]=-13
 	end
-	local ZBLsit = PIGFrame(fujik,{"TOPLEFT", fujik, "TOPRIGHT",PointXY[1],PointXY[2]},{ListWWWHHH[1],ListWWWHHH[2]},nil,nil,nil,{["ElvUI"]={2,0,2,0},["NDui"]={-1,-2,-1,0}});
+	local ZBLsit = PIGFrame(fujik,{"TOPLEFT", fujik, "TOPRIGHT",PointXY[1],PointXY[2]},{ListWWWHHH[1],ListWWWHHH[2]},nil,nil,nil,{["ElvUI"]={2,0,2,0},["NDui"]={0,0,0,0}});
 	ZBLsit.classes = ZBLsit:CreateTexture();
 	ZBLsit.classes:SetTexture("Interface/TargetingFrame/UI-Classes-Circles");
 	if NDui then
@@ -420,7 +427,7 @@ local function add_ItemList(fujik,miaodian,ZBLsit_C,TalentUI)
 	PIGLine(ZBLsit,"TOP",-43-ZBLsit.TopJG,nil,{1,-1},{0.2,0.2,0.2,0.9})
 	ZBLsit.ListHang={}
 	for i=1,#InvSlot["ID"] do
-		local clsit = PIGFrame(ZBLsit,nil,{ListWWWHHH[4],ListWWWHHH[3]-3.7});
+		local clsit = PIGFrame(ZBLsit,nil,{ListWWWHHH[4],ListWWWHHH[3]});
 		ZBLsit.ListHang[InvSlot["ID"][i]]=clsit
 		clsit.Slot=InvSlot["ID"][i]
 		clsit:PIGSetBackdrop(0)
@@ -434,7 +441,7 @@ local function add_ItemList(fujik,miaodian,ZBLsit_C,TalentUI)
 			if PIG_MaxTocversion(50000) then
 				clsit:SetPoint("TOPLEFT",ZBLsit.ListHang[InvSlot["ID"][i-1]],"BOTTOMLEFT",0,-2);
 			else
-				clsit:SetPoint("TOPLEFT",ZBLsit.ListHang[InvSlot["ID"][i-1]],"BOTTOMLEFT",0,-3.2);
+				clsit:SetPoint("TOPLEFT",ZBLsit.ListHang[InvSlot["ID"][i-1]],"BOTTOMLEFT",0,-3.4);
 			end
 		end
 		clsit.t = PIGFontString(clsit,{"CENTER",0.4,0.6},InvSlot["Name"][InvSlot["ID"][i]][2],"OUTLINE",12)
@@ -624,14 +631,21 @@ local function add_ItemList(fujik,miaodian,ZBLsit_C,TalentUI)
 					end
 				end
 			else
+				jichuxinxi.Talent={NONE, 132222, 1}
 				if IS_guacha then
 					local specID = GetInspectSpecialization(unit)
 					local id, name, description, icon = GetSpecializationInfoByID(specID)
-					jichuxinxi.Talent={name ~= "" and name or NONE, icon or 132222, 1}
+					if name ~= "" then
+						jichuxinxi.Talent[1]=name
+						jichuxinxi.Talent[2]=icon
+					end
 				else
 					local specIndex = GetSpecialization()--当前专精
 					local id, name, description, icon = GetSpecializationInfo(specIndex)
-					jichuxinxi.Talent={name ~= "" and name or NONE, icon or 132222, 1}
+					if name ~= "" then
+						jichuxinxi.Talent[1]=name
+						jichuxinxi.Talent[2]=icon
+					end
 				end
 				jichuxinxi.OpenTF=function()
 					if IS_guacha then

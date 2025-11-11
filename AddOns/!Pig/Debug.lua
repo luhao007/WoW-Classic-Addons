@@ -247,7 +247,8 @@ fuFrame.GetItem = PIGButton(fuFrame,{"TOPLEFT",fuFrame,"TOPLEFT",230,-260},{110,
 fuFrame.GetItem:SetScript("OnClick", function (self,button)
 	if button=="LeftButton" then
 		--local itemName,itemLink = GetItemInfo(self.E:GetNumber())
-		print(GetItemInfo(self.E:GetText()))
+		--print(GetItemInfo(self.E:GetText()))
+		DevTools_Dump({GetItemInfo(self.E:GetText())})
 		-- print(string.gsub(itemLink,"|","||"))
 		-- local itemLink=Fun.GetItemLinkJJ(itemLink)
 		-- print(itemLink)

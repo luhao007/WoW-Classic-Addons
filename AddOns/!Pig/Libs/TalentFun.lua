@@ -6,6 +6,7 @@ local PIGButton=Create.PIGButton
 local PIGFontString=Create.PIGFontString
 local BackdropColor=Create.BackdropColor
 local PIGEnter=Create.PIGEnter
+local PIGDiyTex = Create.PIGDiyTex
 ----
 local Fun=addonTable.Fun
 local yasuo_NumberString=Fun.yasuo_NumberString
@@ -37,36 +38,28 @@ local function max_tianfudianshu(level)
 	end
 end
 -----------
-local function shezhitishi(tishiUI,txtui)
-	local GlyphFF = PIGFrame(tishiUI);
-	GlyphFF:SetAllPoints(txtui)
-	GlyphFF:SetScript("OnEnter", function (self)
-		local xxxx = txtui:GetText()
-		if xxxx and xxxx~=NONE then
-			GameTooltip:ClearLines();
-			GameTooltip:SetOwner(self, "ANCHOR_TOPLEFT",0,0);
-			GameTooltip:SetHyperlink(xxxx)
-			GameTooltip:Show();
-		end
-	end);
-	GlyphFF:SetScript("OnLeave", function ()
-		GameTooltip:ClearLines();
-		GameTooltip:Hide() 
-	end);
-end
 local function Show_Glyphinfo(self,fwid,from)
+	for glyphIndex=1,TalentData.GLYPH_NUM do
+		self.Glyph.ButList[glyphIndex].icon:SetTexture(136260)
+		self.Glyph.ButList[glyphIndex].txt:SetTextColor(0.5, 0.5, 0.5, 1);
+		self.Glyph.ButList[glyphIndex].txt:SetText(NONE)
+	end
 	local fujiui=self:GetParent()
 	if from=="lx" then
 		if PIGA["StatsInfo"] and PIGA["StatsInfo"]["Items"] and PIGA["StatsInfo"]["Items"][fujiui.cName] then
 			local fwDataall ={TalentData.HY_GlyphTXT(PIGA["StatsInfo"]["Items"][fujiui.cName]["G"])}
 			local fwData = fwDataall[fwid]
 			if fwData then
-				for i=1,TalentData.GLYPH_NUM do
-					if fwData[i] then
-						local link = GetSpellLink(fwData[i])
+				for glyphIndex=1,TalentData.GLYPH_NUM do
+					if fwData[glyphIndex] then
+						local link = GetSpellLink(fwData[glyphIndex])
 						if link and link~="" then
-							self.Glyph["Glyph"..i]:SetText(link)
+							self.Glyph.ButList[glyphIndex].txt:SetText(link)
 						end
+						local iconID = C_Spell.GetSpellTexture(fwData[glyphIndex])
+						if iconID then
+							self.Glyph.ButList[glyphIndex].icon:SetTexture(iconID)
+						end	
 					end
 				end
 			end
@@ -75,12 +68,16 @@ local function Show_Glyphinfo(self,fwid,from)
 		if PIG_OptionsUI.talentData[fujiui.cName] and PIG_OptionsUI.talentData[fujiui.cName]["G"] then
 			local fwData = PIG_OptionsUI.talentData[fujiui.cName]["G"][fwid+1]
 			if fwData then
-				for i=1,TalentData.GLYPH_NUM do
-					if fwData[i] then
-						local link = GetSpellLink(fwData[i])
+				for glyphIndex=1,TalentData.GLYPH_NUM do
+					if fwData[glyphIndex] then
+						local link = GetSpellLink(fwData[glyphIndex])
 						if link and link~="" then
-							self.Glyph["Glyph"..i]:SetText(link)
+							self.Glyph.ButList[glyphIndex].txt:SetText(link)
 						end
+						local iconID = C_Spell.GetSpellTexture(fwData[glyphIndex])
+						if iconID then
+							self.Glyph.ButList[glyphIndex].icon:SetTexture(iconID)
+						end	
 					end
 				end
 			end
@@ -95,279 +92,428 @@ function TalentData.add_TalentUI(frameX)
 	frameX.TalentF:SetFrameLevel(frameX.TalentF:GetFrameLevel()+6)
 	frameX.TalentF:Hide()
 	frameX.TalentF:PIGClose()
-	frameX.TalentF.L_TOPLEFT = frameX.TalentF:CreateTexture(nil, "BORDER");
-	frameX.TalentF.L_TOPLEFT:SetSize(TalentData.tianfuW/3,TalentData.tianfuH-104);
-	frameX.TalentF.L_TOPLEFT:SetPoint("TOPLEFT", frameX.TalentF, "TOPLEFT",4, -24);
-	frameX.TalentF.L_TOPRIGHT = frameX.TalentF:CreateTexture(nil, "BORDER");
-	frameX.TalentF.L_TOPRIGHT:SetPoint("TOPLEFT", frameX.TalentF.L_TOPLEFT, "TOPRIGHT",0, 0);
-	frameX.TalentF.L_TOPRIGHT:SetPoint("BOTTOMLEFT", frameX.TalentF.L_TOPLEFT, "BOTTOMRIGHT",0, 0);
-	frameX.TalentF.L_BOTTOMLEFT = frameX.TalentF:CreateTexture(nil, "BORDER");
-	frameX.TalentF.L_BOTTOMLEFT:SetPoint("TOPLEFT", frameX.TalentF.L_TOPLEFT, "BOTTOMLEFT",0, 0);
-	frameX.TalentF.L_BOTTOMLEFT:SetPoint("TOPRIGHT", frameX.TalentF.L_TOPLEFT, "BOTTOMRIGHT",0, 0);
-	frameX.TalentF.L_BOTTOMRIGHT = frameX.TalentF:CreateTexture(nil, "BORDER");
-	frameX.TalentF.L_BOTTOMRIGHT:SetPoint("TOPLEFT", frameX.TalentF.L_BOTTOMLEFT, "TOPRIGHT",0, 0);
-	---
-	frameX.TalentF.C_TOPLEFT = frameX.TalentF:CreateTexture(nil, "BORDER");
-	frameX.TalentF.C_TOPLEFT:SetWidth(TalentData.tianfuW/3);
-	frameX.TalentF.C_TOPLEFT:SetPoint("TOPLEFT", frameX.TalentF.L_TOPRIGHT, "TOPRIGHT",-20, 0);
-	frameX.TalentF.C_TOPLEFT:SetPoint("BOTTOMLEFT", frameX.TalentF.L_TOPRIGHT, "BOTTOMRIGHT",-20, 0);
-	frameX.TalentF.C_TOPRIGHT = frameX.TalentF:CreateTexture(nil, "BORDER");
-	frameX.TalentF.C_TOPRIGHT:SetPoint("TOPLEFT", frameX.TalentF.C_TOPLEFT, "TOPRIGHT",0, 0);
-	frameX.TalentF.C_TOPRIGHT:SetPoint("BOTTOMLEFT", frameX.TalentF.C_TOPLEFT, "BOTTOMRIGHT",0, 0);
-	frameX.TalentF.C_BOTTOMLEFT = frameX.TalentF:CreateTexture(nil, "BORDER");
-	frameX.TalentF.C_BOTTOMLEFT:SetPoint("TOPLEFT", frameX.TalentF.C_TOPLEFT, "BOTTOMLEFT",0, 0);
-	frameX.TalentF.C_BOTTOMLEFT:SetPoint("TOPRIGHT", frameX.TalentF.C_TOPLEFT, "BOTTOMRIGHT",0, 0);
-	frameX.TalentF.C_BOTTOMRIGHT = frameX.TalentF:CreateTexture(nil, "BORDER");
-	frameX.TalentF.C_BOTTOMRIGHT:SetPoint("TOPLEFT", frameX.TalentF.C_BOTTOMLEFT, "TOPRIGHT",0, 0);
-	---
-	frameX.TalentF.R_TOPLEFT = frameX.TalentF:CreateTexture(nil, "BORDER");
-	frameX.TalentF.R_TOPLEFT:SetWidth(TalentData.tianfuW/3);
-	frameX.TalentF.R_TOPLEFT:SetPoint("TOPLEFT", frameX.TalentF.C_TOPRIGHT, "TOPRIGHT",-20, 0);
-	frameX.TalentF.R_TOPLEFT:SetPoint("BOTTOMLEFT", frameX.TalentF.C_TOPRIGHT, "BOTTOMRIGHT",-20, 0);
-	frameX.TalentF.R_TOPRIGHT = frameX.TalentF:CreateTexture(nil, "BORDER");
-	frameX.TalentF.R_TOPRIGHT:SetPoint("TOPLEFT", frameX.TalentF.R_TOPLEFT, "TOPRIGHT",0, 0);
-	frameX.TalentF.R_TOPRIGHT:SetPoint("BOTTOMLEFT", frameX.TalentF.R_TOPLEFT, "BOTTOMRIGHT",0, 0);
-	frameX.TalentF.R_BOTTOMLEFT = frameX.TalentF:CreateTexture(nil, "BORDER");
-	frameX.TalentF.R_BOTTOMLEFT:SetPoint("TOPLEFT", frameX.TalentF.R_TOPLEFT, "BOTTOMLEFT",0, 0);
-	frameX.TalentF.R_BOTTOMLEFT:SetPoint("TOPRIGHT", frameX.TalentF.R_TOPLEFT, "BOTTOMRIGHT",0, 0);
-	frameX.TalentF.R_BOTTOMRIGHT = frameX.TalentF:CreateTexture(nil, "BORDER");
-	frameX.TalentF.R_BOTTOMRIGHT:SetPoint("TOPLEFT", frameX.TalentF.R_BOTTOMLEFT, "TOPRIGHT",0, 0);
+	if PIG_MaxTocversion(50000) then
+		frameX.TalentF.L_TOPLEFT = frameX.TalentF:CreateTexture(nil, "BORDER");
+		frameX.TalentF.L_TOPLEFT:SetSize(TalentData.tianfuW/3,TalentData.tianfuH-104);
+		frameX.TalentF.L_TOPLEFT:SetPoint("TOPLEFT", frameX.TalentF, "TOPLEFT",4, -24);
+		frameX.TalentF.L_TOPRIGHT = frameX.TalentF:CreateTexture(nil, "BORDER");
+		frameX.TalentF.L_TOPRIGHT:SetPoint("TOPLEFT", frameX.TalentF.L_TOPLEFT, "TOPRIGHT",0, 0);
+		frameX.TalentF.L_TOPRIGHT:SetPoint("BOTTOMLEFT", frameX.TalentF.L_TOPLEFT, "BOTTOMRIGHT",0, 0);
+		frameX.TalentF.L_BOTTOMLEFT = frameX.TalentF:CreateTexture(nil, "BORDER");
+		frameX.TalentF.L_BOTTOMLEFT:SetPoint("TOPLEFT", frameX.TalentF.L_TOPLEFT, "BOTTOMLEFT",0, 0);
+		frameX.TalentF.L_BOTTOMLEFT:SetPoint("TOPRIGHT", frameX.TalentF.L_TOPLEFT, "BOTTOMRIGHT",0, 0);
+		frameX.TalentF.L_BOTTOMRIGHT = frameX.TalentF:CreateTexture(nil, "BORDER");
+		frameX.TalentF.L_BOTTOMRIGHT:SetPoint("TOPLEFT", frameX.TalentF.L_BOTTOMLEFT, "TOPRIGHT",0, 0);
+		---
+		frameX.TalentF.C_TOPLEFT = frameX.TalentF:CreateTexture(nil, "BORDER");
+		frameX.TalentF.C_TOPLEFT:SetWidth(TalentData.tianfuW/3);
+		frameX.TalentF.C_TOPLEFT:SetPoint("TOPLEFT", frameX.TalentF.L_TOPRIGHT, "TOPRIGHT",-20, 0);
+		frameX.TalentF.C_TOPLEFT:SetPoint("BOTTOMLEFT", frameX.TalentF.L_TOPRIGHT, "BOTTOMRIGHT",-20, 0);
+		frameX.TalentF.C_TOPRIGHT = frameX.TalentF:CreateTexture(nil, "BORDER");
+		frameX.TalentF.C_TOPRIGHT:SetPoint("TOPLEFT", frameX.TalentF.C_TOPLEFT, "TOPRIGHT",0, 0);
+		frameX.TalentF.C_TOPRIGHT:SetPoint("BOTTOMLEFT", frameX.TalentF.C_TOPLEFT, "BOTTOMRIGHT",0, 0);
+		frameX.TalentF.C_BOTTOMLEFT = frameX.TalentF:CreateTexture(nil, "BORDER");
+		frameX.TalentF.C_BOTTOMLEFT:SetPoint("TOPLEFT", frameX.TalentF.C_TOPLEFT, "BOTTOMLEFT",0, 0);
+		frameX.TalentF.C_BOTTOMLEFT:SetPoint("TOPRIGHT", frameX.TalentF.C_TOPLEFT, "BOTTOMRIGHT",0, 0);
+		frameX.TalentF.C_BOTTOMRIGHT = frameX.TalentF:CreateTexture(nil, "BORDER");
+		frameX.TalentF.C_BOTTOMRIGHT:SetPoint("TOPLEFT", frameX.TalentF.C_BOTTOMLEFT, "TOPRIGHT",0, 0);
+		---
+		frameX.TalentF.R_TOPLEFT = frameX.TalentF:CreateTexture(nil, "BORDER");
+		frameX.TalentF.R_TOPLEFT:SetWidth(TalentData.tianfuW/3);
+		frameX.TalentF.R_TOPLEFT:SetPoint("TOPLEFT", frameX.TalentF.C_TOPRIGHT, "TOPRIGHT",-20, 0);
+		frameX.TalentF.R_TOPLEFT:SetPoint("BOTTOMLEFT", frameX.TalentF.C_TOPRIGHT, "BOTTOMRIGHT",-20, 0);
+		frameX.TalentF.R_TOPRIGHT = frameX.TalentF:CreateTexture(nil, "BORDER");
+		frameX.TalentF.R_TOPRIGHT:SetPoint("TOPLEFT", frameX.TalentF.R_TOPLEFT, "TOPRIGHT",0, 0);
+		frameX.TalentF.R_TOPRIGHT:SetPoint("BOTTOMLEFT", frameX.TalentF.R_TOPLEFT, "BOTTOMRIGHT",0, 0);
+		frameX.TalentF.R_BOTTOMLEFT = frameX.TalentF:CreateTexture(nil, "BORDER");
+		frameX.TalentF.R_BOTTOMLEFT:SetPoint("TOPLEFT", frameX.TalentF.R_TOPLEFT, "BOTTOMLEFT",0, 0);
+		frameX.TalentF.R_BOTTOMLEFT:SetPoint("TOPRIGHT", frameX.TalentF.R_TOPLEFT, "BOTTOMRIGHT",0, 0);
+		frameX.TalentF.R_BOTTOMRIGHT = frameX.TalentF:CreateTexture(nil, "BORDER");
+		frameX.TalentF.R_BOTTOMRIGHT:SetPoint("TOPLEFT", frameX.TalentF.R_BOTTOMLEFT, "TOPRIGHT",0, 0);
+		local tianfuB= 30
+		frameX.TalentF.ButList={}
+		for i=1,3 do
+			frameX.TalentF.ButList[i]={}
+			for ii=1,TalentData.PIGtianfuhangshu do
+				frameX.TalentF.ButList[i][ii]={}
+				for iii=1,4 do
+					local tianfuBUT = CreateFrame("Button", nil, frameX.TalentF);
+					frameX.TalentF.ButList[i][ii][iii]=tianfuBUT
+					tianfuBUT:SetHighlightTexture(130718);
+					tianfuBUT:SetSize(tianfuB,tianfuB);
+					if i==1 then
+						if ii==1 then
+							if iii==1 then
+								tianfuBUT:SetPoint("TOPLEFT",frameX.TalentF,"TOPLEFT",20,-46);
+							else
+								tianfuBUT:SetPoint("LEFT", frameX.TalentF.ButList[i][ii][iii-1], "RIGHT", 20, 0);
+							end
+						else
+							if iii==1 then
+								tianfuBUT:SetPoint("TOP",frameX.TalentF.ButList[i][ii-1][iii],"BOTTOM", 0, -18);
+							else
+								tianfuBUT:SetPoint("LEFT", frameX.TalentF.ButList[i][ii][iii-1], "RIGHT", 20, 0);
+							end
+						end
+					elseif i==2 then
+						if ii==1 then
+							if iii==1 then
+								tianfuBUT:SetPoint("TOPLEFT",frameX.TalentF,"TOPLEFT",236,-46);
+							else
+								tianfuBUT:SetPoint("LEFT", frameX.TalentF.ButList[i][ii][iii-1], "RIGHT", 20, 0);
+							end
+						else
+							if iii==1 then
+								tianfuBUT:SetPoint("TOP",frameX.TalentF.ButList[i][ii-1][iii],"BOTTOM", 0, -18);
+							else
+								tianfuBUT:SetPoint("LEFT", frameX.TalentF.ButList[i][ii][iii-1], "RIGHT", 20, 0);
+							end
+						end
+					elseif i==3 then
+						if ii==1 then
+							if iii==1 then
+								tianfuBUT:SetPoint("TOPLEFT",frameX.TalentF,"TOPLEFT",444,-46);
+							else
+								tianfuBUT:SetPoint("LEFT", frameX.TalentF.ButList[i][ii][iii-1], "RIGHT", 20, 0);
+							end
+						else
+							if iii==1 then
+								tianfuBUT:SetPoint("TOP",frameX.TalentF.ButList[i][ii-1][iii],"BOTTOM", 0, -18);
+							else
+								tianfuBUT:SetPoint("LEFT", frameX.TalentF.ButList[i][ii][iii-1], "RIGHT", 20, 0);
+							end
+						end
+					end
+					tianfuBUT.Border = tianfuBUT:CreateTexture(nil, "BORDER");
+					tianfuBUT.Border:SetTexture(130841);
+					tianfuBUT.Border:SetPoint("TOPLEFT",tianfuBUT,"TOPLEFT",-10,10);
+					tianfuBUT.Border:SetPoint("BOTTOMRIGHT",tianfuBUT,"BOTTOMRIGHT",10,-10);
+					tianfuBUT.Icon = tianfuBUT:CreateTexture(nil, "BORDER");
+					tianfuBUT.Icon:SetPoint("TOPLEFT",tianfuBUT,"TOPLEFT",0,0);
+					tianfuBUT.Icon:SetPoint("BOTTOMRIGHT",tianfuBUT,"BOTTOMRIGHT",0,0);
+					tianfuBUT.dianshuBG = tianfuBUT:CreateTexture(nil, "ARTWORK");
+					tianfuBUT.dianshuBG:SetTexture("interface/talentframe/talentframe-rankborder.blp");
+					tianfuBUT.dianshuBG:SetSize(tianfuB*1.74,tianfuB);
+					tianfuBUT.dianshuBG:SetPoint("BOTTOMRIGHT",tianfuBUT,"BOTTOMRIGHT",25,-14);
+					tianfuBUT.dianshu = PIGFontString(tianfuBUT,{"CENTER", tianfuBUT.dianshuBG, "CENTER", 1,1},nil,nil,12)
+					tianfuBUT:SetScript("OnLeave", function ()
+						GameTooltip:ClearLines();
+						GameTooltip:Hide() 
+					end);
+				end
+			end
+		end
+		--
+		frameX.TalentF.ButListDian={}
+		for ixx=1,3 do
+			frameX.TalentF.ButListDian[ixx]=PIGFontString(frameX.TalentF,{"TOPLEFT", frameX.TalentF, "TOPLEFT", 214*(ixx-1)+84,-27});
+		end
+		if PIG_MaxTocversion(30000,true) then 
+			frameX.TalentF.Glyph = PIGFrame(frameX.TalentF,{"BOTTOMLEFT", frameX.TalentF, "TOPLEFT", 0, -2},{TalentData.tianfuW+140,38},nil,nil,nil,{["ElvUI"]={0,0,0,0},["NDui"]={0,0,0,0}});
+			frameX.TalentF.Glyph:PIGSetBackdrop(1);
+			frameX.TalentF.Glyph.biaoti2 = PIGFontString(frameX.TalentF.Glyph,{"BOTTOMLEFT", frameX.TalentF.Glyph, "BOTTOMLEFT", 4,6},MINOR_GLYPH..": ");
+			frameX.TalentF.Glyph.Glyph2 = PIGFontString(frameX.TalentF.Glyph,{"LEFT", frameX.TalentF.Glyph.biaoti2, "RIGHT", 0,0});
+			frameX.TalentF.Glyph.Glyph3 = PIGFontString(frameX.TalentF.Glyph,{"LEFT", frameX.TalentF.Glyph.biaoti2, "RIGHT", 180,0});
+			frameX.TalentF.Glyph.Glyph5 = PIGFontString(frameX.TalentF.Glyph,{"LEFT", frameX.TalentF.Glyph.biaoti2, "RIGHT", 360,0});
+
+			frameX.TalentF.Glyph.biaoti1 = PIGFontString(frameX.TalentF.Glyph,{"BOTTOMLEFT", frameX.TalentF.Glyph.biaoti2, "TOPLEFT", 0,2},MAJOR_GLYPH..": ");
+			frameX.TalentF.Glyph.Glyph1 = PIGFontString(frameX.TalentF.Glyph,{"LEFT", frameX.TalentF.Glyph.biaoti1, "RIGHT", 0,0});
+			frameX.TalentF.Glyph.Glyph4 = PIGFontString(frameX.TalentF.Glyph,{"LEFT", frameX.TalentF.Glyph.biaoti1, "RIGHT", 180,0});
+			frameX.TalentF.Glyph.Glyph6 = PIGFontString(frameX.TalentF.Glyph,{"LEFT", frameX.TalentF.Glyph.biaoti1, "RIGHT", 360,0});
+
+			shezhitishi(frameX.TalentF.Glyph,frameX.TalentF.Glyph.Glyph1)
+			shezhitishi(frameX.TalentF.Glyph,frameX.TalentF.Glyph.Glyph2)
+			shezhitishi(frameX.TalentF.Glyph,frameX.TalentF.Glyph.Glyph3)
+			shezhitishi(frameX.TalentF.Glyph,frameX.TalentF.Glyph.Glyph4)
+			shezhitishi(frameX.TalentF.Glyph,frameX.TalentF.Glyph.Glyph5)
+			shezhitishi(frameX.TalentF.Glyph,frameX.TalentF.Glyph.Glyph6)
+			if PIG_MaxTocversion(40000,true) then
+				frameX.TalentF.Glyph:SetHeight(50)
+				frameX.TalentF.Glyph.biaoti3 = PIGFontString(frameX.TalentF.Glyph,{"BOTTOMLEFT", frameX.TalentF.Glyph.biaoti1, "TOPLEFT", 0,2},PRIME_GLYPH..": ");
+				frameX.TalentF.Glyph.Glyph7 = PIGFontString(frameX.TalentF.Glyph,{"LEFT", frameX.TalentF.Glyph.biaoti3, "RIGHT", 0,0});
+				frameX.TalentF.Glyph.Glyph8 = PIGFontString(frameX.TalentF.Glyph,{"LEFT", frameX.TalentF.Glyph.biaoti3, "RIGHT", 180,0});
+				frameX.TalentF.Glyph.Glyph9 = PIGFontString(frameX.TalentF.Glyph,{"LEFT", frameX.TalentF.Glyph.biaoti3, "RIGHT", 360,0});
+				shezhitishi(frameX.TalentF.Glyph,frameX.TalentF.Glyph.Glyph7)
+				shezhitishi(frameX.TalentF.Glyph,frameX.TalentF.Glyph.Glyph8)
+				shezhitishi(frameX.TalentF.Glyph,frameX.TalentF.Glyph.Glyph9)
+			end
+		end
+	elseif PIG_MaxTocversion(60000) then 
+		frameX.TalentF.ButList={}
+		for tier = 1, TalentData.PIGtianfuhangshu do
+			local TalentRowBut = CreateFrame("Frame", nil, frameX.TalentF);
+			frameX.TalentF.ButList[tier]=TalentRowBut
+			TalentRowBut:SetSize(frameX.TalentF:GetWidth()-10,49);
+			if tier == 1 then
+				TalentRowBut:SetPoint("TOP",frameX.TalentF,"TOP",0,-26);
+			else
+				TalentRowBut:SetPoint("TOP",frameX.TalentF.ButList[tier-1],"BOTTOM",0,-6);
+			end
+			TalentRowBut.bg1 = TalentRowBut:CreateTexture(nil, "BACKGROUND");
+			TalentRowBut.bg1:SetTexture("Interface/TalentFrame/talent-horiz");
+			TalentRowBut.bg1:SetTexCoord(0.00000000,1.00000000,0.15625000,0.53906250);
+			TalentRowBut.bg1:SetHeight(49);
+			TalentRowBut.bg1:SetPoint("BOTTOMLEFT", TalentRowBut, "BOTTOMLEFT",0, 0);
+			TalentRowBut.bg1:SetPoint("BOTTOMRIGHT", TalentRowBut, "BOTTOMRIGHT",0, 0);
+			--
+			TalentRowBut.leftCap = TalentRowBut:CreateTexture()
+			TalentRowBut.leftCap:SetTexture("Interface\\TalentFrame\\talent-main")
+			TalentRowBut.leftCap:SetSize(34, 56)
+			TalentRowBut.leftCap:SetPoint("LEFT", TalentRowBut, "LEFT", 0, 0)
+			TalentRowBut.leftCap:SetTexCoord(0.140625, 0.26953125, 0.47656250, 0.58593750)
+			TalentRowBut.rightCap = TalentRowBut:CreateTexture()
+			TalentRowBut.rightCap:SetTexture("Interface\\TalentFrame\\talent-main")
+			TalentRowBut.rightCap:SetSize(34, 56)
+			TalentRowBut.rightCap:SetPoint("RIGHT", TalentRowBut, "RIGHT", 0, 0)
+			TalentRowBut.rightCap:SetTexCoord(0.00390625, 0.140625, 0.47656250, 0.58593750)
+			-- Separator1
+			TalentRowBut.separator1 = TalentRowBut:CreateTexture()
+			TalentRowBut.separator1:SetTexture("Interface\\TalentFrame\\talent-main")
+			TalentRowBut.separator1:SetSize(68, 56)
+			TalentRowBut.separator1:SetPoint("CENTER", TalentRowBut, "LEFT", 60, 0)
+			TalentRowBut.separator1:SetTexCoord(0.00390625, 0.26953125, 0.47656250, 0.58593750)
+			-- Separator2
+			TalentRowBut.separator2 = TalentRowBut:CreateTexture()
+			TalentRowBut.separator2:SetTexture("Interface\\TalentFrame\\talent-main")
+			TalentRowBut.separator2:SetSize(68, 56)
+			TalentRowBut.separator2:SetPoint("LEFT", TalentRowBut.separator1, "RIGHT", 120, 0)
+			TalentRowBut.separator2:SetTexCoord(0.00390625, 0.26953125, 0.47656250, 0.58593750)
+			-- Separator3
+			TalentRowBut.separator3 = TalentRowBut:CreateTexture()
+			TalentRowBut.separator3:SetTexture("Interface\\TalentFrame\\talent-main")
+			TalentRowBut.separator3:SetSize(68, 56)
+			TalentRowBut.separator3:SetPoint("LEFT", TalentRowBut.separator2, "RIGHT", 120, 0)
+			TalentRowBut.separator3:SetTexCoord(0.00390625, 0.26953125, 0.47656250, 0.58593750)
+
+			TalentRowBut.level = PIGFontString(TalentRowBut,{"LEFT", TalentRowBut, "LEFT", 18,0},tier*15,nil,20)
+			TalentRowBut.tbutList={}
+			for tid=1,3 do
+				local talentbut = CreateFrame("Button",nil,TalentRowBut);
+				TalentRowBut.tbutList[tid]=talentbut
+				talentbut:SetSize(164,45);
+				talentbut:SetPoint("LEFT", TalentRowBut["separator"..tid], "LEFT", 46, 0);
+				talentbut.icon = talentbut:CreateTexture()
+				talentbut.icon:SetTexture(134400)
+				talentbut.icon:SetSize(36, 36)
+				talentbut.icon:SetPoint("LEFT", talentbut, "LEFT", 18, 0)
+				talentbut.name = PIGFontString(talentbut,{"LEFT", talentbut.icon, "RIGHT", 6,0})
+				talentbut.name:SetTextColor(1, 1, 1, 1)
+				talentbut:SetScript("OnLeave", function ()
+					GameTooltip:ClearLines();
+					GameTooltip:Hide() 
+				end);
+				talentbut:SetScript("OnEnter", function (self)
+					GameTooltip:ClearLines();
+					GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+					if self.tfspellid then
+						GameTooltip:SetHyperlink("spell:"..self.tfspellid)
+					end
+					GameTooltip:Show();
+				end);
+			end
+		end
+		frameX.TalentF.Glyph = PIGFrame(frameX.TalentF,{"BOTTOM", frameX.TalentF, "BOTTOM", 0, 6},{frameX.TalentF:GetWidth()-10,64},nil,nil,nil,{["ElvUI"]={0,0,0,0},["NDui"]={0,0,0,0}});
+		if PIG_MaxTocversion(50000,true) and PIG_MaxTocversion(60000) then
+			frameX.TalentF.Glyph.laiyuan = PIGFontString(frameX.TalentF.Glyph,{"BOTTOMRIGHT", frameX.TalentF.Glyph, "BOTTOMRIGHT", -10,2},"雕文测试员:大祭司超超",nil,12);
+			frameX.TalentF.Glyph.laiyuan:SetTextColor(0.5, 0.5, 0.5, 0.8)
+		end
+		local GlyphButData={
+			{MAJOR_GLYPH,{2,4,6}},
+			{MINOR_GLYPH,{1,3,5}},
+		}
+		frameX.TalentF.Glyph.ButList={}
+		for i=1,#GlyphButData do
+			local biaotix = PIGFontString(frameX.TalentF.Glyph,{"TOPLEFT", frameX.TalentF.Glyph, "TOPLEFT", 4,-2-(i-1)*24},GlyphButData[i][1]..": ");
+			for ii=1,#GlyphButData[i][2] do
+				local glyphIndex=GlyphButData[i][2][ii]
+				local glyphBut= PIGDiyTex(frameX.TalentF.Glyph,{"LEFT", biaotix, "RIGHT", 4+180*(ii-1),0},{20,20})
+				frameX.TalentF.Glyph.ButList[glyphIndex] =glyphBut 
+				glyphBut.txt = PIGFontString(frameX.TalentF.Glyph,{"LEFT", glyphBut, "RIGHT", 0,0});
+				glyphBut:SetHitRectInsets(0,-140,0,0);
+				glyphBut:SetScript("OnEnter", function (self)
+					local xxxx = self.txt:GetText()
+					if xxxx and xxxx~=NONE then
+						GameTooltip:ClearLines();
+						GameTooltip:SetOwner(self, "ANCHOR_TOPLEFT",0,0);
+						GameTooltip:SetHyperlink(xxxx)
+						GameTooltip:Show();
+					end
+				end);
+				glyphBut:SetScript("OnLeave", function ()
+					GameTooltip:ClearLines();
+					GameTooltip:Hide() 
+				end);
+			end
+		end
+	end
 	--
 	frameX.TalentF.futianfu = PIGButton(frameX.TalentF,{"TOPLEFT", frameX.TalentF, "TOPLEFT", 20,-2},{80,20},nil,nil,nil,nil,nil,0)
 	frameX.TalentF.futianfu:HookScript("OnClick", function(self)
 		self.xianshi2()
 	end)
 	--
-	frameX.TalentF.biaoti = PIGFontString(frameX.TalentF,{"TOP", frameX.TalentF, "TOP", -20,-6})
+	frameX.TalentF.biaoti = PIGFontString(frameX.TalentF,{"TOP", frameX.TalentF, "TOP", -10,-6})
 	frameX.TalentF.biaoti1 = PIGFontString(frameX.TalentF,{"LEFT", frameX.TalentF.biaoti, "RIGHT", 0,0})
-	--
-	frameX.TalentF.ButListDian={}
-	for ixx=1,3 do
-		frameX.TalentF.ButListDian[ixx]=PIGFontString(frameX.TalentF,{"TOPLEFT", frameX.TalentF, "TOPLEFT", 214*(ixx-1)+84,-27});
-	end
-	if PIG_MaxTocversion(30000,true) and PIG_MaxTocversion(50000) then 
-		frameX.TalentF.Glyph = PIGFrame(frameX.TalentF,{"BOTTOMLEFT", frameX.TalentF, "TOPLEFT", 0, -2},{TalentData.tianfuW+140,38},nil,nil,nil,{["ElvUI"]={0,0,0,0},["NDui"]={0,0,0,0}});
-		frameX.TalentF.Glyph:PIGSetBackdrop(1);
-
-		frameX.TalentF.Glyph.biaoti2 = PIGFontString(frameX.TalentF.Glyph,{"BOTTOMLEFT", frameX.TalentF.Glyph, "BOTTOMLEFT", 4,6},MINOR_GLYPH..": ");
-		frameX.TalentF.Glyph.Glyph2 = PIGFontString(frameX.TalentF.Glyph,{"LEFT", frameX.TalentF.Glyph.biaoti2, "RIGHT", 0,0});
-		frameX.TalentF.Glyph.Glyph3 = PIGFontString(frameX.TalentF.Glyph,{"LEFT", frameX.TalentF.Glyph.biaoti2, "RIGHT", 180,0});
-		frameX.TalentF.Glyph.Glyph5 = PIGFontString(frameX.TalentF.Glyph,{"LEFT", frameX.TalentF.Glyph.biaoti2, "RIGHT", 360,0});
-
-		frameX.TalentF.Glyph.biaoti1 = PIGFontString(frameX.TalentF.Glyph,{"BOTTOMLEFT", frameX.TalentF.Glyph.biaoti2, "TOPLEFT", 0,2},MAJOR_GLYPH..": ");
-		frameX.TalentF.Glyph.Glyph1 = PIGFontString(frameX.TalentF.Glyph,{"LEFT", frameX.TalentF.Glyph.biaoti1, "RIGHT", 0,0});
-		frameX.TalentF.Glyph.Glyph4 = PIGFontString(frameX.TalentF.Glyph,{"LEFT", frameX.TalentF.Glyph.biaoti1, "RIGHT", 180,0});
-		frameX.TalentF.Glyph.Glyph6 = PIGFontString(frameX.TalentF.Glyph,{"LEFT", frameX.TalentF.Glyph.biaoti1, "RIGHT", 360,0});
-
-		shezhitishi(frameX.TalentF.Glyph,frameX.TalentF.Glyph.Glyph1)
-		shezhitishi(frameX.TalentF.Glyph,frameX.TalentF.Glyph.Glyph2)
-		shezhitishi(frameX.TalentF.Glyph,frameX.TalentF.Glyph.Glyph3)
-		shezhitishi(frameX.TalentF.Glyph,frameX.TalentF.Glyph.Glyph4)
-		shezhitishi(frameX.TalentF.Glyph,frameX.TalentF.Glyph.Glyph5)
-		shezhitishi(frameX.TalentF.Glyph,frameX.TalentF.Glyph.Glyph6)
-		if PIG_MaxTocversion(40000,true) then
-			frameX.TalentF.Glyph:SetHeight(50)
-			frameX.TalentF.Glyph.biaoti3 = PIGFontString(frameX.TalentF.Glyph,{"BOTTOMLEFT", frameX.TalentF.Glyph.biaoti1, "TOPLEFT", 0,2},PRIME_GLYPH..": ");
-			frameX.TalentF.Glyph.Glyph7 = PIGFontString(frameX.TalentF.Glyph,{"LEFT", frameX.TalentF.Glyph.biaoti3, "RIGHT", 0,0});
-			frameX.TalentF.Glyph.Glyph8 = PIGFontString(frameX.TalentF.Glyph,{"LEFT", frameX.TalentF.Glyph.biaoti3, "RIGHT", 180,0});
-			frameX.TalentF.Glyph.Glyph9 = PIGFontString(frameX.TalentF.Glyph,{"LEFT", frameX.TalentF.Glyph.biaoti3, "RIGHT", 360,0});
-			shezhitishi(frameX.TalentF.Glyph,frameX.TalentF.Glyph.Glyph7)
-			shezhitishi(frameX.TalentF.Glyph,frameX.TalentF.Glyph.Glyph8)
-			shezhitishi(frameX.TalentF.Glyph,frameX.TalentF.Glyph.Glyph9)
-		end
+	if PIG_MaxTocversion(50000,true) and PIG_MaxTocversion(60000) then
+		frameX.TalentF.biaoti9 = PIGFontString(frameX.TalentF,{"TOPRIGHT", frameX.TalentF, "TOPRIGHT", -20,-6},"天赋数据提供:浅羽凝",nil,12)
+		frameX.TalentF.biaoti9:SetTextColor(0.5, 0.5, 0.5, 0.8)
 	end
 	---
-	local tianfuB= 30
-	frameX.TalentF.ButList={}
-	for i=1,3 do
-		frameX.TalentF.ButList[i]={}
-		for ii=1,TalentData.PIGtianfuhangshu do
-			frameX.TalentF.ButList[i][ii]={}
-			for iii=1,4 do
-				local tianfuBUT = CreateFrame("Button", nil, frameX.TalentF);
-				frameX.TalentF.ButList[i][ii][iii]=tianfuBUT
-				tianfuBUT:SetHighlightTexture(130718);
-				tianfuBUT:SetSize(tianfuB,tianfuB);
-				if i==1 then
-					if ii==1 then
-						if iii==1 then
-							tianfuBUT:SetPoint("TOPLEFT",frameX.TalentF,"TOPLEFT",20,-46);
-						else
-							tianfuBUT:SetPoint("LEFT", frameX.TalentF.ButList[i][ii][iii-1], "RIGHT", 20, 0);
-						end
-					else
-						if iii==1 then
-							tianfuBUT:SetPoint("TOP",frameX.TalentF.ButList[i][ii-1][iii],"BOTTOM", 0, -18);
-						else
-							tianfuBUT:SetPoint("LEFT", frameX.TalentF.ButList[i][ii][iii-1], "RIGHT", 20, 0);
-						end
-					end
-				elseif i==2 then
-					if ii==1 then
-						if iii==1 then
-							tianfuBUT:SetPoint("TOPLEFT",frameX.TalentF,"TOPLEFT",236,-46);
-						else
-							tianfuBUT:SetPoint("LEFT", frameX.TalentF.ButList[i][ii][iii-1], "RIGHT", 20, 0);
-						end
-					else
-						if iii==1 then
-							tianfuBUT:SetPoint("TOP",frameX.TalentF.ButList[i][ii-1][iii],"BOTTOM", 0, -18);
-						else
-							tianfuBUT:SetPoint("LEFT", frameX.TalentF.ButList[i][ii][iii-1], "RIGHT", 20, 0);
-						end
-					end
-				elseif i==3 then
-					if ii==1 then
-						if iii==1 then
-							tianfuBUT:SetPoint("TOPLEFT",frameX.TalentF,"TOPLEFT",444,-46);
-						else
-							tianfuBUT:SetPoint("LEFT", frameX.TalentF.ButList[i][ii][iii-1], "RIGHT", 20, 0);
-						end
-					else
-						if iii==1 then
-							tianfuBUT:SetPoint("TOP",frameX.TalentF.ButList[i][ii-1][iii],"BOTTOM", 0, -18);
-						else
-							tianfuBUT:SetPoint("LEFT", frameX.TalentF.ButList[i][ii][iii-1], "RIGHT", 20, 0);
-						end
-					end
-				end
-				tianfuBUT.Border = tianfuBUT:CreateTexture(nil, "BORDER");
-				tianfuBUT.Border:SetTexture(130841);
-				tianfuBUT.Border:SetPoint("TOPLEFT",tianfuBUT,"TOPLEFT",-10,10);
-				tianfuBUT.Border:SetPoint("BOTTOMRIGHT",tianfuBUT,"BOTTOMRIGHT",10,-10);
-				tianfuBUT.Icon = tianfuBUT:CreateTexture(nil, "BORDER");
-				tianfuBUT.Icon:SetPoint("TOPLEFT",tianfuBUT,"TOPLEFT",0,0);
-				tianfuBUT.Icon:SetPoint("BOTTOMRIGHT",tianfuBUT,"BOTTOMRIGHT",0,0);
-				tianfuBUT.dianshuBG = tianfuBUT:CreateTexture(nil, "ARTWORK");
-				tianfuBUT.dianshuBG:SetTexture("interface/talentframe/talentframe-rankborder.blp");
-				tianfuBUT.dianshuBG:SetSize(tianfuB*1.74,tianfuB);
-				tianfuBUT.dianshuBG:SetPoint("BOTTOMRIGHT",tianfuBUT,"BOTTOMRIGHT",25,-14);
-				tianfuBUT.dianshu = PIGFontString(tianfuBUT,{"CENTER", tianfuBUT.dianshuBG, "CENTER", 1,1},nil,nil,12)
-			end
-		end
-	end
 	function frameX.TalentF:CZ_Tianfu()
 		self:Hide()
 		self.futianfu:Hide()
 		self.biaoti:SetText();
 		self.biaoti1:SetText();
-		--
-		self.L_TOPLEFT:SetTexture("");
-		self.L_TOPRIGHT:SetTexture("");
-		self.L_BOTTOMLEFT:SetTexture("");
-		self.L_BOTTOMRIGHT:SetTexture("");
-		--
-		self.C_TOPLEFT:SetTexture("");
-		self.C_TOPRIGHT:SetTexture("");
-		self.C_BOTTOMLEFT:SetTexture("");
-		self.C_BOTTOMRIGHT:SetTexture("");
-		--
-		self.R_TOPLEFT:SetTexture("");
-		self.R_TOPRIGHT:SetTexture("");
-		self.R_BOTTOMLEFT:SetTexture("");
-		self.R_BOTTOMRIGHT:SetTexture("");
-		for i=1,3 do
-			self.ButListDian[i]:SetText("");
-			for ii=1,TalentData.PIGtianfuhangshu do
-				for iii=1,4 do
-					self.ButList[i][ii][iii]:Hide();
+		if PIG_MaxTocversion(50000) then
+			self.L_TOPLEFT:SetTexture("");
+			self.L_TOPRIGHT:SetTexture("");
+			self.L_BOTTOMLEFT:SetTexture("");
+			self.L_BOTTOMRIGHT:SetTexture("");
+			--
+			self.C_TOPLEFT:SetTexture("");
+			self.C_TOPRIGHT:SetTexture("");
+			self.C_BOTTOMLEFT:SetTexture("");
+			self.C_BOTTOMRIGHT:SetTexture("");
+			--
+			self.R_TOPLEFT:SetTexture("");
+			self.R_TOPRIGHT:SetTexture("");
+			self.R_BOTTOMLEFT:SetTexture("");
+			self.R_BOTTOMRIGHT:SetTexture("");
+			for i=1,3 do
+				self.ButListDian[i]:SetText("");
+				for ii=1,TalentData.PIGtianfuhangshu do
+					for iii=1,4 do
+						self.ButList[i][ii][iii]:Hide();
+					end
 				end
 			end
 		end
 	end
 	function frameX.TalentF:ShowTianfuInfo(zhiye,level,tfData,fwid,from)
 		if not tfData then return end
-		local tianfudata = {["xulie"]=0,[1]=0,[2]=0,[3]=0}
-		local xnum = #tfData
-		local TFinfo = {}
-		for i=1,xnum do
-			TFinfo[i]=tfData:sub(i,i)
-		end
-		for i=1,3 do
-			for ii=1,TalentData.PIGtianfuhangshu do
-				for iii=1,4 do
-					local tianfuF =frameX.TalentF.ButList[i][ii][iii]
-					if TalentData.tianfuID[zhiye][i][ii][iii] then
-						tianfudata.xulie=tianfudata.xulie+1
-						local huoqudianshu=tonumber(TFinfo[tianfudata.xulie])
-						local huoqudianshu=huoqudianshu or 0
-						tianfudata[i]=tianfudata[i]+huoqudianshu
-						tianfuF.dianshu.yijiadian=huoqudianshu
-						tianfuF.dianshu:SetText(huoqudianshu.."/"..(#TalentData.tianfuID[zhiye][i][ii][iii]));
-						if huoqudianshu==#TalentData.tianfuID[zhiye][i][ii][iii] then
-							tianfuF.dianshu:SetTextColor(1, 1, 0, 1);
+		if PIG_MaxTocversion(50000) then
+			local tianfudata = {["xulie"]=0,[1]=0,[2]=0,[3]=0}
+			local xnum = #tfData
+			local TFinfo = {}
+			for i=1,xnum do
+				TFinfo[i]=tfData:sub(i,i)
+			end
+			for i=1,3 do
+				for ii=1,TalentData.PIGtianfuhangshu do
+					for iii=1,4 do
+						local tianfuF =frameX.TalentF.ButList[i][ii][iii]
+						if TalentData.tianfuID[zhiye][i][ii][iii] then
+							tianfudata.xulie=tianfudata.xulie+1
+							local huoqudianshu=tonumber(TFinfo[tianfudata.xulie])
+							local huoqudianshu=huoqudianshu or 0
+							tianfudata[i]=tianfudata[i]+huoqudianshu
+							tianfuF.dianshu.yijiadian=huoqudianshu
+							tianfuF.dianshu:SetText(huoqudianshu.."/"..(#TalentData.tianfuID[zhiye][i][ii][iii]));
+							if huoqudianshu==#TalentData.tianfuID[zhiye][i][ii][iii] then
+								tianfuF.dianshu:SetTextColor(1, 1, 0, 1);
+							else
+								tianfuF.dianshu:SetTextColor(0, 1, 0, 1);
+							end
+							if PIG_MaxTocversion(40000) then
+								tianfuF.Icon:SetTexture(GetSpellTexture(TalentData.tianfuID[zhiye][i][ii][iii][1]))
+							else
+								tianfuF.Icon:SetTexture(TalentData.tianfuID_ICON[zhiye][i][ii][iii])
+							end
+							tianfuF.dianshu:Show()
+							tianfuF.dianshuBG:Show()
+							tianfuF:Show();
+							if huoqudianshu>0 then
+								tianfuF.Icon:SetDesaturated(false)
+								tianfuF:SetScript("OnEnter", function (self)
+									GameTooltip:ClearLines();
+									GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+									if PIG_MaxTocversion(40000) then
+										GameTooltip:SetHyperlink("spell:"..TalentData.tianfuID[zhiye][i][ii][iii][huoqudianshu])
+									else
+										GameTooltip:SetHyperlink("talent:"..TalentData.tianfuID[zhiye][i][ii][iii][huoqudianshu])
+									end
+									GameTooltip:Show();
+								end);
+							else
+								tianfuF.Icon:SetDesaturated(true)
+								tianfuF:SetScript("OnEnter", function (self)
+									GameTooltip:ClearLines();
+									GameTooltip:SetOwner(self,"ANCHOR_RIGHT");
+									if PIG_MaxTocversion(40000) then
+										GameTooltip:SetHyperlink("spell:"..TalentData.tianfuID[zhiye][i][ii][iii][1])
+									else
+										GameTooltip:SetHyperlink("talent:"..TalentData.tianfuID[zhiye][i][ii][iii][1])
+									end
+									GameTooltip:Show();
+								end);
+							end
 						else
-							tianfuF.dianshu:SetTextColor(0, 1, 0, 1);
+							tianfuF:Hide();
 						end
-						if PIG_MaxTocversion(40000) then
-							tianfuF.Icon:SetTexture(GetSpellTexture(TalentData.tianfuID[zhiye][i][ii][iii][1]))
+					end
+				end
+				frameX.TalentF.ButListDian[i]:SetText(TalentData.tianfuTabName[zhiye][i].."("..tianfudata[i]..")");
+			end
+			local yiyongzongdianshu=tianfudata[1]+tianfudata[2]+tianfudata[3]
+			--
+			local zongdianshu = max_tianfudianshu(tonumber(level))
+			self.biaoti:SetText("当前可用点数"..zongdianshu);
+			self.biaoti1:SetText("(已分配"..yiyongzongdianshu..")");
+			local shengyu = zongdianshu-yiyongzongdianshu
+			for i=1,3 do
+				for ii=1,TalentData.PIGtianfuhangshu do
+					for iii=1,4 do
+						local tianfuF = frameX.TalentF.ButList[i][ii][iii]
+						if TalentData.tianfuID[zhiye][i][ii][iii] then
+							if tianfuF.dianshu.yijiadian==0 then
+								tianfuF.dianshu:Hide()
+								tianfuF.dianshuBG:Hide()
+							end
+						end
+					end
+				end
+			end
+			---
+			if PIG_MaxTocversion(30000,true) and PIG_MaxTocversion(50000) then
+				Show_Glyphinfo(self,fwid,from)
+			end
+		elseif PIG_MaxTocversion(60000) then
+			local zongdianshu = tonumber(level)
+			for tier=TalentData.PIGtianfuhangshu, 1,-1  do
+				if zongdianshu>=(tier*15) then
+					self.biaoti:SetText("可用天赋"..tier);
+					break
+				end
+			end
+			local SpecID,dataTT = strsplit("-", tfData)
+			local xnum = #dataTT
+			local tianfudata = {["TFinfo"]={},["yidian"]=0,["index"]=0}
+			for i=1,xnum do
+				local yidianji=dataTT:sub(i,i)
+				if yidianji=="1" then
+					tianfudata.yidian=tianfudata.yidian+1
+				end
+				tianfudata.TFinfo[i]=yidianji
+			end
+			self.biaoti1:SetText(" (已学习"..tianfudata.yidian..")");
+			for tier = 1, TalentData.PIGtianfuhangshu do
+				for tid=1,3 do
+					tianfudata.index=tianfudata.index+1
+					local TalentRowBut=frameX.TalentF.ButList[tier].tbutList[tid]
+					local SpellDD=C_Spell.GetSpellInfo(TalentData.tianfuID[zhiye][tier][tid])
+					TalentRowBut.tfspellid=TalentData.tianfuID[zhiye][tier][tid]
+					TalentRowBut.icon:SetTexture(SpellDD.iconID)
+					TalentRowBut.name:SetText(SpellDD.name)
+					if tier<=tianfudata.yidian then
+						if tianfudata.TFinfo[tianfudata.index]=="1" then
+							TalentRowBut.icon:SetDesaturated(false)
 						else
-							tianfuF.Icon:SetTexture(TalentData.tianfuID_ICON[zhiye][i][ii][iii])
+							TalentRowBut.icon:SetDesaturated(true)
 						end
-						tianfuF.dianshu:Show()
-						tianfuF.dianshuBG:Show()
-						tianfuF:Show();
-						if huoqudianshu>0 then
-							tianfuF.Icon:SetDesaturated(false)
-							tianfuF:SetScript("OnEnter", function (self)
-								GameTooltip:ClearLines();
-								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-								if PIG_MaxTocversion(40000) then
-									GameTooltip:SetHyperlink("spell:"..TalentData.tianfuID[zhiye][i][ii][iii][huoqudianshu])
-								else
-									GameTooltip:SetHyperlink("talent:"..TalentData.tianfuID[zhiye][i][ii][iii][huoqudianshu])
-								end
-								GameTooltip:Show();
-							end);
-						else
-							tianfuF.Icon:SetDesaturated(true)
-							tianfuF:SetScript("OnEnter", function (self)
-								GameTooltip:ClearLines();
-								GameTooltip:SetOwner(self,"ANCHOR_RIGHT");
-								if PIG_MaxTocversion(40000) then
-									GameTooltip:SetHyperlink("spell:"..TalentData.tianfuID[zhiye][i][ii][iii][1])
-								else
-									GameTooltip:SetHyperlink("talent:"..TalentData.tianfuID[zhiye][i][ii][iii][1])
-								end
-								GameTooltip:Show();
-							end);
-						end
-						tianfuF:SetScript("OnLeave", function ()
-							GameTooltip:ClearLines();
-							GameTooltip:Hide() 
-						end);
-
 					else
-						tianfuF:Hide();
+						TalentRowBut.icon:SetDesaturated(true)
 					end
 				end
-			end
-			frameX.TalentF.ButListDian[i]:SetText(TalentData.tianfuTabName[zhiye][i].."("..tianfudata[i]..")");
-		end
-		local yiyongzongdianshu=tianfudata[1]+tianfudata[2]+tianfudata[3]
-		--
-		local zongdianshu = max_tianfudianshu(tonumber(level))
-		self.biaoti:SetText("当前可用点数"..zongdianshu);
-		self.biaoti1:SetText("(已分配"..yiyongzongdianshu..")");
-		local shengyu = zongdianshu-yiyongzongdianshu
-		for i=1,3 do
-			for ii=1,TalentData.PIGtianfuhangshu do
-				for iii=1,4 do
-					local tianfuF = frameX.TalentF.ButList[i][ii][iii]
-					if TalentData.tianfuID[zhiye][i][ii][iii] then
-						if tianfuF.dianshu.yijiadian==0 then
-							tianfuF.dianshu:Hide()
-							tianfuF.dianshuBG:Hide()
-						end
-					end
-				end
-			end
-		end
-		---
-		if PIG_MaxTocversion(30000,true) and PIG_MaxTocversion(50000) then
-			for i=1,TalentData.GLYPH_NUM do
-				self.Glyph["Glyph"..i]:SetTextColor(0.5, 0.5, 0.5, 1);
-				self.Glyph["Glyph"..i]:SetText(NONE)
 			end
 			Show_Glyphinfo(self,fwid,from)
 		end
@@ -377,20 +523,22 @@ function TalentData.add_TalentUI(frameX)
 		local cName=fujiui.cName
 		local level=fujiui.level
 		local zhiye=fujiui.zhiye
-		self.L_TOPLEFT:SetTexture(TalentData.tianfuBG[zhiye][3]);
-		self.L_TOPRIGHT:SetTexture(TalentData.tianfuBG[zhiye][4]);
-		self.L_BOTTOMLEFT:SetTexture(TalentData.tianfuBG[zhiye][1]);
-		self.L_BOTTOMRIGHT:SetTexture(TalentData.tianfuBG[zhiye][2]);
-		--
-		self.C_TOPLEFT:SetTexture(TalentData.tianfuBG[zhiye][7]);
-		self.C_TOPRIGHT:SetTexture(TalentData.tianfuBG[zhiye][8]);
-		self.C_BOTTOMLEFT:SetTexture(TalentData.tianfuBG[zhiye][5]);
-		self.C_BOTTOMRIGHT:SetTexture(TalentData.tianfuBG[zhiye][6]);
-		---
-		self.R_TOPLEFT:SetTexture(TalentData.tianfuBG[zhiye][11]);
-		self.R_TOPRIGHT:SetTexture(TalentData.tianfuBG[zhiye][12]);
-		self.R_BOTTOMLEFT:SetTexture(TalentData.tianfuBG[zhiye][9]);
-		self.R_BOTTOMRIGHT:SetTexture(TalentData.tianfuBG[zhiye][10]);
+		if PIG_MaxTocversion(50000) then
+			self.L_TOPLEFT:SetTexture(TalentData.tianfuBG[zhiye][3]);
+			self.L_TOPRIGHT:SetTexture(TalentData.tianfuBG[zhiye][4]);
+			self.L_BOTTOMLEFT:SetTexture(TalentData.tianfuBG[zhiye][1]);
+			self.L_BOTTOMRIGHT:SetTexture(TalentData.tianfuBG[zhiye][2]);
+			--
+			self.C_TOPLEFT:SetTexture(TalentData.tianfuBG[zhiye][7]);
+			self.C_TOPRIGHT:SetTexture(TalentData.tianfuBG[zhiye][8]);
+			self.C_BOTTOMLEFT:SetTexture(TalentData.tianfuBG[zhiye][5]);
+			self.C_BOTTOMRIGHT:SetTexture(TalentData.tianfuBG[zhiye][6]);
+			---
+			self.R_TOPLEFT:SetTexture(TalentData.tianfuBG[zhiye][11]);
+			self.R_TOPRIGHT:SetTexture(TalentData.tianfuBG[zhiye][12]);
+			self.R_BOTTOMLEFT:SetTexture(TalentData.tianfuBG[zhiye][9]);
+			self.R_BOTTOMRIGHT:SetTexture(TalentData.tianfuBG[zhiye][10]);
+		end
 		local tfinfo,tfinfo2= "","";
 		if datayuan then
 			if datayuan=="lx" then
@@ -488,37 +636,48 @@ function TalentData.GetTianfuIcon_YC(zhiye,namex,from,tfData)
 		tfTXTData[1] =PIG_OptionsUI.talentData[namex]["T"][2]
 		tfTXTData[2] =PIG_OptionsUI.talentData[namex]["T"][3]
 	end
-	for id=1,#tfTXTData do
-		if tfTXTData[id]~="" then
-			local xnum = #tfTXTData[id]
-			local TFinfo = {}
-			for i=1,xnum do
-				TFinfo[i]=tfTXTData[id]:sub(i,i)
-			end
-			local tianfudata = {["xulie"]=0,["zuidaV"]=0,["zuidaID"]=0,[1]=0,[2]=0,[3]=0}
-			for i=1,3 do
-				for ii=1,TalentData.PIGtianfuhangshu do
-					for iii=1,4 do
-						if TalentData.tianfuID[zhiye][i][ii][iii] then
-							tianfudata.xulie=tianfudata.xulie+1
-							local huoqudianshu=tonumber(TFinfo[tianfudata.xulie]) or 0
-							tianfudata[i]=tianfudata[i]+huoqudianshu
+	if PIG_MaxTocversion(50000) then
+		for id=1,#tfTXTData do
+			if tfTXTData[id]~="" then
+				local xnum = #tfTXTData[id]
+				local TFinfo = {}
+				for i=1,xnum do
+					TFinfo[i]=tfTXTData[id]:sub(i,i)
+				end
+				local tianfudata = {["xulie"]=0,["zuidaV"]=0,["zuidaID"]=0,[1]=0,[2]=0,[3]=0}
+				for i=1,3 do
+					for ii=1,TalentData.PIGtianfuhangshu do
+						for iii=1,4 do
+							if TalentData.tianfuID[zhiye][i][ii][iii] then
+								tianfudata.xulie=tianfudata.xulie+1
+								local huoqudianshu=tonumber(TFinfo[tianfudata.xulie]) or 0
+								tianfudata[i]=tianfudata[i]+huoqudianshu
+							end
 						end
 					end
+					if i==3 then
+						zuidazhi[id][3]=zuidazhi[id][3]..tianfudata[i]
+					else
+						zuidazhi[id][3]=zuidazhi[id][3]..tianfudata[i].."-"
+					end
+					if tianfudata[i]>tianfudata.zuidaV then
+						tianfudata.zuidaV=tianfudata[i]
+						tianfudata.zuidaID=i
+					end	
 				end
-				if i==3 then
-					zuidazhi[id][3]=zuidazhi[id][3]..tianfudata[i]
-				else
-					zuidazhi[id][3]=zuidazhi[id][3]..tianfudata[i].."-"
+				if tianfudata.zuidaID>0 then
+					zuidazhi[id][1]=TalentData.tianfuTabName[zhiye][tianfudata.zuidaID]
+					zuidazhi[id][2]=TalentData.tianfuTabIcon[zhiye][tianfudata.zuidaID]
 				end
-				if tianfudata[i]>tianfudata.zuidaV then
-					tianfudata.zuidaV=tianfudata[i]
-					tianfudata.zuidaID=i
-				end	
 			end
-			if tianfudata.zuidaID>0 then
-				zuidazhi[id][1]=TalentData.tianfuTabName[zhiye][tianfudata.zuidaID]
-				zuidazhi[id][2]=TalentData.tianfuTabIcon[zhiye][tianfudata.zuidaID]
+		end
+	else
+		for id=1,#tfTXTData do
+			local zhuanjingID = strsplit("-", tfTXTData[id])
+			local zhuanjingID = tonumber(zhuanjingID or 5)
+			if zhuanjingID~=5 then
+				zuidazhi[id][1]=TalentData.tianfuTabName[zhiye][zhuanjingID]
+				zuidazhi[id][2]=TalentData.tianfuTabIcon[zhiye][zhuanjingID]
 			end
 		end
 	end
@@ -560,13 +719,35 @@ local function GetTianfuData(activeGroup,guancha)
 	end
 	return txt
 end
+local function GetSpecData(activeGroup,guancha)
+	local txt = ""
+ 	local currentSpec = C_SpecializationInfo.GetSpecialization(guancha, false,ActiveSpec)
+	txt=txt..currentSpec.."-"
+	for tier = 1, MAX_NUM_TALENT_TIERS do
+		local tierAvailable, selectedTalent, tierUnlockLevel = GetTalentTierInfo(tier, activeGroup, false, "player")
+		for column=1, NUM_TALENT_COLUMNS do
+			local talentInfoQuery = {};
+			talentInfoQuery.tier = tier;
+			talentInfoQuery.column= column;
+			talentInfoQuery.groupIndex = 1;
+			talentInfoQuery.isInspect = false;
+			talentInfoQuery.target = "player";
+			local talentInfo = C_SpecializationInfo.GetTalentInfo(talentInfoQuery);
+			if talentInfo.selected then
+				txt=txt.."1"
+			else
+				txt=txt.."0"
+			end
+		end
+	end
+	return txt
+end
 function TalentData.GetTianfuNum(guancha)
 	local txt = ""
 	if PIG_MaxTocversion(50000) then
 		local numGroup = GetNumTalentGroups(guancha, false)
 		local activeGroup = GetActiveTalentGroup(guancha, false)	
-		local code1=GetTianfuData(activeGroup,guancha)
-		txt = code1
+		txt =GetTianfuData(activeGroup,guancha)
 		if numGroup>1 then
 			if activeGroup==1 then
 				txt = txt.."&"..GetTianfuData(2,guancha)
@@ -574,17 +755,17 @@ function TalentData.GetTianfuNum(guancha)
 				txt = txt.."&"..GetTianfuData(1,guancha)
 			end
 		end
-	elseif PIG_MaxTocversion(100000) then
-	 -- local currentSpec = C_SpecializationInfo.GetSpecialization()
-		 -- TFInfo=TFInfo..currentSpec.."-"
-		 -- for i=1,MAX_TALENT_TIERS do
-		 -- 	local tierAvailable, selectedTalent, tierUnlockLevel = GetTalentTierInfo(i, 1, false, "player")
-		 -- 	if i==MAX_TALENT_TIERS then
-		 -- 		TFInfo=TFInfo..selectedTalent
-		 -- 	else
-		 -- 		TFInfo=TFInfo..selectedTalent.."-"
-		 -- 	end
-		 -- end
+	elseif PIG_MaxTocversion(60000) then
+		local numSpecGroups = GetNumSpecGroups(guancha)
+		local ActiveSpec = C_SpecializationInfo.GetActiveSpecGroup(guancha)
+		txt = GetSpecData(ActiveSpec,guancha)
+		if numSpecGroups>1 then
+			if ActiveSpec==1 then
+				txt = txt.."&"..GetSpecData(2,guancha)
+			elseif ActiveSpec==2 then
+				txt = txt.."&"..GetSpecData(1,guancha)
+			end
+		end
 	else
 		-- local currentSpec = C_SpecializationInfo.GetSpecialization()
 		-- TFInfo=TFInfo..currentSpec.."-"
@@ -648,12 +829,24 @@ function TalentData.GetGlyphNum()
 			end
 			txt = code1.."&"..code2
 		end
+	elseif PIG_MaxTocversion(50000,true) and PIG_MaxTocversion(60000) then
+		local numSpecGroups = GetNumSpecGroups(guancha)
+		local ActiveSpec = C_SpecializationInfo.GetActiveSpecGroup(guancha)
+		txt =GetGlyphData(ActiveSpec);
+		if numSpecGroups > 1 then
+			local code2=""
+			if ActiveSpec==1 then
+				code2 =GetGlyphData(2);
+			elseif ActiveSpec==2 then
+				code2 =GetGlyphData(1);
+			end
+			txt = code1.."&"..code2
+		end
 	end
 	return txt
 end
 function TalentData.GetGlyphTXT()
-	local numTxt12 = TalentData.GetGlyphNum()
-	return yasuo_NumberString(numTxt12)
+	return yasuo_NumberString(TalentData.GetGlyphNum())
 end
 function TalentData.HY_GlyphTXT(txt)
 	local txt = txt or ""
@@ -698,7 +891,6 @@ local TalentTabRole = {
 	["WARRIOR"] ={[1]=4,[2]=4,[3]=1},
 	["MONK"] = {[1]=1,[2]=2,[3]=4},
 	["DEMONHUNTER"] = {[1]=4,[2]=1},
-	
 };
 local TalentIDRole = {
 	["DEATHKNIGHT"]={[250]=1,[251]=4,[252]=4},

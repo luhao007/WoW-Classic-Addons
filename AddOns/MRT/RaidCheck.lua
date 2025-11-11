@@ -1,10 +1,11 @@
 local GlobalAddonName, ExRT = ...
 
-local IsEncounterInProgress, GetTime = IsEncounterInProgress, GetTime
+local GetTime = GetTime
 local IsAddOnLoaded = C_AddOns and C_AddOns.IsAddOnLoaded or IsAddOnLoaded
 local GetSpellInfo = ExRT.F.GetSpellInfo or GetSpellInfo
 local GetItemInfo, GetItemInfoInstant, GetItemCount  = C_Item and C_Item.GetItemInfo or GetItemInfo, C_Item and C_Item.GetItemInfoInstant or GetItemInfoInstant, C_Item and C_Item.GetItemCount or GetItemCount
 local SendChatMessage = C_ChatInfo and C_ChatInfo.SendChatMessage or SendChatMessage
+local IsEncounterInProgress = C_InstanceEncounter and C_InstanceEncounter.IsEncounterInProgress or IsEncounterInProgress
 
 local VMRT = nil
 
@@ -1777,6 +1778,7 @@ do
 end
 
 function module.main:ENCOUNTER_START()
+	if ExRT.isMN then return end
 	ExRT.F.ScheduleTimer(CheckPotionsOnPull,1.5)
 
 	table.wipe(module.db.hsList)

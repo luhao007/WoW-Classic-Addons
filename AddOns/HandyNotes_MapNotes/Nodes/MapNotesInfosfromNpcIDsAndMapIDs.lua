@@ -314,6 +314,7 @@ ns.Dreamwalk = spellName(193753) -- Teleport Dreamwalk - Druid
 ns.DeathGate = spellName(50977) -- Teleport Death Gate -- DK
 ns.ZenPilgrimage = spellName(126892) -- Teleport Zen Pilgrimage -- Monk
 ns.JumpToSkyhold = spellName(192085) -- Teleport -- Warrior Class Hall
+ns.WarbandExploreAllMapsFromMainchar = spellName(431280) -- Warband explore all maps
 
 
 ------------------------------------ CurrencyID Text

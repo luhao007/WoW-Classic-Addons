@@ -201,8 +201,8 @@ L["MAP_WORDWIND"] = "窗口化世界地圖";
 L["MAP_WORDWINDTIPS"] = "窗口化世界地圖";
 L["MAP_WORDLV"] = "顯示等級範圍";
 L["MAP_WORDLVTIPS"] = "顯示地圖的等級範圍";
-L["MAP_WORDSKILL"] = "顯示釣魚技能點數要求";
-L["MAP_WORDSKILLTIPS"] = "顯示地圖的釣魚技能點數最低要求";
+L["MAP_WORDSKILL"] = tocversion<40000 and "顯示釣魚技能點數要求" or "顯示寵物等級範圍";
+L["MAP_WORDSKILLTIPS"] = tocversion<40000 and "顯示地圖的釣魚技能點數最低要求" or "顯示地圖的寵物等級範圍";
 L["MAP_WORDMIWU"] = "去除戰爭迷霧";
 L["MAP_WORDMIWUTIPS"] = "去除世界地圖的戰爭迷霧";
 --Cvar

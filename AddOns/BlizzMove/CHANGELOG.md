@@ -1,8 +1,6 @@
 # BlizzMove
 
-## [v3.7.11](https://github.com/Kiatra/BlizzMove/tree/v3.7.11) (2025-10-22)
-[Full Changelog](https://github.com/Kiatra/BlizzMove/compare/v3.7.10...v3.7.11) [Previous Releases](https://github.com/Kiatra/BlizzMove/releases)
+## [v3.7.13](https://github.com/Kiatra/BlizzMove/tree/v3.7.13) (2025-11-09)
+[Full Changelog](https://github.com/Kiatra/BlizzMove/compare/v3.7.12...v3.7.13) [Previous Releases](https://github.com/Kiatra/BlizzMove/releases)
 
-- Classic TOC Bump  
-- Minor cleanup  
-- Add support for Remix Artifact Frame  
+- Fixed previous release breaking talent buttons even more  

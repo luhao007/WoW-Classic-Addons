@@ -207,7 +207,6 @@ function TooltipPlusfun.InfoPlus()
 				end
 			else
 				self:AddDoubleLine("|cffd33c54TalentID:|r "..talentTree,"")
-				--print(GetTalentInfoByID(talentTree))
 			end
 			self:Show()
 		end)

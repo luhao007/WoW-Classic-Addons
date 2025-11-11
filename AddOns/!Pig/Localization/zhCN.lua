@@ -201,8 +201,8 @@ L["MAP_WORDWIND"] = "窗口化世界地图";
 L["MAP_WORDWINDTIPS"] = "窗口化世界地图";
 L["MAP_WORDLV"] = "显示等级范围";
 L["MAP_WORDLVTIPS"] = "显示地图的等级范围";
-L["MAP_WORDSKILL"] = "显示钓鱼技能要求";
-L["MAP_WORDSKILLTIPS"] = "显示地图的钓鱼技能最低要求";
+L["MAP_WORDSKILL"] = tocversion<40000 and "显示钓鱼技能要求" or "显示宠物等级范围";
+L["MAP_WORDSKILLTIPS"] = tocversion<40000 and "显示地图的钓鱼技能最低要求" or "显示地图的宠物等级范围";
 L["MAP_WORDMIWU"] = "去除战争迷雾";
 L["MAP_WORDMIWUTIPS"] = "去除地图战争迷雾";
 --Cvar

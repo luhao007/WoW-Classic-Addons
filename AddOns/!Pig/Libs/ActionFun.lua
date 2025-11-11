@@ -162,9 +162,11 @@ function ActionFun.Update_Cooldown(self)
 			end
 		elseif Type=="item" then
 			local ItemID = GetItemInfoInstant(SimID)
-			local start, duration, enabled = GetItemCooldown(ItemID)
-			if enabled~=0 and start and duration then
-				self.cooldown:SetCooldown(start, duration);
+			if ItemID then
+				local start, duration, enabled = GetItemCooldown(ItemID)
+				if enabled~=0 and start and duration then
+					self.cooldown:SetCooldown(start, duration);
+				end
 			end
 		elseif Type=="macro" then
 			local hongSpellID = GetMacroSpell(SimID)
@@ -177,9 +179,11 @@ function ActionFun.Update_Cooldown(self)
 				local ItemName, ItemLink = GetMacroItem(SimID);
 				if ItemName then
 					local ItemID = GetItemInfoInstant(ItemLink)
-					local start, duration, enabled = GetItemCooldown(ItemID);
-					if enabled~=0 and start and duration then
-						self.cooldown:SetCooldown(start or 0, duration or 0);
+					if ItemID then
+						local start, duration, enabled = GetItemCooldown(ItemID);
+						if enabled~=0 and start and duration then
+							self.cooldown:SetCooldown(start or 0, duration or 0);
+						end
 					end
 				end
 			end

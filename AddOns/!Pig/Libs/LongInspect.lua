@@ -38,7 +38,7 @@ local function Update_ShowItem(itemstxt,laiyuan)
 end
 Fun.Update_ShowItem=Update_ShowItem
 local function Update_ShowPlayer(Player,lyfrome)
-	--				print(Player,lyfrome)
+	--print(lyfrome,unpack(Player))
 	local class,race,level,itemLV,gender = unpack(Player)
 	if HardcoreDeaths_UI then HardcoreDeaths_UI.Save_playerdata(_G[UIname].fullnameX,class,race,gender) end
 	local className, classFile = PIGGetClassInfo(class)

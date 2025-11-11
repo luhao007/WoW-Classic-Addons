@@ -1026,39 +1026,57 @@ function Fun.yasuo_NumberString(sss)
     if not sss or sss == "" then return "" end
     local txtmsg = ""
     local count = 1
-    local lastDigit = nil
+    local lastChar = nil
     for i = 1, #sss do
-        local str = sss:sub(i, i)
-        if str == lastDigit then
-            count = count + 1
-        else
-            if lastDigit then
-                if count > 1 then
-                    local compChar = pig_yasuo[count]
-                    if compChar then
-                        txtmsg = txtmsg .. lastDigit .. compChar
+        local char = sss:sub(i, i)
+        if lastChar and (not lastChar:match("%d")) then
+            txtmsg = txtmsg .. lastChar
+            lastChar = nil
+            count = 0
+        end
+        if char:match("%d") then
+            if char == lastChar then
+                count = count + 1
+            else
+                if lastChar and lastChar:match("%d") then
+                    if count > 1 then
+                        local comp = pig_yasuo[count]
+                        txtmsg = txtmsg .. lastChar .. (comp or tostring(count))
                     else
-                        txtmsg = txtmsg .. lastDigit .. tostring(count)
+                        txtmsg = txtmsg .. lastChar
                     end
-                else
-                    txtmsg = txtmsg .. lastDigit
+                elseif lastChar then
+                    txtmsg = txtmsg .. lastChar
                 end
+                count = 1
+                lastChar = char
             end
-            count = 1
-            lastDigit = str
-        end
-    end
-    if count > 1 then
-        local compChar = pig_yasuo[count]
-        if compChar then
-            txtmsg = txtmsg .. lastDigit .. compChar
         else
-            txtmsg = txtmsg .. lastDigit .. tostring(count)
+            if lastChar and lastChar:match("%d") then
+                if count > 1 then
+                    local comp = pig_yasuo[count]
+                    txtmsg = txtmsg .. lastChar .. (comp or tostring(count))
+                else
+                    txtmsg = txtmsg .. lastChar
+                end
+                lastChar = nil
+                count = 0
+            end
+            txtmsg = txtmsg .. char
         end
-    else
-        txtmsg = txtmsg .. lastDigit
     end
-
+    if lastChar then
+        if lastChar:match("%d") then
+            if count > 1 then
+                local comp = pig_yasuo[count]
+                txtmsg = txtmsg .. lastChar .. (comp or tostring(count))
+            else
+                txtmsg = txtmsg .. lastChar
+            end
+        else
+            txtmsg = txtmsg .. lastChar
+        end
+    end
     return txtmsg
 end
 function Fun.jieya_NumberString(sss)
@@ -1097,66 +1115,6 @@ function Fun.jieya_NumberString(sss)
 
     return txtdec
 end
--- function Fun.yasuo_NumberString(sss)
--- 	if not sss or sss=="" then return "" end
---     local txtmsg = ""
---     local count = 1
---     local lastDigit=nil
---     for i = 1, #sss do
---         local str = sss:sub(i, i)
---         if str == lastDigit then
---             count = count + 1
---         else
--- 			if lastDigit then
--- 				local str = sss:sub(i, i)
--- 	            if count > 1 then
--- 	                txtmsg = txtmsg .. tostring(lastDigit) .. pig_yasuo[count]
--- 	            else
--- 	                txtmsg = txtmsg .. tostring(lastDigit)
--- 	            end
--- 	        end
---             count = 1
---             lastDigit = str
---         end
---     end
---     if count > 1 then
---         txtmsg = txtmsg .. tostring(lastDigit) .. pig_yasuo[count]
---     elseif count == 1 then
---         txtmsg = txtmsg .. tostring(lastDigit)
---     end
---     return txtmsg
--- end
--- function Fun.jieya_NumberString(sss)
--- 	if not sss or sss=="" then return "" end
---     local txtdec = ""
---     local zifutxt = nil
---     local count = 0
---     for i = 1, #sss do
---         local char = sss:sub(i, i)
---         local char1 = sss:sub(i+1, i+1)
---         if char:match("%A") then
--- 			txtdec=txtdec..char
---             zifutxt = char
---         elseif char:match("%a") and char1:match("%a") then
---         	if zifutxt then
---         		print(char,char1)
---         		print(pig_jieya[char..char1])
---         		for ix=2,pig_jieya[char..char1] do
---         			txtdec=txtdec..zifutxt
---         		end
---             end
---             zifutxt = nil
---         elseif char:match("%a") then
---         	if zifutxt then
---         		for ix=2,pig_jieya[char] do
---         			txtdec=txtdec..zifutxt
---         		end
---             end
---             zifutxt = nil
---         end
---     end
---     return txtdec
--- end
 --压缩配置
 local pig_teshuzifu = {"&","@","#"}
 function Fun.quchu_teshufuhao(str)

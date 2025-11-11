@@ -63,6 +63,7 @@ local GetProgressColorText = app.Modules.Color.GetProgressColorText;
 local CleanLink = app.Modules.Item.CleanLink
 local TryColorizeName = app.TryColorizeName;
 local MergeProperties = app.MergeProperties
+local wipearray = app.wipearray
 local DESCRIPTION_SEPARATOR = app.DESCRIPTION_SEPARATOR;
 local ATTAccountWideData;
 
@@ -2685,7 +2686,7 @@ customWindowUpdates.CurrentInstance = function(self, force, got)
 			-- app.PrintDebug("Rebuild",self.mapID);
 			local currentMaps, mapID = {}, self.mapID
 
-			-- Get all results for this map, without any results that have been cloned into Source Ignored groups or are under Unsorted
+			-- Get all results for this map
 			results = SearchForField("mapID", mapID)
 			-- app.PrintDebug("Rebuild#",#results);
 			if results and #results > 0 then
@@ -2703,16 +2704,19 @@ customWindowUpdates.CurrentInstance = function(self, force, got)
 					-- end
 				-- end
 				-- See if there are any sub-maps we should also include by way of the 'maps' field on the 'real' map for this id
-				local rootMap
-				for _,result in ipairs(results) do
+				local rootMap, result
+				for i=1,#results do
+					result = results[i]
 					if result.key == "mapID" and result.mapID == mapID then
 						rootMap = result
 						break;
 					end
 				end
-				if rootMap and rootMap.maps then
-					local subresults
-					for _,subMapID in ipairs(rootMap.maps) do
+				local rootMaps = rootMap and rootMap.maps
+				if rootMaps then
+					local subresults, subMapID
+					for i=1,#rootMaps do
+						subMapID = rootMaps[i]
 						if subMapID ~= mapID then
 							subresults = SearchForField("mapID", subMapID)
 							-- app.PrintDebug("Adding Sub-Map Results:",subMapID,#subresults)
@@ -2722,31 +2726,37 @@ customWindowUpdates.CurrentInstance = function(self, force, got)
 				end
 				-- Simplify the returned groups
 				groups = {};
-				wipe(rootGroups);
-				wipe(mapGroups);
+				wipearray(rootGroups);
+				wipearray(mapGroups);
 				header = { mapID = mapID, g = groups }
 				currentMaps[mapID] = true;
 				isInInstance = IsInInstance();
 				headerKeys = isInInstance and subGroupInstanceKeys or subGroupKeys;
+				local group, groupmapID, groupmaps
 				-- split search results by whether they represent the 'root' of the minilist or some other mapped content
-				for _,group in ipairs(results) do
+				for i=1,#results do
 					-- do not use any raw Source groups in the final list
-					group = CreateObject(group);
+					group = CreateObject(results[i]);
+					groupmapID = group.mapID
+					groupmaps = group.maps
 					-- Instance/Map/Class/Header(of current map) groups are allowed as root of minilist
-					if (group.instanceID or (group.mapID and (group.key == "mapID" or (group.key == "headerID" and group.mapID == mapID))) or group.key == "classID")
+					if (group.instanceID or (groupmapID and (group.key == "mapID" or (group.key == "headerID" and groupmapID == mapID))) or group.key == "classID")
 						-- and actually match this minilist...
 						-- only if this group mapID matches the minilist mapID directly or by maps
-						and (group.mapID == mapID or (group.maps and contains(group.maps, mapID))) then
+						and (groupmapID == mapID or (groupmaps and contains(groupmaps, mapID))) then
 						rootGroups[#rootGroups + 1] = group
 					else
 						mapGroups[#mapGroups + 1] = group
 					end
 				end
 				-- first merge all root groups into the list
-				for _,group in ipairs(rootGroups) do
-					if group.maps then
-						for _,m in ipairs(group.maps) do
-							currentMaps[m] = true;
+				local groupMaps
+				for i=1,#rootGroups do
+					group = rootGroups[i]
+					groupMaps = group.maps
+					if groupMaps then
+						for i=1,#groupMaps do
+							currentMaps[groupMaps[i]] = true;
 						end
 					end
 					-- app.PrintDebug("Merge as Root",group.hash)
@@ -2755,7 +2765,8 @@ customWindowUpdates.CurrentInstance = function(self, force, got)
 				end
 				local externalMaps = {}
 				-- then merge all mapped groups into the list
-				for _,group in ipairs(mapGroups) do
+				for i=1,#mapGroups do
+					group = mapGroups[i]
 					-- app.PrintDebug("Mapping:",app:SearchLink(group))
 					nested = nil;
 
@@ -2780,8 +2791,8 @@ customWindowUpdates.CurrentInstance = function(self, force, got)
 							group = CreateHeaderData(group, nextParent);
 							nested = true;
 						else
-							for _,hkey in ipairs(headerKeys) do
-								if nextParent[hkey] then
+							for i=1,#headerKeys do
+								if nextParent[headerKeys[i]] then
 									-- create the specified group Type header
 									group = CreateHeaderData(group, nextParent);
 									nested = true;

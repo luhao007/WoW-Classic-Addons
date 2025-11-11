@@ -51,12 +51,37 @@ function ns.FogOfWar:OnEnable()
   end
 end
 
+function ns.FogOfWar:OnInitialize()
+  HandyNotes.RegisterMessage(self, "HandyNotes_NotifyUpdate", "OnHNUpdate")
+  self:SyncColorsFromDB(false)
+end
+
+function ns.FogOfWar:OnHNUpdate(event, addonName)
+  if addonName ~= "MapNotes" then return end
+  local db = ns.Addon and ns.Addon.db and ns.Addon.db.profile
+  local on = db and db.activate and db.activate.FogOfWar
+
+  if on and not self:IsEnabled() then
+    self:Enable()
+    self:Refresh()
+  elseif not on and self:IsEnabled() then
+    self:Disable()
+    self:Refresh()
+  end
+end
+
 function ns.FogOfWar:OnDisable()
   if ns._hookCheckTicker then
     ns._hookCheckTicker:Cancel()
     ns._hookCheckTicker = nil
   end
+  if WorldMapFrame and WorldMapFrame:IsShown() then
+    for pin in WorldMapFrame:EnumeratePinsByTemplate("MapExplorationPinTemplate") do
+      if pin.RefreshOverlays then pin:RefreshOverlays(true) end
+    end
+  end
 end
+
 
 function ns.FogOfWar:Refresh()
   if not self:IsEnabled() then return end

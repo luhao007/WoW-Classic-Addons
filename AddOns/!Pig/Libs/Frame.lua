@@ -95,7 +95,7 @@ function Create.PIGFrame(Parent,Point,WH,UIName,ESCOFF,Template,Ext)
 	local frameX = CreateFrame("Frame", UIName, Parent,Template)
 	frameX.Ext=Ext
 	if WH then
-		frameX:SetSize(WH[1],WH[2]+4);
+		frameX:SetSize(WH[1],WH[2]);
 	end
 	if Point then
 		_SetPoint(frameX,Point)

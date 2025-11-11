@@ -505,13 +505,12 @@ function Fun.Get_GroupLvTxt()
 		if numgroup>0 then
 			local MsgNr=",队内("
 			for id=2,numgroup do
-				local dengjiKk = UnitLevel("Raid"..id);
-				if id==numgroup then
-					MsgNr=MsgNr..dengjiKk..")";
-				else
+				local name, rank, subgroup, dengjiKk = GetRaidRosterInfo(id)
+				if name and PIGA_Per["Farm"]["Other_RaidMode"] and PIGA_Per["Farm"]["Other_RaidModeShow"][subgroup] then
 					MsgNr=MsgNr..dengjiKk..",";
 				end
 			end
+			MsgNr=MsgNr..")";
 			return MsgNr
 		end
 	elseif IsInGroup() then

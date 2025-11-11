@@ -1050,53 +1050,56 @@ function BusinessInfo.MailPlus_ADDUI()
 		for bag=1,#bagData["bagID"] do
 			for slot=1,GetContainerNumSlots(bagData["bagID"][bag]) do
 				local itemID, itemLink, icon, stackCount, quality, noValue, lootable, locked, isBound=PIGGetContainerItemInfo(bagData["bagID"][bag], slot);
-				if itemID and not isBound then
-					local pigmail_additemS = {false,0}
-					if SendMailFrame.ItemList.filtrate=="all" then
-						pigmail_additemS[1]=true
-					else
-						local classID, subclassID = select(6, GetItemInfoInstant(itemLink))
-						for ibi=1,#SendMailFrame.ItemList.filtrate do
-							if SendMailFrame.ItemList.filtrate[ibi][2] then
-								if classID==SendMailFrame.ItemList.filtrate[ibi][1] and subclassID==SendMailFrame.ItemList.filtrate[ibi][2] then
-									pigmail_additemS[1]=true
-								end
-							else
-								if classID==SendMailFrame.ItemList.filtrate[ibi][1] then
-									pigmail_additemS[1]=true
+				if itemID then
+					local itemQuality = select(3, GetItemInfo(itemLink)) 
+					if not isBound or itemQuality==7 then
+						local pigmail_additemS = {false,0}
+						if SendMailFrame.ItemList.filtrate=="all" then
+							pigmail_additemS[1]=true
+						else
+							local classID, subclassID = select(6, GetItemInfoInstant(itemLink))
+							for ibi=1,#SendMailFrame.ItemList.filtrate do
+								if SendMailFrame.ItemList.filtrate[ibi][2] then
+									if classID==SendMailFrame.ItemList.filtrate[ibi][1] and subclassID==SendMailFrame.ItemList.filtrate[ibi][2] then
+										pigmail_additemS[1]=true
+									end
+								else
+									if classID==SendMailFrame.ItemList.filtrate[ibi][1] then
+										pigmail_additemS[1]=true
+									end
 								end
 							end
 						end
-					end
-					if pigmail_additemS[1] then
-						SendMailFrame.ItemList.index=SendMailFrame.ItemList.index+1
-						local itemBut=SendMailFrame.ItemList.butList[SendMailFrame.ItemList.index]
-						itemBut:Show()
-						if locked then
-							itemBut.icon:SetDesaturated(true)
-							itemBut.selectTex:Show()
-							SendMailFrame.ItemList.Delbut:Enable()
-						else
-							itemBut.icon:SetDesaturated(false)
-							itemBut.selectTex:Hide()
-						end
-						itemBut.BagID=bagData["bagID"][bag]
-						itemBut.SlotID=slot
-						SetItemButtonTexture(itemBut, icon)
-						if stackCount>1 then
-							itemBut.Count:SetText(stackCount)
-							itemBut.Count:Show()
-						else
-							itemBut.Count:SetText("")
-						end
-						if PIGA["BagBank"]["wupinLV"] then
-							if classID==2 or classID==4 then
-								local effectiveILvl = GetDetailedItemLevelInfo(itemLink)	
-								if effectiveILvl and effectiveILvl>0 then
-									itemBut.LV:SetText(effectiveILvl)
-									local quality = C_Item.GetItemQualityByID(itemLink)
-									local r, g, b, hex = GetItemQualityColor(quality)
-									itemBut.LV:SetTextColor(r, g, b, 1);
+						if pigmail_additemS[1] then
+							SendMailFrame.ItemList.index=SendMailFrame.ItemList.index+1
+							local itemBut=SendMailFrame.ItemList.butList[SendMailFrame.ItemList.index]
+							itemBut:Show()
+							if locked then
+								itemBut.icon:SetDesaturated(true)
+								itemBut.selectTex:Show()
+								SendMailFrame.ItemList.Delbut:Enable()
+							else
+								itemBut.icon:SetDesaturated(false)
+								itemBut.selectTex:Hide()
+							end
+							itemBut.BagID=bagData["bagID"][bag]
+							itemBut.SlotID=slot
+							SetItemButtonTexture(itemBut, icon)
+							if stackCount>1 then
+								itemBut.Count:SetText(stackCount)
+								itemBut.Count:Show()
+							else
+								itemBut.Count:SetText("")
+							end
+							if PIGA["BagBank"]["wupinLV"] then
+								if classID==2 or classID==4 then
+									local effectiveILvl = GetDetailedItemLevelInfo(itemLink)	
+									if effectiveILvl and effectiveILvl>0 then
+										itemBut.LV:SetText(effectiveILvl)
+										local quality = C_Item.GetItemQualityByID(itemLink)
+										local r, g, b, hex = GetItemQualityColor(quality)
+										itemBut.LV:SetTextColor(r, g, b, 1);
+									end
 								end
 							end
 						end

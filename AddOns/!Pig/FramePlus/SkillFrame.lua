@@ -216,9 +216,13 @@ local function TradeSkillFunc()
 				TradeSkillFrameAvailableFilterCheckButton:SetPoint("TOPLEFT", TradeSkillFrame, "TOPLEFT", 70, -50)
 			end
 			--搜索位置
-			if TradeSkillFrameEditBox then
-				TradeSkillFrameEditBox:ClearAllPoints()
-				TradeSkillFrameEditBox:SetPoint("TOPLEFT", TradeSkillFrame, "TOPLEFT", 190, -50)
+			local SearchBox=TradeSkillFrameEditBox or TradeSkillFrameSearchBox
+			if SearchBox then
+				SearchBox:ClearAllPoints()
+				SearchBox:SetPoint("TOPLEFT", TradeSkillFrame, "TOPLEFT", 190, -50)
+			end
+			if TradeSkillFrame.FilterDropdown then
+				TradeSkillFrame.FilterDropdown:SetPoint("TOPRIGHT", TradeSkillFrame, "TOPRIGHT", -220, -48)
 			end
 			if TradeSearchInputBox then
 				TradeSearchInputBox:ClearAllPoints()

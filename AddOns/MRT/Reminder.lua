@@ -18,6 +18,7 @@ local GetNumSpecializationsForClassID = C_SpecializationInfo and C_Specializatio
 local GetSpecializationInfo = C_SpecializationInfo and C_SpecializationInfo.GetSpecializationInfo or GetSpecializationInfo
 local SendChatMessage = C_ChatInfo and C_ChatInfo.SendChatMessage or SendChatMessage
 local GetSpecialization = GetSpecialization or C_SpecializationInfo and C_SpecializationInfo.GetSpecialization
+local IsEncounterInProgress = C_InstanceEncounter and C_InstanceEncounter.IsEncounterInProgress or IsEncounterInProgress
 
 local senderVersion = 4
 local addonVersion = 70
@@ -1374,7 +1375,7 @@ do
 		elseif word == "playerClass" then
 			return (select(2,UnitClass'player'):lower())..rest
 		elseif word == "playerSpec" then
-			local specid,specname = GetSpecializationInfo and GetSpecializationInfo(GetSpecialization() or 1)
+			local specid,specname = GetSpecializationInfo and GetSpecializationInfo(GetSpecialization and GetSpecialization() or 1)
 			return (defSpecName[specid or 0] or specname and specname:lower() or "")..rest
 		elseif word == "defCDIcon" then
 			local icon = defCDList[select(2,UnitClass'player') or ""]
@@ -1386,11 +1387,11 @@ do
 			local icon = sprintCDList[select(2,UnitClass'player') or ""]
 			return (icon and "{spell:"..icon.."}" or "")..rest
 		elseif word == "healCDIcon" then
-			local specid,specname = GetSpecializationInfo and GetSpecializationInfo(GetSpecialization() or 1)
+			local specid,specname = GetSpecializationInfo and GetSpecializationInfo(GetSpecialization and GetSpecialization() or 1)
 			local icon = healCDList[specid or 0]
 			return (icon and "{spell:"..icon.."}" or "")..rest
 		elseif word == "raidCDIcon" then
-			local specid,specname = GetSpecializationInfo and GetSpecializationInfo(GetSpecialization() or 1)
+			local specid,specname = GetSpecializationInfo and GetSpecializationInfo(GetSpecialization and GetSpecialization() or 1)
 			local icon = raidCDList[specid or 0]
 			return (icon and "{spell:"..icon.."}" or "")..rest
 		elseif word == "notePlayer" or word == "notePlayerRight" then
@@ -1985,6 +1986,7 @@ module.C = {
 		},
 		triggerFields = {"eventCLEU"},
 		alertFields = {"eventCLEU"},
+		legacy = ExRT.isMN,
 	},
 	["SPELL_CAST_START"] = {
 		main_id = 1,
@@ -1994,6 +1996,7 @@ module.C = {
 		triggerFields = {"eventCLEU","spellID","spellName","sourceName","sourceID","sourceUnit","sourceMark","counter","cbehavior","delayTime","activeTime","invert"},
 		triggerSynqFields = {"eventCLEU","spellID","counter","cbehavior","delayTime","activeTime","sourceName","sourceUnit","sourceID","sourceMark","spellName","invert"},
 		replaceres = {"sourceName","sourceMark","sourceGUID","spellName","spellID","counter","guid"},
+		legacy = ExRT.isMN,
 	},
 	["SPELL_CAST_SUCCESS"] = {
 		main_id = 1,
@@ -2003,6 +2006,7 @@ module.C = {
 		triggerFields = {"eventCLEU","spellID","spellName","sourceName","sourceID","sourceUnit","sourceMark","targetName","targetID","targetUnit","targetMark","targetRole","guidunit","onlyPlayer","counter","cbehavior","delayTime","activeTime","invert"},
 		triggerSynqFields = {"eventCLEU","spellID","counter","cbehavior","delayTime","activeTime","sourceName","sourceUnit","targetName","targetUnit","sourceID","sourceMark","targetID","targetMark","spellName","invert","guidunit","onlyPlayer","targetRole"},
 		replaceres = {"sourceName","sourceMark","sourceGUID","targetName","targetMark","targetGUID","spellName","spellID","counter","guid"},
+		legacy = ExRT.isMN,
 	},
 	["SPELL_AURA_APPLIED"] = {
 		main_id = 1,
@@ -2012,6 +2016,7 @@ module.C = {
 		triggerFields = {"eventCLEU","spellID","spellName","sourceName","sourceID","sourceUnit","sourceMark","targetName","targetID","targetUnit","targetMark","targetRole","guidunit","stacks","onlyPlayer","counter","cbehavior","delayTime","activeTime","invert"},
 		triggerSynqFields = {"eventCLEU","spellID","counter","cbehavior","delayTime","activeTime","sourceName","sourceUnit","targetName","targetUnit","sourceID","sourceMark","targetID","targetMark","spellName","stacks","invert","guidunit","onlyPlayer","targetRole"},
 		replaceres = {"sourceName","sourceMark","sourceGUID","targetName","targetMark","targetGUID","spellName","spellID","stacks","counter","guid"},
+		legacy = ExRT.isMN,
 	},
 	["SPELL_AURA_REMOVED"] = {
 		main_id = 1,
@@ -2021,6 +2026,7 @@ module.C = {
 		triggerFields = {"eventCLEU","spellID","spellName","sourceName","sourceID","sourceUnit","sourceMark","targetName","targetID","targetUnit","targetMark","targetRole","guidunit","stacks","onlyPlayer","counter","cbehavior","delayTime","activeTime","invert"},
 		triggerSynqFields = {"eventCLEU","spellID","counter","cbehavior","delayTime","activeTime","sourceName","sourceUnit","targetName","targetUnit","sourceID","sourceMark","targetID","targetMark","spellName","stacks","invert","guidunit","onlyPlayer","targetRole"},
 		replaceres = {"sourceName","sourceMark","sourceGUID","targetName","targetMark","targetGUID","spellName","spellID","stacks","counter","guid"},
+		legacy = ExRT.isMN,
 	},
 	["SPELL_DAMAGE"] = {
 		main_id = 1,
@@ -2030,6 +2036,7 @@ module.C = {
 		triggerFields = {"eventCLEU","spellID","spellName","sourceName","sourceID","sourceUnit","sourceMark","targetName","targetID","targetUnit","targetMark","guidunit","counter","cbehavior","delayTime","activeTime","invert"},
 		triggerSynqFields = {"eventCLEU","spellID","counter","cbehavior","delayTime","activeTime","sourceName","sourceUnit","targetName","targetUnit","sourceID","sourceMark","targetID","targetMark","spellName","invert","guidunit"},
 		replaceres = {"sourceName","sourceMark","sourceGUID","targetName","targetMark","targetGUID","spellName","spellID","extraSpellID",extraSpellID=L.ReminderReplacerextraSpellIDSpellDmg,"counter","guid"},
+		legacy = ExRT.isMN,
 	},
 	["SPELL_PERIODIC_DAMAGE"] = {
 		main_id = 1,
@@ -2039,6 +2046,7 @@ module.C = {
 		triggerFields = {"eventCLEU","spellID","spellName","sourceName","sourceID","sourceUnit","sourceMark","targetName","targetID","targetUnit","targetMark","guidunit","counter","cbehavior","delayTime","activeTime","invert"},
 		triggerSynqFields = {"eventCLEU","spellID","counter","cbehavior","delayTime","activeTime","sourceName","sourceUnit","targetName","targetUnit","sourceID","sourceMark","targetID","targetMark","spellName","invert","guidunit"},
 		replaceres = {"sourceName","sourceMark","sourceGUID","targetName","targetMark","targetGUID","spellName","spellID","extraSpellID",extraSpellID=L.ReminderReplacerextraSpellIDSpellDmg,"counter","guid"},
+		legacy = ExRT.isMN,
 	},
 	["SWING_DAMAGE"] = {
 		main_id = 1,
@@ -2048,6 +2056,7 @@ module.C = {
 		triggerFields = {"eventCLEU","sourceName","sourceID","sourceUnit","sourceMark","targetName","targetID","targetUnit","targetMark","guidunit","counter","cbehavior","delayTime","activeTime","invert"},
 		triggerSynqFields = {"eventCLEU","counter","cbehavior","delayTime","activeTime","sourceName","sourceUnit","targetName","targetUnit","sourceID","sourceMark","targetID","targetMark","invert","guidunit"},
 		replaceres = {"sourceName","sourceMark","sourceGUID","targetName","targetMark","targetGUID","spellID",spellID=L.ReminderReplacerspellIDSwing,"counter","guid"},
+		legacy = ExRT.isMN,
 	},
 	["SPELL_HEAL"] = {
 		main_id = 1,
@@ -2057,6 +2066,7 @@ module.C = {
 		triggerFields = {"eventCLEU","spellID","spellName","sourceName","sourceID","sourceUnit","sourceMark","targetName","targetID","targetUnit","targetMark","guidunit","counter","cbehavior","delayTime","activeTime","invert"},
 		triggerSynqFields = {"eventCLEU","spellID","counter","cbehavior","delayTime","activeTime","sourceName","sourceUnit","targetName","targetUnit","sourceID","sourceMark","targetID","targetMark","spellName","invert","guidunit"},
 		replaceres = {"sourceName","sourceMark","sourceGUID","targetName","targetMark","targetGUID","spellName","spellID","extraSpellID",extraSpellID=L.ReminderReplacerextraSpellIDSpellDmg,"counter","guid"},
+		legacy = ExRT.isMN,
 	},
 	["SPELL_PERIODIC_HEAL"] = {
 		main_id = 1,
@@ -2066,6 +2076,7 @@ module.C = {
 		triggerFields = {"eventCLEU","spellID","spellName","sourceName","sourceID","sourceUnit","sourceMark","targetName","targetID","targetUnit","targetMark","guidunit","counter","cbehavior","delayTime","activeTime","invert"},
 		triggerSynqFields = {"eventCLEU","spellID","counter","cbehavior","delayTime","activeTime","sourceName","sourceUnit","targetName","targetUnit","sourceID","sourceMark","targetID","targetMark","spellName","invert","guidunit"},
 		replaceres = {"sourceName","sourceMark","sourceGUID","targetName","targetMark","targetGUID","spellName","spellID","extraSpellID",extraSpellID=L.ReminderReplacerextraSpellIDSpellDmg,"counter","guid"},
+		legacy = ExRT.isMN,
 	},
 	["SPELL_ABSORBED"] = {
 		main_id = 1,
@@ -2075,6 +2086,7 @@ module.C = {
 		triggerFields = {"eventCLEU","spellID","spellName","sourceName","sourceID","sourceUnit","sourceMark","targetName","targetID","targetUnit","targetMark","guidunit","counter","cbehavior","delayTime","activeTime","invert"},
 		triggerSynqFields = {"eventCLEU","spellID","counter","cbehavior","delayTime","activeTime","sourceName","sourceUnit","targetName","targetUnit","sourceID","sourceMark","targetID","targetMark","spellName","invert","guidunit"},
 		replaceres = {"sourceName","sourceMark","sourceGUID","targetName","targetMark","targetGUID","spellName","spellID","extraSpellID",extraSpellID=L.ReminderReplacerextraSpellIDSpellDmg,"counter","guid"},
+		legacy = ExRT.isMN,
 	},
 	["SPELL_ENERGIZE"] = {
 		main_id = 1,
@@ -2084,6 +2096,7 @@ module.C = {
 		triggerFields = {"eventCLEU","spellID","spellName","sourceName","sourceID","sourceUnit","sourceMark","targetName","targetID","targetUnit","targetMark","guidunit","counter","cbehavior","delayTime","activeTime","invert"},
 		triggerSynqFields = {"eventCLEU","spellID","counter","cbehavior","delayTime","activeTime","sourceName","sourceUnit","targetName","targetUnit","sourceID","sourceMark","targetID","targetMark","spellName","invert","guidunit"},
 		replaceres = {"sourceName","sourceMark","sourceGUID","targetName","targetMark","targetGUID","spellName","spellID","extraSpellID",extraSpellID=L.ReminderReplacerextraSpellIDSpellDmg,"counter","guid"},
+		legacy = ExRT.isMN,
 	},
 	["SPELL_MISSED"] = {
 		main_id = 1,
@@ -2094,6 +2107,7 @@ module.C = {
 		fieldNames = {["pattFind"]=L.ReminderMissType},
 		triggerSynqFields = {"eventCLEU","spellID","counter","cbehavior","delayTime","activeTime","sourceName","sourceUnit","targetName","targetUnit","pattFind","sourceID","sourceMark","targetID","targetMark","spellName","invert","guidunit"},
 		replaceres = {"sourceName","sourceMark","sourceGUID","targetName","targetMark","targetGUID","spellName","spellID","counter","guid"},
+		legacy = ExRT.isMN,
 	},
 	["UNIT_DIED"] = {
 		main_id = 1,
@@ -2103,6 +2117,7 @@ module.C = {
 		triggerFields = {"eventCLEU","targetName","targetID","targetUnit","targetMark","counter","cbehavior","delayTime","activeTime","invert"},
 		triggerSynqFields = {"eventCLEU","counter","cbehavior","delayTime","activeTime","targetName","targetUnit","targetID","targetMark","invert"},
 		replaceres = {"targetName","targetMark","targetGUID","counter","guid"},
+		legacy = ExRT.isMN,
 	},
 	["SPELL_SUMMON"] = {
 		main_id = 1,
@@ -2112,6 +2127,7 @@ module.C = {
 		triggerFields = {"eventCLEU","spellID","spellName","sourceName","sourceID","sourceUnit","sourceMark","targetName","targetID","targetUnit","targetMark","guidunit","counter","cbehavior","delayTime","activeTime","invert"},
 		triggerSynqFields = {"eventCLEU","spellID","counter","cbehavior","delayTime","activeTime","sourceName","sourceUnit","targetName","targetUnit","sourceID","sourceMark","targetID","targetMark","spellName","invert","guidunit"},
 		replaceres = {"sourceName","sourceMark","sourceGUID","targetName","targetMark","targetGUID","spellName","spellID","counter","guid"},
+		legacy = ExRT.isMN,
 	},
 	["SPELL_DISPEL"] = {
 		main_id = 1,
@@ -2121,6 +2137,7 @@ module.C = {
 		triggerFields = {"eventCLEU","spellID","spellName","sourceName","sourceID","sourceUnit","sourceMark","targetName","targetID","targetUnit","targetMark","guidunit","extraSpellID","counter","cbehavior","delayTime","activeTime","invert"},
 		triggerSynqFields = {"eventCLEU","spellID","counter","cbehavior","delayTime","activeTime","sourceName","sourceUnit","targetName","targetUnit","sourceID","sourceMark","targetID","targetMark","spellName","extraSpellID","invert","guidunit"},
 		replaceres = {"sourceName","sourceMark","sourceGUID","targetName","targetMark","targetGUID","spellName","spellID","extraSpellID","counter","guid"},
+		legacy = ExRT.isMN,
 	},
 	["SPELL_AURA_BROKEN_SPELL"] = {
 		main_id = 1,
@@ -2130,6 +2147,7 @@ module.C = {
 		triggerFields = {"eventCLEU","spellID","spellName","sourceName","sourceID","sourceUnit","sourceMark","targetName","targetID","targetUnit","targetMark","guidunit","extraSpellID","counter","cbehavior","delayTime","activeTime","invert"},
 		triggerSynqFields = {"eventCLEU","spellID","counter","cbehavior","delayTime","activeTime","sourceName","sourceUnit","targetName","targetUnit","sourceID","sourceMark","targetID","targetMark","spellName","extraSpellID","invert","guidunit"},
 		replaceres = {"sourceName","sourceMark","sourceGUID","targetName","targetMark","targetGUID","spellName","spellID","extraSpellID",extraSpellID=L.ReminderReplacerextraSpellID,"counter","guid"},
+		legacy = ExRT.isMN,
 	},
 	["ENVIRONMENTAL_DAMAGE"] = {
 		main_id = 1,
@@ -2139,6 +2157,7 @@ module.C = {
 		triggerFields = {"eventCLEU","spellID","targetName","targetID","targetUnit","targetMark","counter","cbehavior","delayTime","activeTime","invert"},
 		triggerSynqFields = {"eventCLEU","spellID","counter","cbehavior","delayTime","activeTime","targetName","targetUnit","targetID","targetMark","invert"},
 		replaceres = {"targetName","targetMark","targetGUID","spellName","counter","guid"},
+		legacy = ExRT.isMN,
 	},
 	["SPELL_INTERRUPT"] = {
 		main_id = 1,
@@ -2148,6 +2167,7 @@ module.C = {
 		triggerFields = {"eventCLEU","spellID","spellName","sourceName","sourceID","sourceUnit","sourceMark","targetName","targetID","targetUnit","targetMark","guidunit","extraSpellID","counter","cbehavior","delayTime","activeTime","invert"},
 		triggerSynqFields = {"eventCLEU","spellID","counter","cbehavior","delayTime","activeTime","sourceName","sourceUnit","targetName","targetUnit","sourceID","sourceMark","targetID","targetMark","spellName","extraSpellID","invert","guidunit"},
 		replaceres = {"sourceName","sourceMark","sourceGUID","targetName","targetMark","targetGUID","spellName","spellID","extraSpellID","counter","guid"},
+		legacy = ExRT.isMN,
 	},
 	[2] = {
 		id = 2,
@@ -2185,6 +2205,7 @@ module.C = {
 		triggerSynqFields = {"numberPercent","targetUnit","counter","cbehavior","delayTime","activeTime","targetName","targetID","targetMark","invert"},
 		help = L.ReminderHealthTip,
 		replaceres = {"targetName","targetMark","guid",guid=L.ReminderReplacertargetGUID,"health","value","counter"},
+		legacy = ExRT.isMN,
 	},
 	[5] = {
 		id = 5,
@@ -2199,6 +2220,7 @@ module.C = {
 		triggerSynqFields = {"numberPercent","targetUnit","counter","cbehavior","delayTime","activeTime","targetName","targetID","targetMark","invert"},
 		help = L.ReminderManaTip,
 		replaceres = {"targetName","targetMark","guid",guid=L.ReminderReplacertargetGUID,"health",health=L.ReminderReplacerhealthenergy,"value",value=L.ReminderReplacervalueenergy,"counter"},
+		legacy = ExRT.isMN,
 	},
 	[6] = {
 		id = 6,
@@ -2238,6 +2260,7 @@ module.C = {
 		alertFields = {"pattFind"},
 		triggerSynqFields = {"pattFind","counter","cbehavior","delayTime","activeTime","sourceName","sourceUnit","targetName","targetUnit","sourceID","invert"},
 		replaceres = {"sourceName","targetName","text","counter"},
+		legacy = ExRT.isMN,
 	},
 	[9] = {
 		id = 9,
@@ -2249,6 +2272,7 @@ module.C = {
 		triggerFields = {"targetName","targetID","targetUnit","counter","cbehavior","delayTime","activeTime","invert"},
 		triggerSynqFields = {"counter","cbehavior","delayTime","activeTime","targetName","targetUnit","targetID","invert"},
 		replaceres = {"targetName","guid",guid=L.ReminderReplacertargetGUID,"counter"},
+		legacy = ExRT.isMN,
 	},
 	[10] = {
 		id = 10,
@@ -2264,6 +2288,7 @@ module.C = {
 		triggerSynqFields = {"targetUnit","spellID","counter","cbehavior","delayTime","activeTime","sourceName","sourceUnit","targetName","sourceID","sourceMark","targetID","targetMark","spellName","stacks","bwtimeleft","invert","onlyPlayer","targetRole"},
 		help = L.ReminderAuraTip,
 		replaceres = {"sourceName","sourceMark","sourceGUID","targetName","targetMark","targetGUID","spellName","spellID","stacks","timeLeft","counter","guid","auraValA","auraValB","auraValC"},
+		legacy = ExRT.isMN,
 	},
 	[11] = {
 		id = 11,
@@ -2279,6 +2304,7 @@ module.C = {
 		triggerSynqFields = {"numberPercent","targetUnit","counter","cbehavior","delayTime","activeTime","targetName","targetID","targetMark","invert"},
 		help = L.ReminderAbsorbTip,
 		replaceres = {"targetName","targetMark","guid",guid=L.ReminderReplacertargetGUID,"value",value=L.ReminderReplacervalueabsorb,"counter"},
+		legacy = ExRT.isMN,
 	},
 	[12] = {
 		id = 12,
@@ -2293,6 +2319,7 @@ module.C = {
 		triggerSynqFields = {"sourceUnit","counter","cbehavior","delayTime","activeTime","sourceName","targetName","targetUnit","sourceID","sourceMark","targetID","targetMark","invert","guidunit"},
 		help = L.ReminderCurTargetTip,
 		replaceres = {"sourceName","sourceMark","sourceGUID","targetName","targetMark","targetGUID","counter","guid"},
+		legacy = ExRT.isMN,
 	},
 	[13] = {
 		id = 13,
@@ -2307,6 +2334,7 @@ module.C = {
 		triggerSynqFields = {"spellID","counter","cbehavior","delayTime","activeTime","spellName","bwtimeleft","invert"},
 		help = L.ReminderSpellCDTip,
 		replaceres = {"spellName","spellID","counter","timeLeft"},
+		legacy = ExRT.isMN,
 	},
 	[14] = {
 		id = 14,
@@ -2321,6 +2349,7 @@ module.C = {
 		alertFields = {"sourceUnit"},
 		triggerSynqFields = {"sourceUnit","spellID","counter","cbehavior","delayTime","activeTime","sourceName","sourceID","sourceMark","spellName","invert"},
 		replaceres = {"sourceName","sourceMark","guid",guid=L.ReminderReplacersourceGUID,"spellID","spellName","counter"},
+		legacy = ExRT.isMN,
 	},
 	[15] = {
 		id = 15,
@@ -2335,6 +2364,7 @@ module.C = {
 		triggerSynqFields = {"numberPercent","spellID","counter","cbehavior","delayTime","activeTime","spellName","invert"},
 		help = L.ReminderWidgetTip,
 		replaceres = {"spellID",spellID=L.ReminderReplacerspellIDwigdet,"spellName",spellName=L.ReminderReplacerspellNamewigdet,"value",value=L.ReminderReplacervaluewigdet,"counter"},
+		legacy = ExRT.isMN,
 	},
 	[16] = {
 		id = 16,
@@ -2363,6 +2393,7 @@ module.C = {
 		triggerSynqFields = {"bwtimeleft","stacks","invert"},
 		help = L.ReminderPlayersInRangeTip,
 		replaceres = {"value",value=L.ReminderReplacervaluerange,"list"},
+		legacy = ExRT.isMN,
 	},
 	[18] = {
 		id = 18,
@@ -2377,6 +2408,7 @@ module.C = {
 		triggerSynqFields = {"spellID","sourceUnit","counter","cbehavior","delayTime","activeTime","sourceName","spellName","sourceID","sourceMark","invert"},
 		help = L.ReminderUnitCastTip,
 		replaceres = {"sourceName","sourceMark","guid",guid=L.ReminderReplacersourceGUID,"spellID","spellName","timeLeft"},
+		legacy = ExRT.isMN,
 	},
 	[19] = {
 		id = 19,
@@ -2404,6 +2436,7 @@ module.C = {
 		triggerSynqFields = {"bwtimeleft","stacks","targetName","targetID","targetUnit","targetMark","invert"},
 		help = L.ReminderPlayersInRangeTip,
 		replaceres = {"value",value=L.ReminderReplacervaluemobrange,"list",value=L.ReminderReplacerlistmobrange,"targetName","targetMark","guid",guid=L.ReminderReplacertargetGUID},
+		legacy = ExRT.isMN,	
 	},
 	[21] = {
 		id = 21,
@@ -7449,6 +7482,7 @@ function options:Load()
 	end
 
 	function options.assign:GetSpellsCDListClass(class)
+		class = class or ""
 		if not self.spellsCDListClass then
 			self.spellsCDListClass = {}
 		end
@@ -9197,9 +9231,9 @@ function options:Load()
 				local line = AllSpells[i]
 				for j=4,8 do
 					local spell_role
-					if j > 4 and ExRT.GDB.ClassSpecializationList[class] then
+					if j > 4 and ExRT.GDB.ClassSpecializationList[class or ""] then
 						spell_role = ROLE_TO_ROLE[ ExRT.GDB.ClassSpecializationRole[ ExRT.GDB.ClassSpecializationList[class][j-4] or 0 ] or 0 ]
-					elseif ExRT.GDB.ClassSpecializationList[class] then
+					elseif ExRT.GDB.ClassSpecializationList[class or ""] then
 						local l = ExRT.GDB.ClassSpecializationList[class]
 						spell_role = {}
 						for k=1,#l do
@@ -14402,7 +14436,9 @@ function options:Load()
 					l.leaveFunc = events_Tooltip_Hide
 					l.hoverArg = eventDB.tooltip
 				end
-				List[#List+1] = l
+				if not eventDB.legacy then
+					List[#List+1] = l
+				end
 			end
 		end
 		button.eventDropDown.Background:SetColorTexture(1,1,1,1)
@@ -14420,11 +14456,13 @@ function options:Load()
 			local List = button.eventCLEU.List
 			for i=1,#module.C[1].subEvents do
 				local event = module.C[1].subEvents[i]
-				List[#List+1] = {
-					text = module.C[event] and module.C[event].lname or event,
-					arg1 = event,
-					func = events_CLEU_SetValue,
-				}
+				if not event.legacy then
+					List[#List+1] = {
+						text = module.C[event] and module.C[event].lname or event,
+						arg1 = event,
+						func = events_CLEU_SetValue,
+					}
+				end
 			end
 		end
 		button.eventCLEU.Background:SetColorTexture(1,1,1,1)
@@ -17197,13 +17235,23 @@ function options:Load()
 			self.voicesList:Update()
 			ELib:DropDownClose()
 
-			C_VoiceChat.SpeakText(
-				arg1 or TextToSpeech_GetSelectedVoice(Enum.TtsVoiceType.Standard).voiceID,
-				TEXT_TO_SPEECH_SAMPLE_TEXT,
-				Enum.VoiceTtsDestination.QueuedLocalPlayback,
-				VMRT.Reminder2.ttsSpeechRate or C_TTSSettings.GetSpeechRate() or 0,
-				VMRT.Reminder2.ttsVolume or C_TTSSettings.GetSpeechVolume() or 100
-			)
+			if ExRT.isMN then
+				C_VoiceChat.SpeakText(
+					arg1 or TextToSpeech_GetSelectedVoice(Enum.TtsVoiceType.Standard).voiceID,
+					TEXT_TO_SPEECH_SAMPLE_TEXT,
+					VMRT.Reminder2.ttsSpeechRate or C_TTSSettings.GetSpeechRate() or 0,
+					VMRT.Reminder2.ttsVolume or C_TTSSettings.GetSpeechVolume() or 100,
+					true
+				)
+			else
+				C_VoiceChat.SpeakText(
+					arg1 or TextToSpeech_GetSelectedVoice(Enum.TtsVoiceType.Standard).voiceID,
+					TEXT_TO_SPEECH_SAMPLE_TEXT,
+					Enum.VoiceTtsDestination.QueuedLocalPlayback,
+					VMRT.Reminder2.ttsSpeechRate or C_TTSSettings.GetSpeechRate() or 0,
+					VMRT.Reminder2.ttsVolume or C_TTSSettings.GetSpeechVolume() or 100
+				)
+			end
 		end
 		function self.voicesList:PreUpdate()
 			local List = self.List
@@ -17227,13 +17275,23 @@ function options:Load()
 		self.voicesList.playButton = ELib:Icon(self.voicesList,"Interface\\AddOns\\MRT\\media\\DiesalGUIcons16x256x128",20,true):Point("LEFT",'x',"RIGHT",5,0)
 		self.voicesList.playButton.texture:SetTexCoord(0.375,0.4375,0.5,0.625)
 		self.voicesList.playButton:SetScript("OnClick",function()
-			C_VoiceChat.SpeakText(
-				module:GetTTSVoiceID() or 0,
-				"This is an example of text to speech",
-				Enum.VoiceTtsDestination.QueuedLocalPlayback,
-				VMRT.Reminder2.ttsSpeechRate or C_TTSSettings.GetSpeechRate() or 0,
-				VMRT.Reminder2.ttsVolume or C_TTSSettings.GetSpeechVolume() or 100
-			)
+			if ExRT.isMN then
+				C_VoiceChat.SpeakText(
+					module:GetTTSVoiceID() or 0,
+					"This is an example of text to speech",
+					VMRT.Reminder2.ttsSpeechRate or C_TTSSettings.GetSpeechRate() or 0,
+					VMRT.Reminder2.ttsVolume or C_TTSSettings.GetSpeechVolume() or 100,
+					true
+				)
+			else
+				C_VoiceChat.SpeakText(
+					module:GetTTSVoiceID() or 0,
+					"This is an example of text to speech",
+					Enum.VoiceTtsDestination.QueuedLocalPlayback,
+					VMRT.Reminder2.ttsSpeechRate or C_TTSSettings.GetSpeechRate() or 0,
+					VMRT.Reminder2.ttsVolume or C_TTSSettings.GetSpeechVolume() or 100
+				)
+			end
 		end)
 
 		self.ttsSpeechRate = ELib:Slider(self.options_tab.tabs[2],""):Size(320):Point("TOPLEFT",self.voicesList,"BOTTOMLEFT",0,-15):Range(-10,10):SetTo(VMRT.Reminder2.ttsSpeechRate or 0):SetObey(true):OnChange(function(self,event) 
@@ -18406,14 +18464,25 @@ do
 					if isPass then
 						C_Timer.After(0.01,function()	--Try to fix lag
 							--C_VoiceChat.StopSpeakingText()
-							C_VoiceChat.SpeakText(
-								--VMRT.Reminder2.ttsVoice or TextToSpeech_GetSelectedVoice(Enum.TtsVoiceType.Standard).voiceID or 1, 
-								module:GetTTSVoiceID(), 
-								FormatMsgForSound( msg ), 
-								Enum.VoiceTtsDestination.QueuedLocalPlayback, 
-								VMRT.Reminder2.ttsSpeechRate or C_TTSSettings.GetSpeechRate() or 0, 
-								VMRT.Reminder2.ttsVolume or C_TTSSettings.GetSpeechVolume() or 100
-							)
+							if ExRT.isMN then
+								C_VoiceChat.SpeakText(
+									--VMRT.Reminder2.ttsVoice or TextToSpeech_GetSelectedVoice(Enum.TtsVoiceType.Standard).voiceID or 1, 
+									module:GetTTSVoiceID(), 
+									FormatMsgForSound( msg ), 
+									VMRT.Reminder2.ttsSpeechRate or C_TTSSettings.GetSpeechRate() or 0, 
+									VMRT.Reminder2.ttsVolume or C_TTSSettings.GetSpeechVolume() or 100,
+									true
+								)
+							else
+								C_VoiceChat.SpeakText(
+									--VMRT.Reminder2.ttsVoice or TextToSpeech_GetSelectedVoice(Enum.TtsVoiceType.Standard).voiceID or 1, 
+									module:GetTTSVoiceID(), 
+									FormatMsgForSound( msg ), 
+									Enum.VoiceTtsDestination.QueuedLocalPlayback, 
+									VMRT.Reminder2.ttsSpeechRate or C_TTSSettings.GetSpeechRate() or 0, 
+									VMRT.Reminder2.ttsVolume or C_TTSSettings.GetSpeechVolume() or 100
+								)
+							end
 						end)
 					else
 						pcall(PlaySoundFile, sound, "Master")
@@ -18430,13 +18499,23 @@ do
 	function module:PlayTTS(msg)
 		C_Timer.After(0.01,function()	--Try to fix lag
 			--C_VoiceChat.StopSpeakingText()
-			C_VoiceChat.SpeakText(
-				module:GetTTSVoiceID(), 
-				tostring( msg or "" ), 
-				Enum.VoiceTtsDestination.QueuedLocalPlayback, 
-				VMRT.Reminder2.ttsSpeechRate or C_TTSSettings.GetSpeechRate() or 0, 
-				VMRT.Reminder2.ttsVolume or C_TTSSettings.GetSpeechVolume() or 100
-			)
+			if ExRT.isMN then
+				C_VoiceChat.SpeakText(
+					module:GetTTSVoiceID(), 
+					tostring( msg or "" ), 
+					VMRT.Reminder2.ttsSpeechRate or C_TTSSettings.GetSpeechRate() or 0, 
+					VMRT.Reminder2.ttsVolume or C_TTSSettings.GetSpeechVolume() or 100,
+					true
+				)
+			else
+				C_VoiceChat.SpeakText(
+					module:GetTTSVoiceID(), 
+					tostring( msg or "" ), 
+					Enum.VoiceTtsDestination.QueuedLocalPlayback, 
+					VMRT.Reminder2.ttsSpeechRate or C_TTSSettings.GetSpeechRate() or 0, 
+					VMRT.Reminder2.ttsVolume or C_TTSSettings.GetSpeechVolume() or 100
+				)
+			end
 		end)
 	end
 end
@@ -22343,7 +22422,7 @@ function module:LoadReminders(encounterID,encounterDiff,zoneID,zoneName)
 				}
 				reminder.triggers[i] = triggerNow
 
-				if trigger.event and module.C[trigger.event] then
+				if trigger.event and module.C[trigger.event] and not module.C[trigger.event].legacy then
 					local eventDB = module.C[trigger.event]
 
 					eventsUsed[trigger.event] = true
@@ -22470,26 +22549,28 @@ function module:LoadReminders(encounterID,encounterDiff,zoneID,zoneName)
 		end
 	end
 	local anyUnit
-	for unit in pairs(unitsUsed) do
-		if unit == "target" then
-			module:RegisterEvents("PLAYER_TARGET_CHANGED")
-		elseif unit == "focus" then
-			module:RegisterEvents("PLAYER_FOCUS_CHANGED")
-		elseif unit == "mouseover" then
-			module:RegisterEvents("UPDATE_MOUSEOVER_UNIT")
-		elseif (type(unit) == "string" and unit:find("^boss")) or unit == 1 then
-			module:RegisterEvents("INSTANCE_ENCOUNTER_ENGAGE_UNIT")
-		elseif unit == 2 then
-			nameplateUsed = true
+	if not ExRT.isMN then
+		for unit in pairs(unitsUsed) do
+			if unit == "target" then
+				module:RegisterEvents("PLAYER_TARGET_CHANGED")
+			elseif unit == "focus" then
+				module:RegisterEvents("PLAYER_FOCUS_CHANGED")
+			elseif unit == "mouseover" then
+				module:RegisterEvents("UPDATE_MOUSEOVER_UNIT")
+			elseif (type(unit) == "string" and unit:find("^boss")) or unit == 1 then
+				module:RegisterEvents("INSTANCE_ENCOUNTER_ENGAGE_UNIT")
+			elseif unit == 2 then
+				nameplateUsed = true
+			end
+	
+			anyUnit = true
 		end
-
-		anyUnit = true
-	end
-	if anyUnit then
-		module:RegisterEvents("RAID_TARGET_UPDATE")
-	end
-	if nameplateUsed then
-		module:RegisterEvents("NAME_PLATE_UNIT_ADDED","NAME_PLATE_UNIT_REMOVED")
+		if anyUnit then
+			module:RegisterEvents("RAID_TARGET_UPDATE")
+		end
+		if nameplateUsed then
+			module:RegisterEvents("NAME_PLATE_UNIT_ADDED","NAME_PLATE_UNIT_REMOVED")
+		end
 	end
 
 	if encounterID then
@@ -22534,7 +22615,7 @@ function module:PrepeareForHistoryRecording()
 	if not VMRT.Reminder2.HistoryEnabled then
 		return
 	end
-	if not module.db.eventsToTriggers.COMBAT_LOG_EVENT_UNFILTERED then 
+	if not module.db.eventsToTriggers.COMBAT_LOG_EVENT_UNFILTERED and not ExRT.isMN then 
 		module.db.eventsToTriggers.COMBAT_LOG_EVENT_UNFILTERED = {} 
 		module:RegisterEvents("COMBAT_LOG_EVENT_UNFILTERED")
 
@@ -22549,11 +22630,11 @@ function module:PrepeareForHistoryRecording()
 		module:RegisterBigWigsCallback("BigWigs_SetStage")
 		module:RegisterDBMCallback("DBM_SetStage")
 	end
-	if not module.db.eventsToTriggers.CHAT_MSG then 
+	if not module.db.eventsToTriggers.CHAT_MSG and not ExRT.isMN then 
 		module.db.eventsToTriggers.CHAT_MSG = {} 
 		module:RegisterEvents(unpack(module.C[8].events))
 	end
-	if not module.db.eventsToTriggers.INSTANCE_ENCOUNTER_ENGAGE_UNIT then 
+	if not module.db.eventsToTriggers.INSTANCE_ENCOUNTER_ENGAGE_UNIT and not ExRT.isMN then 
 		module.db.eventsToTriggers.INSTANCE_ENCOUNTER_ENGAGE_UNIT = {} 
 		module:RegisterEvents("INSTANCE_ENCOUNTER_ENGAGE_UNIT")
 	end

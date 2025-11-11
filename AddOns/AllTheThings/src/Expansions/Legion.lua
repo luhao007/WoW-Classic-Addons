@@ -137,12 +137,32 @@ app.CreateArtifact = app.CreateClass(CLASSNAME, KEY, {
 		-- else app.PrintDebug("Artifact with no ItemID?",t.artifactID)
 		end
 	end,
+	-- only used when an artifact is listed without correpsonding itemID
+	itemID = function(t)
+		local artifactID = t.artifactID
+		local artifacts = app.SearchForField("artifactID", artifactID)
+		local i = 1
+		local itemID
+		while not itemID and i < #artifacts do
+			itemID = rawget(artifacts[i], "itemID")
+			i = i + 1
+		end
+		if not itemID then
+			app.PrintDebug("Failed to determine itemID from artifactID",artifactID)
+		end
+		t.itemID = itemID
+		return itemID
+	end,
 	modItemID = function(t)
 		-- Artifacts will use a fake modItemID by way of the ArtifactID and IsOffhand
-		local modItemID = GetArtifactModItemID(t.itemID, t.artifactID, t.isOffHand)
-		-- app.PrintDebug("artifact.modItemID",modItemID,t.itemID,t.artifactID,t.isOffHand)
-		t.modItemID = modItemID;
-		return modItemID;
+		local itemID = t.itemID
+		if itemID then
+			local artifactID = t.artifactID
+			local modItemID = GetArtifactModItemID(itemID, artifactID, t.isOffHand)
+			-- app.PrintDebug("artifact.modItemID",modItemID,itemID,artifactID,t.isOffHand)
+			t.modItemID = modItemID;
+			return modItemID;
+		end
 	end,
 	-- probably never used ever, but just in case an artifact somehow misses it's appearance...
 	sourceID = function(t)

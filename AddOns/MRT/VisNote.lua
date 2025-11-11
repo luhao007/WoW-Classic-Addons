@@ -168,6 +168,7 @@ function module.options:Load()
 		{0,1,.59},
 		{.53,.53,.93},
 		{.64,.19,.79},
+		{0.20,0.58,0.50},
 	}
 
 	local icons_list = {
@@ -683,6 +684,7 @@ function module.options:Load()
 		MONK=22,
 		DRUID=5,
 		DEMONHUNTER=24,
+		EVOKER=25,
 	}
 
 	local function TextAddData_SetValue(_,arg1,arg2)

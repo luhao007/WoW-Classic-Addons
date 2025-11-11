@@ -1,7 +1,7 @@
 local ADDON_NAME, ns = ...
 
-ns.CurrentAddonVersion = "3.1.5"
-ns.PreviousAddonVersion_1 = "3.1.4"
+ns.CurrentAddonVersion = "3.1.6"
+ns.PreviousAddonVersion_1 = "3.1.5"
 
 ns.LOCALE_CHANGELOG_3_1_ = { -- empty backup file
   deDE = [[
@@ -46,6 +46,52 @@ ns.LOCALE_CHANGELOG_3_1_ = { -- empty backup file
 
   koKR = [[
 
+]],
+}
+
+ns.LOCALE_CHANGELOG_3_1_6 = {
+  deDE = [[
+• Der Fehler bei der Funktion zum Deaktivieren des „Nebel des Unerforschten“ sollte nun behoben sein, falls der Spieler den Kriegsmeute Zauber „Kriegsmeutekarte für überall gleichzeitig“ benutzt hat.
+]],
+
+  enUS = [[
+• The error in the function to disable the “Fog of the Unexplored” should now be fixed if the player has used the Warband spell “The Warband Map to Everywhere All At Once”.
+]],
+
+  frFR = [[
+• L’erreur de la fonction de désactivation du « Brouillard de l’inexploré » devrait désormais être corrigée si le joueur a utilisé le sort de la meute de guerre « Carte de meute de guerre pour partout à la fois ».
+]],
+
+  itIT = [[
+• L’errore nella funzione per disattivare la « Nebbia dell’inesplorato » dovrebbe ora essere stato risolto, se il giocatore ha utilizzato l’incantesimo della banda di guerra « Mappa del branco di guerra ovunque ».
+]],
+
+  esES = [[
+• El error en la función para desactivar la « Niebla de lo inexplorado » debería haberse corregido ahora, si el jugador ha usado el hechizo de la manada de guerra « Mapa de la manada de guerra para todas partes a la vez ».
+]],
+
+  esMX = [[
+• El error en la función para desactivar la « Niebla de lo inexplorado » debería haberse corregido ahora, si el jugador ha usado el hechizo de la manada de guerra « Mapa de la manada de guerra para todas partes al mismo tiempo ».
+]],
+
+  ptBR = [[
+• O erro na função para desativar a « Névoa do Inexplorado » deve ter sido corrigido agora, caso o jogador tenha usado o feitiço da matilha de guerra « Mapa da Matilha de Guerra para Todos os Lugares ao Mesmo Tempo ».
+]],
+
+  ruRU = [[
+• Ошибка в функции отключения «Тумана Неисследованного» теперь должна быть исправлена, если игрок использовал заклинание боевой стаи «Карта боевой стаи для всех мест одновременно».
+]],
+
+  zhCN = [[
+• 当玩家曾使用过战团法术“战团地图：同时覆盖所有地点”后，“未探索区域之雾”的停用功能现在应该已被修复。
+]],
+
+  zhTW = [[
+• 玩家曾使用過戰團法術「戰爭小隊地圖：同時覆蓋所有地點」後，「未探索區域之霧」的停用功能現在應已修正。
+]],
+
+  koKR = [[
+• 플레이어가 전쟁 무리 주문 ‘전쟁 무리 지도: 모든 지역 동시에’를 사용한 경우 “미탐험 지역의 안개” 비활성화 기능의 오류가 이제 수정되었을 것입니다.
 ]],
 }
 
@@ -907,6 +953,7 @@ ns.LOCALE_CHANGELOG_3_1_1 = {
 }
 
 ns.LOCALE_CHANGELOGS = {
+  { version = "3.1.6", table = ns.LOCALE_CHANGELOG_3_1_6 },
   { version = "3.1.5", table = ns.LOCALE_CHANGELOG_3_1_5 },
   { version = "3.1.4", table = ns.LOCALE_CHANGELOG_3_1_4 },
   { version = "3.1.3", table = ns.LOCALE_CHANGELOG_3_1_3 },

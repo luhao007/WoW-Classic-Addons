@@ -4,6 +4,7 @@ local PIGFrame=Create.PIGFrame
 local PIGFontString=Create.PIGFontString
 local Data=addonTable.Data
 local InvSlot=Data.InvSlot
+local _GetItemLevel=addonTable.Fun._GetItemLevel
 --创建界面背景
 function Create.CharacterBG(fuji,Isname)
 	local texname = nil
@@ -109,16 +110,12 @@ function Create.CharacterFrame(fuji,UIName,FrameLevel)
 		frameX._BG = PIGFrame(frameX)
 		frameX._BG:SetFrameLevel(FrameLevel-2)
 		Create.add_CloseUI(nil,frameX)
-		frameX.Close:SetPoint("TOPRIGHT",frameX,"TOPRIGHT",-35,-15);
+		frameX._BG:SetPoint("TOPLEFT",frameX,"TOPLEFT",10,1);
+		frameX._BG:SetPoint("BOTTOMRIGHT",frameX,"BOTTOMRIGHT",-2,38);
 		if ElvUI then
-			frameX._BG:PIGSetBackdrop(0.5)
-			frameX._BG:SetPoint("TOPLEFT",frameX,"TOPLEFT",16,-13);
-			frameX._BG:SetPoint("BOTTOMRIGHT",frameX,"BOTTOMRIGHT",-33,74);
 			frameX._BG:PIGSetBackdrop(0.8)
 		elseif NDui then
 			frameX._BG:PIGSetBackdrop(0.5)
-			frameX._BG:SetPoint("TOPLEFT",frameX,"TOPLEFT",16,-15);
-			frameX._BG:SetPoint("BOTTOMRIGHT",frameX,"BOTTOMRIGHT",-34,72);
 		end
 	else
 		frameX._BackdropL1 = frameX:CreateTexture(nil, "BORDER");
@@ -151,7 +148,6 @@ function Create.CharacterFrame(fuji,UIName,FrameLevel)
 	    frameX.Portrait:SetPoint("TOPLEFT", frameX, "TOPLEFT", 8, 7);
 		frameX.Close = CreateFrame("Button",nil,frameX, "UIPanelCloseButton");
 	    frameX.Close:SetPoint("CENTER", frameX, "TOPRIGHT", -12, -11);
-
 	end
 	--
 	frameX.TitleText = PIGFontString(frameX,nil,nil,nil,nil,"OVERLAY")
@@ -229,6 +225,17 @@ function Create.CharacterFrame(fuji,UIName,FrameLevel)
 		frameX.ZBLsit:CZ_ItemList()
 		frameX:Show()
 	end
+	local function Update_ItemLevel(unit,ZBID,framef,itemLink)
+		local ItemLevel = _GetItemLevel(unit, ZBID,nil,itemLink)
+		if ItemLevel == "RETRIEVING" and framef.attempt < 10 then
+			framef.attempt = framef.attempt + 1
+			C_Timer.After(0.05, function()
+				Update_ItemLevel(unit,ZBID,framef,itemLink)
+			end)
+		else
+			framef.ZLV:SetText(ItemLevel or "")
+		end
+	end
 	function frameX:Update_ShowItem_List(zbData,laiyuan)
 		for k,v in pairs(zbData) do
 			local _,itemLink = GetItemInfo(v) 
@@ -256,19 +263,15 @@ function Create.CharacterFrame(fuji,UIName,FrameLevel)
 				GameTooltip:Show();
 			end);
 			if k~=4 and k~=19 then
+				local r, g, b, hex = GetItemQualityColor(itemQuality or 1)
 				if PIGA["FramePlus"]["Character_ItemLevel"] then
-					if itemLevel and itemLevel>0 then
-						invFff.ZLV:SetText(itemLevel)
-						local r, g, b, hex = GetItemQualityColor(itemQuality)
-						invFff.ZLV:SetTextColor(r, g, b, 1);
-					end
+					invFff.ZLV:SetTextColor(r, g, b, 1);
+					invFff.attempt = 0
+					Update_ItemLevel("yc",k,invFff,itemLink)
 				end
 				if PIGA["FramePlus"]["Character_ItemColor"] then
-				    if itemQuality and itemQuality>1 then
-				        local r, g, b = GetItemQualityColor(itemQuality);
-				        invFff.ranse:SetVertexColor(r, g, b);
-						invFff.ranse:Show()
-					end
+				    invFff.ranse:SetVertexColor(r, g, b);
+					invFff.ranse:Show()
 				end
 			end
 		end

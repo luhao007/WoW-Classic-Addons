@@ -292,7 +292,7 @@ function Fun._GetItemLevel(unit,SlotID,SlotBut,itemLink)
     PIG_TooltipUI:ClearLines();
     local Iteminfo
     if unit=="lx" or unit=="yc" then
-        Iteminfo = PIG_TooltipUI:SetHyperlink(SlotBut.itemLink)
+        Iteminfo = PIG_TooltipUI:SetHyperlink(itemLink or SlotBut.itemLink)
     else
         Iteminfo = PIG_TooltipUI:SetInventoryItem(unit, SlotID)
     end
@@ -443,6 +443,7 @@ local GEM_EMPTY_SOCKET= {
     ["EMPTY_SOCKET_PUNCHCARD_YELLOW"] = 2958631, -- 铭文卡-黄色
     ["EMPTY_SOCKET_DOMINATION"] = 4095404, -- 支配插槽 (Domination)
     ["EMPTY_SOCKET_GREEN"] = 136256,  -- 蓝色槽常被用作绿色（旧版兼容）
+    ["EMPTY_SOCKET_FIBER"] = 136256,
 }
 function Fun._Get_GEM_EMPTY_SOCKET(key)
     if GEM_EMPTY_SOCKET[key] then

@@ -301,6 +301,14 @@ function BusinessInfo.Item(StatsInfo)
 	   			table.insert(cdmulu,{k,v[1],v[2],v[3],v[4],v[5]})
 	   		end
 	   	end
+		-- local SyncPlayers=Data.SyncData.StatsInfo.Players
+		-- for k,v in pairs(SyncPlayers) do
+		-- 	if not PlayerData[k] then
+		-- 		print(k)
+		-- 		table.insert(cdmulu,{k,v[1],v[2],v[3],v[4],v[5]})
+
+	   	-- 	end
+		-- end	
 		local ItemsNum = #cdmulu;
 		if ItemsNum>0 then
 			local ScrollUI=fujiF.List.Scroll

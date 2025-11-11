@@ -1798,6 +1798,29 @@ elseif PIG_MaxTocversion(50000) then
         [18]=false,--远程插槽
         [19]=false,--战袍
     }
+elseif PIG_MaxTocversion(60000) then
+    Data.EnchantSlot = {
+        [0]=false,--弹药
+        [1]=false,--头
+        [2]=false,--项链
+        [3]=true,--肩膀
+        [4]=false,--衬衫
+        [5]=true,--胸甲
+        [6]=true,--腰带
+        [7]=true,--腿部
+        [8]=true,--脚
+        [9]=true,--手腕
+        [10]=true,--手
+        [11]=true,--手指1
+        [12]=true,--手指2
+        [13]=false,--饰品1
+        [14]=false,--饰品2
+        [15]=true,--后背
+        [16]=true,--主手
+        [17]=true,--副手
+        [18]=false,--远程插槽
+        [19]=false,--战袍
+    }
 else
     Data.EnchantSlot = {
         [0]=false,--弹药

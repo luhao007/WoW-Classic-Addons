@@ -31,19 +31,23 @@ local function ActionBar_Ranse()
 		hooksecurefunc("ActionButton_UpdateRangeIndicator", function(self, checksRange, inRange)
 			if self.action == nil then return end
 			local isUsable, notEnoughMana = IsUsableAction(self.action)
-			if ( checksRange and not inRange ) then
-				_G[self:GetName().."Icon"]:SetVertexColor(0.5, 0.1, 0.1)
-			elseif isUsable ~= true or notEnoughMana == true then
-				_G[self:GetName().."Icon"]:SetVertexColor(0.4, 0.4, 0.4)
-			else
-				_G[self:GetName().."Icon"]:SetVertexColor(1, 1, 1)
+			local act_icon=_G[self:GetName().."Icon"] or self.Icon or self.icon
+			if act_iconn then
+				if ( checksRange and not inRange ) then
+					act_icon:SetVertexColor(0.5, 0.1, 0.1)
+				elseif isUsable ~= true or notEnoughMana == true then
+					act_icon:SetVertexColor(0.4, 0.4, 0.4)
+				else
+					act_icon:SetVertexColor(1, 1, 1)
+				end
 			end
 		end)
 	else
 		hooksecurefunc("ActionButton_OnUpdate", function(self, elapsed)
 			if self.rangeTimer == TOOLTIP_UPDATE_TIME and self.action then
 				local range = false
-				if IsActionInRange(self.action) == false then 
+				local act_icon=_G[self:GetName().."Icon"] or self.Icon or self.icon
+				if IsActionInRange(self.action) == false and act_icon then 
 					_G[self:GetName().."Icon"]:SetVertexColor(0.5, 0.1, 0.1)
 					range = true
 				end;

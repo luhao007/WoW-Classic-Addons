@@ -799,7 +799,8 @@ local function AutoRaidSetup()
 					SetRaidDifficultyID(VMRT.InviteTool.RaidDiff)
 				end
 				if ExRT.isClassic and VMRT.InviteTool.LootMethodEnabled then
-					SetLootMethod(TransitionLootMethodFromOpt(VMRT.InviteTool.LootMethod),UnitName("player"),nil)
+					local name = UnitName("player")
+					SetLootMethod(TransitionLootMethodFromOpt(VMRT.InviteTool.LootMethod),name)
 					--SetLootThreshold(VMRT.InviteTool.LootThreshold)	--http://us.battle.net/wow/en/forum/topic/14610481537
 					ExRT.F.ScheduleTimer(SetLootThreshold, 2, VMRT.InviteTool.LootThreshold)
 				end
@@ -811,7 +812,8 @@ local function AutoRaidSetup()
 		if inRaid and not module.db.sessionInRaidLoot then
 			module.db.sessionInRaidLoot = true
 			if RaidLeader and ExRT.isClassic and VMRT.InviteTool.LootMethodEnabled then
-				SetLootMethod(TransitionLootMethodFromOpt(VMRT.InviteTool.LootMethod),UnitName("player"),nil)
+				local name = UnitName("player")
+				SetLootMethod(TransitionLootMethodFromOpt(VMRT.InviteTool.LootMethod),name)
 				ExRT.F.ScheduleTimer(SetLootThreshold, 2, VMRT.InviteTool.LootThreshold)
 			end
 		end

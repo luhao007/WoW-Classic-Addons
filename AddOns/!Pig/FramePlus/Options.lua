@@ -127,22 +127,23 @@ if PIG_MaxTocversion() then
 			PIG_OptionsUI.RLUI:Show()
 		end
 	end)
-	
-	FrameExtF.Talent = PIGCheckbutton_R(FrameExtF,{"天赋界面扩展"," "})
-	if PIG_MaxTocversion(30000) then
-		FrameExtF.Talent.tooltip= "在一页显示三系天赋";
-	else
-		FrameExtF.Talent.tooltip= "在一页显示三系天赋和雕文";
-	end
-	FrameExtF.Talent:SetScript("OnClick", function (self)
-		if self:GetChecked() then
-			PIGA["FramePlus"]["Talent"]=true;
-			FramePlusfun.Talent()
+	if PIG_MaxTocversion(40000) then
+		FrameExtF.Talent = PIGCheckbutton_R(FrameExtF,{"天赋界面扩展"," "})
+		if PIG_MaxTocversion(30000) then
+			FrameExtF.Talent.tooltip= "在一页显示三系天赋";
 		else
-			PIGA["FramePlus"]["Talent"]=false
-			PIG_OptionsUI.RLUI:Show()
+			FrameExtF.Talent.tooltip= "在一页显示三系天赋和雕文";
 		end
-	end)
+		FrameExtF.Talent:SetScript("OnClick", function (self)
+			if self:GetChecked() then
+				PIGA["FramePlus"]["Talent"]=true;
+				FramePlusfun.Talent()
+			else
+				PIGA["FramePlus"]["Talent"]=false
+				PIG_OptionsUI.RLUI:Show()
+			end
+		end)
+	end
 end
 FrameExtF:HookScript("OnShow", function(self)
 	self.Merchant:SetChecked(PIGA["FramePlus"]["Merchant"])

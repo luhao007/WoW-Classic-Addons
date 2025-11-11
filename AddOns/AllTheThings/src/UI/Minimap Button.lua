@@ -157,7 +157,7 @@ end
 app.AddEventHandler("OnStartup", function()
 	if not LibStub then return end
 
-	local LDB = LibStub:GetLibrary("LibDataBroker-1.1")
+	local LDB = LibStub:GetLibrary("LibDataBroker-1.1", true)
 	if not LDB then return end
 
 	LDB:NewDataObject(L["TITLE"], {
