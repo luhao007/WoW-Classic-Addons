@@ -1,6 +1,6 @@
 ## Interface: 50502
 ## Author: Numy - github.com/Kiatra/BlizzMove/
-## Version: v3.7.13
+## Version: v3.7.14
 
 ## Title: BlizzMove - Debugging plugin
 ## Notes: This Load-On-Demand plugin allows for retrieving debugging information.

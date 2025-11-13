@@ -263,8 +263,10 @@ QuickButUI.ButList[1]=function()
 		GameTooltip:ClearLines();
 		GameTooltip:Hide() 
 	end)
-	QuickButUI.yidong.t = PIGFontString(QuickButUI.yidong,{"CENTER",QuickButUI.yidong,"CENTER",0,0},"拖\n动",nil,9)
+	QuickButUI.yidong.t = PIGFontString(QuickButUI.yidong,{"CENTER",QuickButUI.yidong,"CENTER",0,5},"拖",nil,9)
 	QuickButUI.yidong.t:SetTextColor(0.8, 0.8, 0.8, 0.8)
+	QuickButUI.yidong.t1 = PIGFontString(QuickButUI.yidong,{"CENTER",QuickButUI.yidong,"CENTER",0,-5},"动",nil,9)
+	QuickButUI.yidong.t1:SetTextColor(0.8, 0.8, 0.8, 0.8)
 	QuickButUI.nr=PIGFrame(QuickButUI,{"TOPLEFT",QuickButUI.yidong,"TOPRIGHT",1,0})
 	QuickButUI.nr:SetPoint("BOTTOMRIGHT", QuickButUI, "BOTTOMRIGHT", 0, 0);
 	QuickButUI.nr:PIGSetBackdrop()
@@ -435,17 +437,17 @@ QuickButUI.ButList[7]=function()
 		jiazaiHasToy()
 		local function UpdateIconAttribute(itemID)
 			local itemID=itemID or PIGA_Per["QuickBut"]["LushiID"]
-			local lushiName, SpellID = GetItemSpell(itemID)
+			local _, SpellID = GetItemSpell(itemID)
+			local lushiName,Itemlink = GetItemInfo(itemID)
 			if not lushiName and General.lushijisuqi<5 then
 				General.lushijisuqi=General.lushijisuqi+1
 				return C_Timer.After(0.2, UpdateIconAttribute);
 			end
 			if lushiName and SpellID then
-				--local itemName = GetItemInfo(itemID)
 				General.lushiitemID=itemID
 				General.lushiSpellID=SpellID
 				General:SetAttribute("type1", "item");
-				General:SetAttribute("item", lushiName);
+				General:SetAttribute("item1", Itemlink);
 				General:SetNormalTexture(GetItemIcon(itemID))
 				gengxinlushiCD()
 			end
@@ -455,7 +457,7 @@ QuickButUI.ButList[7]=function()
 	 		local Skill_List = Data.Get_Skill_Info(true)
 			if #Skill_List.top>0 then
 				General:SetAttribute("type2", "spell");
-				General:SetAttribute("spell", Skill_List.top[1][2]);
+				General:SetAttribute("spell2", Skill_List.top[1][2]);
 			end
 		end
 		General.lushijisuqi=0

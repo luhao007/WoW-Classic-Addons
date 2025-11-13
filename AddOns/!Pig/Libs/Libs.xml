@@ -16,7 +16,7 @@
 	<Script file="StatusBar.lua" />
 	<Script file="DownMenu.lua" />
 	<Script file="BlizzardUI.lua" />
-	<Script file="ala.lua" />
+	<Script file="LongInspectAla.lua" />
 	<Script file="TalentData.lua" />
 	<Script file="TalentFun.lua" />
 	<Script file="ItemList.lua" />

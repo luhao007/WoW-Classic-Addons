@@ -1,6 +1,6 @@
 ## Interface: 50502
 ## Author: Pazza (Bronzebeard), (Updated by Sylvanaar/MysticalOS/Humfras)
-## Version: 3.12.17
+## Version: 3.13.1
 
 ## Title: WIM
 ## Notes: Give whispers an instant messenger feel.

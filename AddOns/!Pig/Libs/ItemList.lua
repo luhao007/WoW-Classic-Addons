@@ -535,7 +535,7 @@ local function add_ItemList(fujik,miaodian,ZBLsit_C,TalentUI)
 	--
 	ZBLsit.allstats={}
 	function ZBLsit:CZ_ItemList()
-		if self.TalentF then self.TalentF:Hide() self.TalentF:CZ_Tianfu() end
+		if self.TalentF then self.TalentF:Hide() self.TalentF:CZ_TianfuUI() end
 		local Parent=self:GetParent()
 		self.WJname:SetText(_G[Data.LongInspectUIUIname].fullnameX)
 		self.pingjunLV_V:SetText("--")
@@ -573,8 +573,7 @@ local function add_ItemList(fujik,miaodian,ZBLsit_C,TalentUI)
 				if self.TalentF:IsVisible() then
 					self.TalentF:Hide()
 				else
-					self.TalentF:Show()
-					self.TalentF:Show_Tianfu(unit)
+					self.TalentF:Show_TianfuUI(unit)
 				end
 			end
 		elseif unit=="yc" then
@@ -585,8 +584,7 @@ local function add_ItemList(fujik,miaodian,ZBLsit_C,TalentUI)
 				if self.TalentF:IsVisible() then
 					self.TalentF:Hide()
 				else
-					self.TalentF:Show()
-					self.TalentF:Show_Tianfu()
+					self.TalentF:Show_TianfuUI(unit)
 				end
 			end
 		else
@@ -601,16 +599,15 @@ local function add_ItemList(fujik,miaodian,ZBLsit_C,TalentUI)
 			self.level=Level
 			self.zhiyeID=classId
 			self.zhiye=classFilename
-			if PIG_MaxTocversion(50000) then
-				jichuxinxi.Talent=TalentData.GetTianfuIcon(IS_guacha,classFilename)
-				jichuxinxi.OpenTF=function()
+			jichuxinxi.Talent=TalentData.GetTianfuIcon(IS_guacha,classFilename,unit)
+			jichuxinxi.OpenTF=function()
+				if PIG_MaxTocversion(60000) then
 					if IS_guacha then
 						PlaySound(SOUNDKIT.IG_CHAT_EMOTE_BUTTON);
 						if self.TalentF:IsVisible() then
 							self.TalentF:Hide()
 						else
-							self.TalentF:Show()
-							self.TalentF:Show_Tianfu(TalentData.GetTianfuNum(true))
+							self.TalentF:Show_TianfuUI("Inspect")
 						end
 					else
 						if PIG_MaxTocversion(20000) then
@@ -629,25 +626,7 @@ local function add_ItemList(fujik,miaodian,ZBLsit_C,TalentUI)
 							end
 						end
 					end
-				end
-			else
-				jichuxinxi.Talent={NONE, 132222, 1}
-				if IS_guacha then
-					local specID = GetInspectSpecialization(unit)
-					local id, name, description, icon = GetSpecializationInfoByID(specID)
-					if name ~= "" then
-						jichuxinxi.Talent[1]=name
-						jichuxinxi.Talent[2]=icon
-					end
-				else
-					local specIndex = GetSpecialization()--当前专精
-					local id, name, description, icon = GetSpecializationInfo(specIndex)
-					if name ~= "" then
-						jichuxinxi.Talent[1]=name
-						jichuxinxi.Talent[2]=icon
-					end
-				end
-				jichuxinxi.OpenTF=function()
+				elseif PIG_MaxTocversion(110000,true) then
 					if IS_guacha then
 						if InCombatLockdown() then
 							PlaySound(SOUNDKIT.IG_CHAT_EMOTE_BUTTON);

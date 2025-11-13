@@ -12,15 +12,24 @@ local HY_RuneTXT=Fun.HY_RuneTXT
 local Data=addonTable.Data
 local TalentData=Data.TalentData
 ---
-local ALA_tiquMsg=addonTable.ALA.ALA_tiquMsg
 local pig_PREFIX="!Pig-YCIN";
-local ala_PREFIX = "ATEADD"
-local td_PREFIX = "tdInspect"
 local YCinfo_GET_MSG = {"!GETALL","!GETT-","!GETG-","!GETR-","!GETI-"};
 C_ChatInfo.RegisterAddonMessagePrefix(pig_PREFIX)
 local UIname="PIG_LongInspectUI"
 Data.LongInspectUIUIname=UIname
 Data.UILayout[UIname]={"TOPLEFT","TOPLEFT",0, -116}
+--ala
+local ALA=addonTable.ALA
+local ALA_tiquMsg=ALA.ALA_tiquMsg
+local ala_PREFIX = ALA.ala_PREFIX
+local COMM_PART_PREFIX = ALA.ala_COMM_PART_PREFIX
+local COMM_QUERY_PREFIX = ALA.ala_COMM_QUERY_PREFIX
+local COMM_TALENT_PREFIX = ALA.ala_COMM_TALENT_PREFIX
+local COMM_GLYPH_PREFIX = ALA.ala_COMM_GLYPH_PREFIX
+local COMM_EQUIPMENT_PREFIX = ALA.ala_COMM_EQUIPMENT_PREFIX
+local COMM_ENGRAVING_PREFIX = ALA.ala_COMM_ENGRAVING_PREFIX
+local COMM_ADDON_PREFIX = ALA.ala_COMM_ADDON_PREFIX
+local td_PREFIX = "tdInspect"
 ---------------
 local function Update_ShowItem(itemstxt,laiyuan)
 	local zbData = {}
@@ -139,52 +148,25 @@ local function PIG_tiquMsg(msgx,nameX)
 		end
 	end
 end
---没有获取到目标信息
-local function alaGet_Fun_1()
-	if not _G[UIname].fanhuiYN then
-		PIGSendAddonMessage(ala_PREFIX, "!Q32TGE", "WHISPER", _G[UIname].fullnameX);
-	end
-end
-local function alaGet_Fun_2()
-	if not _G[UIname].fanhuiYN then
-		PIGSendAddonMessage(ala_PREFIX, "_q_tal", "WHISPER", _G[UIname].fullnameX);
-		PIGSendAddonMessage(ala_PREFIX, "_q_equ", "WHISPER", _G[UIname].fullnameX);		
-	end
-end
-local function ycNull_Fun()
-	if not _G[UIname].fanhuiYN then
-		_G[UIname].LevelText:SetText("|cffFF0000获取失败\n目标未安装"..addonName.."插件或版本过期|r");
-	end
-end
-local function GetDATA_YN()
+--无PIG返回/ALA获取/无返回
+local function ALA_GetDATA_YN()
 	if _G[UIname].alaGet_1 then _G[UIname].alaGet_1:Cancel() end
-	_G[UIname].alaGet_1=C_Timer.NewTimer(1,alaGet_Fun_1)
-	if _G[UIname].alaGet_2 then _G[UIname].alaGet_2:Cancel() end
-	_G[UIname].alaGet_2=C_Timer.NewTimer(2,alaGet_Fun_2)
+	_G[UIname].alaGet_1=C_Timer.NewTimer(1,function()
+		if not _G[UIname].fanhuiYN then
+			PIGSendAddonMessage(ala_PREFIX, COMM_QUERY_PREFIX.."TEG", "WHISPER", _G[UIname].fullnameX);
+		end
+	end)
+	--if _G[UIname].alaGet_2 then _G[UIname].alaGet_2:Cancel() end
+	-- _G[UIname].alaGet_2=C_Timer.NewTimer(2,function()
+	-- 	if not _G[UIname].fanhuiYN then
+	-- 		PIGSendAddonMessage(ala_PREFIX, "_q_tal", "WHISPER", _G[UIname].fullnameX);
+	-- 		PIGSendAddonMessage(ala_PREFIX, "_q_equ", "WHISPER", _G[UIname].fullnameX);		
+	-- 	end
+	-- end)
 	if _G[UIname].ycNull then _G[UIname].ycNull:Cancel() end
-	_G[UIname].ycNull=C_Timer.NewTimer(3,ycNull_Fun)
-end
-local function GetDATA_YN_TF(fullnameX)
-	if _G[UIname].alaGet_TF then _G[UIname].alaGet_TF:Cancel() end
-	_G[UIname].alaGet_TF=C_Timer.NewTimer(0.8,function()
-		if not _G[UIname].fanhuiYN_TF then
-			PIGSendAddonMessage(ala_PREFIX, "!Q32T", "WHISPER", fullnameX);
-		end
-	end)
-end
-local function GetDATA_YN_GG(fullnameX)
-	if _G[UIname].alaGet_GG then _G[UIname].alaGet_GG:Cancel() end
-	_G[UIname].alaGet_GG=C_Timer.NewTimer(0.8,function()
-		if not _G[UIname].fanhuiYN_GG then
-			PIGSendAddonMessage(ala_PREFIX, "!Q32G", "WHISPER", fullnameX);
-		end
-	end)
-end
-local function GetDATA_YN_RR(fullnameX)
-	if _G[UIname].alaGet_RR then _G[UIname].alaGet_RR:Cancel() end
-	_G[UIname].alaGet_RR=C_Timer.NewTimer(0.8,function()
-		if not _G[UIname].fanhuiYN_RR then
-			PIGSendAddonMessage(ala_PREFIX, "!Q32R", "WHISPER", fullnameX);
+	_G[UIname].ycNull=C_Timer.NewTimer(3,function()
+		if not _G[UIname].fanhuiYN then
+			_G[UIname].LevelText:SetText("|cffFF0000获取失败\n目标未安装"..addonName.."插件或版本过期|r");
 		end
 	end)
 end
@@ -198,25 +180,40 @@ local function FasongYCqingqiu(fullnameX,iidd)
 		PIGSendAddonMessage(pig_PREFIX,YCinfo_GET_MSG[iidd], "WHISPER", fullnameX)
 		_G[UIname].TitleText:SetText(fullnameX);
 		_G[UIname].fullnameX=fullnameX
-		GetDATA_YN()
+		ALA_GetDATA_YN()
 		_G[UIname]:CZ_yuancheng_Data(INVTYPE_RANGED)
 	elseif iidd==2 then--只请求天赋信息
 		if not PIG_OptionsUI.talentData[fullnameX]["T"] or GetServerTime()-PIG_OptionsUI.talentData[fullnameX]["T"][1]>10 then
 			_G[UIname].fanhuiYN_TF=false
 			PIGSendAddonMessage(pig_PREFIX,YCinfo_GET_MSG[iidd], "WHISPER", fullnameX)
-			GetDATA_YN_TF(fullnameX)
+			if _G[UIname].alaGet_TF then _G[UIname].alaGet_TF:Cancel() end
+			_G[UIname].alaGet_TF=C_Timer.NewTimer(1,function()
+				if not _G[UIname].fanhuiYN_TF then
+					PIGSendAddonMessage(ala_PREFIX, COMM_QUERY_PREFIX.."T", "WHISPER", fullnameX);
+				end
+			end)
 		end
 	elseif iidd==3 then--只请求雕文信息
 		if not PIG_OptionsUI.talentData[fullnameX]["G"] or GetServerTime()-PIG_OptionsUI.talentData[fullnameX]["G"][1]>10 then
 			_G[UIname].fanhuiYN_GG=false
 			PIGSendAddonMessage(pig_PREFIX,YCinfo_GET_MSG[iidd], "WHISPER", fullnameX)
-			GetDATA_YN_GG(fullnameX)
+			if _G[UIname].alaGet_GG then _G[UIname].alaGet_GG:Cancel() end
+			_G[UIname].alaGet_GG=C_Timer.NewTimer(1,function()
+				if not _G[UIname].fanhuiYN_GG then
+					PIGSendAddonMessage(ala_PREFIX, COMM_QUERY_PREFIX.."G", "WHISPER", fullnameX);
+				end
+			end)
 		end
 	elseif iidd==4 then--只请求符文信息
 		if not PIG_OptionsUI.talentData[fullnameX]["R"] or GetServerTime()-PIG_OptionsUI.talentData[fullnameX]["R"][1]>10 then
 			_G[UIname].fanhuiYN_RR=false
 			PIGSendAddonMessage(pig_PREFIX,YCinfo_GET_MSG[iidd], "WHISPER", fullnameX)
-			GetDATA_YN_RR(fullnameX)
+			if _G[UIname].alaGet_RR then _G[UIname].alaGet_RR:Cancel() end
+			_G[UIname].alaGet_RR=C_Timer.NewTimer(1,function()
+				if not _G[UIname].fanhuiYN_RR then
+					PIGSendAddonMessage(ala_PREFIX, COMM_QUERY_PREFIX.."R", "WHISPER", fullnameX);
+				end
+			end)
 		end
 	elseif iidd==5 then--只请求角色信息
 		if not PIG_OptionsUI.talentData[fullnameX]["I"] or GetServerTime()-PIG_OptionsUI.talentData[fullnameX]["I"][1]>10 then

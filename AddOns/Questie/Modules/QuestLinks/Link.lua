@@ -11,6 +11,8 @@ local QuestieLib = QuestieLoader:ImportModule("QuestieLib")
 local QuestiePlayer = QuestieLoader:ImportModule("QuestiePlayer")
 ---@type TrackerUtils
 local TrackerUtils = QuestieLoader:ImportModule("TrackerUtils")
+---@type QuestieEvent
+local QuestieEvent = QuestieLoader:ImportModule("QuestieEvent")
 ---@type l10n
 local l10n = QuestieLoader:ImportModule("l10n")
 ---@type ZoneDB
@@ -80,7 +82,7 @@ function QuestieLink:GetQuestHyperLink(questId, senderGUID)
         senderGUID = UnitGUID("player")
     end
 
-    return "|Hquestie:"..questId..":"..senderGUID.."|h"..QuestieLib:PrintDifficultyColor(questLevel, "[", isRepeatable, QuestieDB.IsActiveEventQuest(questId), QuestieDB.IsPvPQuest(questId))..coloredQuestName..QuestieLib:PrintDifficultyColor(questLevel, "]", isRepeatable, QuestieDB.IsActiveEventQuest(questId), QuestieDB.IsPvPQuest(questId)).."|h"
+    return "|Hquestie:"..questId..":"..senderGUID.."|h"..QuestieLib:PrintDifficultyColor(questLevel, "[", isRepeatable, QuestieEvent.IsEventQuest(questId), QuestieDB.IsPvPQuest(questId))..coloredQuestName..QuestieLib:PrintDifficultyColor(questLevel, "]", isRepeatable, QuestieEvent.IsEventQuest(questId), QuestieDB.IsPvPQuest(questId)).."|h"
 end
 
 ---@param link string
@@ -126,10 +128,7 @@ end
 _AddQuestTitle = function(quest)
     local questLevel = QuestieLib:GetLevelString(quest.Id, quest.level)
 
-    local titleColor = "gold"
-    if quest.specialFlags == 1 then
-        titleColor = "lightBlue"
-    end
+    local titleColor = string.sub(QuestieLib:PrintDifficultyColor(quest.level, "", QuestieDB.IsRepeatable(quest.Id), QuestieEvent.IsEventQuest(quest.Id), QuestieDB.IsPvPQuest(quest.Id)),5,10)
 
     if Questie.db.profile.trackerShowQuestLevel and Questie.db.profile.enableTooltipsQuestID then
         _AddColoredTooltipLine(questLevel .. quest.name .. " (" .. quest.Id .. ")", titleColor)
@@ -202,10 +201,10 @@ end
 _AddDungeonInfo = function(quest)
     local zoneOrSort = quest.zoneOrSort
     if zoneOrSort and zoneOrSort > 0 then
-        local dungeonName = ZoneDB:GetDungeonName(zoneOrSort)
-        if dungeonName then
+        local localizedDungeonName = ZoneDB:GetLocalizedDungeonName(zoneOrSort)
+        if localizedDungeonName then
             _AddTooltipLine(" ")
-            _AddColoredTooltipLine(FormatLabelWithColon(l10n("Dungeon")) .. " " .. dungeonName, "gray")
+            _AddColoredTooltipLine(FormatLabelWithColon(l10n("Dungeon")) .. " " .. localizedDungeonName, "gray")
         end
     end
 end
@@ -291,7 +290,7 @@ _GetQuestStarter = function(quest)
             starterZoneName = TrackerUtils:GetZoneNameByID(quest.zoneOrSort)
         end
 
-        return starterName, starterZoneName
+        return starterName, l10n(starterZoneName)
     end
 
     return nil, nil
@@ -322,7 +321,7 @@ _GetQuestFinisher = function(quest)
         finisherZoneName = TrackerUtils:GetZoneNameByID(quest.zoneOrSort)
     end
 
-    return finisherName, finisherZoneName
+    return finisherName, l10n(finisherZoneName)
 end
 
 ---@param quest Quest

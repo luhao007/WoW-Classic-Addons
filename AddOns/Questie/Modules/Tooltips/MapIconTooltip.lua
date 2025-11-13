@@ -235,7 +235,7 @@ function MapIconTooltip:Show()
                     if (quest and shift) then
                         local xpReward = QuestXP:GetQuestLogRewardXP(questData.questId, Questie.db.profile.showQuestXpAtMaxLevel)
                         if xpReward > 0 then
-                            rewardString = QuestieLib:PrintDifficultyColor(quest.level, "(" .. FormatLargeNumber(xpReward) .. xpString .. ") ", QuestieDB.IsRepeatable(questData.questId), QuestieDB.IsActiveEventQuest(questData.questId), QuestieDB.IsPvPQuest(questData.questId))
+                            rewardString = QuestieLib:PrintDifficultyColor(quest.level, "(" .. FormatLargeNumber(xpReward) .. xpString .. ") ", QuestieDB.IsRepeatable(questData.questId), QuestieEvent.IsEventQuest(questData.questId), QuestieDB.IsPvPQuest(questData.questId))
                         end
 
                         local moneyReward = QuestXP.GetQuestRewardMoney(questData.questId)
@@ -259,9 +259,9 @@ function MapIconTooltip:Show()
                     if shift and quest then
                         local zoneOrSort = quest.zoneOrSort
                         if zoneOrSort and zoneOrSort > 0 then
-                            local dungeonName = ZoneDB:GetDungeonName(zoneOrSort)
-                            if dungeonName then
-                                self:AddLine("  " .. FormatLabelWithColon(l10n("Dungeon")) .. " " .. dungeonName, 0.7, 0.7, 0.7)
+                            local localizedDungeonName = ZoneDB:GetLocalizedDungeonName(zoneOrSort)
+                            if localizedDungeonName then
+                                self:AddLine("  " .. FormatLabelWithColon(l10n("Dungeon")) .. " " .. localizedDungeonName, 0.7, 0.7, 0.7)
                             end
                         end
                     end
@@ -351,9 +351,9 @@ function MapIconTooltip:Show()
             if shift and quest then
                 local zoneOrSort = quest.zoneOrSort
                 if zoneOrSort and zoneOrSort > 0 then
-                    local dungeonName = ZoneDB:GetDungeonName(zoneOrSort)
-                    if dungeonName then
-                        self:AddLine("   " .. FormatLabelWithColon(l10n("Dungeon")) .. " " .. dungeonName, 0.7, 0.7, 0.7)
+                    local localizedDungeonName = ZoneDB:GetLocalizedDungeonName(zoneOrSort)
+                    if localizedDungeonName then
+                        self:AddLine("  " .. FormatLabelWithColon(l10n("Dungeon")) .. " " .. localizedDungeonName, 0.7, 0.7, 0.7)
                     end
                 end
             end
@@ -657,7 +657,7 @@ function _MapIconTooltip.GetNextQuestInChainLines(questId, questLevel)
     local nextQuestXpRewardString = "";
     local xpReward = QuestXP:GetQuestLogRewardXP(questId, Questie.db.profile.showQuestXpAtMaxLevel)
     if xpReward > 0 then
-        nextQuestXpRewardString = QuestieLib:PrintDifficultyColor(questLevel, "(" .. FormatLargeNumber(xpReward) .. l10n('xp') .. ") ", QuestieDB.IsRepeatable(questId), QuestieDB.IsActiveEventQuest(questId), QuestieDB.IsPvPQuest(questId))
+        nextQuestXpRewardString = QuestieLib:PrintDifficultyColor(questLevel, "(" .. FormatLargeNumber(xpReward) .. l10n('xp') .. ") ", QuestieDB.IsRepeatable(questId), QuestieEvent.IsEventQuest(questId), QuestieDB.IsPvPQuest(questId))
     end
 
     local nextQuestMoneyRewardString = "";

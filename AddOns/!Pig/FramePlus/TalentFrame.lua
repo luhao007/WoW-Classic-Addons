@@ -453,7 +453,7 @@ local function Uptate_FrameX()
 			PlayerTalentFrameResetButton:SetPoint("TOPRIGHT",PlayerTalentFrame,"TOPRIGHT",-220,-40);
 			PlayerTalentFrameCloseButton:SetPoint("CENTER",PlayerTalentFrame,"TOPRIGHT",-44,-25);
 			PlayerTalentFrameStatusFrame:SetPoint("TOPLEFT",PlayerTalentFrame,"TOPLEFT",73,-40);
-			PlayerTalentFrameActivateButton:SetPoint("TOP",PlayerTalentFrame,"TOP",-273,-40);
+			PlayerTalentFrameActivateButton:SetPoint("TOP",PlayerTalentFrame,"TOP",-200,-40);
 			if PIG_OptionsUI.IsOpen_ElvUI() and PlayerTalentFrame.backdrop then
 				PlayerTalentFrame.backdrop:SetPoint("TOPLEFT",PlayerTalentFrame,"TOPLEFT",0,0);
 				PlayerTalentFrame.backdrop:SetPoint("BOTTOMRIGHT",PlayerTalentFrame,"BOTTOMRIGHT",0,0);

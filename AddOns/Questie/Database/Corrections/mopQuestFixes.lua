@@ -18,6 +18,19 @@ QuestieCorrections.spellObjectiveFirst[10070] = true
 QuestieCorrections.spellObjectiveFirst[10071] = true
 QuestieCorrections.spellObjectiveFirst[10072] = true
 QuestieCorrections.spellObjectiveFirst[10073] = true
+QuestieCorrections.spellObjectiveFirst[14007] = true
+QuestieCorrections.spellObjectiveFirst[14008] = true
+QuestieCorrections.spellObjectiveFirst[14010] = true
+QuestieCorrections.spellObjectiveFirst[14011] = true
+QuestieCorrections.spellObjectiveFirst[14012] = true
+QuestieCorrections.spellObjectiveFirst[14013] = true
+QuestieCorrections.spellObjectiveFirst[14266] = true
+QuestieCorrections.spellObjectiveFirst[14272] = true
+QuestieCorrections.spellObjectiveFirst[14274] = true
+QuestieCorrections.spellObjectiveFirst[14276] = true
+QuestieCorrections.spellObjectiveFirst[14279] = true
+QuestieCorrections.spellObjectiveFirst[14281] = true
+QuestieCorrections.spellObjectiveFirst[14283] = true
 QuestieCorrections.spellObjectiveFirst[24526] = true
 QuestieCorrections.spellObjectiveFirst[24527] = true
 QuestieCorrections.spellObjectiveFirst[24528] = true
@@ -120,6 +133,7 @@ function MopQuestFixes.Load()
     local profKeys = QuestieProfessions.professionKeys
     local factionIDs = QuestieDB.factionIDs
     local zoneIDs = ZoneDB.zoneIDs
+    local sortKeys = QuestieDB.sortKeys
     local specialFlags = QuestieDB.specialFlags
     local questFlags = QuestieDB.questFlags
 
@@ -280,6 +294,62 @@ function MopQuestFixes.Load()
         },
         [13409] = { -- Hellfire Fortifications
             [questKeys.requiredClasses] = 2015, -- all classes except DK
+        },
+        [14007] = { -- Steady Shot
+            [questKeys.requiredLevel] = 2,
+            [questKeys.extraObjectives] = {},
+        },
+        [14008] = { -- Frost Nova
+            [questKeys.objectives] = {{{48304}},nil,nil,nil,nil,{{5143}}},
+            [questKeys.requiredLevel] = 2,
+            [questKeys.extraObjectives] = {},
+        },
+        [14009] = { -- Learning the Word
+            [questKeys.objectives] = {{{48304}},nil,nil,nil,nil,{{589}}},
+            [questKeys.requiredLevel] = 2,
+            [questKeys.extraObjectives] = {},
+        },
+        [14010] = { -- Eviscerate
+            [questKeys.requiredLevel] = 2,
+            [questKeys.extraObjectives] = {},
+        },
+        [14011] = { -- Primal Strike
+            [questKeys.requiredLevel] = 2,
+            [questKeys.extraObjectives] = {},
+        },
+        [14012] = { -- Corruption
+            [questKeys.objectives] = {{{48304}},nil,nil,nil,nil,{{172}}},
+            [questKeys.requiredLevel] = 2,
+            [questKeys.extraObjectives] = {},
+        },
+        [14013] = { -- Charge
+            [questKeys.requiredLevel] = 2,
+            [questKeys.extraObjectives] = {},
+        },
+        [14266] = { -- Charge
+            [questKeys.extraObjectives] = {},
+        },
+        [14272] = { -- Eviscerate
+            [questKeys.extraObjectives] = {},
+        },
+        [14274] = { -- Corruption
+            [questKeys.objectives] = {{{35118}},nil,nil,nil,nil,{{172}}},
+            [questKeys.extraObjectives] = {},
+        },
+        [14276] = { -- Steady Shot
+            [questKeys.extraObjectives] = {},
+        },
+        [14279] = { -- Learning the Word
+            [questKeys.objectives] = {{{35118}},nil,nil,nil,nil,{{589}}},
+            [questKeys.extraObjectives] = {},
+        },
+        [14281] = { -- Frost Nova
+            [questKeys.objectives] = {{{35118}},nil,nil,nil,nil,{{122}}},
+            [questKeys.extraObjectives] = {},
+        },
+        [14283] = { -- Moonfire
+            [questKeys.objectives] = {{{35118}},nil,nil,nil,nil,{{8921}}},
+            [questKeys.extraObjectives] = {},
         },
         [24494] = { -- Empowered Rune
             [questKeys.requiredLevel] = 2,
@@ -727,6 +797,33 @@ function MopQuestFixes.Load()
         [28756] = { -- Aberrations of Bone
             [questKeys.objectives] = {{{59153}}},
             [questKeys.zoneOrSort] = zoneIDs.SCHOLOMANCE_MOP,
+        },
+        [28798] = { -- Waters of Elune
+            [questKeys.requiredSkill] = {},
+        },
+        [28799] = { -- Might of the Earthen
+            [questKeys.requiredSkill] = {},
+        },
+        [28800] = { -- Whispers of the Djinn
+            [questKeys.requiredSkill] = {},
+        },
+        [28801] = { -- Tol'vir Heiroglyphics
+            [questKeys.requiredSkill] = {},
+        },
+        [28802] = { -- Map of the Architects
+            [questKeys.requiredSkill] = {},
+        },
+        [28803] = { -- Vengeance of the Wildhammer
+            [questKeys.requiredSkill] = {},
+        },
+        [28804] = { -- Dark Iron Contingency Plan
+            [questKeys.requiredSkill] = {},
+        },
+        [29261] = { -- Zul'Aman Voodoo
+            [questKeys.requiredSkill] = {},
+        },
+        [29262] = { -- Zul'Gurub Voodoo
+            [questKeys.requiredSkill] = {},
         },
         [29406] = { -- The Lesson of the Sandy Fist
             [questKeys.requiredLevel] = 1,
@@ -2420,14 +2517,14 @@ function MopQuestFixes.Load()
         },
         [30258] = { -- Mung-Mung's Vote I: A Hozen's Problem
             [questKeys.preQuestSingle] = {31945}, -- Gina chain required for Mung Mung
-            [questKeys.requiredMinRep] = {1272,14600}, -- available at 5600/12000 honored with Tillers
+            [questKeys.requiredMinRep] = {factionIDs.THE_TILLERS,14600}, -- available at 5600/12000 honored with Tillers
             [questKeys.reputationReward] = {{factionIDs.THE_TILLERS,15}},
         },
         [30259] = { -- Mung-Mung's Vote II: Rotten to the Core
             [questKeys.reputationReward] = {{factionIDs.THE_TILLERS,15}},
         },
         [30260] = { -- Growing the Farm I: The Weeds
-            [questKeys.requiredMinRep] = {1272,9000},
+            [questKeys.requiredMinRep] = {factionIDs.THE_TILLERS,9000},
             [questKeys.reputationReward] = {{factionIDs.THE_TILLERS,7}},
         },
         [30261] = { -- Roll Club: Serpent's Spine
@@ -2755,7 +2852,7 @@ function MopQuestFixes.Load()
         },
         [30321] = { -- Weed War II
             [questKeys.preQuestSingle] = {30257},
-            [questKeys.requiredMinRep] = {1272,9000},
+            [questKeys.requiredMinRep] = {factionIDs.THE_TILLERS,9000},
             [questKeys.extraObjectives] = {{nil,Questie.ICON_TYPE_TALK,l10n("Start the event"),0,{{"monster",57385}}}},
             [questKeys.exclusiveTo] = {30317,30318,30319,30322},
             [questKeys.reputationReward] = {{factionIDs.THE_TILLERS,4},{factionIDs.JOGU_THE_DRUNK,11}},
@@ -3511,12 +3608,12 @@ function MopQuestFixes.Load()
             [questKeys.extraObjectives] = {{nil,Questie.ICON_TYPE_OBJECT,l10n("Set the Yaungol Banner ablaze"),0,{{"object",210933}}}},
         },
         [30516] = { -- Growing the Farm I: A Little Problem
-            [questKeys.requiredMinRep] = {1272,9000},
+            [questKeys.requiredMinRep] = {factionIDs.THE_TILLERS,9000},
             [questKeys.reputationReward] = {{factionIDs.THE_TILLERS,7}},
         },
         [30517] = { -- Farmer Fung's Vote I: Yak Attack
             [questKeys.preQuestSingle] = {31946}, -- Mung Mung chain required for Farmer Fung
-            [questKeys.requiredMinRep] = {1272,25200}, -- Tillers 4200 into Revered (wowhead)
+            [questKeys.requiredMinRep] = {factionIDs.THE_TILLERS,25200}, -- Tillers 4200 into Revered (wowhead)
             [questKeys.reputationReward] = {{factionIDs.THE_TILLERS,5},{factionIDs.FARMER_FUNG,8}},
         },
         [30518] = { -- Farmer Fung's Vote II: On the Loose
@@ -3526,12 +3623,12 @@ function MopQuestFixes.Load()
         },
         [30519] = { -- Nana's Vote I: Nana's Secret Recipe
             [questKeys.preQuestSingle] = {31947}, -- Farmer Fung chain required for Nana
-            [questKeys.requiredMinRep] = {1272,29400}, -- Tillers 8400 into Revered (wowhead)
+            [questKeys.requiredMinRep] = {factionIDs.THE_TILLERS,29400}, -- Tillers 8400 into Revered (wowhead)
             [questKeys.reputationReward] = {{factionIDs.THE_TILLERS,15}},
         },
         [30521] = { -- Haohan's Vote I: Bungalow Break-In
             [questKeys.preQuestSingle] = {31949}, -- Nana chain required for Haohan
-            [questKeys.requiredMinRep] = {1272,37800}, -- Tillers 16800 into Revered (wowhead)
+            [questKeys.requiredMinRep] = {factionIDs.THE_TILLERS,37800}, -- Tillers 16800 into Revered (wowhead)
             [questKeys.reputationReward] = {{factionIDs.THE_TILLERS,12},{factionIDs.HAOHAN_MUDCLAW,11}},
         },
         [30522] = { -- Haohan's Vote II: The Real Culprits
@@ -3539,7 +3636,7 @@ function MopQuestFixes.Load()
             [questKeys.reputationReward] = {{factionIDs.THE_TILLERS,12}},
         },
         [30523] = { -- Growing the Farm II: The Broken Wagon
-            [questKeys.requiredMinRep] = {1272,21000}, -- Tillers at Revered (wowhead)
+            [questKeys.requiredMinRep] = {factionIDs.THE_TILLERS,21000}, -- Tillers at Revered (wowhead)
             [questKeys.reputationReward] = {{factionIDs.THE_TILLERS,7}},
         },
         [30524] = { -- Growing the Farm II: Knock on Wood
@@ -3550,7 +3647,7 @@ function MopQuestFixes.Load()
             [questKeys.reputationReward] = {{factionIDs.THE_TILLERS,12}},
         },
         [30526] = { -- Lost and Lonely
-            [questKeys.requiredMinRep] = {1272,33600}, -- Tillers 12600 into Revered (wowpedia)
+            [questKeys.requiredMinRep] = {factionIDs.THE_TILLERS,33600}, -- Tillers 12600 into Revered (wowpedia)
             [questKeys.reputationReward] = {{factionIDs.THE_TILLERS,7}},
         },
         [30527] = { -- Haohan's Vote IV: Melons For Felons
@@ -3565,7 +3662,7 @@ function MopQuestFixes.Load()
         },
         [30529] = { -- Growing the Farm III: The Mossy Boulder
             [questKeys.preQuestSingle] = {30528},
-            [questKeys.requiredMinRep] = {1272,42000}, -- Tillers at Exalted
+            [questKeys.requiredMinRep] = {factionIDs.THE_TILLERS,42000}, -- Tillers at Exalted
         },
         [30534] = { -- A Second Hand
             [questKeys.preQuestSingle] = {30529},
@@ -5529,7 +5626,7 @@ function MopQuestFixes.Load()
         },
         [31312] = { -- The Old Map
             [questKeys.nextQuestInChain] = 31313,
-            [questKeys.requiredMinRep] = {1272,42000}, -- Tillers. we check for NPCs exalted via achievement
+            [questKeys.requiredMinRep] = {factionIDs.THE_TILLERS,42000}, -- Tillers. we check for NPCs exalted via achievement
         },
         [31313] = { -- Just A Folk Story
             [questKeys.preQuestSingle] = {31312},
@@ -5560,12 +5657,15 @@ function MopQuestFixes.Load()
         },
         [31321] = { -- Buy A Fish A Round?
             [questKeys.requiredMinRep] = {1273,16800}, -- Buddy level with Jogu
+            [questKeys.reputationReward] = {{factionIDs.JOGU,19}},
         },
         [31322] = { -- Buy A Fish A Keg?
             [questKeys.requiredMinRep] = {1273,25200}, -- Friend level with Jogu
+            [questKeys.reputationReward] = {{factionIDs.JOGU,35}},
         },
         [31323] = { -- Buy A Fish A Brewery?
             [questKeys.requiredMinRep] = {1273,36000}, -- within 6000 rep of Best Friend (wowhead comment)
+            [questKeys.reputationReward] = {{factionIDs.JOGU,26}},
         },
         [31325] = { -- A Very Nice Necklace
             [questKeys.requiredMinRep] = {1280,8400}, -- Tina at Acquaintance level (8400-16800)
@@ -5618,13 +5718,20 @@ function MopQuestFixes.Load()
         },
         [31338] = { -- Lost Sheepie
             [questKeys.requiredMinRep] = {1277,16800}, -- Buddy level with Chee Chee
+            [questKeys.reputationReward] = {{factionIDs.CHEE_CHEE,34}},
         },
         [31339] = { -- Lost Sheepie... Again
             [questKeys.requiredMinRep] = {1277,25200}, -- Friend level with Chee Chee
+            [questKeys.reputationReward] = {{factionIDs.CHEE_CHEE,34}},
         },
         [31340] = { -- Oh Sheepie...
             [questKeys.requiredMinRep] = {1277,33600}, -- Good Friends level with Chee Chee
             [questKeys.objectives] = {{{64391,nil,Questie.ICON_TYPE_TALK}}},
+            [questKeys.reputationReward] = {{factionIDs.CHEE_CHEE,34}},
+        },
+        [31341] = { -- A Wolf In Sheep's Clothing
+            [questKeys.requiredMinRep] = {1277,33600}, -- Good Friends level with Chee Chee
+            [questKeys.reputationReward] = {{factionIDs.CHEE_CHEE,34}},
         },
         [31354] = { -- Mazu's Bounty
             [questKeys.preQuestSingle] = {31190},
@@ -6016,18 +6123,22 @@ function MopQuestFixes.Load()
         },
         [31529] = { -- Mission: Culling The Vermin
             [questKeys.requiredMinRep] = {1278,12600}, -- 4200 into Aquaintance with Sho
+            [questKeys.reputationReward] = {{factionIDs.SHO,34}},
         },
         --[31530] = { -- Mission: The Hozen Dozen -- Don't think this made it to live so blacklisted
             --[questKeys.requiredMinRep] = {1278,} --
        -- },
         [31531] = { -- Mission: Aerial Threat
             [questKeys.requiredMinRep] = {1278,29400}, -- 4200 into Friend with Sho
+            [questKeys.reputationReward] = {{factionIDs.SHO,34}},
         },
         [31532] = { -- Mission: Predator of the Cliffs
             [questKeys.requiredMinRep] = {1278,37800}, -- 4200 into Good Friend with Sho
+            [questKeys.reputationReward] = {{factionIDs.SHO,34}},
         },
         [31534] = { -- The Beginner's Brew
             [questKeys.requiredMinRep] = {1275,16800}, -- Buddy level with Ella
+            [questKeys.reputationReward] = {{factionIDs.ELLA,35}},
         },
         [31535] = { -- Replenishing the Pantry
             [questKeys.preQuestSingle] = {31536},
@@ -6038,10 +6149,12 @@ function MopQuestFixes.Load()
         [31537] = { -- Ella's Taste Test
             [questKeys.requiredMinRep] = {1275,25200}, -- Friend level with Ella
             [questKeys.objectives] = {{{58710,nil,Questie.ICON_TYPE_INTERACT},{58717,nil,Questie.ICON_TYPE_INTERACT},{58646,nil,Questie.ICON_TYPE_INTERACT},{64597,nil,Questie.ICON_TYPE_INTERACT}}},
+            [questKeys.reputationReward] = {{factionIDs.ELLA,35}},
         },
         [31538] = { -- A Worthy Brew
             [questKeys.requiredMinRep] = {1275,33600}, -- Good friends level with Ella
             [questKeys.objectives] = {{{64946,nil,Questie.ICON_TYPE_INTERACT}}},
+            [questKeys.reputationReward] = {{factionIDs.ELLA,35}},
         },
         [31539] = { -- A Thing of Beauty
             [questKeys.requiredSkill] = {profKeys.INSCRIPTION,525},
@@ -7056,11 +7169,13 @@ function MopQuestFixes.Load()
             [questKeys.requiredSpell] = 119467,
             [questKeys.objectives] = {{{66352,nil,Questie.ICON_TYPE_PET_BATTLE},{66436,nil,Questie.ICON_TYPE_PET_BATTLE},{66452,nil,Questie.ICON_TYPE_PET_BATTLE},{66442,nil,Questie.ICON_TYPE_PET_BATTLE},{66412,nil,Questie.ICON_TYPE_PET_BATTLE}}},
             [questKeys.preQuestSingle] = {31728},
+            [questKeys.nextQuestInChain] = 0,
         },
         [31891] = { -- Battle Pet Tamers: Kalimdor
             [questKeys.requiredSpell] = 119467,
             [questKeys.objectives] = {{{66352,nil,Questie.ICON_TYPE_PET_BATTLE},{66436,nil,Questie.ICON_TYPE_PET_BATTLE},{66452,nil,Questie.ICON_TYPE_PET_BATTLE},{66442,nil,Questie.ICON_TYPE_PET_BATTLE},{66412,nil,Questie.ICON_TYPE_PET_BATTLE}}},
             [questKeys.preQuestSingle] = {31870},
+            [questKeys.nextQuestInChain] = 0,
         },
         [31894] = { -- A Delicate Balance
             [questKeys.preQuestSingle] = {30784},
@@ -7080,11 +7195,13 @@ function MopQuestFixes.Load()
             [questKeys.requiredSpell] = 119467,
             [questKeys.objectives] = {{{66478,nil,Questie.ICON_TYPE_PET_BATTLE},{66512,nil,Questie.ICON_TYPE_PET_BATTLE},{66515,nil,Questie.ICON_TYPE_PET_BATTLE},{66518,nil,Questie.ICON_TYPE_PET_BATTLE},{66520,nil,Questie.ICON_TYPE_PET_BATTLE}}},
             [questKeys.preQuestSingle] = {31728},
+            [questKeys.nextQuestInChain] = 0,
         },
         [31903] = { -- Battle Pet Tamers: Eastern Kingdoms
             [questKeys.requiredSpell] = 119467,
             [questKeys.objectives] = {{{66478,nil,Questie.ICON_TYPE_PET_BATTLE},{66512,nil,Questie.ICON_TYPE_PET_BATTLE},{66515,nil,Questie.ICON_TYPE_PET_BATTLE},{66518,nil,Questie.ICON_TYPE_PET_BATTLE},{66520,nil,Questie.ICON_TYPE_PET_BATTLE}}},
             [questKeys.preQuestSingle] = {31870},
+            [questKeys.nextQuestInChain] = 0,
         },
         [31904] = { -- Cassandra Kaboom
             [questKeys.requiredSpell] = 119467,
@@ -7196,6 +7313,7 @@ function MopQuestFixes.Load()
         [31927] = { -- Battle Pet Tamers: Northrend
             [questKeys.preQuestSingle] = {31920},
             [questKeys.requiredSpell] = 119467,
+            [questKeys.nextQuestInChain] = 0,
             [questKeys.objectives] = {{{66635,nil,Questie.ICON_TYPE_PET_BATTLE},{66636,nil,Questie.ICON_TYPE_PET_BATTLE},{66638,nil,Questie.ICON_TYPE_PET_BATTLE},{66639,nil,Questie.ICON_TYPE_PET_BATTLE}}},
         },
         [31928] = { -- Grand Master Payne
@@ -7205,10 +7323,13 @@ function MopQuestFixes.Load()
         [31929] = { -- Battle Pet Tamers: Northrend
             [questKeys.preQuestSingle] = {31920},
             [questKeys.requiredSpell] = 119467,
+            [questKeys.nextQuestInChain] = 0,
             [questKeys.objectives] = {{{66635,nil,Questie.ICON_TYPE_PET_BATTLE},{66636,nil,Questie.ICON_TYPE_PET_BATTLE},{66638,nil,Questie.ICON_TYPE_PET_BATTLE},{66639,nil,Questie.ICON_TYPE_PET_BATTLE}}},
         },
         [31930] = { -- Battle Pet Tamers: Pandaria
             [questKeys.requiredSpell] = 119467,
+            [questKeys.preQuestSingle] = {31970},
+            [questKeys.nextQuestInChain] = 0,
             [questKeys.objectives] = {{{66730,nil,Questie.ICON_TYPE_PET_BATTLE},{66734,nil,Questie.ICON_TYPE_PET_BATTLE},{66733,nil,Questie.ICON_TYPE_PET_BATTLE},{66738,nil,Questie.ICON_TYPE_PET_BATTLE},{66918,nil,Questie.ICON_TYPE_PET_BATTLE},{66739,nil,Questie.ICON_TYPE_PET_BATTLE}}},
         },
         [31931] = { -- Beegle Blastfuse
@@ -7295,9 +7416,12 @@ function MopQuestFixes.Load()
         [31951] = { -- Grand Master Aki
             [questKeys.startedBy] = {{66741}},
             [questKeys.preQuestSingle] = {31930,31952},
+            [questKeys.objectives] = {{{66741,nil,Questie.ICON_TYPE_PET_BATTLE}}},
         },
         [31952] = { -- Battle Pet Tamers: Pandaria
             [questKeys.requiredSpell] = 119467,
+            [questKeys.nextQuestInChain] = 0,
+            [questKeys.preQuestSingle] = {31970},
             [questKeys.objectives] = {{{66730,nil,Questie.ICON_TYPE_PET_BATTLE},{66734,nil,Questie.ICON_TYPE_PET_BATTLE},{66733,nil,Questie.ICON_TYPE_PET_BATTLE},{66738,nil,Questie.ICON_TYPE_PET_BATTLE},{66918,nil,Questie.ICON_TYPE_PET_BATTLE},{66739,nil,Questie.ICON_TYPE_PET_BATTLE}}},
         },
         [31953] = { -- Grand Master Hyuna
@@ -7321,6 +7445,7 @@ function MopQuestFixes.Load()
             [questKeys.objectives] = {{{66739,nil,Questie.ICON_TYPE_PET_BATTLE}}},
         },
         [31958] = { -- Grand Master Aki
+            [questKeys.preQuestSingle] = {31951},
             [questKeys.requiredSpell] = 119467,
             [questKeys.objectives] = {{{66741,nil,Questie.ICON_TYPE_PET_BATTLE}}},
         },
@@ -7343,18 +7468,24 @@ function MopQuestFixes.Load()
         },
         [31966] = { -- Battle Pet Tamers: Cataclysm
             [questKeys.requiredSpell] = 119467,
+            [questKeys.preQuestSingle] = {31928},
+            [questKeys.nextQuestInChain] = 0,
             [questKeys.objectives] = {{{66819,nil,Questie.ICON_TYPE_PET_BATTLE},{66815,nil,Questie.ICON_TYPE_PET_BATTLE},{66822,nil,Questie.ICON_TYPE_PET_BATTLE}}},
         },
         [31967] = { -- Battle Pet Tamers: Cataclysm
             [questKeys.requiredSpell] = 119467,
+            [questKeys.preQuestSingle] = {31928},
+            [questKeys.nextQuestInChain] = 0,
             [questKeys.objectives] = {{{66819,nil,Questie.ICON_TYPE_PET_BATTLE},{66815,nil,Questie.ICON_TYPE_PET_BATTLE},{66822,nil,Questie.ICON_TYPE_PET_BATTLE}}},
         },
         [31970] = { -- Grand Master Obalis
             [questKeys.requiredSpell] = 119467,
+            [questKeys.preQuestSingle] = {31966,31967},
             [questKeys.objectives] = {{{66824,nil,Questie.ICON_TYPE_PET_BATTLE}}},
         },
         [31971] = { -- Grand Master Obalis
             [questKeys.requiredSpell] = 119467,
+            [questKeys.preQuestSingle] = {31970},
             [questKeys.objectives] = {{{66824,nil,Questie.ICON_TYPE_PET_BATTLE}}},
         },
         [31972] = { -- Brok
@@ -7385,7 +7516,7 @@ function MopQuestFixes.Load()
         [31977] = { -- The Returning Champion
             [questKeys.preQuestSingle] = {31897,31915},
             [questKeys.requiredSpell] = 119467,
-            [questKeys.nextQuestInChain] = 0, -- not exclusive to 31980!
+            [questKeys.nextQuestInChain] = 0,
         },
         [31978] = { -- Priorities!
             [questKeys.objectives] = {nil,{{215695}}},
@@ -7395,7 +7526,7 @@ function MopQuestFixes.Load()
         [31980] = { -- The Returning Champion
             [questKeys.preQuestSingle] = {31897,31915},
             [questKeys.requiredSpell] = 119467,
-            [questKeys.nextQuestInChain] = 0, -- not exclusive to 31977!
+            [questKeys.nextQuestInChain] = 0,
         },
         [31981] = { -- Exceeding Expectations
             [questKeys.requiredSpell] = 119467,
@@ -7410,18 +7541,22 @@ function MopQuestFixes.Load()
         [31983] = { -- A Brief Reprieve
             [questKeys.requiredSpell] = 119467,
             [questKeys.preQuestSingle] = {31928},
+            [questKeys.nextQuestInChain] = 0,
         },
         [31984] = { -- A Brief Reprieve
             [questKeys.requiredSpell] = 119467,
             [questKeys.preQuestSingle] = {31928},
+            [questKeys.nextQuestInChain] = 0,
         },
         [31985] = { -- The Triumphant Return
             [questKeys.requiredSpell] = 119467,
             [questKeys.preQuestSingle] = {31970},
+            [questKeys.nextQuestInChain] = 0,
         },
         [31986] = { -- The Triumphant Return
             [questKeys.requiredSpell] = 119467,
             [questKeys.preQuestSingle] = {31970},
+            [questKeys.nextQuestInChain] = 0,
         },
         [31989] = { -- The Peak of Serenity - Complete Your Training
             [questKeys.requiredClasses] = classIDs.MONK,
@@ -7808,6 +7943,9 @@ function MopQuestFixes.Load()
             [questKeys.preQuestSingle] = {32166},
             [questKeys.questFlags] = questFlags.DAILY,
         },
+        [32189] = { -- A Shabby New Face
+            [questKeys.requiredMinRep] = {factionIDs.THE_TILLERS,21000},
+        },
         [32190] = { -- To Mogujia
             [questKeys.preQuestSingle] = {32372},
             [questKeys.requiredMinRep] = {factionIDs.DOMINANCE_OFFENSIVE,11850},
@@ -7841,6 +7979,10 @@ function MopQuestFixes.Load()
             [questKeys.preQuestSingle] = {32108},
             [questKeys.exclusiveTo] = {32199},
             [questKeys.reputationReward] = {{factionIDs.DOMINANCE_OFFENSIVE,4}},
+        },
+        [32198] = { -- One Magical, Flying Kingdom's Trash...
+            [questKeys.requiredMinRep] = {factionIDs.THE_TILLERS,21000},
+            [questKeys.preQuestSingle] = {32189},
         },
         [32199] = { -- Krasarang Steampot
             [questKeys.preQuestSingle] = {32108},
@@ -8410,8 +8552,9 @@ function MopQuestFixes.Load()
             [questKeys.objectives] = {{{64616,nil,Questie.ICON_TYPE_TALK}}},
         },
         [32428] = { -- Pandaren Spirit Tamer
+            [questKeys.requiredSpell] = 119467,
             [questKeys.preQuestSingle] = {31951},
-            [questKeys.objectives] = {{{68463},{68465},{68464},{68462}}},
+            [questKeys.objectives] = {{{68463,nil,Questie.ICON_TYPE_PET_BATTLE},{68465,nil,Questie.ICON_TYPE_PET_BATTLE},{68464,nil,Questie.ICON_TYPE_PET_BATTLE},{68462,nil,Questie.ICON_TYPE_PET_BATTLE}}},
         },
         [32429] = { -- The Prince's Pursuit
             [questKeys.startedBy] = {{64616}},
@@ -8440,6 +8583,12 @@ function MopQuestFixes.Load()
         [32434] = { -- Burning Pandaren Spirit
             [questKeys.requiredSpell] = 119467,
             [questKeys.objectives] = {{{68463,nil,Questie.ICON_TYPE_PET_BATTLE}}},
+        },
+        [32435] = { -- Second Place
+            [questKeys.specialFlags] = specialFlags.REPEATABLE,
+        },
+        [32436] = { -- Third Place
+            [questKeys.specialFlags] = specialFlags.REPEATABLE,
         },
         [32439] = { -- Flowing Pandaren Spirit
             [questKeys.requiredSpell] = 119467,
@@ -8520,7 +8669,7 @@ function MopQuestFixes.Load()
         [32603] = { -- Beasts of Fable
             [questKeys.requiredSpell] = 119467,
             [questKeys.objectives] = {{{68555,nil,Questie.ICON_TYPE_PET_BATTLE},{68558,nil,Questie.ICON_TYPE_PET_BATTLE},{68559,nil,Questie.ICON_TYPE_PET_BATTLE},{68560,nil,Questie.ICON_TYPE_PET_BATTLE},{68561,nil,Questie.ICON_TYPE_PET_BATTLE},{68562,nil,Questie.ICON_TYPE_PET_BATTLE},{68563,nil,Questie.ICON_TYPE_PET_BATTLE},{68564,nil,Questie.ICON_TYPE_PET_BATTLE},{68565,nil,Questie.ICON_TYPE_PET_BATTLE},{68566,nil,Questie.ICON_TYPE_PET_BATTLE}}},
-            [questKeys.preQuestSingle] = {31958},
+            [questKeys.preQuestSingle] = {31951},
         },
         [32604] = { -- Beasts of Fable Book I
             [questKeys.requiredSpell] = 119467,
@@ -8585,7 +8734,7 @@ function MopQuestFixes.Load()
             [questKeys.requiredLevel] = 60,
         },
         [32682] = { -- Inherit the Earth
-            [questKeys.requiredMinRep] = {1272,42000}, -- Tillers at Exalted
+            [questKeys.requiredMinRep] = {factionIDs.THE_TILLERS,42000}, -- Tillers at Exalted
             [questKeys.preQuestSingle] = {30529},
             [questKeys.objectives] = {{{58646,nil,Questie.ICON_TYPE_TALK}}},
         },
@@ -8924,7 +9073,7 @@ function MopQuestFixes.Load()
             [questKeys.requiredClasses] = classIDs.NONE,
             [questKeys.objectivesText] = {"Defeat the Sha of Doubt on Celestial Difficulty in the Temple of the Jade Serpent and acquire the Chimera of Doubt."},
             [questKeys.objectives] = {nil,nil,{{248204}}},
-            [questKeys.zoneOrSort] = -344,
+            [questKeys.zoneOrSort] = sortKeys.LEGENDARY,
             [questKeys.preQuestGroup] = {31468,31473},
             [questKeys.reputationReward] = {{1359,5}},
             [questKeys.exclusiveTo] = {31481},
@@ -8941,7 +9090,7 @@ function MopQuestFixes.Load()
             [questKeys.objectivesText] = {"Bring a large supply of potions to an alchemy trainer in any capital city."},
             [questKeys.objectives] = {nil,nil,{{76097},{76098},{93351}}},
             [questKeys.exclusiveTo] = {10897,10899,10902,29067,29481,29482,92337,92338},
-            [questKeys.zoneOrSort] = -181,
+            [questKeys.zoneOrSort] = sortKeys.ALCHEMY,
         },
         [92337] = { -- Elixir Master
             [questKeys.name] = "Elixir Master",
@@ -8955,7 +9104,7 @@ function MopQuestFixes.Load()
             [questKeys.objectivesText] = {"Bring a variety of flasks to an alchemy trainer in any capital city."},
             [questKeys.objectives] = {nil,nil,{{76088},{76087},{76085},{76084}}},
             [questKeys.exclusiveTo] = {10897,10899,10902,29067,29481,29482,92336,92338},
-            [questKeys.zoneOrSort] = -181,
+            [questKeys.zoneOrSort] = sortKeys.ALCHEMY,
         },
         [92338] = { -- Transmutation Master
             [questKeys.name] = "Transmutation Master",
@@ -8969,7 +9118,7 @@ function MopQuestFixes.Load()
             [questKeys.objectivesText] = {"Bring the requested materials to an alchemy trainer in any capital city."},
             [questKeys.objectives] = {nil,nil,{{72104}}},
             [questKeys.exclusiveTo] = {10897,10899,10902,29067,29481,29482,92336,92337},
-            [questKeys.zoneOrSort] = -181,
+            [questKeys.zoneOrSort] = sortKeys.ALCHEMY,
         },
     }
 end
@@ -8983,11 +9132,35 @@ function MopQuestFixes:LoadFactionFixes()
             [questKeys.preQuestGroup] = {30174,30273},
             [questKeys.exclusiveTo] = {30241},
         },
+        [30632] = { -- The Ruins of Guo-Lai
+            [questKeys.preQuestGroup] = {31511,30649},
+        },
         [31695] = { -- Beyond The Wall
             [questKeys.preQuestGroup] = {30655,30656,30661},
         },
-        [30632] = { -- The Ruins of Guo-Lai
-            [questKeys.preQuestGroup] = {31511,30649},
+        [32428] = { -- Pandaren Spirit Tamer
+            [questKeys.startedBy] = {{64582}},
+            [questKeys.finishedBy] = {{64582}},
+        },
+        [32603] = { -- Beasts of Fable
+            [questKeys.startedBy] = {{64582}},
+            [questKeys.finishedBy] = {{64582}},
+        },
+        [32604] = { -- Beasts of Fable Book I
+            [questKeys.startedBy] = {{64582}},
+            [questKeys.finishedBy] = {{64582}},
+        },
+        [32863] = { -- What We've Been Training For
+            [questKeys.startedBy] = {{63626,64582}},
+            [questKeys.finishedBy] = {{63626,64582}},
+        },
+        [32868] = { -- Beasts of Fable Book II
+            [questKeys.startedBy] = {{64582}},
+            [questKeys.finishedBy] = {{64582}},
+        },
+        [32869] = { -- Beasts of Fable Book III
+            [questKeys.startedBy] = {{64582}},
+            [questKeys.finishedBy] = {{64582}},
         },
     }
 
@@ -8998,11 +9171,35 @@ function MopQuestFixes:LoadFactionFixes()
             [questKeys.preQuestGroup] = {30273,30445},
             [questKeys.exclusiveTo] = {30360},
         },
+        [30632] = { -- The Ruins of Guo-Lai
+            [questKeys.preQuestGroup] = {31512,30631},
+        },
         [31695] = { -- Beyond The Wall
             [questKeys.preQuestGroup] = {30650,30651,30660},
         },
-        [30632] = { -- The Ruins of Guo-Lai
-            [questKeys.preQuestGroup] = {31512,30631},
+        [32428] = { -- Pandaren Spirit Tamer
+            [questKeys.startedBy] = {{64572}},
+            [questKeys.finishedBy] = {{64572}},
+        },
+        [32603] = { -- Beasts of Fable
+            [questKeys.startedBy] = {{64572}},
+            [questKeys.finishedBy] = {{64572}},
+        },
+        [32604] = { -- Beasts of Fable Book I
+            [questKeys.startedBy] = {{64572}},
+            [questKeys.finishedBy] = {{64572}},
+        },
+        [32863] = { -- What We've Been Training For
+            [questKeys.startedBy] = {{63596,64572}},
+            [questKeys.finishedBy] = {{63596,64572}},
+        },
+        [32868] = { -- Beasts of Fable Book II
+            [questKeys.startedBy] = {{64572}},
+            [questKeys.finishedBy] = {{64572}},
+        },
+        [32869] = { -- Beasts of Fable Book III
+            [questKeys.startedBy] = {{64572}},
+            [questKeys.finishedBy] = {{64572}},
         },
     }
 

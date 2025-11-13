@@ -38,6 +38,7 @@ function CataQuestFixes.Load()
     local profKeys = QuestieProfessions.professionKeys
     local factionIDs = QuestieDB.factionIDs
     local zoneIDs = ZoneDB.zoneIDs
+    local sortKeys = QuestieDB.sortKeys
     local specialFlags = QuestieDB.specialFlags
 
     return {
@@ -70,10 +71,10 @@ function CataQuestFixes.Load()
         [171] = { -- A Warden of the Alliance
             [questKeys.preQuestSingle] = {},
             [questKeys.preQuestGroup] = {29117,29119},
-            [questKeys.zoneOrSort] = -378,
+            [questKeys.zoneOrSort] = sortKeys.CHILDRENS_WEEK,
         },
         [172] = { -- Children's Week
-            [questKeys.zoneOrSort] = -378,
+            [questKeys.zoneOrSort] = sortKeys.CHILDRENS_WEEK,
             [questKeys.startedBy] = {{51989}},
         },
         [184] = { -- Furlbrow's Deed
@@ -284,7 +285,7 @@ function CataQuestFixes.Load()
             [questKeys.preQuestGroup] = {1453,14354},
         },
         [1468] = { -- Children's Week
-            [questKeys.zoneOrSort] = -378,
+            [questKeys.zoneOrSort] = sortKeys.CHILDRENS_WEEK,
             [questKeys.startedBy] = {{51988}},
         },
         [1918] = { -- The Befouled Element
@@ -450,7 +451,7 @@ function CataQuestFixes.Load()
         [5502] = { -- A Warden of the Horde
             [questKeys.preQuestSingle] = {},
             [questKeys.preQuestGroup] = {29190,29191},
-            [questKeys.zoneOrSort] = -378,
+            [questKeys.zoneOrSort] = sortKeys.CHILDRENS_WEEK,
             [questKeys.finishedBy] = {{51989}},
         },
         [5561] = { -- Kodo Roundup
@@ -1275,6 +1276,9 @@ function CataQuestFixes.Load()
         [9704] = { -- Slain by the Wretched
             [questKeys.breadcrumbs] = {8347},
         },
+        [9729] = { -- Fhwoor Smash!
+            [questKeys.requiredMinRep] = {970,42000},
+        },
         [9731] = { -- Drain Schematics
             [questKeys.startedBy] = {nil,nil,{24330}},
             [questKeys.preQuestSingle] = {9718},
@@ -1737,62 +1741,62 @@ function CataQuestFixes.Load()
             [questKeys.breadcrumbForQuestId] = 10847,
         },
         [10942] = { -- Children's Week
-            [questKeys.zoneOrSort] = -378,
+            [questKeys.zoneOrSort] = sortKeys.CHILDRENS_WEEK,
             [questKeys.startedBy] = {{22819}},
         },
         [10943] = { -- Children's Week
-            [questKeys.zoneOrSort] = -378,
+            [questKeys.zoneOrSort] = sortKeys.CHILDRENS_WEEK,
         },
         [10945] = { -- Hch'uu and the Mushroom People
-            [questKeys.zoneOrSort] = -378,
+            [questKeys.zoneOrSort] = sortKeys.CHILDRENS_WEEK,
             [questKeys.startedBy] = {{22817}},
         },
         [10950] = { -- Auchindoun and the Ring of Observance
-            [questKeys.zoneOrSort] = -378,
+            [questKeys.zoneOrSort] = sortKeys.CHILDRENS_WEEK,
         },
         [10951] = { -- A Trip to the Dark Portal
-            [questKeys.zoneOrSort] = -378,
+            [questKeys.zoneOrSort] = sortKeys.CHILDRENS_WEEK,
             [questKeys.triggerEnd] = {"Salandria taken to the Dark Portal",{[zoneIDs.HELLFIRE_PENINSULA] = {{89.1,50.23}}}},
         },
         [10952] = { -- A Trip to the Dark Portal
-            [questKeys.zoneOrSort] = -378,
+            [questKeys.zoneOrSort] = sortKeys.CHILDRENS_WEEK,
             [questKeys.triggerEnd] = {"Dornaa taken to the Dark Portal",{[zoneIDs.HELLFIRE_PENINSULA] = {{89.1,50.23}}}},
         },
         [10953] = { -- Visit the Throne of the Elements
-            [questKeys.zoneOrSort] = -378,
+            [questKeys.zoneOrSort] = sortKeys.CHILDRENS_WEEK,
             [questKeys.triggerEnd] = {"Salandria taken to the Throne of the Elements",{[zoneIDs.NAGRAND] = {{60.65,22.38}}}},
             [questKeys.startedBy] = {{22817}},
         },
         [10954] = { -- Jheel is at Aeris Landing!
-            [questKeys.zoneOrSort] = -378,
+            [questKeys.zoneOrSort] = sortKeys.CHILDRENS_WEEK,
         },
         [10956] = { -- The Seat of the Naaru
-            [questKeys.zoneOrSort] = -378,
+            [questKeys.zoneOrSort] = sortKeys.CHILDRENS_WEEK,
             [questKeys.preQuestSingle] = {},
             [questKeys.preQuestGroup] = {10950,10952,10954},
         },
         [10962] = { -- Time to Visit the Caverns
-            [questKeys.zoneOrSort] = -378,
+            [questKeys.zoneOrSort] = sortKeys.CHILDRENS_WEEK,
             [questKeys.preQuestSingle] = {},
             [questKeys.preQuestGroup] = {10950,10952,10954},
             [questKeys.triggerEnd] = {"Dornaa taken to the Caverns of Time",{[zoneIDs.TANARIS] = {{60.02,57.32}}}},
         },
         [10963] = { -- Time to Visit the Caverns
-            [questKeys.zoneOrSort] = -378,
+            [questKeys.zoneOrSort] = sortKeys.CHILDRENS_WEEK,
             [questKeys.preQuestSingle] = {},
             [questKeys.preQuestGroup] = {10945,10951,10953},
             [questKeys.triggerEnd] = {"Salandria taken to the Caverns of Time",{[zoneIDs.TANARIS] = {{60.02,57.32}}}},
         },
         [10966] = { -- Back to the Orphanage
-            [questKeys.zoneOrSort] = -378,
+            [questKeys.zoneOrSort] = sortKeys.CHILDRENS_WEEK,
         },
         [10967] = { -- Back to the Orphanage
-            [questKeys.zoneOrSort] = -378,
+            [questKeys.zoneOrSort] = sortKeys.CHILDRENS_WEEK,
             [questKeys.preQuestSingle] = {},
             [questKeys.preQuestGroup] = {10963,11975},
         },
         [10968] = { -- Call on the Farseer
-            [questKeys.zoneOrSort] = -378,
+            [questKeys.zoneOrSort] = sortKeys.CHILDRENS_WEEK,
         },
         [10969] = { -- Seek Out Ameer
             [questKeys.nextQuestInChain] = 10970,
@@ -2237,7 +2241,7 @@ function CataQuestFixes.Load()
             [questKeys.objectivesText] = {"Warmage Kaitlyn wants you to free Keristrasza."},
         },
         [11975] = { -- Now, When I Grow Up...
-            [questKeys.zoneOrSort] = -378,
+            [questKeys.zoneOrSort] = sortKeys.CHILDRENS_WEEK,
             [questKeys.preQuestSingle] = {},
             [questKeys.preQuestGroup] = {10945,10951,10953},
         },
@@ -2264,20 +2268,20 @@ function CataQuestFixes.Load()
             [questKeys.nextQuestInChain] = 11956,
         },
         [12133] = { -- Smash the Pumpkin
-            [questKeys.zoneOrSort] = -21,
+            [questKeys.zoneOrSort] = sortKeys.HALLOWS_END,
         },
         [12135] = { -- "Let the Fires Come!"
-            [questKeys.zoneOrSort] = -21,
+            [questKeys.zoneOrSort] = sortKeys.HALLOWS_END,
             [questKeys.exclusiveTo] = {11131},
             [questKeys.preQuestSingle] = {11360,11439,11440},
         },
         [12139] = { -- "Let the Fires Come!"
-            [questKeys.zoneOrSort] = -21,
+            [questKeys.zoneOrSort] = sortKeys.HALLOWS_END,
             [questKeys.exclusiveTo] = {11219},
             [questKeys.preQuestSingle] = {11361,11449,11450},
         },
         [12155] = { -- Smash the Pumpkin
-            [questKeys.zoneOrSort] = -21,
+            [questKeys.zoneOrSort] = sortKeys.HALLOWS_END,
         },
         [12171] = { -- Of Traitors and Treason
             [questKeys.preQuestSingle] = {},
@@ -2333,6 +2337,12 @@ function CataQuestFixes.Load()
         [12515] = { -- Nice Hat...
             [questKeys.zoneOrSort] = zoneIDs.CAVERNS_OF_TIME,
         },
+        [12517] = { -- Rogues Deck
+            [questKeys.requiredSkill] = {},
+        },
+        [12518] = { -- Mages Deck
+            [questKeys.requiredSkill] = {},
+        },
         [12535] = { -- Mischief in the Making
             [questKeys.preQuestSingle] = {12532},
         },
@@ -2387,6 +2397,9 @@ function CataQuestFixes.Load()
         [12790] = { -- Learning to Leave and Return: the Magical Way
             [questKeys.preQuestSingle] = {},
         },
+        [12798] = { -- Swords Deck
+            [questKeys.requiredSkill] = {},
+        },
         [12821] = { -- Opening the Backdoor
             [questKeys.objectives] = {nil,nil,{{40731}}},
         },
@@ -2426,6 +2439,9 @@ function CataQuestFixes.Load()
         },
         [13189] = { -- Warchief's Blessing
             [questKeys.finishedBy] = {{39605}},
+        },
+        [13311] = { -- Demons Deck
+            [questKeys.requiredSkill] = {},
         },
         [13312] = { -- The Ironwall Rampart
             [questKeys.preQuestSingle] = {},
@@ -3237,7 +3253,7 @@ function CataQuestFixes.Load()
             [questKeys.objectives] = {nil,{{195327}}},
         },
         [14099] = { -- Royal Orders
-            [questKeys.preQuestGroup] = {14093,14098},
+            [questKeys.preQuestGroup] = {14093,14094,14098},
             [questKeys.preQuestSingle] = {},
         },
         [14101] = { -- Drottinn Hrothgar
@@ -4314,6 +4330,10 @@ function CataQuestFixes.Load()
         [24577] = { -- Desolation Hold Inspection
             [questKeys.objectives] = {{{37811,"Gar'dul Notified",Questie.ICON_TYPE_TALK}}},
             [questKeys.extraObjectives] = {{nil,Questie.ICON_TYPE_TALK,l10n("Take a ride to Desolation Hold"),0,{{"monster",37679}}}},
+        },
+        [24578] = { -- The Blackwald
+            [questKeys.preQuestSingle] = {},
+            [questKeys.preQuestGroup] = {24495,24501},
         },
         [24591] = { -- Changing of the Gar'dul
             [questKeys.objectives] = {{{37843,nil,Questie.ICON_TYPE_EVENT},{37811,nil,Questie.ICON_TYPE_EVENT}}},
@@ -15477,6 +15497,16 @@ function CataQuestFixes.Load()
         },
 
         ----- Boosted character quests -----
+        [84385] = {
+            [questKeys.name] = "Shiny New Wears",
+            [questKeys.startedBy] = {{29156}},
+            [questKeys.finishedBy] = {},
+            [questKeys.requiredLevel] = 80,
+            [questKeys.questLevel] = 80,
+            [questKeys.requiredRaces] = raceIDs.NONE,
+            [questKeys.objectivesText] = {"Speak with a Repurposed Arcane Titan in The Silver Enclave in Dalaran."},
+            [questKeys.zoneOrSort] = zoneIDs.THE_SILVER_ENCLAVE,
+        },
         [88776] = {
             [questKeys.name] = "A New Beginning",
             [questKeys.startedBy] = {}, -- This quest is auto accept

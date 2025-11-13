@@ -15,7 +15,7 @@ GNU General Public License for more details.
 This file is part of StaleCheck.
 ]]--
 
-local Lib = LibStub:NewLibrary('StaleCheck-1.0', 3)
+local Lib = LibStub:NewLibrary('StaleCheck-1.0', 4)
 if not Lib then
 	return
 elseif not Lib.registry then
@@ -94,14 +94,16 @@ function Lib:CheckForUpdates(addon, sets, icon)
     if ours >= nextExpansion then
         return popup(invalidBuild, addon, icon)
 	else
+		Lib.registry[addon] = {sets = sets, queue = {}, installed = installed, istest = installed:find('[ab]')}
+		if type(sets.latest) ~= 'table' then
+			sets.latest = {}
+		end
+
 		local latest = sets.latest
-		if latest and latest.id and int(latest.id) > ours and GetServerTime() >= (latest.cooldown or 0) then
+		if latest.id and int(latest.id) > ours and GetServerTime() >= (latest.cooldown or 0) then
 			popup(outOfDate, addon, icon, latest.who, latest.id)
 			sets.latest = {cooldown = GetServerTime() + 7 * 24 * 60 * 60}
 		end
-
-		Lib.registry[addon] = {sets = sets, queue = {}, installed = installed, istest = installed:find('[ab]')}
-		sets.latest = sets.latest or {}
     end
 end
 

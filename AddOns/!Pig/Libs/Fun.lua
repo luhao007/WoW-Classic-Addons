@@ -53,7 +53,7 @@ function PIG_PlaySoundFile(url)
 	end
 end
 function Fun.IsAudioNumMaxV(cfv,AudioData)
-	if cfv>#AudioData then
+	if  not AudioData[cfv] or AudioData[cfv] and cfv>#AudioData then
 		return 1
 	else
 		return cfv

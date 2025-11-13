@@ -1,5 +1,8 @@
 local addonName, addonTable = ...;
+local _, _, _, tocversion = GetBuildInfo()
 local Data=addonTable.Data
+local Fun=addonTable.Fun
+-------------
 local wipe, concat = table.wipe, table.concat;
 local find = _G.string.find
 local sub = _G.string.sub
@@ -15,6 +18,7 @@ local strchar=strchar
 --兼容ALA远程数据文件，取自TalentEmu插件，版权归原作者
 --===============================================
 local ALA={}
+
 local __base64, __debase64 = {  }, {  };
 for i = 0, 9 do __base64[i] = tostring(i); end
 __base64[10] = "-";
@@ -24,6 +28,26 @@ for i = 0, 25 do __base64[i + 1 + 11 + 26] = strchar(i + 97); end
 for i = 0, 63 do
 	__debase64[__base64[i]] = i;
 end
+
+local CLIENT_MAJOR = floor(tocversion / 10000);
+local LIB_MAJOR = 2;
+local COMM_PART_PREFIX = "!P" .. __base64[CLIENT_MAJOR] .. __base64[LIB_MAJOR];
+local COMM_QUERY_PREFIX = "!Q" .. __base64[CLIENT_MAJOR] .. __base64[LIB_MAJOR];
+local COMM_TALENT_PREFIX = "!T" .. __base64[CLIENT_MAJOR] .. __base64[LIB_MAJOR];
+local COMM_GLYPH_PREFIX = "!G" .. __base64[CLIENT_MAJOR] .. __base64[LIB_MAJOR];
+local COMM_EQUIPMENT_PREFIX = "!E" .. __base64[CLIENT_MAJOR] .. __base64[LIB_MAJOR];
+local COMM_ENGRAVING_PREFIX = "!N" .. __base64[CLIENT_MAJOR] .. __base64[LIB_MAJOR];
+local COMM_ADDON_PREFIX = "!A" .. __base64[CLIENT_MAJOR] .. __base64[LIB_MAJOR];
+ALA.ala_PREFIX="ATEADD"
+ALA.ala_COMM_PART_PREFIX=COMM_PART_PREFIX
+ALA.ala_COMM_QUERY_PREFIX=COMM_QUERY_PREFIX
+ALA.ala_COMM_TALENT_PREFIX=COMM_TALENT_PREFIX
+ALA.ala_COMM_GLYPH_PREFIX=COMM_GLYPH_PREFIX
+ALA.ala_COMM_EQUIPMENT_PREFIX=COMM_EQUIPMENT_PREFIX
+ALA.ala_COMM_ENGRAVING_PREFIX=COMM_ENGRAVING_PREFIX
+ALA.ala_COMM_ADDON_PREFIX=COMM_ADDON_PREFIX
+
+----
 local RepeatedZero = setmetatable(
 	{[0] = "",[1] = "0",},
 	{__index = function(tbl, key)
@@ -227,6 +251,11 @@ local function DecodeTalentBlock(code, len)
 	return data;
 end
 local ClasseID={[9]=1,[4]=2,[2]=3,[6]=4,[5]=5,[10]=6,[7]=7,[3]=8,[8]=9,[11]=10,[1]=11,[12]=12,}
+local function _mopData(v)
+	--local zhuanjingV=v:sub(1, 1)
+	local tianfuV=v:sub(2)
+	return "5-"..tianfuV
+end
 local haiyuan_tianfu = {
 	[1] = function(code)
 		local classIndex = __debase64[code:sub(1, 1)];
@@ -242,23 +271,36 @@ local haiyuan_tianfu = {
 		local activeGroup = tonumber(__debase64[code:sub(5, 5)]);
 		local tianfudata=""
 		local tianfudata2=nil
+		local lenTal1 = tonumber(__debase64[code:sub(6, 6)]);
+		local code1 = code:sub(7, lenTal1 + 6);
 		if numGroup < 2 then
-			local lenTal1 = tonumber(__debase64[code:sub(6, 6)]);
-			local code1 = code:sub(7, lenTal1 + 6);
-			tianfudata=DecodeTalentBlock(code1, lenTal1)
+			if PIG_MaxTocversion(50000) then
+				tianfudata=DecodeTalentBlock(code1, lenTal1)
+			else
+				tianfudata=_mopData(code1)
+			end
 		else
-			local shuangtianfu = {}
-			local lenTal1 = tonumber(__debase64[code:sub(6, 6)]);
-			local code1 = code:sub(7, lenTal1 + 6);
-			shuangtianfu[1]=DecodeTalentBlock(code1, lenTal1)
+			local shuangtianfu = {}	
 			local lenTal2 = tonumber(__debase64[code:sub(7 + lenTal1, 7 + lenTal1)]);
 			local code2 = code:sub(lenTal1 + 8, lenTal1 + lenTal2 + 7);
-			shuangtianfu[2]=DecodeTalentBlock(code2, lenTal2)
-			tianfudata=shuangtianfu[activeGroup]
-			if activeGroup==1 then
-				tianfudata2=shuangtianfu[2]
-			elseif activeGroup==2 then
-				tianfudata2=shuangtianfu[1]
+			if PIG_MaxTocversion(50000) then
+				shuangtianfu[1]=DecodeTalentBlock(code1, lenTal1)
+				shuangtianfu[2]=DecodeTalentBlock(code2, lenTal2)
+				tianfudata=shuangtianfu[activeGroup]
+				if activeGroup==1 then
+					tianfudata2=shuangtianfu[2]
+				elseif activeGroup==2 then
+					tianfudata2=shuangtianfu[1]
+				end
+			else
+				shuangtianfu[1]=_mopData(code1)
+				shuangtianfu[2]=_mopData(code2)
+				tianfudata=shuangtianfu[activeGroup]
+				if activeGroup==1 then
+					tianfudata2=shuangtianfu[2]
+				elseif activeGroup==2 then
+					tianfudata2=shuangtianfu[1]
+				end
 			end
 		end
 		return {["class"]=class,["race"]=0,["level"]=level,["active"]=activeGroup,["num"]=numGroup},tianfudata,tianfudata2
@@ -441,7 +483,6 @@ local function haiyuan_tianfu_60(code)
 	return {class, race, level}, data
 end
 --------------
-local Fun=addonTable.Fun
 local function huifu_Glyph(glyph,glyph2)
 	local fwData,fwData2={},{}
 	if glyph then
@@ -530,25 +571,8 @@ local function ALA_FormatData_TF(nameX,leixing,msgx)
 end
 function ALA.ALA_tiquMsg(msgx,nameX)
 	if _G[Data.LongInspectUIUIname]:IsShown() and _G[Data.LongInspectUIUIname].fullnameX==nameX then
-		local qianzhui = msgx:sub(1, 2)
-		if qianzhui == "!P" or qianzhui == "!T" then
-			_G[Data.LongInspectUIUIname].fanhuiYN=true
-			PIG_OptionsUI.talentData[nameX]=PIG_OptionsUI.talentData[nameX] or {["T"]="",["G"]=""}
-			if qianzhui == "!P" then
-				local allnum = msgx:sub(5, 5)
-				local danqian = msgx:sub(7, 7)
-				if danqian=="1" then
-					_G[Data.LongInspectUIUIname].allmsg=msgx:sub(9, -1)
-				else
-					_G[Data.LongInspectUIUIname].allmsg=_G[Data.LongInspectUIUIname].allmsg..msgx:sub(9, -1)
-				end
-				if allnum==danqian then
-					ALA_FormatData(nameX,_G[Data.LongInspectUIUIname].allmsg)
-				end
-			elseif qianzhui == "!T" then
-				ALA_FormatData(nameX,msgx)
-			end
-		else
+		local _xintou = msgx:sub(1, 1)
+		if _xintou == "_" then
 			local qianzhui = msgx:sub(1, 6)	
 			if qianzhui == '_r_tal' or qianzhui == '_reply' or qianzhui == '_r_equ' or qianzhui == '_repeq' or qianzhui == '_r_eq3' then
 				PIG_OptionsUI.talentData[nameX]=PIG_OptionsUI.talentData[nameX] or {["T"]="",["G"]=""}
@@ -565,6 +589,24 @@ function ALA.ALA_tiquMsg(msgx,nameX)
 						end)
 					end
 				end
+			end
+		elseif _xintou == "!" then
+			_G[Data.LongInspectUIUIname].fanhuiYN=true
+			PIG_OptionsUI.talentData[nameX]=PIG_OptionsUI.talentData[nameX] or {["T"]="",["G"]=""}
+			local qianzhui = msgx:sub(1, 2)
+			if qianzhui == "!P" then
+				local allnum = msgx:sub(5, 5)
+				local danqian = msgx:sub(7, 7)
+				if danqian=="1" then
+					_G[Data.LongInspectUIUIname].allmsg=msgx:sub(9, -1)
+				else
+					_G[Data.LongInspectUIUIname].allmsg=_G[Data.LongInspectUIUIname].allmsg..msgx:sub(9, -1)
+				end
+				if allnum==danqian then
+					ALA_FormatData(nameX,_G[Data.LongInspectUIUIname].allmsg)
+				end
+			elseif qianzhui == "!T" then
+				ALA_FormatData(nameX,msgx)
 			end
 		end
 	end

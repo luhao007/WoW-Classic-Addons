@@ -1,4 +1,5 @@
 local addonName, addonTable = ...;
+local sub = _G.string.sub
 --
 local Create = addonTable.Create
 local PIGFrame=Create.PIGFrame
@@ -39,11 +40,6 @@ local function max_tianfudianshu(level)
 end
 -----------
 local function Show_Glyphinfo(self,fwid,from)
-	for glyphIndex=1,TalentData.GLYPH_NUM do
-		self.Glyph.ButList[glyphIndex].icon:SetTexture(136260)
-		self.Glyph.ButList[glyphIndex].txt:SetTextColor(0.5, 0.5, 0.5, 1);
-		self.Glyph.ButList[glyphIndex].txt:SetText(NONE)
-	end
 	local fujiui=self:GetParent()
 	if from=="lx" then
 		if PIGA["StatsInfo"] and PIGA["StatsInfo"]["Items"] and PIGA["StatsInfo"]["Items"][fujiui.cName] then
@@ -52,7 +48,7 @@ local function Show_Glyphinfo(self,fwid,from)
 			if fwData then
 				for glyphIndex=1,TalentData.GLYPH_NUM do
 					if fwData[glyphIndex] then
-						local link = GetSpellLink(fwData[glyphIndex])
+						local link = C_Spell.GetSpellLink(fwData[glyphIndex])
 						if link and link~="" then
 							self.Glyph.ButList[glyphIndex].txt:SetText(link)
 						end
@@ -64,13 +60,13 @@ local function Show_Glyphinfo(self,fwid,from)
 				end
 			end
 		end
-	else
+	elseif from=="yc" then
 		if PIG_OptionsUI.talentData[fujiui.cName] and PIG_OptionsUI.talentData[fujiui.cName]["G"] then
 			local fwData = PIG_OptionsUI.talentData[fujiui.cName]["G"][fwid+1]
 			if fwData then
 				for glyphIndex=1,TalentData.GLYPH_NUM do
 					if fwData[glyphIndex] then
-						local link = GetSpellLink(fwData[glyphIndex])
+						local link = C_Spell.GetSpellLink(fwData[glyphIndex])
 						if link and link~="" then
 							self.Glyph.ButList[glyphIndex].txt:SetText(link)
 						end
@@ -82,7 +78,24 @@ local function Show_Glyphinfo(self,fwid,from)
 				end
 			end
 		else
-			C_Timer.After(0.6,function() Show_Glyphinfo(self,fwid) end)
+			if self.Glyphyanchi<10 then
+				self.Glyphyanchi=self.Glyphyanchi+1
+				C_Timer.After(0.6,function() Show_Glyphinfo(self,fwid) end)
+			end
+		end
+	elseif from=="Inspect" then
+		for glyphIndex=1,TalentData.GLYPH_NUM do
+			local enabled, glyphType, glyphTooltipIndex, glyphSpell, iconFilename = GetGlyphSocketInfo(glyphIndex, fwid, true, InspectFrame and InspectFrame.unit);
+			if glyphSpell ~= nil then
+				local link = C_Spell.GetSpellLink(glyphSpell)
+				if link and link~="" then
+					self.Glyph.ButList[glyphIndex].txt:SetText(link)
+				end
+				local iconID = C_Spell.GetSpellTexture(glyphSpell)
+				if iconID then
+					self.Glyph.ButList[glyphIndex].icon:SetTexture(iconID)
+				end	
+			end
 		end
 	end
 end
@@ -285,6 +298,8 @@ function TalentData.add_TalentUI(frameX)
 			TalentRowBut.separator3:SetPoint("LEFT", TalentRowBut.separator2, "RIGHT", 120, 0)
 			TalentRowBut.separator3:SetTexCoord(0.00390625, 0.26953125, 0.47656250, 0.58593750)
 
+			
+
 			TalentRowBut.level = PIGFontString(TalentRowBut,{"LEFT", TalentRowBut, "LEFT", 18,0},tier*15,nil,20)
 			TalentRowBut.tbutList={}
 			for tid=1,3 do
@@ -298,6 +313,12 @@ function TalentData.add_TalentUI(frameX)
 				talentbut.icon:SetPoint("LEFT", talentbut, "LEFT", 18, 0)
 				talentbut.name = PIGFontString(talentbut,{"LEFT", talentbut.icon, "RIGHT", 6,0})
 				talentbut.name:SetTextColor(1, 1, 1, 1)
+				talentbut.knownSelection = talentbut:CreateTexture()
+				talentbut.knownSelection:SetTexture("Interface\\TalentFrame\\talent-main")
+				talentbut.knownSelection:SetTexCoord(0.00390625,0.74609375,0.37304688,0.47265625)
+				talentbut.knownSelection:SetSize(190,51)
+				talentbut.knownSelection:SetPoint("CENTER", talentbut, "CENTER", 0, 0)
+				
 				talentbut:SetScript("OnLeave", function ()
 					GameTooltip:ClearLines();
 					GameTooltip:Hide() 
@@ -323,7 +344,7 @@ function TalentData.add_TalentUI(frameX)
 		}
 		frameX.TalentF.Glyph.ButList={}
 		for i=1,#GlyphButData do
-			local biaotix = PIGFontString(frameX.TalentF.Glyph,{"TOPLEFT", frameX.TalentF.Glyph, "TOPLEFT", 4,-2-(i-1)*24},GlyphButData[i][1]..": ");
+			local biaotix = PIGFontString(frameX.TalentF.Glyph,{"TOPLEFT", frameX.TalentF.Glyph, "TOPLEFT", 4,-6-(i-1)*24},GlyphButData[i][1]..": ");
 			for ii=1,#GlyphButData[i][2] do
 				local glyphIndex=GlyphButData[i][2][ii]
 				local glyphBut= PIGDiyTex(frameX.TalentF.Glyph,{"LEFT", biaotix, "RIGHT", 4+180*(ii-1),0},{20,20})
@@ -359,7 +380,7 @@ function TalentData.add_TalentUI(frameX)
 		frameX.TalentF.biaoti9:SetTextColor(0.5, 0.5, 0.5, 0.8)
 	end
 	---
-	function frameX.TalentF:CZ_Tianfu()
+	function frameX.TalentF:CZ_TianfuUI()
 		self:Hide()
 		self.futianfu:Hide()
 		self.biaoti:SetText();
@@ -387,16 +408,40 @@ function TalentData.add_TalentUI(frameX)
 					end
 				end
 			end
+		elseif PIG_MaxTocversion(60000) then
+			for tier = 1, TalentData.PIGtianfuhangshu do
+				for tid=1,3 do
+					local TalentRowBut=frameX.TalentF.ButList[tier].tbutList[tid]
+					TalentRowBut.icon:SetDesaturated(true)
+					TalentRowBut.knownSelection:Hide()
+					TalentRowBut.icon:SetTexture(134400)
+					TalentRowBut.name:SetText("")
+				end
+			end
+		end
+		if frameX.TalentF.Glyph then
+			for glyphIndex=1,TalentData.GLYPH_NUM do
+				self.Glyph.ButList[glyphIndex].icon:SetTexture(136260)
+				self.Glyph.ButList[glyphIndex].txt:SetTextColor(0.5, 0.5, 0.5, 1);
+				self.Glyph.ButList[glyphIndex].txt:SetText(NONE)
+			end
 		end
 	end
-	function frameX.TalentF:ShowTianfuInfo(zhiye,level,tfData,fwid,from)
+	function frameX.TalentF:Update_TFInfo(zhiye,level,tfData,fwid,from)
 		if not tfData then return end
+		if PIG_MaxTocversion(30000,true) and PIG_MaxTocversion(60000) then
+			self.Glyphyanchi=0
+			Show_Glyphinfo(self,fwid,from,tfData[2])
+		end
+		if from=="Inspect" then
+			tfData[1]=TalentData.GetTianfuNum(true)
+		end
 		if PIG_MaxTocversion(50000) then
 			local tianfudata = {["xulie"]=0,[1]=0,[2]=0,[3]=0}
-			local xnum = #tfData
+			local xnum = #tfData[1]
 			local TFinfo = {}
 			for i=1,xnum do
-				TFinfo[i]=tfData:sub(i,i)
+				TFinfo[i]=tfData[1]:sub(i,i)
 			end
 			for i=1,3 do
 				for ii=1,TalentData.PIGtianfuhangshu do
@@ -473,10 +518,6 @@ function TalentData.add_TalentUI(frameX)
 					end
 				end
 			end
-			---
-			if PIG_MaxTocversion(30000,true) and PIG_MaxTocversion(50000) then
-				Show_Glyphinfo(self,fwid,from)
-			end
 		elseif PIG_MaxTocversion(60000) then
 			local zongdianshu = tonumber(level)
 			for tier=TalentData.PIGtianfuhangshu, 1,-1  do
@@ -485,40 +526,34 @@ function TalentData.add_TalentUI(frameX)
 					break
 				end
 			end
-			local SpecID,dataTT = strsplit("-", tfData)
-			local xnum = #dataTT
 			local tianfudata = {["TFinfo"]={},["yidian"]=0,["index"]=0}
+			local SpecID,dataTT = strsplit("-", tfData[1])
+			if not dataTT then return end
+			local xnum = #dataTT
 			for i=1,xnum do
-				local yidianji=dataTT:sub(i,i)
-				if yidianji=="1" then
+				local yidianji=tonumber(dataTT:sub(i,i))
+				if yidianji>0 then
 					tianfudata.yidian=tianfudata.yidian+1
 				end
 				tianfudata.TFinfo[i]=yidianji
 			end
-			self.biaoti1:SetText(" (已学习"..tianfudata.yidian..")");
 			for tier = 1, TalentData.PIGtianfuhangshu do
 				for tid=1,3 do
-					tianfudata.index=tianfudata.index+1
 					local TalentRowBut=frameX.TalentF.ButList[tier].tbutList[tid]
-					local SpellDD=C_Spell.GetSpellInfo(TalentData.tianfuID[zhiye][tier][tid])
-					TalentRowBut.tfspellid=TalentData.tianfuID[zhiye][tier][tid]
-					TalentRowBut.icon:SetTexture(SpellDD.iconID)
-					TalentRowBut.name:SetText(SpellDD.name)
-					if tier<=tianfudata.yidian then
-						if tianfudata.TFinfo[tianfudata.index]=="1" then
-							TalentRowBut.icon:SetDesaturated(false)
-						else
-							TalentRowBut.icon:SetDesaturated(true)
-						end
-					else
-						TalentRowBut.icon:SetDesaturated(true)
-					end
+					TalentRowBut.icon:SetDesaturated(true)
+					TalentRowBut.knownSelection:Hide()
+				end
+				if tianfudata.TFinfo[tier] and tianfudata.TFinfo[tier]>0 then
+					local TalentRowBut=frameX.TalentF.ButList[tier].tbutList[tianfudata.TFinfo[tier]]
+					TalentRowBut.icon:SetDesaturated(false)
+					TalentRowBut.knownSelection:Show()
 				end
 			end
-			Show_Glyphinfo(self,fwid,from)
+			self.biaoti1:SetText(" (已学习"..tianfudata.yidian..")");
 		end
 	end
-	function frameX.TalentF:Show_Tianfu(datayuan)
+	function frameX.TalentF:Show_TianfuUI(form)
+		self:Show()
 		local fujiui=self:GetParent()
 		local cName=fujiui.cName
 		local level=fujiui.level
@@ -538,25 +573,35 @@ function TalentData.add_TalentUI(frameX)
 			self.R_TOPRIGHT:SetTexture(TalentData.tianfuBG[zhiye][12]);
 			self.R_BOTTOMLEFT:SetTexture(TalentData.tianfuBG[zhiye][9]);
 			self.R_BOTTOMRIGHT:SetTexture(TalentData.tianfuBG[zhiye][10]);
-		end
-		local tfinfo,tfinfo2= "","";
-		if datayuan then
-			if datayuan=="lx" then
-				if PIGA["StatsInfo"] and PIGA["StatsInfo"]["Items"] and PIGA["StatsInfo"]["Items"][cName] then
-					local Xtfinfo,Xtfinfo2 =TalentData.HY_TianfuTXT(PIGA["StatsInfo"]["Items"][cName]["T"])
-					tfinfo,tfinfo2= Xtfinfo,Xtfinfo2
-				end
-			else
-				local Xtfinfo,Xtfinfo2= strsplit("&", datayuan);
-				tfinfo,tfinfo2= Xtfinfo,Xtfinfo2
-			end
 		else
-			if PIG_OptionsUI.talentData[cName] then
-				tfinfo,tfinfo2= PIG_OptionsUI.talentData[cName]["T"][2],PIG_OptionsUI.talentData[cName]["T"][3]
+			for tier = 1, TalentData.PIGtianfuhangshu do
+				for tid=1,3 do
+					local TalentRowBut=frameX.TalentF.ButList[tier].tbutList[tid]
+					TalentRowBut.icon:SetDesaturated(true)
+					TalentRowBut.knownSelection:Hide()
+					local SpellDD=C_Spell.GetSpellInfo(TalentData.tianfuID[zhiye][tier][tid])
+					TalentRowBut.tfspellid=TalentData.tianfuID[zhiye][tier][tid]
+					TalentRowBut.icon:SetTexture(SpellDD.iconID)
+					TalentRowBut.name:SetText(SpellDD.name)
+				end
 			end
 		end
-		self:ShowTianfuInfo(zhiye,level,tfinfo,1,datayuan)
-		if tfinfo2 then
+		local DataX= {["T1"]={nil,nil},["T2"]={nil,nil}}
+		if form=="lx" then
+			if PIGA["StatsInfo"] and PIGA["StatsInfo"]["Items"] and PIGA["StatsInfo"]["Items"][cName] then
+				local Xtfinfo,Xtfinfo2 =TalentData.HY_TianfuTXT(PIGA["StatsInfo"]["Items"][cName]["T"])
+				DataX.T1[1],DataX.T2[1]= Xtfinfo,Xtfinfo2
+			end		
+		elseif form=="yc" then
+			if PIG_OptionsUI.talentData[cName] then
+				DataX.T1[1],DataX.T2[1]= PIG_OptionsUI.talentData[cName]["T"][2],PIG_OptionsUI.talentData[cName]["T"][3]
+			end
+		elseif form=="Inspect" then
+			-- DataX.T1[1],DataX.T2[1]= strsplit("&", *****);
+			-- DataX.T1[2],DataX.T2[2]= strsplit("&", *****);
+		end
+		self:Update_TFInfo(zhiye,level,DataX.T1,1,form)
+		if DataX.T2[1] then
 			self.futianfu:Show()
 			self.futianfu:SetID(1)
 			if self.futianfu:GetID()==0 or self.futianfu:GetID()==1 then
@@ -568,11 +613,11 @@ function TalentData.add_TalentUI(frameX)
 				if self.futianfu:GetID()==0 or self.futianfu:GetID()==1 then
 					self.futianfu:SetID(2)
 					self.futianfu:SetText(TALENT_SPEC_PRIMARY)
-					self:ShowTianfuInfo(zhiye,level,tfinfo2,2,datayuan)
+					self:Update_TFInfo(zhiye,level,DataX.T2,2,form)
 				else
 					self.futianfu:SetID(1)
 					self.futianfu:SetText(TALENT_SPEC_SECONDARY)
-					self:ShowTianfuInfo(zhiye,level,tfinfo,1,datayuan)
+					self:Update_TFInfo(zhiye,level,DataX.T1,1,form)
 				end
 			end
 		else
@@ -598,7 +643,7 @@ local function PIGGetActiveTalentGroup()
 end
 local GetNumTalentGroups=GetNumTalentGroups or PIGGetNumTalentGroups
 local GetActiveTalentGroup=GetActiveTalentGroup or PIGGetActiveTalentGroup
-function TalentData.GetTianfuIcon(guancha,zhiye)
+function TalentData.GetTianfuIcon(guancha,zhiye,unit)
 	local zuidazhi = {"--",132222,0}
 	local index = GetActiveTalentGroup(guancha,false)
 	if PIG_MaxTocversion(40000) then
@@ -619,6 +664,22 @@ function TalentData.GetTianfuIcon(guancha,zhiye)
 			local _, name, _, icon, pointsSpent, background, previewPointsSpent = GetTalentTabInfo(masteryIndex,guancha,false,index);
 			zuidazhi[1]=name
 			zuidazhi[2]=icon
+		end
+	else
+		if guancha then
+			local specID = GetInspectSpecialization(unit)
+			local id, name, description, icon = GetSpecializationInfoByID(specID)
+			if name ~= "" then
+				zuidazhi[1]=name
+				zuidazhi[2]=icon
+			end
+		else
+			local specIndex = GetSpecialization()--当前专精
+			local id, name, description, icon = GetSpecializationInfo(specIndex)
+			if name ~= "" then
+				zuidazhi[1]=name
+				zuidazhi[2]=icon
+			end
 		end
 	end
 	return zuidazhi
@@ -671,13 +732,15 @@ function TalentData.GetTianfuIcon_YC(zhiye,namex,from,tfData)
 				end
 			end
 		end
-	else
+	elseif PIG_MaxTocversion(60000) then
 		for id=1,#tfTXTData do
-			local zhuanjingID = strsplit("-", tfTXTData[id])
-			local zhuanjingID = tonumber(zhuanjingID or 5)
-			if zhuanjingID~=5 then
-				zuidazhi[id][1]=TalentData.tianfuTabName[zhiye][zhuanjingID]
-				zuidazhi[id][2]=TalentData.tianfuTabIcon[zhiye][zhuanjingID]
+			local zhuanjingID,tftxtt = strsplit("-", tfTXTData[id])
+			if tftxtt then
+				local zhuanjingID = tonumber(zhuanjingID or 5)
+				if zhuanjingID~=5 then
+					zuidazhi[id][1]=TalentData.tianfuTabName[zhiye][zhuanjingID]
+					zuidazhi[id][2]=TalentData.tianfuTabIcon[zhiye][zhuanjingID]
+				end
 			end
 		end
 	end
@@ -721,24 +784,24 @@ local function GetTianfuData(activeGroup,guancha)
 end
 local function GetSpecData(activeGroup,guancha)
 	local txt = ""
- 	local currentSpec = C_SpecializationInfo.GetSpecialization(guancha, false,ActiveSpec)
+ 	local currentSpec = C_SpecializationInfo.GetSpecialization(guancha, false, activeGroup)
 	txt=txt..currentSpec.."-"
 	for tier = 1, MAX_NUM_TALENT_TIERS do
-		local tierAvailable, selectedTalent, tierUnlockLevel = GetTalentTierInfo(tier, activeGroup, false, "player")
+		local lietxt="0"
+		local tierAvailable, selectedTalent, tierUnlockLevel = GetTalentTierInfo(tier, activeGroup, guancha, guancha and InspectFrame and InspectFrame.unit or "player")
 		for column=1, NUM_TALENT_COLUMNS do
 			local talentInfoQuery = {};
 			talentInfoQuery.tier = tier;
 			talentInfoQuery.column= column;
-			talentInfoQuery.groupIndex = 1;
-			talentInfoQuery.isInspect = false;
-			talentInfoQuery.target = "player";
+			talentInfoQuery.groupIndex = activeGroup;
+			talentInfoQuery.isInspect = guancha;
+			talentInfoQuery.target = InspectFrame and InspectFrame.unit;
 			local talentInfo = C_SpecializationInfo.GetTalentInfo(talentInfoQuery);
 			if talentInfo.selected then
-				txt=txt.."1"
-			else
-				txt=txt.."0"
+				lietxt=column
 			end
 		end
+		txt=txt..lietxt
 	end
 	return txt
 end
@@ -766,7 +829,7 @@ function TalentData.GetTianfuNum(guancha)
 				txt = txt.."&"..GetSpecData(1,guancha)
 			end
 		end
-	else
+	elseif PIG_MaxTocversion(110000,true) then
 		-- local currentSpec = C_SpecializationInfo.GetSpecialization()
 		-- TFInfo=TFInfo..currentSpec.."-"
 		-- local exportStream = ExportUtil.MakeExportDataStream();
@@ -793,10 +856,10 @@ function TalentData.HY_TianfuTXT(txt)
 	return unpack(list)
 end
 ---雕文
-local function GetGlyphData(activeGroup)
+local function GetGlyphData(activeGroup,guancha)
 	local data = {};
 	for index = 1, TalentData.GLYPH_NUM do
-		local enabled, glyphType, glyphTooltipIndex, glyphSpell, iconFilename = GetGlyphSocketInfo(index, activeGroup);
+		local enabled, glyphType, glyphTooltipIndex, glyphSpell, iconFilename = GetGlyphSocketInfo(index, activeGroup, guancha);
 		if glyphSpell ~= nil then
 			data[index] = glyphSpell
 		end
@@ -812,35 +875,29 @@ local function GetGlyphData(activeGroup)
 	end
 	return code
 end
-function TalentData.GetGlyphNum()
+function TalentData.GetGlyphNum(guancha)
 	local txt = ""
 	if PIG_MaxTocversion(30000,true) and PIG_MaxTocversion(50000) then
-		local numGroup = GetNumTalentGroups(false, false)
-		local activeGroup = GetActiveTalentGroup(false, false)
-		local code1 =GetGlyphData(activeGroup);
-		if numGroup == 1 then
-			txt = code1
-		elseif numGroup > 1 then
-			local code2=""
+		local numGroup = GetNumTalentGroups(guancha, false)
+		local activeGroup = GetActiveTalentGroup(guancha, false)
+		txt =GetGlyphData(activeGroup);
+		if numGroup > 1 then
 			if activeGroup==1 then
-				code2 =GetGlyphData(2);
+				txt = txt.."&"..GetGlyphData(2,guancha);
 			elseif activeGroup==2 then
-				code2 =GetGlyphData(1);
+				txt = txt.."&"..GetGlyphData(1,guancha);
 			end
-			txt = code1.."&"..code2
 		end
 	elseif PIG_MaxTocversion(50000,true) and PIG_MaxTocversion(60000) then
 		local numSpecGroups = GetNumSpecGroups(guancha)
 		local ActiveSpec = C_SpecializationInfo.GetActiveSpecGroup(guancha)
 		txt =GetGlyphData(ActiveSpec);
 		if numSpecGroups > 1 then
-			local code2=""
 			if ActiveSpec==1 then
-				code2 =GetGlyphData(2);
+				txt = txt.."&"..GetGlyphData(2,guancha);
 			elseif ActiveSpec==2 then
-				code2 =GetGlyphData(1);
+				txt = txt.."&"..GetGlyphData(1,guancha);
 			end
-			txt = code1.."&"..code2
 		end
 	end
 	return txt

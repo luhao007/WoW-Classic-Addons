@@ -223,7 +223,7 @@ if PIG_MaxTocversion(40000) and PIG_MaxTocversion(20000,true) then
 				if ( tradeSkillSpellID ) then
 					ChatEdit_InsertLink(tradeSkillLink);
 				else
-					ChatEdit_InsertLink(GetSpellLink(slot, SpellBookFrame.bookType));
+					ChatEdit_InsertLink(C_Spell.GetSpellLink(slot, SpellBookFrame.bookType));
 				end
 				return;
 			end

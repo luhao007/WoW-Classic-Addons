@@ -75,7 +75,6 @@ end
 QuestsEndFrameUI:SetScript("OnEvent", function(self,event)
 	if event == "PLAYER_ENTERING_WORLD" then
 		self:UnregisterEvent("PLAYER_ENTERING_WORLD")
-		PIGA["Common"]["QuestsEndAudio"]=Fun.IsAudioNumMaxV(PIGA["Common"]["QuestsEndAudio"],AudioData.QuestEnd)
 		GetQuestsInfo(event)
 		self.chucijiazai=true
 		C_Timer.After(1,function()
@@ -89,6 +88,7 @@ QuestsEndFrameUI:SetScript("OnEvent", function(self,event)
 	end
 end)
 function CommonInfo.Commonfun.QuestsEnd()
+	PIGA["Common"]["QuestsEndAudio"]=Fun.IsAudioNumMaxV(PIGA["Common"]["QuestsEndAudio"],AudioData.QuestEnd)
 	if PIGA["Common"]["QuestsEnd"] then
 		if PIG_MaxTocversion(20000,true) and QuestLogFrame and not QuestLogFrame.allopen then
 			QuestLogFrame.allopen = PIGButton(QuestLogFrame,{"TOPLEFT",QuestLogFrame,"TOPLEFT",185,-38.6},{24,23},"+",nil,nil,nil,nil,0);
