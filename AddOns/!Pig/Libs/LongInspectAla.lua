@@ -56,136 +56,7 @@ local RepeatedZero = setmetatable(
 		return str;
 	end,}
 );
--- local function EncodeNumber(val, len)
--- 	if val == 0 or val == nil then
--- 		return __base64[0];
--- 	end
--- 	local code = nil;
--- 	if val < 0 then
--- 		code = "^";
--- 		val = -val;
--- 	else
--- 		code = "";
--- 	end
--- 	local num = 0;
--- 	while val > 0 do
--- 		local v = val % 64;
--- 		code = code .. __base64[v];
--- 		num = num + 1;
--- 		val = (val - v) / 64;
--- 	end
--- 	if len ~= nil and num < len then
--- 		return code .. RepeatedZero[len - num];
--- 	end
--- 	return code;
--- end
--- --装备
--- local function EncodeItem(item)
--- 	local val = { strsplit(":", item) };
--- 	if val[1] == "item" then
--- 		local code = EncodeNumber(tonumber(val[2]));
--- 		local pos = 2;
--- 		local len = #val;
--- 		for i = 3, len do
--- 			if val[i] ~= "" then
--- 				code = code .. ":" .. __base64[i - pos] .. EncodeNumber(tonumber(val[i]));
--- 				pos = i;
--- 			end
--- 		end
--- 		if pos < len then
--- 			code = code .. ":" .. __base64[len - pos];
--- 		end
--- 		return code;
--- 	end
--- 	return "^";
--- end
--- local function EncodeItemList()
--- 	local msg = "";
--- 	for slot = 0,19 do
--- 		local item = GetInventoryItemLink('player', slot);
--- 		if item ~= nil then
--- 			item = item:match("\124H(item:[%-0-9:]+)\124h");
--- 			if item ~= nil then
--- 				item = "+" .. EncodeItem(item);
--- 			else
--- 				item = "+^";
--- 			end
--- 		else
--- 			item = "+^";
--- 		end
--- 		msg = msg .. item;
--- 	end
--- 	return msg;
--- end
--- --天赋
--- local function EncodeTalentBlock(data)
--- 	local len = #data;
--- 	local num = 0;
--- 	local raw = 0;
--- 	local magic = 1;
--- 	local mem = {  };
--- 	local pos = 0;
--- 	for index = 1, len do
--- 		local d = tonumber(data:sub(index, index));
--- 		num = num + 1;
--- 		raw = raw + magic * d;
--- 		magic = magic * 6;
--- 		if num >= 11 or index == len then
--- 			num = 0;
--- 			magic = 1;
--- 			local nChar = 0;
--- 			while raw > 0 do
--- 				local v1 = raw % 64;
--- 				pos = pos + 1;
--- 				mem[pos] = __base64[v1];
--- 				raw = (raw - v1) / 64;
--- 				nChar = nChar + 1;
--- 			end
--- 			if nChar < 5 then
--- 				pos = pos + 1;
--- 				mem[pos] = ":";
--- 			end
--- 		end
--- 	end
--- 	return concat(mem)
--- end
--- ---雕文
--- local function EncodeGlyphBlock(GroupID)
--- 	local data = {};
--- 	for index = 1, 6 do
--- 		local Enabled, GlyphType, GlyphSpell, Icon = GetGlyphSocketInfo(index, GroupID);
--- 		if GlyphSpell ~= nil then
--- 			data[index] = { Enabled and 1 or 0, GlyphType, GlyphSpell, Icon, };
--- 		end
--- 	end
--- 	local code = "";
--- 	for index = 1, 6 do
--- 		local val = data[index];
--- 		if val == nil then
--- 			code = code .. "+";
--- 		else
--- 			code = code .. "+" .. __base64[val[1] * 8 + val[2]] .. ":" .. EncodeNumber(val[3]) .. ":" .. EncodeNumber(val[4]);
--- 		end
--- 	end
--- 	return code
--- end
--- local function EncodeGlyphList()
--- 	local numGroup = GetNumTalentGroups(false, false)
--- 	local activeGroup = GetActiveTalentGroup(false, false)
--- 	if numGroup < 2 then
--- 		local code1 =EncodeGlyphBlock(1);
--- 		return __base64[numGroup] ..__base64[activeGroup] ..__base64[#code1] .. code1;
--- 	else
--- 		local code1 =EncodeGlyphBlock(activeGroup);
--- 		local code2=""
--- 		if activeGroup==1 then
--- 			code2 =EncodeGlyphBlock(2);
--- 		elseif activeGroup==2 then
--- 			code2 =EncodeGlyphBlock(1);
--- 		end
--- 		return __base64[numGroup] ..__base64[activeGroup] ..__base64[#code1] .. code1 ..__base64[#code2] .. code2;
--- 	end
--- end
+
 ---恢复数据
 local RepeatedColon = setmetatable(
 	{[0] = "",[1] = ":",},
@@ -252,9 +123,9 @@ local function DecodeTalentBlock(code, len)
 end
 local ClasseID={[9]=1,[4]=2,[2]=3,[6]=4,[5]=5,[10]=6,[7]=7,[3]=8,[8]=9,[11]=10,[1]=11,[12]=12,}
 local function _mopData(v)
-	--local zhuanjingV=v:sub(1, 1)
+	local zhuanjingV=v:sub(1, 1)
 	local tianfuV=v:sub(2)
-	return "5-"..tianfuV
+	return zhuanjingV.."-"..tianfuV
 end
 local haiyuan_tianfu = {
 	[1] = function(code)

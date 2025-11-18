@@ -39,44 +39,43 @@ local function max_tianfudianshu(level)
 	end
 end
 -----------
+local function Update_Glyphinfo(self,fwData,from,fwid)
+	if fwData then
+		for glyphIndex=1,TalentData.GLYPH_NUM do
+			local N_glyphSpell=fwData[glyphIndex]
+			if from=="Inspect" then
+				local enabled, glyphType, glyphTooltipIndex, glyphSpell, iconFilename = GetGlyphSocketInfo(glyphIndex, fwid, true, InspectFrame and InspectFrame.unit);
+				N_glyphSpell=glyphSpell
+			end
+			if N_glyphSpell then
+				local link = C_Spell.GetSpellLink(N_glyphSpell)
+				if link and link~="" then
+					self.Glyph.ButList[glyphIndex].txt:SetText(link)
+				end
+				if PIG_MaxTocversion(50000) then
+					self.Glyph.ButList[glyphIndex].icon:Hide()
+				else
+					local iconID = C_Spell.GetSpellTexture(N_glyphSpell)
+					if iconID then
+						self.Glyph.ButList[glyphIndex].icon:SetTexture(iconID)
+					end
+				end	
+			end
+		end
+	end
+end
 local function Show_Glyphinfo(self,fwid,from)
 	local fujiui=self:GetParent()
 	if from=="lx" then
 		if PIGA["StatsInfo"] and PIGA["StatsInfo"]["Items"] and PIGA["StatsInfo"]["Items"][fujiui.cName] then
 			local fwDataall ={TalentData.HY_GlyphTXT(PIGA["StatsInfo"]["Items"][fujiui.cName]["G"])}
 			local fwData = fwDataall[fwid]
-			if fwData then
-				for glyphIndex=1,TalentData.GLYPH_NUM do
-					if fwData[glyphIndex] then
-						local link = C_Spell.GetSpellLink(fwData[glyphIndex])
-						if link and link~="" then
-							self.Glyph.ButList[glyphIndex].txt:SetText(link)
-						end
-						local iconID = C_Spell.GetSpellTexture(fwData[glyphIndex])
-						if iconID then
-							self.Glyph.ButList[glyphIndex].icon:SetTexture(iconID)
-						end	
-					end
-				end
-			end
+			Update_Glyphinfo(self,fwData)
 		end
-	elseif from=="yc" then
+	elseif from=="yc" or from=="Inspect" and PIG_MaxTocversion(40000)  then
 		if PIG_OptionsUI.talentData[fujiui.cName] and PIG_OptionsUI.talentData[fujiui.cName]["G"] then
 			local fwData = PIG_OptionsUI.talentData[fujiui.cName]["G"][fwid+1]
-			if fwData then
-				for glyphIndex=1,TalentData.GLYPH_NUM do
-					if fwData[glyphIndex] then
-						local link = C_Spell.GetSpellLink(fwData[glyphIndex])
-						if link and link~="" then
-							self.Glyph.ButList[glyphIndex].txt:SetText(link)
-						end
-						local iconID = C_Spell.GetSpellTexture(fwData[glyphIndex])
-						if iconID then
-							self.Glyph.ButList[glyphIndex].icon:SetTexture(iconID)
-						end	
-					end
-				end
-			end
+			Update_Glyphinfo(self,fwData)
 		else
 			if self.Glyphyanchi<10 then
 				self.Glyphyanchi=self.Glyphyanchi+1
@@ -84,19 +83,7 @@ local function Show_Glyphinfo(self,fwid,from)
 			end
 		end
 	elseif from=="Inspect" then
-		for glyphIndex=1,TalentData.GLYPH_NUM do
-			local enabled, glyphType, glyphTooltipIndex, glyphSpell, iconFilename = GetGlyphSocketInfo(glyphIndex, fwid, true, InspectFrame and InspectFrame.unit);
-			if glyphSpell ~= nil then
-				local link = C_Spell.GetSpellLink(glyphSpell)
-				if link and link~="" then
-					self.Glyph.ButList[glyphIndex].txt:SetText(link)
-				end
-				local iconID = C_Spell.GetSpellTexture(glyphSpell)
-				if iconID then
-					self.Glyph.ButList[glyphIndex].icon:SetTexture(iconID)
-				end	
-			end
-		end
+		Update_Glyphinfo(self,fwData,from,fwid)
 	end
 end
 function TalentData.add_TalentUI(frameX)
@@ -221,36 +208,6 @@ function TalentData.add_TalentUI(frameX)
 		for ixx=1,3 do
 			frameX.TalentF.ButListDian[ixx]=PIGFontString(frameX.TalentF,{"TOPLEFT", frameX.TalentF, "TOPLEFT", 214*(ixx-1)+84,-27});
 		end
-		if PIG_MaxTocversion(30000,true) then 
-			frameX.TalentF.Glyph = PIGFrame(frameX.TalentF,{"BOTTOMLEFT", frameX.TalentF, "TOPLEFT", 0, -2},{TalentData.tianfuW+140,38},nil,nil,nil,{["ElvUI"]={0,0,0,0},["NDui"]={0,0,0,0}});
-			frameX.TalentF.Glyph:PIGSetBackdrop(1);
-			frameX.TalentF.Glyph.biaoti2 = PIGFontString(frameX.TalentF.Glyph,{"BOTTOMLEFT", frameX.TalentF.Glyph, "BOTTOMLEFT", 4,6},MINOR_GLYPH..": ");
-			frameX.TalentF.Glyph.Glyph2 = PIGFontString(frameX.TalentF.Glyph,{"LEFT", frameX.TalentF.Glyph.biaoti2, "RIGHT", 0,0});
-			frameX.TalentF.Glyph.Glyph3 = PIGFontString(frameX.TalentF.Glyph,{"LEFT", frameX.TalentF.Glyph.biaoti2, "RIGHT", 180,0});
-			frameX.TalentF.Glyph.Glyph5 = PIGFontString(frameX.TalentF.Glyph,{"LEFT", frameX.TalentF.Glyph.biaoti2, "RIGHT", 360,0});
-
-			frameX.TalentF.Glyph.biaoti1 = PIGFontString(frameX.TalentF.Glyph,{"BOTTOMLEFT", frameX.TalentF.Glyph.biaoti2, "TOPLEFT", 0,2},MAJOR_GLYPH..": ");
-			frameX.TalentF.Glyph.Glyph1 = PIGFontString(frameX.TalentF.Glyph,{"LEFT", frameX.TalentF.Glyph.biaoti1, "RIGHT", 0,0});
-			frameX.TalentF.Glyph.Glyph4 = PIGFontString(frameX.TalentF.Glyph,{"LEFT", frameX.TalentF.Glyph.biaoti1, "RIGHT", 180,0});
-			frameX.TalentF.Glyph.Glyph6 = PIGFontString(frameX.TalentF.Glyph,{"LEFT", frameX.TalentF.Glyph.biaoti1, "RIGHT", 360,0});
-
-			shezhitishi(frameX.TalentF.Glyph,frameX.TalentF.Glyph.Glyph1)
-			shezhitishi(frameX.TalentF.Glyph,frameX.TalentF.Glyph.Glyph2)
-			shezhitishi(frameX.TalentF.Glyph,frameX.TalentF.Glyph.Glyph3)
-			shezhitishi(frameX.TalentF.Glyph,frameX.TalentF.Glyph.Glyph4)
-			shezhitishi(frameX.TalentF.Glyph,frameX.TalentF.Glyph.Glyph5)
-			shezhitishi(frameX.TalentF.Glyph,frameX.TalentF.Glyph.Glyph6)
-			if PIG_MaxTocversion(40000,true) then
-				frameX.TalentF.Glyph:SetHeight(50)
-				frameX.TalentF.Glyph.biaoti3 = PIGFontString(frameX.TalentF.Glyph,{"BOTTOMLEFT", frameX.TalentF.Glyph.biaoti1, "TOPLEFT", 0,2},PRIME_GLYPH..": ");
-				frameX.TalentF.Glyph.Glyph7 = PIGFontString(frameX.TalentF.Glyph,{"LEFT", frameX.TalentF.Glyph.biaoti3, "RIGHT", 0,0});
-				frameX.TalentF.Glyph.Glyph8 = PIGFontString(frameX.TalentF.Glyph,{"LEFT", frameX.TalentF.Glyph.biaoti3, "RIGHT", 180,0});
-				frameX.TalentF.Glyph.Glyph9 = PIGFontString(frameX.TalentF.Glyph,{"LEFT", frameX.TalentF.Glyph.biaoti3, "RIGHT", 360,0});
-				shezhitishi(frameX.TalentF.Glyph,frameX.TalentF.Glyph.Glyph7)
-				shezhitishi(frameX.TalentF.Glyph,frameX.TalentF.Glyph.Glyph8)
-				shezhitishi(frameX.TalentF.Glyph,frameX.TalentF.Glyph.Glyph9)
-			end
-		end
 	elseif PIG_MaxTocversion(60000) then 
 		frameX.TalentF.ButList={}
 		for tier = 1, TalentData.PIGtianfuhangshu do
@@ -298,8 +255,6 @@ function TalentData.add_TalentUI(frameX)
 			TalentRowBut.separator3:SetPoint("LEFT", TalentRowBut.separator2, "RIGHT", 120, 0)
 			TalentRowBut.separator3:SetTexCoord(0.00390625, 0.26953125, 0.47656250, 0.58593750)
 
-			
-
 			TalentRowBut.level = PIGFontString(TalentRowBut,{"LEFT", TalentRowBut, "LEFT", 18,0},tier*15,nil,20)
 			TalentRowBut.tbutList={}
 			for tid=1,3 do
@@ -333,7 +288,14 @@ function TalentData.add_TalentUI(frameX)
 				end);
 			end
 		end
-		frameX.TalentF.Glyph = PIGFrame(frameX.TalentF,{"BOTTOM", frameX.TalentF, "BOTTOM", 0, 6},{frameX.TalentF:GetWidth()-10,64},nil,nil,nil,{["ElvUI"]={0,0,0,0},["NDui"]={0,0,0,0}});
+	end
+	if PIG_MaxTocversion(30000,true) and PIG_MaxTocversion(60000) then
+		if PIG_MaxTocversion(50000) then
+			frameX.TalentF.Glyph = PIGFrame(frameX.TalentF,{"BOTTOM", frameX.TalentF, "TOP", 0, -1},{frameX.TalentF:GetWidth(),64},nil,nil,nil,{["ElvUI"]={0,0,0,0},["NDui"]={0,0,0,0}});
+			frameX.TalentF.Glyph:PIGSetBackdrop(1);
+		else
+			frameX.TalentF.Glyph = PIGFrame(frameX.TalentF,{"BOTTOM", frameX.TalentF, "BOTTOM", 0, 6},{frameX.TalentF:GetWidth()-10,64},nil,nil,nil,{["ElvUI"]={0,0,0,0},["NDui"]={0,0,0,0}});
+		end
 		if PIG_MaxTocversion(50000,true) and PIG_MaxTocversion(60000) then
 			frameX.TalentF.Glyph.laiyuan = PIGFontString(frameX.TalentF.Glyph,{"BOTTOMRIGHT", frameX.TalentF.Glyph, "BOTTOMRIGHT", -10,2},"雕文测试员:大祭司超超",nil,12);
 			frameX.TalentF.Glyph.laiyuan:SetTextColor(0.5, 0.5, 0.5, 0.8)
@@ -345,6 +307,9 @@ function TalentData.add_TalentUI(frameX)
 		frameX.TalentF.Glyph.ButList={}
 		for i=1,#GlyphButData do
 			local biaotix = PIGFontString(frameX.TalentF.Glyph,{"TOPLEFT", frameX.TalentF.Glyph, "TOPLEFT", 4,-6-(i-1)*24},GlyphButData[i][1]..": ");
+			if PIG_MaxTocversion(50000) then
+				biaotix:SetPoint("TOPLEFT", frameX.TalentF.Glyph, "TOPLEFT", 14,-12-(i-1)*24)
+			end
 			for ii=1,#GlyphButData[i][2] do
 				local glyphIndex=GlyphButData[i][2][ii]
 				local glyphBut= PIGDiyTex(frameX.TalentF.Glyph,{"LEFT", biaotix, "RIGHT", 4+180*(ii-1),0},{20,20})
@@ -365,6 +330,16 @@ function TalentData.add_TalentUI(frameX)
 					GameTooltip:Hide() 
 				end);
 			end
+			-- if PIG_MaxTocversion(40000,true) then
+			-- 	frameX.TalentF.Glyph:SetHeight(50)
+			-- 	frameX.TalentF.Glyph.biaoti3 = PIGFontString(frameX.TalentF.Glyph,{"BOTTOMLEFT", frameX.TalentF.Glyph.biaoti1, "TOPLEFT", 0,2},PRIME_GLYPH..": ");
+			-- 	frameX.TalentF.Glyph.Glyph7 = PIGFontString(frameX.TalentF.Glyph,{"LEFT", frameX.TalentF.Glyph.biaoti3, "RIGHT", 0,0});
+			-- 	frameX.TalentF.Glyph.Glyph8 = PIGFontString(frameX.TalentF.Glyph,{"LEFT", frameX.TalentF.Glyph.biaoti3, "RIGHT", 180,0});
+			-- 	frameX.TalentF.Glyph.Glyph9 = PIGFontString(frameX.TalentF.Glyph,{"LEFT", frameX.TalentF.Glyph.biaoti3, "RIGHT", 360,0});
+			-- 	shezhitishi(frameX.TalentF.Glyph,frameX.TalentF.Glyph.Glyph7)
+			-- 	shezhitishi(frameX.TalentF.Glyph,frameX.TalentF.Glyph.Glyph8)
+			-- 	shezhitishi(frameX.TalentF.Glyph,frameX.TalentF.Glyph.Glyph9)
+			-- end
 		end
 	end
 	--
@@ -421,7 +396,11 @@ function TalentData.add_TalentUI(frameX)
 		end
 		if frameX.TalentF.Glyph then
 			for glyphIndex=1,TalentData.GLYPH_NUM do
-				self.Glyph.ButList[glyphIndex].icon:SetTexture(136260)
+				if PIG_MaxTocversion(50000) then
+					self.Glyph.ButList[glyphIndex].icon:Hide()
+				else
+					self.Glyph.ButList[glyphIndex].icon:SetTexture(136260)
+				end
 				self.Glyph.ButList[glyphIndex].txt:SetTextColor(0.5, 0.5, 0.5, 1);
 				self.Glyph.ButList[glyphIndex].txt:SetText(NONE)
 			end
@@ -553,6 +532,7 @@ function TalentData.add_TalentUI(frameX)
 		end
 	end
 	function frameX.TalentF:Show_TianfuUI(form)
+		if PIG_MaxTocversion(60000,true) then return end
 		self:Show()
 		local fujiui=self:GetParent()
 		local cName=fujiui.cName
@@ -737,7 +717,7 @@ function TalentData.GetTianfuIcon_YC(zhiye,namex,from,tfData)
 			local zhuanjingID,tftxtt = strsplit("-", tfTXTData[id])
 			if tftxtt then
 				local zhuanjingID = tonumber(zhuanjingID or 5)
-				if zhuanjingID~=5 then
+				if zhuanjingID>0 and zhuanjingID<5 then
 					zuidazhi[id][1]=TalentData.tianfuTabName[zhiye][zhuanjingID]
 					zuidazhi[id][2]=TalentData.tianfuTabIcon[zhiye][zhuanjingID]
 				end
@@ -919,6 +899,7 @@ function TalentData.HY_GlyphTXT(txt)
 	end
 	return unpack(data)
 end
+
 ---通告属性=================
 --1坦克/2治疗/3法系DPS/4近战物理DPS/5远程物理DPS
 local TalentTabRole = {

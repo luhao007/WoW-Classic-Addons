@@ -5211,7 +5211,7 @@ elseif PIG_MaxTocversion(60000) then
 	TalentData.tianfuID=tianfuID_MOP
 else
 	TalentData.tianfuH = 424
-	TalentData.PIGtianfuhangshu = MAX_NUM_TALENT_TIERS
+	TalentData.PIGtianfuhangshu = 1
 	TalentData.tianfuID=tianfuID_retail
 end
 addonTable.Data.TalentData=TalentData

@@ -21,6 +21,7 @@ if PIG_MaxTocversion(20000,true) then
 end
 TALENT_TOOLTIP_LEARNTALENTGROUP = TALENT_TOOLTIP_LEARNTALENTGROUP or "学习你的模拟结果。";
 TALENT_TOOLTIP_RESETTALENTGROUP = TALENT_TOOLTIP_RESETTALENTGROUP or "重置你的模拟结果。";
+local GetGlyphLink=GetGlyphLink or C_GlyphInfo and C_GlyphInfo.GetGlyphLink
 ----
 local function ADD_BGtex(self,texname)
 	if PIG_OptionsUI.IsOpen_ElvUI() and PlayerTalentFrame.backdrop or PIG_OptionsUI.IsOpen_NDui() then return end
@@ -417,7 +418,7 @@ local function Uptate_FrameX()
 				GlyphFrameGlyph5:SetPoint("TOPLEFT",GlyphFrameGlyph3,"BOTTOMLEFT",0,-8);
 			end
 			for i=1,NUM_GLYPH_SLOTS do
-				local link = GetGlyphLink(i, PlayerTalentFrame.talentGroup)
+				local link = C_GlyphInfo.GetGlyphLink(i, PlayerTalentFrame.talentGroup)
 				if link=="" then
 					_G["GlyphFrameGlyph"..i].name:SetText("空")
 				else
@@ -579,11 +580,11 @@ local function Uptate_FrameX()
 			end);
 			local function PlayerTalentFrameTalent_OnEnter_pig(self)
 				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-				if PIG_MaxTocversion(30000,true) and PIG_MaxTocversion(40000) then
-					GameTooltip:SetTalent(tfID, self:GetID(),PlayerTalentFrame.inspect, PlayerTalentFrame.pet, PlayerTalentFrame.talentGroup, GetCVarBool(UIdataWHXY.previewT));
-				else
+				-- if PIG_MaxTocversion(30000,true) and PIG_MaxTocversion(40000) then
+				-- 	GameTooltip:SetTalent(tfID, self:GetID(),PlayerTalentFrame.inspect, PlayerTalentFrame.pet, PlayerTalentFrame.talentGroup, GetCVarBool(UIdataWHXY.previewT));
+				-- else
 					GameTooltip:SetTalent(TalentBut.talentID,PlayerTalentFrame.inspect, PlayerTalentFrame.pet, PlayerTalentFrame.talentGroup, GetCVarBool(UIdataWHXY.previewT));
-				end
+				--end
 				self.UpdateTooltip = PlayerTalentFrameTalent_OnEnter_pig;
 			end
 			TalentBut:SetScript("OnEnter", PlayerTalentFrameTalent_OnEnter_pig);

@@ -1,7 +1,8 @@
+--TODO, remove all BUT GOSSIP stuff from midnight
 local mod	= DBM:NewMod("CoSTrash", "DBM-Party-Legion", 7)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20251002044755")
+mod:SetRevision("20251117220446")
 --mod:SetModelID(47785)
 mod:SetOOCBWComms()
 mod:SetMinSyncRevision(20221228000000)

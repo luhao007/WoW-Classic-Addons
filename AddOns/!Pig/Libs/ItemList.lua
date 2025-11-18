@@ -375,7 +375,7 @@ local function Update_LevelTaozhuang(Parent)
 end
 local function UpdateItems_Inventory(Parent,zbData)	
 	if not Parent:IsVisible() then return end
-	Parent.hangMaxW=ListWWWHHH[1]
+	Parent.hangMaxW=ListWWWHHH[1]+28
 	if not Parent.SlotOKs then Parent.SlotOKs = {} else wipe(Parent.SlotOKs) end
 	for SlotID,SlotBut in pairs(Parent.ListHang) do
 		Parent.SlotOKs[SlotID]={laodnd=true,itemCount=0,TooltipCount=0,iLv=0,tao=nil}
@@ -390,7 +390,7 @@ end
 local function add_ItemList(fujik,miaodian,ZBLsit_C,TalentUI)
 	if GearManagerDialog then GearManagerDialog:SetFrameLevel(10) end
 	local PointXY = {-1,1}
-	if PIG_MaxTocversion(20000) and fujik==PaperDollFrame then
+	if PIG_MaxTocversion(20000) and fujik==PaperDollFrame or fujik==PaperDollFrame and PIG_MaxTocversion(40000) and PIG_MaxTocversion(30000,true) then
 		PointXY[1]=-34
 		PointXY[2]=-13
 	end

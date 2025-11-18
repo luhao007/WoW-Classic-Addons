@@ -85,7 +85,8 @@ L.LOWHEALTH_WARNING			= "Salud baja (%d por ciento de salud restante), reproduci
 L.ENTERING_COMBAT			= "Entrando en combate"
 L.LEAVING_COMBAT			= "Saliendo del combate"
 
-L.COMBAT_STARTED_AI_TIMER	= "Mi unidad central es un procesador de red neuronal: una máquina capaz de aprender. (Este encuentro usará la IA de temporizadores para generar temporizadores aproximados.)"
+L.RAID_DIFFICULTY_CHANGED		= "La dificultad de la banda se ha establecido en %s."
+L.DUNGEON_DIFFICULTY_CHANGED	= "La dificultad de la mazmorras se ha establecido en %s."
 
 L.PROFILE_NOT_FOUND				= "<" .. L.DBM .. "> Tu perfil actual está corrupto. " .. L.DBM .. " cargará el perfil 'Predeterminado'."
 L.PROFILE_CREATED				= "Se ha creado el perfil '%s'."
@@ -136,15 +137,15 @@ L.TIMER_FORMAT				= "%d |4minuto:minutos; y %.2f |4segundo:segundos;"
 
 L.MIN						= "min"
 L.MIN_FMT					= "%d min"
-L.SEC						= "s"
-L.SEC_FMT					= "%s s"
+L.SEC						= "seg"
+L.SEC_FMT					= "%s seg"
 
 L.GENERIC_WARNING_OTHERS	= "y otro"
 L.GENERIC_WARNING_OTHERS2	= "y otros %d"
 L.GENERIC_WARNING_BERSERK	= "Rabia en %s %s"
 L.GENERIC_TIMER_BERSERK		= "Rabia"
 L.OPTION_TIMER_BERSERK		= "Mostrar tiempo restante para $spell:26662"
-L.BAD						= "Daño"
+L.BAD						= "Dañino"
 
 L.OPTION_CATEGORY_TIMERS			= "Barras"
 --Sub cats for "announce" object

@@ -9,8 +9,11 @@ local check1 = raidwarnoptions:CreateCheckButton(L.ShowWarningsInChat, true, nil
 local check2 = raidwarnoptions:CreateCheckButton(L.WarningIconLeft, true, nil, "WarningIconLeft")
 local check3 = raidwarnoptions:CreateCheckButton(L.WarningIconRight, true, nil, "WarningIconRight")
 local check4 = raidwarnoptions:CreateCheckButton(L.WarningIconChat, true, nil, "WarningIconChat")
-local check5 = raidwarnoptions:CreateCheckButton(L.WarningAlphabetical, true, nil, "WarningAlphabetical")
-local check6 = raidwarnoptions:CreateCheckButton(L.ShortTextSpellname, true, nil, "WarningShortText")
+local check5, check6
+if not DBM:IsPostMidnight() then
+	check5 = raidwarnoptions:CreateCheckButton(L.WarningAlphabetical, true, nil, "WarningAlphabetical")
+	check6 = raidwarnoptions:CreateCheckButton(L.ShortTextSpellname, true, nil, "WarningShortText")
+end
 
 -- RaidWarn Font
 local Fonts = DBM_GUI:MixinSharedMedia3("font", {
@@ -38,7 +41,7 @@ local FontDropDown = raidwarnoptions:CreateDropdown(L.FontType, Fonts, "DBM", "W
 	DBM:AddWarning(CL.MOVE_WARNING_MESSAGE)
 end)
 local isNewDropdown = FontDropDown.mytype == "dropdown2"
-FontDropDown:SetPoint("TOPLEFT", check6, "BOTTOMLEFT", isNewDropdown and 5 or 0, isNewDropdown and -15 or -10)
+FontDropDown:SetPoint("TOPLEFT", DBM:IsPostMidnight() and check4 or check6, "BOTTOMLEFT", isNewDropdown and 5 or 0, isNewDropdown and -15 or -10)
 
 -- RaidWarn Font Style
 local FontStyles = {
@@ -163,8 +166,10 @@ resetbutton:SetScript("OnClick", function()
 	check2:SetChecked(DBM.Options.WarningIconLeft)
 	check3:SetChecked(DBM.Options.WarningIconRight)
 	check4:SetChecked(DBM.Options.WarningIconChat)
-	check5:SetChecked(DBM.Options.WarningAlphabetical)
-	check6:SetChecked(DBM.Options.WarningShortText)
+	if not DBM:IsPostMidnight() then
+		check5:SetChecked(DBM.Options.WarningAlphabetical)
+		check6:SetChecked(DBM.Options.WarningShortText)
+	end
 	FontDropDown:SetSelectedValue(DBM.Options.WarningFont)
 	FontStyleDropDown:SetSelectedValue(DBM.Options.FontStyles)
 	fontSizeSlider:SetValue(DBM.DefaultOptions.WarningFontSize)

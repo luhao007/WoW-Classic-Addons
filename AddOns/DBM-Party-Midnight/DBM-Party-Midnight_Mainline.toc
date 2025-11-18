@@ -1,5 +1,5 @@
 ## Interface: 50502
-## Version: r218
+## Version: r220
 
 ## Title: |cffffe00a<|r|cffff7d0aDBM Mod|r|cffffe00a>|r |cffc030c0Dungeons (Midnight)|r
 ## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r|cFFFFFFFF副本助手|r |cFF69CCF0小队|r |cFF22B14C至暗之夜|r
@@ -19,14 +19,14 @@
 ## X-DBM-Mod-Type: PARTY
 ## X-DBM-Mod-Category: MIDNIGHT
 ## X-DBM-StatTypes: follower,normal,heroic,mythic,challenge
-## X-DBM-Mod-SubCategoriesID: 2805, 2813, 2811, 2859, 2825
+## X-DBM-Mod-SubCategoriesID: 2805, 2813, 2811, 2859, 2825, 2923, 2874, 2915
 ## X-DBM-Mod-Name: Dungeons (Midnight)
 ## X-DBM-Mod-Name-koKR: 던전 (미드나이트)
 ## X-DBM-Mod-Name-ruRU: Подземелья (Полночь)
 ## X-DBM-Mod-Name-zhCN: 队伍首领 (午夜)
 ## X-DBM-Mod-Name-zhTW: 隊伍首領 (午夜)
 ## X-DBM-Mod-Sort: 105
-## X-DBM-Mod-MapID: 2805, 2813, 2811, 2859, 2825
+## X-DBM-Mod-MapID: 2805, 2813, 2811, 2859, 2825, 2923, 2874, 2915
 ## X-DBM-Mod-MinCoreRevision: 20230716000000
 ## X-DBM-Mod-MinExpansion: 11
 ## X-Curse-Project-ID: 314994
@@ -58,3 +58,15 @@ TheBlindingVale\Ziekket.lua
 DenofNalorakk\TheHoardmonger.lua
 DenofNalorakk\SentinelofWinter.lua
 DenofNalorakk\Nalorakk.lua
+
+VoidscarArena\TazRah.lua
+VoidscarArena\Atroxus.lua
+VoidscarArena\Charonus.lua
+
+MaisaraCaverns\MurojinandNekraxx.lua
+MaisaraCaverns\Vordaza.lua
+MaisaraCaverns\Raktul.lua
+
+NexusPointXenas\Lothraxion.lua
+NexusPointXenas\CorewardenNysarra.lua
+NexusPointXenas\ChiefCorewrightKasreth.lua

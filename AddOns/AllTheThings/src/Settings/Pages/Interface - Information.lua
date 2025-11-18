@@ -1490,6 +1490,34 @@ settings.CreateInformationType("ExclusionFilters", {
 		end
 	end
 })
+settings.CreateInformationType("ExclusionFiltersRow", {
+	priority = 99999,
+	text = "DEBUG: Exclusion Filters - Row",
+	HideCheckBox = not app.Debugging,
+	Process = function(t, reference, tooltipInfo)
+		local ref = app.ActiveRowReference
+		if not ref then return end
+
+		local excludes = {}
+		local Filter = app.Modules.Filter
+		for filterName,filterFunc in pairs(Filter.Filters) do
+			if not filterFunc(ref) then
+				excludes[#excludes + 1] = Colorize(filterName, Filter.Get[filterName]() and app.Colors.ChatLinkError or app.Colors.RemovedWithPatch)
+			else
+				excludes[#excludes + 1] = Colorize(filterName, Filter.Get[filterName]() and app.Colors.Time or app.Colors.ChatLinkHQT)
+			end
+		end
+		if #excludes > 0 then
+			tinsert(tooltipInfo, {
+				left = "Row Filter Checks",
+			});
+			tinsert(tooltipInfo, {
+				left = app.TableConcat(excludes, nil, nil, ", "),
+				wrap = true
+			});
+		end
+	end
+})
 settings.CreateInformationType("LinkSourceID", {
 	priority = 99999,
 	text = "DEBUG: Link SourceID",

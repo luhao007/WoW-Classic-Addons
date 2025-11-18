@@ -198,16 +198,7 @@ function TooltipPlusfun.InfoPlus()
 		end)
 		--处理天赋
 		hooksecurefunc(GameTooltip, "SetTalent", function(self,talentTree,tfID,inspect,pet,Group,...)
-			if PIG_MaxTocversion(30000,true) and PIG_MaxTocversion(40000) then
-				local name, icon, _, _, _, _, _, _, _, _, _, tID = GetTalentInfo(talentTree,tfID, inspect,pet,Group)
-				if tID and tID>0 then
-					self:AddDoubleLine("|cffd33c54TalentID:|r "..tID,"")
-				elseif ctid and ctid>0 then
-					self:AddDoubleLine("|cffd33c54TalentID:|r "..ctid,"")
-				end
-			else
-				self:AddDoubleLine("|cffd33c54TalentID:|r "..talentTree,"")
-			end
+			self:AddDoubleLine("|cffd33c54TalentID:|r "..talentTree,"")
 			self:Show()
 		end)
 		---处理BUFF/DEBUFF

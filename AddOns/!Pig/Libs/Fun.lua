@@ -9,6 +9,7 @@ local char=string.char
 local L =addonTable.locale
 local Fun = {}
 addonTable.Fun=Fun
+local version, internalVersion, date, _, versionType, buildType = GetBuildInfo()
 ----
 local IsAddOnLoaded = IsAddOnLoaded or C_AddOns and C_AddOns.IsAddOnLoaded
 function Fun.IsAddOnLoaded(AddOnName,funx)

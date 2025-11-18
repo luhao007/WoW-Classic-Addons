@@ -1,7 +1,8 @@
+if DBM:IsPostMidnight() then return end
 local mod	= DBM:NewMod("HallsofInfusionTrash", "DBM-Party-Dragonflight", 8)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20240808043723")
+mod:SetRevision("20251117220446")
 --mod:SetModelID(47785)
 --mod:SetZone(1234)--FIXME RIGHT ID
 mod.isTrashMod = true

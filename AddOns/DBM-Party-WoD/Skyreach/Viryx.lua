@@ -3,12 +3,15 @@ local L		= mod:GetLocalizedStrings()
 
 mod.statTypes = "normal,heroic,mythic,challenge,timewalker"
 
-mod:SetRevision("20240428124541")
+mod:SetRevision("20251117220446")
 mod:SetCreatureID(76266)
 mod:SetEncounterID(1701)
 mod:SetUsedIcons(1)
 
 mod:RegisterCombat("combat")
+
+--TODO, some actual custom sounds and timer disables when apis added
+if DBM:IsPostMidnight() then return end
 
 mod:RegisterEventsInCombat(
 	"SPELL_AURA_APPLIED 154055",

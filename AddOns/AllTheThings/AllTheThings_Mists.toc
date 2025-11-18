@@ -1,6 +1,6 @@
 ## Interface: 50502
 ## Author: Crieve
-## Version: 4.7.8
+## Version: 4.7.9a
 
 ## Title: AllTheThings |cfd9b9b9b(Mists)|r
 ## Title-zhCN: |cFFFFE00A<|r|cFFA9D271收藏|r|cFFFFE00A>|r|cFFFFFFFF收集控助手|r |cFFFFE00AAllTheThings|r
