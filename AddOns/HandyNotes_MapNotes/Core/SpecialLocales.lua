@@ -1,6 +1,20 @@
 local ADDON_NAME, ns = ...
 ns.locale = GetLocale()
 
+ns.ABOUT = { -- RetailOptions.lua
+  deDE = "Über",
+  enUS = "About",
+  frFR = "À propos",
+  esES = "Acerca de",
+  esMX = "Acerca de",
+  itIT = "Informazioni",
+  ptBR = "Sobre",
+  ruRU = "О дополнении",
+  zhCN = "关于",
+  zhTW = "關於",
+  koKR = "정보",
+}
+
 ns.CHANGE_VERSIONS_CHECK = { -- RetailVersionsCheck.lua
   deDE = "Neue Version |cff00ff00%s|r verfügbar, deine Version |cffffff00%s|r ist veraltet!",
   enUS = "New version |cff00ff00%s|r available, your version |cffffff00%s|r is outdated!",
@@ -492,4 +506,116 @@ ns.LOCALE_FOUND_MISSING = { -- RetailNpc.lua
   koKR = "%s %s - %d 발견됨, %d 누락됨",
   zhCN = "%s %s - 已找到 %d 个，缺少 %d 个",
   zhTW = "%s %s - 已找到 %d 個，缺少 %d 個",
+}
+
+ns.reset_Character_SavedVariables_Text = {
+  deDE = "Löscht das aktuell benutzte MapNotes Profile und alle gespeicherten MapNotes Daten dieses Profils!\n\nDanach wird das Interface des Spiels neu geladen",
+  enUS = "Deletes the currently selected MapNotes profile and all data belonging to it!\n\nAfterwards, the game's interface will be reloaded",
+  frFR = "Supprime le profil MapNotes actuellement sélectionné ainsi que toutes ses données !\n\nEnsuite, l’interface du jeu sera rechargée",
+  esES = "Elimina el perfil de MapNotes seleccionado actualmente y todos sus datos.\n\nDespués de esto, se recargará la interfaz del juego",
+  esMX = "Elimina el perfil de MapNotes seleccionado actualmente y todos sus datos.\n\nDespués de esto, se recargará la interfaz del juego",
+  itIT = "Elimina il profilo MapNotes attualmente selezionato e tutti i dati ad esso associati!\n\nSuccessivamente verrà ricaricata l’interfaccia di gioco",
+  ptBR = "Exclui o perfil do MapNotes atualmente selecionado e todos os dados associados!\n\nApós isso, a interface do jogo será recarregada",
+  ruRU = "Удаляет текущий выбранный профиль MapNotes и все связанные с ним данные!\n\nПосле этого интерфейс игры будет перезагружен",
+  zhCN = "删除当前选定的 MapNotes 配置档及其所有数据！\n\n之后将重新载入游戏界面",
+  zhTW = "刪除目前所選的 MapNotes 設定檔及其所有資料！\n\n之後將重新載入遊戲介面",
+  koKR = "현재 선택된 MapNotes 프로필과 그에 속한 모든 데이터를 삭제합니다!\n\n이후 게임 인터페이스가 다시 불러와집니다",
+}
+
+ns.keep_Only_Current_Character_SavedVariables_Text = {
+  deDE = "Behalte das aktuell benutzte MapNotes Profil, aber löscht alle anderen MapNotes Profile und die gespeicherten MapNotes Daten der Profile!\n\nDanach wird das Interface des Spiels neu geladen",
+  enUS = "Keeps the currently used MapNotes profile but deletes all other profiles and all stored MapNotes data belonging to them.\n\nAfterwards, the game's interface will be reloaded",
+  frFR = "Conserve le profil MapNotes actuellement utilisé mais supprime tous les autres profils ainsi que toutes les données MapNotes qui leur appartiennent.\n\nEnsuite, l’interface du jeu sera rechargée",
+  esES = "Conserva el perfil actual de MapNotes, pero elimina todos los demás perfiles y todos los datos de MapNotes asociados a ellos.\n\nDespués de esto, se recargará la interfaz del juego",
+  esMX = "Conserva el perfil actual de MapNotes, pero elimina todos los demás perfiles y todos los datos de MapNotes asociados a ellos.\n\nDespués de esto, se recargará la interfaz del juego",
+  itIT = "Mantiene il profilo MapNotes attualmente utilizzato ma elimina tutti gli altri profili e tutti i dati di MapNotes ad essi associati.\n\nSuccessivamente verrà ricaricata l’interfaccia di gioco",
+  ptBR = "Mantém o perfil do MapNotes atualmente usado, mas exclui todos os outros perfis e todos os dados do MapNotes associados a eles.\n\nApós isso, a interface do jogo será recarregada",
+  ruRU = "Сохраняет используемый в данный момент профиль MapNotes, но удаляет все остальные профили и все связанные с ними данные MapNotes.\n\nПосле этого интерфейс игры будет перезагружен",
+  zhCN = "仅保留当前使用的 MapNotes 配置档，但会删除所有其他配置档及其所有关联的 MapNotes 数据。\n\n之后将重新载入游戏界面",
+  zhTW = "僅保留目前使用的 MapNotes 設定檔，但會刪除所有其他設定檔及其所有相關的 MapNotes 資料。\n\n之後將重新載入遊戲介面",
+  koKR = "현재 사용 중인 MapNotes 프로필만 유지하고 다른 모든 프로필과 관련된 모든 MapNotes 데이터를 삭제합니다.\n\n이후 게임 인터페이스가 다시 불러와집니다",
+}
+
+ns.reset_ALL_SavedVariables_Text = {
+  deDE = "Löscht alle vorhandene MapNotes Profile inklusive des aktuell benutzen MapNotes Profiles und löscht alle gespeicherten MapNotes Daten!\n\nDanach wird das Interface des Spiels neu geladen",
+  enUS = "Deletes all existing MapNotes profiles, including the currently used one, and removes all stored MapNotes data!\n\nAfterwards, the game's interface will be reloaded",
+  frFR = "Supprime tous les profils MapNotes existants, y compris celui actuellement utilisé, ainsi que toutes les données MapNotes enregistrées !\n\nEnsuite, l’interface du jeu sera rechargée",
+  esES = "Elimina todos los perfiles existentes de MapNotes, incluido el que se está usando actualmente, y borra todos los datos almacenados de MapNotes.\n\nDespués de esto, se recargará la interfaz del juego",
+  esMX = "Elimina todos los perfiles existentes de MapNotes, incluido el que se está usando actualmente, y borra todos los datos almacenados de MapNotes.\n\nDespués de esto, se recargará la interfaz del juego",
+  itIT = "Elimina tutti i profili MapNotes esistenti, incluso quello attualmente in uso, e rimuove tutti i dati MapNotes memorizzati!\n\nSuccessivamente verrà ricaricata l’interfaccia di gioco",
+  ptBR = "Exclui todos os perfis existentes do MapNotes, incluindo o que está sendo usado atualmente, e remove todos os dados do MapNotes armazenados!\n\nApós isso, a interface do jogo será recarregada",
+  ruRU = "Удаляет все существующие профили MapNotes, включая тот, который используется в данный момент, и удаляет все сохранённые данные MapNotes!\n\nПосле этого интерфейс игры будет перезагружен",
+  zhCN = "删除所有现有的 MapNotes 配置档，包括当前使用的配置，并清除所有 MapNotes 存储的数据！\n\n之后将重新载入游戏界面",
+  zhTW = "刪除所有現有的 MapNotes 設定檔，包括目前使用的設定檔，並清除所有 MapNotes 儲存的資料！\n\n之後將重新載入遊戲介面",
+  koKR = "현재 사용 중인 프로필을 포함하여 모든 기존 MapNotes 프로필과 저장된 모든 MapNotes 데이터를 삭제합니다!\n\n이후 게임 인터페이스가 다시 불러와집니다",
+}
+
+ns.reset_header_1 = { -- Options.lua
+  deDE = "Aktuelles MapNotes Profil",
+  enUS = "Current MapNotes profile",
+  frFR = "Profil MapNotes actuel",
+  esES = "Perfil actual de MapNotes",
+  esMX = "Perfil actual de MapNotes",
+  itIT = "Profilo MapNotes attuale",
+  ptBR = "Perfil atual do MapNotes",
+  ruRU = "Текущий профиль MapNotes",
+  zhCN = "当前的 MapNotes 配置档",
+  zhTW = "目前的 MapNotes 設定檔",
+  koKR = "현재 MapNotes 프로필",
+}
+
+ns.reset_header_2 = {
+  deDE = "Alle MapNotes Profile",
+  enUS = "All MapNotes profiles",
+  frFR = "Tous les profils MapNotes",
+  esES = "Todos los perfiles de MapNotes",
+  esMX = "Todos los perfiles de MapNotes",
+  itIT = "Tutti i profili MapNotes",
+  ptBR = "Todos os perfis do MapNotes",
+  ruRU = "Все профили MapNotes",
+  zhCN = "所有的 MapNotes 配置档",
+  zhTW = "所有的 MapNotes 設定檔",
+  koKR = "모든 MapNotes 프로필",
+}
+
+ns.reset_name_1 = {
+  deDE = "Lösche aktuelles MapNotes Profil",
+  enUS = "Delete current MapNotes profile",
+  frFR = "Supprimer le profil MapNotes actuel",
+  esES = "Eliminar el perfil actual de MapNotes",
+  esMX = "Eliminar el perfil actual de MapNotes",
+  itIT = "Elimina il profilo MapNotes attuale",
+  ptBR = "Excluir o perfil atual do MapNotes",
+  ruRU = "Удалить текущий профиль MapNotes",
+  zhCN = "删除当前的 MapNotes 配置档",
+  zhTW = "刪除目前的 MapNotes 設定檔",
+  koKR = "현재 MapNotes 프로필 삭제",
+}
+
+ns.reset_name_2 = {
+  deDE = "Behalte aktuelles MapNotes Profil aber …",
+  enUS = "Keep current MapNotes profile but …",
+  frFR = "Conserver le profil MapNotes actuel mais …",
+  esES = "Conservar el perfil actual de MapNotes pero …",
+  esMX = "Conservar el perfil actual de MapNotes pero …",
+  itIT = "Mantieni il profilo MapNotes attuale ma …",
+  ptBR = "Manter o perfil atual do MapNotes mas …",
+  ruRU = "Сохранить текущий профиль MapNotes, но …",
+  zhCN = "保留当前的 MapNotes 配置档，但…",
+  zhTW = "保留目前的 MapNotes 設定檔，但…",
+  koKR = "현재 MapNotes 프로필을 유지하지만 …",
+}
+
+ns.reset_name_3 = {
+  deDE = "Lösche alle MapNotes Profile",
+  enUS = "Delete all MapNotes profiles",
+  frFR = "Supprimer tous les profils MapNotes",
+  esES = "Eliminar todos los perfiles de MapNotes",
+  esMX = "Eliminar todos los perfiles de MapNotes",
+  itIT = "Elimina tutti i profili MapNotes",
+  ptBR = "Excluir todos os perfis do MapNotes",
+  ruRU = "Удалить все профили MapNotes",
+  zhCN = "删除所有的 MapNotes 配置档",
+  zhTW = "刪除所有的 MapNotes 設定檔",
+  koKR = "모든 MapNotes 프로필 삭제",
 }

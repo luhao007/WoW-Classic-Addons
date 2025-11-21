@@ -73,7 +73,14 @@ function ns.SafeOpenWorldMap(mapID)
   local act = ns.Addon and ns.Addon.db and ns.Addon.db.profile and ns.Addon.db.profile.activate
   if not act or not act.ToggleMap then return end
 
+  ns._lastCombatInfo = ns._lastCombatInfo or 0
+  local now = GetTime()
+
   if InCombatLockdown() then
+
+    if act.InfoBlockedInCombat and (now - ns._lastCombatInfo) < 0.2 then return end
+    ns._lastCombatInfo = now
+
     if act.ToggleMapAfterCombat then
       pendingMapOpen = mapID
       if act.InfoBlockedInCombat then

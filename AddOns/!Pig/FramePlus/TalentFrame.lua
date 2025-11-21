@@ -19,8 +19,8 @@ if PIG_MaxTocversion(20000,true) then
 	UIdataWHXY.ScrollPY=-90
 	UIdataWHXY.allwww = 920
 end
-TALENT_TOOLTIP_LEARNTALENTGROUP = TALENT_TOOLTIP_LEARNTALENTGROUP or "学习你的模拟结果。";
-TALENT_TOOLTIP_RESETTALENTGROUP = TALENT_TOOLTIP_RESETTALENTGROUP or "重置你的模拟结果。";
+local TALENT_TOOLTIP_LEARNTALENTGROUP = TALENT_TOOLTIP_LEARNTALENTGROUP or "学习你的模拟结果。";
+local TALENT_TOOLTIP_RESETTALENTGROUP = TALENT_TOOLTIP_RESETTALENTGROUP or "重置你的模拟结果。";
 local GetGlyphLink=GetGlyphLink or C_GlyphInfo and C_GlyphInfo.GetGlyphLink
 ----
 local function ADD_BGtex(self,texname)
@@ -417,12 +417,15 @@ local function Uptate_FrameX()
 				GlyphFrameGlyph3:SetPoint("TOPLEFT",GlyphFrameGlyph2,"BOTTOMLEFT",0,-8);
 				GlyphFrameGlyph5:SetPoint("TOPLEFT",GlyphFrameGlyph3,"BOTTOMLEFT",0,-8);
 			end
-			for i=1,NUM_GLYPH_SLOTS do
-				local link = C_GlyphInfo.GetGlyphLink(i, PlayerTalentFrame.talentGroup)
-				if link=="" then
-					_G["GlyphFrameGlyph"..i].name:SetText("空")
-				else
-					_G["GlyphFrameGlyph"..i].name:SetText(link)
+			local talentGroup = PlayerTalentFrame and PlayerTalentFrame.talentGroup;
+			for Gindex=1,NUM_GLYPH_SLOTS do
+				_G["GlyphFrameGlyph"..Gindex].name:SetText(NONE)
+				local enabled, glyphType, glyphTooltipIndex, glyphSpell, iconFilename, glyphID = GetGlyphSocketInfo(Gindex, talentGroup);
+				if glyphID then
+					local link = C_GlyphInfo.GetGlyphLink(Gindex, glyphID)
+					if link and link~="" then
+						_G["GlyphFrameGlyph"..Gindex].name:SetText(link)
+					end
 				end
 			end
 		end)

@@ -12,14 +12,17 @@ function ns.FogOfWar:SyncColorsFromDB(doRefresh)
   local db = ns.Addon and ns.Addon.db and ns.Addon.db.profile
   local t = db and db.FogOfWarColor
   if not t then return end
+
   self.colorR = t.colorR or 1
   self.colorG = t.colorG or 1
   self.colorB = t.colorB or 1
   self.colorA = t.colorA or 1
+
   self.FogOfWarColorR = t.FogOfWarColorR or 1
   self.FogOfWarColorG = t.FogOfWarColorG or 0
   self.FogOfWarColorB = t.FogOfWarColorB or 0
   self.FogOfWarColorA = t.FogOfWarColorA or 1
+
   if doRefresh then self:Refresh() end
 end
 
@@ -52,22 +55,7 @@ function ns.FogOfWar:OnEnable()
 end
 
 function ns.FogOfWar:OnInitialize()
-  HandyNotes.RegisterMessage(self, "HandyNotes_NotifyUpdate", "OnHNUpdate")
   self:SyncColorsFromDB(false)
-end
-
-function ns.FogOfWar:OnHNUpdate(event, addonName)
-  if addonName ~= "MapNotes" then return end
-  local db = ns.Addon and ns.Addon.db and ns.Addon.db.profile
-  local on = db and db.activate and db.activate.FogOfWar
-
-  if on and not self:IsEnabled() then
-    self:Enable()
-    self:Refresh()
-  elseif not on and self:IsEnabled() then
-    self:Disable()
-    self:Refresh()
-  end
 end
 
 function ns.FogOfWar:OnDisable()
@@ -81,7 +69,6 @@ function ns.FogOfWar:OnDisable()
     end
   end
 end
-
 
 function ns.FogOfWar:Refresh()
   if not self:IsEnabled() then return end
@@ -97,9 +84,12 @@ end
 local mapData = ns.FogOfWarDataClassic or {}
 function ns.FogOfWar:MapExplorationPin_RefreshOverlays(pin, fullUpdate)
   local db = ns.Addon and ns.Addon.db and ns.Addon.db.profile
-  local fogOn = db and db.activate and db.activate.FogOfWar
+  local activate = db and db.activate
+  if not (activate and (activate.FogOfWar or activate.MistOfTheUnexplored)) then return end
+
   for overlay in pin.overlayTexturePool:EnumerateActive() do
-    overlay:SetAlpha(fogOn and 0 or 1)
+    overlay:SetVertexColor(1, 1, 1)
+    overlay:SetAlpha(1)
   end
 
   local mapCanvas = pin:GetMap()
@@ -132,10 +122,10 @@ function ns.FogOfWar:MapExplorationPin_RefreshOverlays(pin, fullUpdate)
 
   for key, files in pairs(data) do
     if not explored[key] then
-      local width  = mod(floor(key / 2 ^ 39), 2 ^ 13)
+      local width = mod(floor(key / 2 ^ 39), 2 ^ 13)
       local height = mod(floor(key / 2 ^ 26), 2 ^ 13)
       local offsetX= mod(floor(key / 2 ^ 13), 2 ^ 13)
-      local offsetY= mod(key,                 2 ^ 13)
+      local offsetY= mod(key, 2 ^ 13)
 
       local fileDataIDs = { strsplit(",", files) }
       local numWide = ceil(width / TILE_SIZE_WIDTH)
@@ -177,7 +167,7 @@ function ns.FogOfWar:MapExplorationPin_RefreshOverlays(pin, fullUpdate)
             texture:SetTexture(tonumber(fileDataIDs[((j - 1) * numWide) + k]), nil, nil, "TRILINEAR")
           end
 
-          if ns.Addon and ns.Addon.db and ns.Addon.db.profile and ns.Addon.db.profile.activate.MistOfTheUnexplored then
+          if activate.FogOfWar and activate.MistOfTheUnexplored then
             texture:SetVertexColor(FoWr, FoWg, FoWb)
             texture:SetAlpha(FoWa)
           end
@@ -197,6 +187,7 @@ end
 
 function ns.FogOfWar:SetOverlayColor(info, r, g, b, a)
   self.colorR, self.colorG, self.colorB, self.colorA = r, g, b, a
+
   local db = ns.Addon and ns.Addon.db and ns.Addon.db.profile
   if db then
     db.FogOfWarColor = db.FogOfWarColor or {}
@@ -205,6 +196,7 @@ function ns.FogOfWar:SetOverlayColor(info, r, g, b, a)
     db.FogOfWarColor.colorB = b
     db.FogOfWarColor.colorA = a
   end
+
   if self:IsEnabled() then self:Refresh() end
 end
 
@@ -214,6 +206,7 @@ end
 
 function ns.FogOfWar:SetFogOfWarColor(info, r, g, b, a)
   self.FogOfWarColorR, self.FogOfWarColorG, self.FogOfWarColorB, self.FogOfWarColorA = r, g, b, a
+
   local db = ns.Addon and ns.Addon.db and ns.Addon.db.profile
   if db then
     db.FogOfWarColor = db.FogOfWarColor or {}
@@ -222,10 +215,39 @@ function ns.FogOfWar:SetFogOfWarColor(info, r, g, b, a)
     db.FogOfWarColor.FogOfWarColorB = b
     db.FogOfWarColor.FogOfWarColorA = a
   end
+
   if WorldMapFrame and WorldMapFrame:IsShown() and self:IsEnabled() then
     self:Refresh()
   end
+
   if ns.UpdateAreaMapFogOfWar then ns.UpdateAreaMapFogOfWar() end
+end
+
+function ns.FogOfWar:ResetFogOfWarColors()
+  local db = ns.Addon and ns.Addon.db and ns.Addon.db.profile
+  if not db then return end
+
+  db.FogOfWarColor = db.FogOfWarColor or {}
+
+  db.FogOfWarColor.colorR = 1
+  db.FogOfWarColor.colorG = 1
+  db.FogOfWarColor.colorB = 1
+  db.FogOfWarColor.colorA = 1
+
+  db.FogOfWarColor.FogOfWarColorR = 1
+  db.FogOfWarColor.FogOfWarColorG = 0
+  db.FogOfWarColor.FogOfWarColorB = 0
+  db.FogOfWarColor.FogOfWarColorA = 1
+
+  self:SyncColorsFromDB(false)
+
+  if WorldMapFrame and WorldMapFrame:IsShown() and self:IsEnabled() then
+    self:Refresh()
+  end
+
+  if ns.UpdateAreaMapFogOfWar then
+    ns.UpdateAreaMapFogOfWar()
+  end
 end
 
 ns.FogOfWarDataClassic = nil

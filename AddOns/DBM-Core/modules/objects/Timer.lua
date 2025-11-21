@@ -238,8 +238,10 @@ function timerPrototype:Start(timer, ...)
 	if select("#", ...) > 0 then--If timer has args
 		for i = 1, select("#", ...) do
 			local v = select(i, ...)
-			if DBM:IsNonPlayableGUID(v) then--Then scan them for a mob guid
-				guid = v--If found, guid will be passed in DBM_TimerBegin callback
+			if not DBM:IsPostMidnight() then
+				if DBM:IsNonPlayableGUID(v) then--Then scan them for a mob guid
+					guid = v--If found, guid will be passed in DBM_TimerBegin callback
+				end
 			end
 			--Not most efficient way to do it, but since it's already being done for guid, it's best not to repeat the work
 			if isCountTimer and type(v) == "number" then
@@ -452,7 +454,7 @@ function timerPrototype:Start(timer, ...)
 	--Mods that have specifically flagged that it's safe to assume all timers from that boss mod belong to boss1
 	--This check is performed secondary to args scan so that no adds guids are overwritten
 	--NOTE: Begin fires regardless of enabled status, and includes additional enabled flag. Start only fires if option is enabled (old behavior)
-	if not guid and self.mod.sendMainBossGUID and not DBM.Options.DontSendBossGUIDs and (self.type == "cd" or self.type == "next" or self.type == "cdcount" or self.type == "nextcount" or self.type == "cdspecial" or self.type == "ai") then--Variance excluded for now while NP timers don't support yet
+	if not DBM:IsPostMidnight() and not guid and self.mod.sendMainBossGUID and not DBM.Options.DontSendBossGUIDs and (self.type == "cd" or self.type == "next" or self.type == "cdcount" or self.type == "nextcount" or self.type == "cdspecial" or self.type == "ai") then--Variance excluded for now while NP timers don't support yet
 		guid = UnitGUID("boss1")
 	end
 	if self.simpType and (self.simpType == "cdnp" or self.simpType == "castnp") then--Only send nampelate callback
@@ -1526,20 +1528,42 @@ end
 --IE each boss will have a checkbox to enable/disable timers for that specific boss
 --TODO, make sure DBM core can track timers in startedTimers table?
 --TODO, re-enable icon when blizzard unfucks SetTexture
+--TODO, use EncounterTimelineIconMasks to get icon mask from
 --/run C_EncounterTimeline.AddEditModeEvents()
-function DBM:ENCOUNTER_TIMELINE_EVENT_ADDED(eventInfo, barState)
+function DBM:ENCOUNTER_TIMELINE_EVENT_ADDED(eventInfo, remaining)
 	local source = eventInfo.source--(0-Encounter, 1-Script, 2-EditMode)
 	if self.Options.DontShowBossTimers and source == 0 then return end
 	if self.Options.DontShowUserTimers and source == 1 then return end
 	local eventID = eventInfo.id
-	local duration = eventInfo.duration
+	local eventState = C_EncounterTimeline.GetEventState(eventID)
+	local duration = remaining or eventInfo.duration
+	local maxQueueDuration = eventInfo.maxQueueDuration
 	--Secrets
-	local spellId = eventInfo.tooltipSpellID
-	local spellName = C_Spell.GetSpellName(spellId)--Must use blizzard fucntion, wrapper taints secret
+	--local spellId = eventInfo.tooltipSpellID
+	local spellName = eventInfo.spellName--Spell name associated with this event. For script events, this may instead be the contents of the 'overrideName' field if it wasn't empty."
 	local iconId = eventInfo.iconFileID
---	local effectType = eventInfo.dispelType ("None", "Poison", "Magic", "Curse", "Disease", "Enrage", "Bleed")
---	local role = eventInfo.role ("None", "Tank", "Healer", "Damager")
---	local priority = eventInfo.priority ("Normal", "Deadly")
+	local icons = eventInfo.icons
+	local inlineIcon, hasTankIcon, hasHealerIcon, hasDpsIcon, isDeadly = "", nil, nil, nil, nil
+	if icons and not issecretvalue(icons) then
+		hasTankIcon = bit.band(icons, 128) ~= 0
+		hasHealerIcon = bit.band(icons, 256) ~= 0
+		hasDpsIcon = bit.band(icons, 512) ~= 0
+		isDeadly = bit.band(icons, 1) ~= 0
+		if isDeadly then
+			inlineIcon = DBM_COMMON_L.DEADLY_ICON
+		end
+		if hasTankIcon then
+			inlineIcon = inlineIcon .. DBM_COMMON_L.TANK_ICON
+		end
+		if hasHealerIcon then
+			inlineIcon = inlineIcon .. DBM_COMMON_L.HEALER_ICON
+		end
+		if hasDpsIcon then
+			inlineIcon = inlineIcon .. DBM_COMMON_L.DAMAGE_ICON
+		end
+	end
+--	local severity = eventInfo.severity ("Normal", "Deadly")
+--	local isApproximate = eventInfo.isApproximate
 
 	--We want to store timer references for secret timers so we can stop them later
 	--if not tContains(self.startedTimers, eventID) then--Make sure timer doesn't exist already before adding it
@@ -1547,7 +1571,16 @@ function DBM:ENCOUNTER_TIMELINE_EVENT_ADDED(eventInfo, barState)
 	--end
 	--self:Unschedule(removeEntry, self.startedTimers, eventID)
 	--self:Schedule(duration, removeEntry, self.startedTimers, eventID)
-	DBT:CreateBar(duration, eventID, iconId, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, spellName, true, barState == 1)--barState 1 is "paused"
+	if DBM.Options.DebugMode and maxQueueDuration and maxQueueDuration > 0 then
+		DBT:CreateBar("v"..tostring(duration).."-"..tostring(maxQueueDuration+duration), eventID, iconId, nil, nil, nil, nil, (hasTankIcon or hasHealerIcon or hasDpsIcon) and 5 or isDeadly and 2 or 0, inlineIcon, nil, nil, isDeadly and 1 or nil, 5, nil, spellName, true, eventState == 1)--barState 1 is "paused"
+	else
+		DBT:CreateBar(duration, eventID, iconId, nil, nil, nil, nil, (hasTankIcon or hasHealerIcon or hasDpsIcon) and 5 or isDeadly and 2 or 0, inlineIcon, nil, nil, isDeadly and 1 or nil, 5, nil, spellName, true, eventState == 1)--barState 1 is "paused"
+	end
+	if isDeadly then
+		--Start countdown
+		self:Unschedule(playCountSound, eventID) -- Prevents count sound if timer is started again before timer expires
+		playCountdown(eventID, duration, 1, 5)
+	end
 end
 
 
@@ -1556,13 +1589,21 @@ end
 --/run C_EncounterTimeline.GetEventList()
 --/run C_EncounterTimeline.PauseScriptEvent()
 --/run C_EncounterTimeline.ResumeScriptEvent()
-function DBM:ENCOUNTER_TIMELINE_EVENT_STATE_CHANGED(eventID, barState)
+function DBM:ENCOUNTER_TIMELINE_EVENT_STATE_CHANGED(eventID)
 	local newBar = DBT:GetBar(eventID)
 	if newBar then
-		if barState == 1 then
+		local eventState = C_EncounterTimeline.GetEventState(eventID)
+		if eventState == 1 then
 			newBar:Pause()
-		elseif barState == 0 then
+			self:Unschedule(playCountSound, eventID)
+		elseif eventState == 0 then
 			newBar:Resume()
+			if newBar.countdown then
+				local remaining = C_EncounterTimeline.GetEventTimeRemaining(eventID)
+				if remaining and remaining > 0 then
+					playCountdown(eventID, remaining, 1, 5)
+				end
+			end
 		end
 	end
 --	self:Unschedule(playCountSound, self.startedTimers[i])--Unschedule countdown by timerId
@@ -1572,7 +1613,7 @@ end
 
 function DBM:ENCOUNTER_TIMELINE_EVENT_REMOVED(eventID)
 	DBT:CancelBar(eventID)
---	self:Unschedule(playCountSound, self.startedTimers[i])--Unschedule countdown by timerId
+	self:Unschedule(playCountSound, eventID)
 --	self:Unschedule(removeEntry, self.startedTimers, eventID)
 --	tremove(self.startedTimers, eventID)
 end
@@ -1582,9 +1623,9 @@ function DBM:RecoverBlizzardTimers()
 	if C_EncounterTimeline.HasActiveEvents() then
 		local eventList = C_EncounterTimeline.GetEventList()
 		for _, v in ipairs(eventList) do
-			local eventId = C_EncounterTimeline.GetEventInfo(v)
-			local eventState = C_EncounterTimeline.GetEventState(v)
-			self:ENCOUNTER_TIMELINE_EVENT_ADDED(eventId, eventState)
+			local eventInfo = C_EncounterTimeline.GetEventInfo(v)
+			local remaining = C_EncounterTimeline.GetEventTimeRemaining(v)
+			self:ENCOUNTER_TIMELINE_EVENT_ADDED(eventInfo, remaining)
 		end
 	end
 end

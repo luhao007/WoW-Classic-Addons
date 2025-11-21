@@ -76,16 +76,16 @@ end
 ---@class DBM
 local DBM = private:GetPrototype("DBM")
 _G.DBM = DBM
-DBM.Revision = parseCurseDate("20251116182105")
+DBM.Revision = parseCurseDate("20251119075614")
 DBM.TaintedByTests = false -- Tests may mess with some internal state, you probably don't want to rely on DBM for an important boss fight after running it in test mode
 
 local fakeBWVersion, fakeBWHash = 401, "34b582e"--401.4
 local PForceDisable
 -- The string that is shown as version
-DBM.DisplayVersion = "12.0.5"--Core version
+DBM.DisplayVersion = "12.0.6"--Core version
 DBM.classicSubVersion = 0
 DBM.dungeonSubVersion = 0
-DBM.ReleaseRevision = releaseDate(2025, 11, 16) -- the date of the latest stable version that is available, optionally pass hours, minutes, and seconds for multiple releases in one day
+DBM.ReleaseRevision = releaseDate(2025, 11, 18) -- the date of the latest stable version that is available, optionally pass hours, minutes, and seconds for multiple releases in one day
 PForceDisable = 19--When this is incremented, trigger force disable regardless of major patch
 DBM.HighestRelease = DBM.ReleaseRevision --Updated if newer version is detected, used by update nags to reflect critical fixes user is missing on boss pulls
 
@@ -1770,7 +1770,7 @@ do
 			if self:IsPostMidnight() then
 				C_CVar.SetCVar("encounterTimelineEnabled", "1")
 				if self.Options.HideBlizzardTimeline then
-					EncounterTimeline.TimelineView:SetScript("OnShow", function(self) self:Hide() end)
+					EncounterTimeline.View:SetScript("OnShow", function(self) self:Hide() end)
 				end
 			else
 				--Only mess with sound channels if NOT midnight, since it's not like we need the sound channels anymore
@@ -3584,7 +3584,7 @@ do
 			if not self.Options.RaidDifficultyChangedAlertRaidOnly or IsInRaid() then
 				if self.Options.RaidDifficultyChangedAlert and self:AntiSpam(5, "raiddiffchanged", currentRaidDifficulty) then
 					if difficutlyToText[currentRaidDifficulty] then
-						self:AddWarning(L.RAID_DIFFICULTY_CHANGED:format(difficutlyToText[currentRaidDifficulty]), nil, nil, true, true, 5)
+						self:AddWarning(L.RAID_DIFFICULTY_CHANGED:format(difficutlyToText[currentRaidDifficulty]), nil, nil, true, true, 3.5)
 					end
 				end
 			end
@@ -3594,7 +3594,7 @@ do
 				lastDungeonDifficulty = currentDungeonDifficulty
 				if self.Options.DungeonDifficultyChangedAlert and self:AntiSpam(5, "dungeondiffchanged", currentDungeonDifficulty) then
 					if difficutlyToText[currentDungeonDifficulty] then
-						self:AddWarning(L.DUNGEON_DIFFICULTY_CHANGED:format(difficutlyToText[currentDungeonDifficulty]), nil, nil, true, true, 5)
+						self:AddWarning(L.DUNGEON_DIFFICULTY_CHANGED:format(difficutlyToText[currentDungeonDifficulty]), nil, nil, true, true, 3.5)
 					end
 				end
 			end
@@ -9482,7 +9482,7 @@ function bossModPrototype:ReceiveSync(event, sender, revision, ...)
 	end
 end
 
----@param revision number|string Either a number in the format "202101010000" (year, month, day, hour, minute) or string "20251116165350" to be auto set by packager
+---@param revision number|string Either a number in the format "202101010000" (year, month, day, hour, minute) or string "20251119075614" to be auto set by packager
 function bossModPrototype:SetRevision(revision)
 	revision = parseCurseDate(revision or "")
 	if not revision or type(revision) == "string" then

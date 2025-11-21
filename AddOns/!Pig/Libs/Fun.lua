@@ -316,19 +316,19 @@ function Fun.Get_LootTypeData()
 	return lootListIDs,lootmethodName,lootmethodNameJ
 end
 function Fun.Get_LootTypeID(id)
-	if PIG_MaxTocversion(30000,true) and PIG_MaxTocversion(40000) then
-		return lootList[id]
-	else
+	-- if PIG_MaxTocversion(30000,true) and PIG_MaxTocversion(40000) then
+	-- 	return lootList[id]
+	-- else
 		return id
-	end
+	--end
 end
 function Fun.PIG_GetLootMethod()
 	local lootmethodID,masterLootPartyID, masterLooterRaidID= GetLootMethod();
-	if PIG_MaxTocversion(30000,true) and PIG_MaxTocversion(40000) then
-		return lootList_old[lootmethodID],masterLootPartyID, masterLooterRaidID
-	else
+	-- if type(lootmethodID)~="number" then
+	-- 	return lootList_old[lootmethodID],masterLootPartyID, masterLooterRaidID
+	-- else
 		return lootmethodID,masterLootPartyID, masterLooterRaidID
-	end
+	--end
 end
 local function Update_LootTxt(but)
 	if PIG_MaxTocversion() then

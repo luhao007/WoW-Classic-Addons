@@ -798,6 +798,7 @@ ns.options = {
               width = 1.20,
               get = function() return ns.Addon.db.profile.activate.FogOfWar end,
               set = function(info, v) ns.Addon.db.profile.activate.FogOfWar = v 
+                  if ns.FogOfWar and ns.FogOfWar.Refresh then ns.FogOfWar:Refresh() end
                   HandyNotes:GetModule("FogOfWarButton"):Refresh()
                   self:FullUpdate() HandyNotes:SendMessage("HandyNotes_NotifyUpdate", "MapNotes")
                   if ns.Addon.db.profile.CoreChatMassage and not ns.Addon.db.profile.activate.FogOfWar then print(TextIconMNL4:GetIconString() .. " " .. ns.COLORED_ADDON_NAME .. " " .. TextIconMNL4:GetIconString() .. "|cffffff00", L["Unexplored Areas"], "|cffff0000" .. L["is deactivated"]) else
@@ -835,7 +836,24 @@ ns.options = {
               set = "SetFogOfWarColor",
               handler = ns.FogOfWar,
               hasAlpha = true,
-              }, 
+              },
+            Unexploredheader3 = {
+              type = "header",
+              name = RESET_POSITION,
+              order = 3.0,
+              },
+            ResetFogOfWarColor = {
+              --disabled = function() return not ns.Addon.db.profile.activate.FogOfWar end,
+              type = "execute",
+              name = L["Fog"] .. " - " .. COLOR .. " " .. RESET_POSITION,
+              desc = "",
+              width = "full",
+              order = 3.1,
+              func = function()
+                  ns.FogOfWar:ResetFogOfWarColors()
+                  self:FullUpdate() HandyNotes:SendMessage("HandyNotes_NotifyUpdate", "MapNotes")
+                end,
+              },
             },
           },
         CoordinatesTab = {
@@ -1303,41 +1321,6 @@ ns.options = {
               },
             },
           },
-        NpcDatabase = {
-          disabled = function() return ns.Addon.db.profile.activate.HideMapNote end,
-          type = "group",
-          name = L["NPC database"],
-          desc = "",
-          order = 11,
-          args = {
-            AreaMapheader1 = {
-              type = "header",
-              name = L["NPC database"],
-              order = 1.0,
-              },
-            MNNpcScanmid = {
-              type = "description",
-              name = "",
-              width = 0.30,
-              order = 1.1,
-              },
-            MNNpcScan = {
-              disabled = function() return ns.Addon.db.profile.activate.HideMapNote end,
-              type = "execute",
-              name = " NPC " .. NAMES_LABEL .. " " .. UPDATE,
-              desc = ns.LOCALE_CACHING[ns.locale] or ns.LOCALE_CACHING["enUS"],
-              width = 2,
-              order = 1.2,
-              func = function(info, v) 
-              C_Timer.After(0.3, function()
-                  ns.RebuildNpcNameCache({ forceAll = true })
-                  self:FullUpdate()
-                  HandyNotes:SendMessage("HandyNotes_NotifyUpdate", "MapNotes")
-                end)
-              end,
-              },
-            },
-          }, 
         },
       },
     CapitalsAndCapitalsMiniMapTab = {
@@ -9298,12 +9281,47 @@ ns.options = {
           },
         },
       },
+    NpcDatabase = {
+      disabled = function() return ns.Addon.db.profile.activate.HideMapNote end,
+      type = "group",
+      name = ns.COLORED_ADDON_NAME .. " " .. L["NPC database"],
+      desc = "",
+      order = 7,
+      args = {
+        AreaMapheader1 = {
+          type = "header",
+          name = L["NPC database"],
+          order = 1.0,
+          },
+        MNNpcScanmid = {
+          type = "description",
+          name = "",
+          width = 0.30,
+          order = 1.1,
+          },
+        MNNpcScan = {
+          disabled = function() return ns.Addon.db.profile.activate.HideMapNote end,
+          type = "execute",
+          name = L["NPC database"] .. " " .. UPDATE,
+          desc = ns.LOCALE_CACHING[ns.locale] or ns.LOCALE_CACHING["enUS"],
+          width = "full",
+          order = 1.2,
+          func = function(info, v) 
+          C_Timer.After(0.3, function()
+              ns.RebuildNpcNameCache({ forceAll = true })
+              self:FullUpdate()
+              HandyNotes:SendMessage("HandyNotes_NotifyUpdate", "MapNotes")
+            end)
+          end,
+          },
+        },
+      },
     AboutTab = {
       --disabled = function() return ns.Addon.db.profile.activate.HideMapNote end,
       type = "group",
-      name = L["About MapNotes"],
+      name = ns.ABOUT[ns.locale] .. " " .. ns.COLORED_ADDON_NAME,
       desc = "",
-      order = 7,
+      order = 8,
       args = {
         NpcChangelog = {
           type = "group",
@@ -9366,7 +9384,82 @@ ns.options = {
               order = 1.1,
               },
             },
-          }, 
+          },
+        },
+      },
+    ResetTab = {
+      --disabled = function() return ns.Addon.db.profile.activate.HideMapNote end,
+      type = "group",
+      name = ns.COLORED_ADDON_NAME .. " " .. RESET_POSITION,
+      desc = "",
+      order = 9,
+      args = {
+        resetSVheader1 = {
+          type = "header",
+          name = ns.reset_header_1[ns.locale],
+          order = 1.0,
+          },
+        resetCharacterSavedVariables = {
+          --disabled = function() return ns.Addon.db.profile.activate.HideMapNote end,
+          type = "execute",
+          name = ns.reset_name_1[ns.locale],
+          desc = "\n" .. ns.reset_Character_SavedVariables_Text[ns.locale],
+          order = 1.1,
+          width = "full",
+          confirm = function()
+              return ns.reset_Character_SavedVariables_Text[ns.locale]
+          end,
+          func = function()
+            ns.deleteCharacterSavedVariables()
+            self:FullUpdate()
+            HandyNotes:SendMessage("HandyNotes_NotifyUpdate", "MapNotes")
+            ReloadUI()
+          end,
+          },
+        keepOnlyCurrentSavedVariables = {
+          --disabled = function() return ns.Addon.db.profile.activate.HideMapNote end,
+          type = "execute",
+          name = ns.reset_name_2[ns.locale],
+          desc = "\n" .. ns.keep_Only_Current_Character_SavedVariables_Text[ns.locale],
+          order = 1.3,
+          width = "full",
+          confirm = function()
+            return ns.keep_Only_Current_Character_SavedVariables_Text[ns.locale]
+          end,
+          func = function()
+            ns.keepOnlyCurrentSavedVariables()
+            self:FullUpdate()
+            HandyNotes:SendMessage("HandyNotes_NotifyUpdate", "MapNotes")
+            ReloadUI()
+          end,
+          },
+        resetSVspacer2 = {
+          type = "description",
+          name = "\n",
+          order = 1.4,
+          },
+        resetSVheader3 = {
+          type = "header",
+          name = ns.reset_header_2[ns.locale],
+          order = 2.0,
+          },
+        resetALLSavedVariables = {
+          --disabled = function() return ns.Addon.db.profile.activate.HideMapNote end,
+          type = "execute",
+          name = ns.reset_name_3[ns.locale],
+          desc = "\n" .. ns.reset_ALL_SavedVariables_Text[ns.locale],
+          order = 2.1,
+          width = "full",
+          confirm = function()
+            return ns.reset_ALL_SavedVariables_Text[ns.locale]
+          end,
+          func = function()
+            ns.deleteALLSavedVariables()
+            self:FullUpdate()
+            HandyNotes:SendMessage("HandyNotes_NotifyUpdate", "MapNotes")
+            ReloadUI()
+          end,
+          },
         },
       },
     },

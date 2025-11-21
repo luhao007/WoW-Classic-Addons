@@ -1,6 +1,6 @@
 local _, ns = ...
 local buildVersion, buildNumber, buildDate, interfaceVersion, localizedVersion, buildInfo = GetBuildInfo()
-ns.version = buildVersion -- ns.version == "12.2.0"
+ns.version = buildVersion -- ns.version == "11.2.0"
 
 local HandyNotes = LibStub("AceAddon-3.0"):GetAddon("HandyNotes", true)
 if not HandyNotes then return end
@@ -19,6 +19,109 @@ local extraInformations = { }
 
 ns.RestoreStaticPopUpsRetail() -- StaticPopUps.lua
 if ns.ErrorMessages then ns.ErrorMessages() end -- RetailErrorMessage.lua
+
+function ns.deleteCharacterSavedVariables() -- delete only activ profile
+  local db = ns.Addon and ns.Addon.db
+  if not db then return end
+
+  db:SetProfile("Default")
+
+  local current = db:GetCurrentProfile()
+  if current and current ~= "Default" then
+    db:DeleteProfile(current, true)
+  else
+    db:ResetProfile()
+  end
+
+  if HandyNotes_MapNotesRetailDB and HandyNotes_MapNotesRetailDB.char then
+    HandyNotes_MapNotesRetailDB.char[current] = nil
+  end
+
+  local mmButton = _G["MNMiniMapButtonRetailDB"]
+  if type(mmButton) == "table" then
+    if mmButton.profileKeys then
+      mmButton.profileKeys[current] = nil
+    end
+    if mmButton.profiles then
+      mmButton.profiles[current] = nil
+    end
+  end
+end
+
+function ns.keepOnlyCurrentSavedVariables() -- keep activ profile, delete all others
+  local db = ns.Addon and ns.Addon.db
+  if not db then return end
+
+  local currentProfile = db:GetCurrentProfile()
+  if not currentProfile then return end
+
+  local charKey = UnitName("player") .. " - " .. GetRealmName()
+  if db.keys and db.keys.profileKeys then
+    for key in pairs(db.keys.profileKeys) do
+      if key ~= charKey then
+        db.keys.profileKeys[key] = nil
+      end
+    end
+    db.keys.profileKeys[charKey] = currentProfile
+  end
+
+  for profileName in pairs(db.profiles) do
+    if profileName ~= currentProfile then
+      db:DeleteProfile(profileName, true)
+    end
+  end
+
+  local wipeTables = { "FogOfWarColorDB", "HandyNotes_MapNotesRetailChangelogDB" }
+  for _, svName in ipairs(wipeTables) do
+    if type(_G[svName]) == "table" then
+      wipe(_G[svName])
+    end
+  end
+
+  local mmButton = _G["MNMiniMapButtonRetailDB"]
+  if type(mmButton) == "table" then
+
+    if mmButton.profileKeys then
+      for key in pairs(mmButton.profileKeys) do
+        if key ~= charKey then
+          mmButton.profileKeys[key] = nil
+        end
+      end
+      mmButton.profileKeys[charKey] = currentProfile
+    end
+
+    if mmButton.profiles then
+      for key in pairs(mmButton.profiles) do
+        if key ~= currentProfile then
+          mmButton.profiles[key] = nil
+        end
+      end
+    end
+  end
+end
+
+function ns.deleteALLSavedVariables() -- delete all profiles
+  local db = ns.Addon and ns.Addon.db
+  if not db then return end
+
+  db:SetProfile("Default")
+
+  for profileName in pairs(db.profiles) do
+    if profileName ~= "Default" then
+      db:DeleteProfile(profileName, true)
+    end
+  end
+
+  db:ResetDB("Default")
+
+  local wipeTables = { "HandyNotes_MapNotesRetailNpcCacheDB", "FogOfWarColorDB", "HandyNotes_MapNotesRetailChangelogDB", "MNMiniMapButtonRetailDB" }
+  for _, svName in ipairs(wipeTables) do
+    if type(_G[svName]) == "table" then
+      wipe(_G[svName])
+    end
+    _G[svName] = nil
+  end
+end
 
 function MapNotesMiniButton:OnInitialize() --mmb.lua
   self.db = LibStub("AceDB-3.0"):New("MNMiniMapButtonRetailDB", { profile = { minimap = { hide = false, }, }, }) 
@@ -472,14 +575,14 @@ function ns.pluginHandler.OnEnter(self, uiMapId, coord)
       if nodeData.mnID and nodeData.mnID2 or nodeData.mnID3 then -- outputs the Zone or Dungeonmap name and displays it in the tooltip
         local mnIDname = C_Map.GetMapInfo(nodeData.mnID).name
         if mnIDname then
-          tooltip:AddDoubleLine("\n" .. KEY_BUTTON1 .. " ==> " .. mnIDname, nil, nil, false)
+          tooltip:AddDoubleLine("\n" .. KEY_BUTTON1 .. " - " .. mnIDname, nil, nil, false)
         end
       end
 
       if nodeData.mnID2 then
         local mnID2name = C_Map.GetMapInfo(nodeData.mnID2).name
         if mnID2name then 
-          tooltip:AddDoubleLine(KEY_BUTTON2 .. " ==> " .. mnID2name, nil, nil, false)
+          tooltip:AddDoubleLine(KEY_BUTTON2 .. " - " .. mnID2name, nil, nil, false)
         end
       end
 
@@ -521,10 +624,58 @@ function ns.pluginHandler.OnEnter(self, uiMapId, coord)
       end
     end
 
-    if nodeData.mnID and not (nodeData.dnID or nodeData.id or nodeData.TransportName or nodeData.hideTTmnID) then
+    if nodeData.mnID and not (nodeData.dnID or nodeData.id or nodeData.TransportName or nodeData.hideTTmnID) 
+      and not (nodeData.type == "Portal" or nodeData.type == "PortalS" or nodeData.type == "HPortal" or nodeData.type == "APortal" or nodeData.type == "HPortalS" or nodeData.type == "APortalS" or nodeData.type == "HPortalGray" 
+      or nodeData.type == "APortalGray" or nodeData.type == "HPortalSGray" or nodeData.type == "APortalSGray" or nodeData.type == "PassageHPortal" or nodeData.type == "PassageAPortal" or nodeData.type == "PassagePortal" 
+      or nodeData.type == "WayGateGreen" or nodeData.type == "TorghastUp" or nodeData.type == "WayGateGolden" 
+      or nodeData.type == "MoleMachine"
+      or nodeData.type == "RocketDrill"
+      or nodeData.type == "Zeppelin" or nodeData.type == "HZeppelin"
+      or nodeData.type == "Ship" or nodeData.type == "AShip" or nodeData.type == "HShip") 
+    then
       local mnIDname = C_Map.GetMapInfo(nodeData.mnID).name
       if mnIDname then
         tooltip:AddDoubleLine(" ==> " .. mnIDname, nil, nil, false)
+      end
+    end
+
+    if (nodeData.mnID and not nodeData.TransportName) and (nodeData.type == "Portal" or nodeData.type == "PortalS" or nodeData.type == "HPortal" or nodeData.type == "APortal" or nodeData.type == "HPortalS" or nodeData.type == "APortalS" or nodeData.type == "HPortalGray" 
+      or nodeData.type == "APortalGray" or nodeData.type == "HPortalSGray" or nodeData.type == "APortalSGray" or nodeData.type == "PassageHPortal" or nodeData.type == "PassageAPortal" or nodeData.type == "PassagePortal" 
+      or nodeData.type == "WayGateGreen" or nodeData.type == "TorghastUp" or nodeData.type == "WayGateGolden")
+    then
+      local mnIDname = C_Map.GetMapInfo(nodeData.mnID).name
+      if mnIDname then
+        tooltip:AddDoubleLine(mnIDname .. " (" .. L["Portal"] ..")", nil, nil, false) -- only Portals name tooltips
+      end
+    end
+
+    if (nodeData.mnID and not nodeData.TransportName) and (nodeData.type == "MoleMachine")
+    then
+      local mnIDname = C_Map.GetMapInfo(nodeData.mnID).name
+      if mnIDname then
+        tooltip:AddDoubleLine(mnIDname .. " (" .. L["Mole Machine"] ..")", nil, nil, false) -- only Mole Machine name tooltips
+      end
+    end
+
+        if (nodeData.mnID and not nodeData.TransportName) and (nodeData.type == "RocketDrill")
+    then
+      local mnIDname = C_Map.GetMapInfo(nodeData.mnID).name
+      if mnIDname then
+        tooltip:AddDoubleLine(mnIDname .. " (" .. L["Rocket drill"] ..")", nil, nil, false) -- only Rocket drill name tooltips
+      end
+    end
+
+    if (nodeData.mnID and not nodeData.TransportName) and (nodeData.type == "Zeppelin" or nodeData.type == "HZeppelin") then
+      local mnIDname = C_Map.GetMapInfo(nodeData.mnID).name
+      if mnIDname then
+        tooltip:AddDoubleLine(mnIDname .. " (" .. L["Zeppelin"] ..")", nil, nil, false) -- only Zeppelin name tooltips
+      end
+    end
+
+    if (nodeData.mnID and not nodeData.TransportName) and (nodeData.type == "Ship" or nodeData.type == "AShip" or nodeData.type == "HShip") then
+      local mnIDname = C_Map.GetMapInfo(nodeData.mnID).name
+      if mnIDname then
+        tooltip:AddDoubleLine(mnIDname .. " (" .. L["Ship"] ..")", nil, nil, false) -- Ship name tooltips
       end
     end
 
@@ -720,12 +871,12 @@ do
                           or value.type == "Multiple" or value.type == "LFR" or value.type == "Gray" or value.type == "VKey1" or value.type == "Delves" or value.type == "VInstanceD" or value.type == "VInstanceR" or value.type == "MultiVInstanceD" 
                           or value.type == "MultiVInstanceR" or value.type == "DelvesPassage" or value.type == "PassageLFR" or value.type == "PetBattleDungeon"
 
-      ns.transportIcons = value.type == "Portal" or value.type == "PortalS" or value.type == "HPortal" or value.type == "APortal" or value.type == "HPortalS" or value.type == "APortalS" or value.type == "PassageHPortal" 
-                          or value.type == "PassageAPortal" or value.type == "PassagePortal" or value.type == "Zeppelin" or value.type == "HZeppelin" or value.type == "AZeppelin" or value.type == "Ship" or value.type == "TorghastUp"
-                          or value.type == "AShip" or value.type == "HShip" or value.type == "Carriage" or value.type == "TravelL" or value.type == "TravelH" or value.type == "TravelA" or value.type == "Tport2" 
-                          or value.type == "OgreWaygate" or value.type == "WayGateGreen" or value.type == "Ghost" or value.type == "DarkMoon" or value.type == "Mirror" or value.type == "TravelM" or value.type == "WayGateGolden"
-                          or value.type == "MoleMachineDwarf" or value.type == "PortalPetBattleDungeon" or value.type == "PortalHPetBattleDungeon" or value.type == "PortalAPetBattleDungeon" or value.type == "B11M" or value.type == "B11F" 
-                          or value.type == "MOrcM" or value.type == "MOrcF" or value.type == "UndeadM" or value.type == "UndeadF" or value.type == "GoblinM" or value.type == "GoblinF" or value.type == "GilneanM" or value.type == "GilneanF" 
+      ns.transportIcons = value.type == "Portal" or value.type == "PortalS" or value.type == "HPortal" or value.type == "APortal" or value.type == "HPortalS" or value.type == "APortalS" or value.type == "HPortalGray" or value.type == "APortalGray" 
+                          or value.type == "HPortalSGray" or value.type == "APortalSGray" or value.type == "PassageHPortal" or value.type == "PassageAPortal" or value.type == "PassagePortal" or value.type == "Zeppelin" or value.type == "HZeppelin" 
+                          or value.type == "AZeppelin" or value.type == "Ship" or value.type == "TorghastUp" or value.type == "AShip" or value.type == "HShip" or value.type == "Carriage" or value.type == "TravelL" or value.type == "TravelH" 
+                          or value.type == "TravelA" or value.type == "Tport2" or value.type == "OgreWaygate" or value.type == "WayGateGreen" or value.type == "Ghost" or value.type == "DarkMoon" or value.type == "Mirror" or value.type == "TravelM"
+                          or value.type == "WayGateGolden" or value.type == "MoleMachineDwarf" or value.type == "PortalPetBattleDungeon" or value.type == "PortalHPetBattleDungeon" or value.type == "PortalAPetBattleDungeon" or value.type == "B11M" 
+                          or value.type == "B11F" or value.type == "MOrcM" or value.type == "MOrcF" or value.type == "UndeadM" or value.type == "UndeadF" or value.type == "GoblinM" or value.type == "GoblinF" or value.type == "GilneanM" or value.type == "GilneanF" 
                           or value.type == "KulM" or value.type == "KulF" or value.type == "DwarfM" or value.type == "DwarfF" or value.type == "OrcM" or value.type == "OrcF" or value.type == "GnomeM" or value.type == "GnomeF" or value.type == "DraneiM"
                           or value.type == "DraneiF" or value.type == "N11M" or value.type == "N11F" or value.type == "TrollM" or value.type == "TrollF"
                           
@@ -972,9 +1123,10 @@ do
         end
 
         -- Transport Icons
-        if value.type == "Portal" or value.type == "PortalS" or value.type == "HPortal" or value.type == "APortal" or value.type == "HPortalS" or value.type == "APortalS" or value.type == "PassageHPortal" 
-          or value.type == "PassageAPortal" or value.type == "WayGateGolden" or value.type == "WayGateGreen" or value.type == "DarkMoon" or value.type == "TorghastUp" or value.type == "PortalPetBattleDungeon"
-          or value.type == "PortalHPetBattleDungeon" or value.type == "PortalAPetBattleDungeon" then
+        if value.type == "Portal" or value.type == "PortalS" or value.type == "HPortal" or value.type == "APortal" or value.type == "HPortalS" or value.type == "APortalS" or value.type == "HPortalGray" 
+          or value.type == "APortalGray" or value.type == "HPortalSGray" or value.type == "APortalSGray" or value.type == "PassageHPortal" or value.type == "PassageAPortal" or value.type == "WayGateGolden" or value.type == "WayGateGreen" 
+          or value.type == "DarkMoon" or value.type == "TorghastUp" or value.type == "PortalPetBattleDungeon" or value.type == "PortalHPetBattleDungeon" or value.type == "PortalAPetBattleDungeon" 
+        then
           scale = db.MiniMapScalePortals
           alpha = db.MiniMapAlphaPortals
         end
@@ -1121,8 +1273,10 @@ do
           alpha = db.DungeonMapAlphaExit
         end
 
-        if value.type == "Portal" or value.type == "PortalS" or value.type == "HPortal" or value.type == "APortal" or value.type == "HPortalS" or value.type == "APortalS" or value.type == "PassageHPortal" 
-          or value.type == "PassageAPortal" or value.type == "PortalPetBattleDungeon" or value.type == "PortalHPetBattleDungeon" or value.type == "PortalAPetBattleDungeon" then
+        if value.type == "Portal" or value.type == "PortalS" or value.type == "HPortal" or value.type == "APortal" or value.type == "HPortalS" or value.type == "APortalS" 
+          or value.type == "HPortalGray" or value.type == "APortalGray" or value.type == "HPortalSGray" or value.type == "APortalSGray" or value.type == "PassageHPortal" 
+          or value.type == "PassageAPortal" or value.type == "PortalPetBattleDungeon" or value.type == "PortalHPetBattleDungeon" or value.type == "PortalAPetBattleDungeon" 
+        then
           scale = db.DungeonMapScalePortal
           alpha = db.DungeonMapAlphaPortal
         end
@@ -1239,9 +1393,10 @@ do
         end
 
         -- Transport Icons
-        if value.type == "Portal" or value.type == "PortalS" or value.type == "HPortal" or value.type == "APortal" or value.type == "HPortalS" or value.type == "APortalS" or value.type == "PassageHPortal" 
-          or value.type == "PassageAPortal" or value.type == "WayGateGolden" or value.type == "WayGateGreen" or value.type == "TorghastUp" or value.type == "PortalPetBattleDungeon" 
-          or value.type == "PortalHPetBattleDungeon" or value.type == "PortalAPetBattleDungeon" then
+        if value.type == "Portal" or value.type == "PortalS" or value.type == "HPortal" or value.type == "APortal" or value.type == "HPortalS" or value.type == "APortalS" or value.type == "HPortalGray" or value.type == "APortalGray" 
+          or value.type == "HPortalSGray" or value.type == "APortalSGray" or value.type == "PassageHPortal" or value.type == "PassageAPortal" or value.type == "WayGateGolden" or value.type == "WayGateGreen" or value.type == "TorghastUp" 
+          or value.type == "PortalPetBattleDungeon" or value.type == "PortalHPetBattleDungeon" or value.type == "PortalAPetBattleDungeon" 
+        then
           scale = db.ZoneScalePortals
           alpha = db.ZoneAlphaPortals
         end

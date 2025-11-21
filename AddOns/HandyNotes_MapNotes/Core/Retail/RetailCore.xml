@@ -2,7 +2,6 @@
     <Frame name="MapNotesContinentDelvePinTemplate" inherits="DelveEntrancePinTemplate" mixin="DelveEntrancePinMixin" virtual="true"/>
     <Script file="RetailDefaults.lua"/>
     <Script file="RetailVersionsCheck.lua"/>
-    <Script file="RetailSpecialLocales.lua"/>
     <Script file="RetailChangeLogText.lua"/>
     <Script file="RetailChangeLog.lua"/>
     <Script file="RetailOptions.lua"/>

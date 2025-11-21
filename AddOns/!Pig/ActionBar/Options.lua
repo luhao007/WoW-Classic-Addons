@@ -193,13 +193,14 @@ local function ActionBar_PetTishi()
 		PETtips:SetScript("OnEvent",function(self,event)
 			local hasUI, isHunterPet = HasPetUI()
 			if hasUI then
+				local partyMemberCount = GetNumSubgroupMembers()
 				for x=4, 7 do
 					for xx=1,#chaofengjinengName do
 						local name, texture, isToken, isActive, autoCastAllowed, autoCastEnabled = GetPetActionInfo(x);
 						if name==chaofengjinengName[xx] then
 							local inInstance = IsInInstance();
 							if inInstance then
-								if autoCastEnabled or texture==136222 then
+								if partyMemberCount>0 and autoCastEnabled or texture==136222 then
 									self:Show()
 									self:SetPoint("BOTTOM", _G["PetActionButton"..x], "TOP", 0, 0);
 									PIGEnter(self,tishibiaoti,"|cffFFFF00副本内开启宠物嘲讽可能干扰坦克仇恨！|r")

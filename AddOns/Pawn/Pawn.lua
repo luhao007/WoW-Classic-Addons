@@ -7,7 +7,7 @@
 -- Main non-UI code
 ------------------------------------------------------------
 
-PawnVersion = 2.1109
+PawnVersion = 2.1200
 
 -- Pawn requires this version of VgerCore:
 local PawnVgerCoreVersionRequired = 1.20
@@ -49,9 +49,13 @@ local PawnEnchantedAnnotationFormat, PawnUnenchantedAnnotationFormat, PawnNoValu
 
 -- Plugin scale providers
 
--- PawnScaleProviders["Wowhead"] = { ["Name"] = "Wowhead scales", ["Function"] = <function> }
+-- PawnScaleProviders["Wowhead"] = { Name = "Wowhead scales", Function = <function> }
 PawnScaleProviders = { }
 local PawnScaleProvidersInitialized
+
+-- Third-party tooltips
+-- PawnThirdPartyTooltips["MyTooltipAddon"] = { SetBackdropBorderColor = function(Tooltip, r, g, b, a) ... end }
+local PawnThirdPartyTooltips = { }
 
 -- "Constants"
 local PawnCurrentScaleVersion = 1
@@ -153,6 +157,22 @@ function PawnOnEvent(Event, arg1, arg2, ...)
 		PawnInitialize()
 	elseif Event == "PLAYER_LOGOUT" then
 		PawnOnLogout()
+	end
+end
+
+-- A wrapper for Tooltip:SetBackdropBorderColor that allows addon authors to easily override it.
+local function PawnSetTooltipBorderColor(Tooltip, r, g, b, a)
+	local Fallback = true
+	for _, Overrides in pairs(PawnThirdPartyTooltips) do
+		if Overrides.SetBackdropBorderColor then
+			Overrides.SetBackdropBorderColor(Tooltip, r, g, b, a)
+			Fallback = false
+		end
+	end
+
+	if Fallback then
+		if a == nil then a = 1 end
+		Tooltip.NineSlice:SetBorderColor(r, g, b, a)
 	end
 end
 
@@ -1824,28 +1844,6 @@ function PawnUpdateTooltip(TooltipName, MethodName, Param1, ...)
 	end
 end
 
--- A wrapper for Tooltip:SetBackdropBorderColor that continues to work in WoW 9.1.5+.
-function PawnSetTooltipBorderColor(Tooltip, r, g, b, a)
-	if a == nil then a = 1 end
-	if Tooltip.SetBackdropBorderColor then
-		Tooltip:SetBackdropBorderColor(r, g, b, a)
-	elseif Tooltip.NineSlice.TopEdge then
-		-- Seems like this SHOULD work:
-		-- Tooltip.NineSlice:SetBorderColor(r, g, b, a)
-		-- ...but for some reason it doesn't (in the 9.1.5 PTR), so just do it manually for now.
-		Tooltip.NineSlice.TopLeftCorner:SetVertexColor(r, g, b, a)
-		Tooltip.NineSlice.TopRightCorner:SetVertexColor(r, g, b, a)
-		Tooltip.NineSlice.BottomLeftCorner:SetVertexColor(r, g, b, a)
-		Tooltip.NineSlice.BottomRightCorner:SetVertexColor(r, g, b, a)
-		Tooltip.NineSlice.TopEdge:SetVertexColor(r, g, b, a)
-		Tooltip.NineSlice.BottomEdge:SetVertexColor(r, g, b, a)
-		Tooltip.NineSlice.LeftEdge:SetVertexColor(r, g, b, a)
-		Tooltip.NineSlice.RightEdge:SetVertexColor(r, g, b, a)
-	else
-		VgerCore.Fail("Pawn doesn't know how to change tooltip border colors in this version of WoW (" .. GetLocale() .. " " .. GetBuildInfo() .. ").")
-	end
-end
-
 -- Returns a sorted list of all scale values for an item (and its unenchanted version, if supplied).
 -- Parameters:
 -- 	Item: A table of item stats in the format returned by GetStatsFromTooltip.
@@ -3148,7 +3146,7 @@ local SpecNameToIDMap =
 	[9] = { AFFLICTION = 1, DEMONOLOGY = 2, DESTRUCTION = 3 },
 	[10] = { BREWMASTER = 1, MISTWEAVER = 2, WINDWALKER = 3 },
 	[11] = { BALANCE = 1, FERAL = 2, GUARDIAN = 3, RESTORATION = 4 },
-	[12] = { HAVOC = 1, VENGEANCE = 2 },
+	[12] = { HAVOC = 1, VENGEANCE = 2, DEVOURER = 3 },
 	[13] = { DEVASTATION = 1, PRESERVATION = 2, AUGMENTATION = 3 },
 }
 local ClassIDToEnglishNameMap =
@@ -3168,7 +3166,7 @@ local SpecIDToEnglishNameMap =
 	[9] = { [1] = "Affliction", [2] = "Demonology", [3] = "Destruction" },
 	[10] = { [1] = "Brewmaster", [2] = "Mistweaver", [3] = "Windwalker" },
 	[11] = { [1] = "Balance", [2] = "Feral", [3] = "Guardian", [4] = "Restoration" },
-	[12] = { [1] = "Havoc", [2] = "Vengeance" },
+	[12] = { [1] = "Havoc", [2] = "Vengeance", [3] = "Devourer" },
 	[13] = { [1] = "Devastation", [2] = "Preservation", [3] = "Augmentation" },
 }
 
@@ -6033,6 +6031,25 @@ function PawnClearBestItemLevelData()
 	for Slot = 1, 18 do
 		PawnAddItemToLevelTracker(PawnGetItemDataForInventorySlot(Slot))
 	end
+end
+
+-- Tells Pawn about a third-party tooltip addon that needs to override some of the things that Pawn does.
+-- Example:
+-- 	PawnRegisterThirdPartyTooltip("MyTooltipAddon", {
+--		SetBackdropBorderColor = function(Tooltip, r, g, b, a) print("Replace this with code that changes your tooltip's border color") end,
+-- 	})
+function PawnRegisterThirdPartyTooltip(AddonName, Overrides)
+	if not AddonName then VgerCore.Fail("AddonName can't be empty.") return end
+	if not Overrides or type(Overrides) ~= "table" then VgerCore.Fail("Overrides must be a table of override functions.") return end
+	if PawnThirdPartyTooltips[AddonName] then VgerCore.Fail("You can only register the third-party tooltip addon \"" .. tostring(AddonName) .. "\" once.") return end
+
+	PawnThirdPartyTooltips[AddonName] = Overrides
+end
+
+-- Not sure why you'd need this, but here's the opposite of PawnRegisterThirdPartyTooltip.
+function PawnUnregisterThirdPartyTooltip(AddonName)
+	if not AddonName then VgerCore.Fail("AddonName can't be empty.") return end
+	PawnThirdPartyTooltips[AddonName] = nil
 end
 
 -- Shows or hides the Pawn UI.

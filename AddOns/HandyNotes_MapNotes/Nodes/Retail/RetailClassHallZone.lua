@@ -79,7 +79,7 @@ ns.currentSourceFile = "RetailClassHallZone.lua"
                         nodes[627][77594788] = { name = "", TransportName = L["Class Hall"] .. " " .. L["Passage"] .. "\n ==> " .. SPLASH_LEGION_BOX_FEATURE1_TITLE, type = "RedPathRU", showInZone = true, showOnContinent = false, showOnMinimap = false } -- DH
                         nodes[627][34664554] = { name = "", mnID = 628, TransportName = L["Passage"] .. "\n ==> " .. L["Class Hall"] .. " " .. L["Warlock"] .. "\n ==> " .. DUNGEON_FLOOR_DALARAN2, type = "RedPathL", showInZone = true, showOnContinent = false, showOnMinimap = false } -- Warlock
                         nodes[627][59714771] = { name = "", mnID = 628, TransportName = L["Passage"] .. "\n ==> " .. L["Class Hall"] .. " " .. L["Warlock"] .. "\n ==> " .. DUNGEON_FLOOR_DALARAN2, type = "RedPathRU", showInZone = true, showOnContinent = false, showOnMinimap = false } -- Warlock
-                        nodes[627][48343243] = { name = L["Passage"] .. "\n ==> " .. L["Class Hall"] .. " " .. L["Warlock"] .. "\n ==> " .. DUNGEON_FLOOR_DALARAN2, mnID = 628, type = "RedPathU", showInZone = true, showOnContinent = false, showOnMinimap = false } -- Warlock
+                        nodes[627][48343243] = { name = "", mnID = 628, TransportName = L["Passage"] .. "\n ==> " .. L["Class Hall"] .. " " .. L["Warlock"] .. "\n ==> " .. DUNGEON_FLOOR_DALARAN2, type = "RedPathU", showInZone = true, showOnContinent = false, showOnMinimap = false } -- Warlock
                     end
 
                     if self.db.profile.showCapitalsClassHallPaths then

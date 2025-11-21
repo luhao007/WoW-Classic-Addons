@@ -649,7 +649,7 @@ ns.currentSourceFile = "RetailContinentNodesLocation.lua"
               nodes[424][59733518] = { mnID = 371, name = "", type = "HPortal", showOnContinent = true, showInZone = false, showOnMinimap = false, TransportName = ns.JadeForest .. " " .. L["Portal"] .. "\n" .. " ==> " .. ns.Orgrimmar } -- Portal from Jade Forest to Orgrimmar
               nodes[424][17970919] = { mnID = 504, name = "", type = "HPortal", showOnContinent = true, showInZone = false, showOnMinimap = false, TransportName = ns.IsleOfThunder .. " " .. L["Portals"] .. "\n" ..  "\n" .. " ==> " .. ns.ShadoPanGarison } -- Portal from Isle of Thunder to Shado-Pan Garrison
               nodes[424][29444738] = { mnID = 388, name = "", type = "HPortal", showOnContinent = true, showInZone = false, showOnMinimap = false, TransportName = ns.ShadoPanGarison .. " " .. L["Portal"] .. "\n" .. " ==> " .. ns.IsleOfThunder } -- Portal from Shado-Pan Garrison to Isle of Thunder
-              nodes[424][50604810] = { mnID = 392, name = "", type = "HPortal", showOnContinent = true, showInZone = false, showOnMinimap = false, TransportName = ns.ValeOfEternalBlossoms .. " " .. L["Portals"] .. "\n" ..  "\n" .. " ==> " .. ns.Orgrimmar } -- Portal from Vale of Eternal Blossoms to Orgrimmar
+              nodes[424][50604810] = { mnID = 392, name = "", type = "HPortal", showOnContinent = true, showInZone = false, showOnMinimap = false, TransportName = ns.Shrine2Moons .. " " .. L["Portal"] .. "\n" ..  "\n" .. " ==> " .. ns.Orgrimmar } -- Portal from Vale of Eternal Blossoms to Orgrimmar
               nodes[424][40508161] = { mnID = 418, name = "", type = "HPortal", showOnContinent = true, showInZone = false, showOnMinimap = false, TransportName = ns.KrasarangWilds .. " " .. L["Portal"] .. "\n" ..  "\n" .. " ==> " .. ns.Silvermoon } -- Portal to Silvermoon
             end
 
@@ -657,7 +657,7 @@ ns.currentSourceFile = "RetailContinentNodesLocation.lua"
               nodes[424][67806740] = { mnID = 371, name = "", type = "APortal", showOnContinent = true, showInZone = false, showOnMinimap = false, TransportName = ns.JadeForest .. " " .. L["Portals"] .. "\n" ..  "\n" .. " ==> " .. ns.Stormwind } -- Portal from Jade Forest to Stormwind
               nodes[424][23891588] = { mnID = 504, name = "", type = "APortal", showOnContinent = true, showInZone = false, showOnMinimap = false, TransportName = ns.IsleOfThunder .. " " .. L["Portals"] .. "\n" ..  "\n" .. " ==> " .. ns.ShadoPanGarison } -- Portal from Isle of Thunder to Shado-Pan Garrison
               nodes[424][28894622] = { mnID = 388, name = "", type = "APortal", showOnContinent = true, showInZone = false, showOnMinimap = false, TransportName = ns.ShadoPanGarison .. " " .. L["Portal"] .. "\n" .. " ==> " .. ns.IsleOfThunder } -- Portal from Shado-Pan Garrison to Isle of Thunder
-              nodes[424][54785688] = { mnID = 394, name = "", type = "APortal", showOnContinent = true, showInZone = false, showOnMinimap = false, TransportName = ns.ValeOfEternalBlossoms .. " " .. L["Portals"] .. "\n" ..  "\n" .. " ==> " .. ns.Stormwind } -- Portal from Vale of Eternal Blossoms to Stormwind
+              nodes[424][54785688] = { mnID = 394, name = "", type = "APortal", showOnContinent = true, showInZone = false, showOnMinimap = false, TransportName = ns.Shrine7Stars .. " " .. L["Portal"] .. "\n" ..  "\n" .. " ==> " .. ns.Stormwind } -- Portal from Vale of Eternal Blossoms to Stormwind
             end
           end
 

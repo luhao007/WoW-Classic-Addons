@@ -198,7 +198,8 @@ function ns.BuildAllChangelogText()
   local allVersionTexts = {}
 
   for _, entry in ipairs(ns.LOCALE_CHANGELOGS) do
-    local versionText = MN_FormatVersionBlock(entry and entry.version, entry and entry.table)
+    local t = entry.table or ns["LOCALE_CHANGELOG_" .. entry.version:gsub("%.", "_")]
+    local versionText = MN_FormatVersionBlock(entry.version, t)
     if versionText ~= "" then
       table.insert(allVersionTexts, versionText)
     end

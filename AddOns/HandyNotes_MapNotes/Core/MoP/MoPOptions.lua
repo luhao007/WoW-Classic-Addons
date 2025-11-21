@@ -416,8 +416,10 @@ ns.options = {
               order = 1.1,
               width = 1.20,
               get = function() return ns.Addon.db.profile.activate.FogOfWar end,
-              set = function(info, v) ns.Addon.db.profile.activate.FogOfWar = v self:FullUpdate() HandyNotes:SendMessage("HandyNotes_NotifyUpdate", "MapNotes")
-                HandyNotes:GetModule("FogOfWarButton"):Refresh()
+              set = function(info, v) ns.Addon.db.profile.activate.FogOfWar = v 
+                  if ns.FogOfWar and ns.FogOfWar.Refresh then ns.FogOfWar:Refresh() end
+                  HandyNotes:GetModule("FogOfWarButton"):Refresh()
+                  self:FullUpdate() HandyNotes:SendMessage("HandyNotes_NotifyUpdate", "MapNotes")
                 if ns.Addon.db.profile.CoreChatMassage and not ns.Addon.db.profile.activate.FogOfWar then print(TextIconMNL4:GetIconString() .. " " .. ns.COLORED_ADDON_NAME .. " " .. TextIconMNL4:GetIconString() .. "|cffffff00", L["Unexplored Areas"], "|cffff0000" .. L["is deactivated"]) else
                 if ns.Addon.db.profile.CoreChatMassage and ns.Addon.db.profile.activate.FogOfWar then print(TextIconMNL4:GetIconString() .. " " .. ns.COLORED_ADDON_NAME .. " " .. TextIconMNL4:GetIconString() .. "|cffffff00", L["Unexplored Areas"], "|cff00ff00" .. L["is activated"]) end end end,
               }, 
@@ -434,8 +436,9 @@ ns.options = {
               width = 1.2,
               order = 2.1,
               get = function() return ns.Addon.db.profile.activate.MistOfTheUnexplored end,
-              set = function(info, v) ns.Addon.db.profile.activate.MistOfTheUnexplored = v self:FullUpdate() HandyNotes:SendMessage("HandyNotes_NotifyUpdate", "MapNotes")
-                HandyNotes:GetModule("FogOfWarButton"):Refresh()
+              set = function(info, v) ns.Addon.db.profile.activate.MistOfTheUnexplored = v 
+                  HandyNotes:GetModule("FogOfWarButton"):Refresh()
+                  self:FullUpdate() HandyNotes:SendMessage("HandyNotes_NotifyUpdate", "MapNotes")
                 if ns.Addon.db.profile.CoreChatMassage and not ns.Addon.db.profile.activate.MistOfTheUnexplored then print(TextIconMNL4:GetIconString() .. " " .. ns.COLORED_ADDON_NAME .. " " .. TextIconMNL4:GetIconString() .. "|cffffff00", L["Fog"], "|cffff0000" .. L["is deactivated"]) else
                 if ns.Addon.db.profile.CoreChatMassage and ns.Addon.db.profile.activate.MistOfTheUnexplored then print(TextIconMNL4:GetIconString() .. " " .. ns.COLORED_ADDON_NAME .. " " .. TextIconMNL4:GetIconString() .. "|cffffff00", L["Fog"], "|cff00ff00" .. L["is activated"]) end end end,
               }, 
@@ -450,7 +453,24 @@ ns.options = {
               set = "SetFogOfWarColor",
               handler = ns.FogOfWar,
               hasAlpha = true,
-              }, 
+              },
+            Unexploredheader3 = {
+              type = "header",
+              name = RESET_POSITION,
+              order = 3.0,
+              },
+            ResetFogOfWarColor = {
+              --disabled = function() return not ns.Addon.db.profile.activate.FogOfWar end,
+              type = "execute",
+              name = L["Fog"] .. " - " .. COLOR .. " " .. RESET_POSITION,
+              desc = "",
+              width = "full",
+              order = 3.1,
+              func = function()
+                  ns.FogOfWar:ResetFogOfWarColors()
+                  self:FullUpdate() HandyNotes:SendMessage("HandyNotes_NotifyUpdate", "MapNotes")
+                end,
+              },
             },
           },
         CoordinatesTab = {
@@ -680,25 +700,6 @@ ns.options = {
                 ns.showAreaMapDropDownMenuSettingsforOptionsFile(val)
                 if ns.Addon.db.profile.CoreChatMassage and not ns.Addon.db.profile.areaMap.showAreaMapDropDownMenu then print(TextIconMNL4:GetIconString() .. " " .. ns.COLORED_ADDON_NAME .. " " .. TextIconMNL4:GetIconString() .. "|cffffff00", L["Area Map"] .. " " .. HUD_EDIT_MODE_MICRO_MENU_LABEL, "|cffff0000".. L["is deactivated"]) else
                 if ns.Addon.db.profile.CoreChatMassage and ns.Addon.db.profile.areaMap.showAreaMapDropDownMenu then print(TextIconMNL4:GetIconString() .. " " .. ns.COLORED_ADDON_NAME .. " " .. TextIconMNL4:GetIconString() .. "|cffffff00", L["Area Map"] .. " " .. HUD_EDIT_MODE_MICRO_MENU_LABEL, "|cff00ff00"  .. L["is activated"]) end end end,
-              },
-            },
-          },
-        About = {
-          type = "group",
-          name = L["About MapNotes"],
-          desc = "",
-          order = 9,
-          args = {
-            SupportTextheader = {
-              type = "header",
-              name = "Support",
-              width = 1,
-              order = 9.0,
-              },
-            SupportText = {
-              type = "description",
-              name = "|cffffd700" .. L["If you like this addon, feel free to support me via Paypal, Patreon or Ko-fi"] .. "\n" .. "\n" .. L["You can find the relevant links on:"] .. "\n" .. "\n" .. "https://www.curseforge.com/wow/addons/mapnotes" .. "\n" .. "https://www.curseforge.com/members/badboybarny".. "\n" .. "https://addons.wago.io/addons/mapnotes" .. "\n" .. "https://addons.wago.io/user/BadBoyBarny" .. "\n" .. "\n" .. L["Any support is greatly appreciated"] .. "\n" .. "\n" .. "            " .. L["Best regards"] .. "\n" .. "\n" .. "                        " .. "BadBoyBarny",
-              order = 9.1,
               },
             },
           },
@@ -3335,6 +3336,100 @@ ns.options = {
           },
         },
       },
+    About = {
+      type = "group",
+      name = ns.ABOUT[ns.locale] .. " " .. ns.COLORED_ADDON_NAME,
+      desc = "",
+      order = 9,
+      args = {
+        SupportTextheader = {
+          type = "header",
+          name = "Support",
+          width = 1,
+          order = 9.0,
+          },
+        SupportText = {
+          type = "description",
+          name = "|cffffd700" .. L["If you like this addon, feel free to support me via Paypal, Patreon or Ko-fi"] .. "\n" .. "\n" .. L["You can find the relevant links on:"] .. "\n" .. "\n" .. "https://www.curseforge.com/wow/addons/mapnotes" .. "\n" .. "https://www.curseforge.com/members/badboybarny".. "\n" .. "https://addons.wago.io/addons/mapnotes" .. "\n" .. "https://addons.wago.io/user/BadBoyBarny" .. "\n" .. "\n" .. L["Any support is greatly appreciated"] .. "\n" .. "\n" .. "            " .. L["Best regards"] .. "\n" .. "\n" .. "                        " .. "BadBoyBarny",
+          order = 9.1,
+          },
+        },
+      },
+    ResetTab = {
+      --disabled = function() return ns.Addon.db.profile.activate.HideMapNote end,
+      type = "group",
+      name = ns.COLORED_ADDON_NAME .. " " .. RESET_POSITION,
+      desc = "",
+      order = 10,
+      args = {
+        resetSVheader1 = {
+          type = "header",
+          name = ns.reset_header_1[ns.locale],
+          order = 1.0,
+          },
+        resetCharacterSavedVariables = {
+          --disabled = function() return ns.Addon.db.profile.activate.HideMapNote end,
+          type = "execute",
+          name = ns.reset_name_1[ns.locale],
+          desc = "\n" .. ns.reset_Character_SavedVariables_Text[ns.locale],
+          order = 1.1,
+          width = "full",
+          confirm = function()
+              return ns.reset_Character_SavedVariables_Text[ns.locale]
+          end,
+          func = function()
+            ns.deleteCharacterSavedVariables()
+            self:FullUpdate()
+            HandyNotes:SendMessage("HandyNotes_NotifyUpdate", "MapNotes")
+            ReloadUI()
+          end,
+          },
+        keepOnlyCurrentSavedVariables = {
+          --disabled = function() return ns.Addon.db.profile.activate.HideMapNote end,
+          type = "execute",
+          name = ns.reset_name_2[ns.locale],
+          desc = "\n" .. ns.keep_Only_Current_Character_SavedVariables_Text[ns.locale],
+          order = 1.3,
+          width = "full",
+          confirm = function()
+            return ns.keep_Only_Current_Character_SavedVariables_Text[ns.locale]
+          end,
+          func = function()
+            ns.keepOnlyCurrentSavedVariables()
+            self:FullUpdate()
+            HandyNotes:SendMessage("HandyNotes_NotifyUpdate", "MapNotes")
+            ReloadUI()
+          end,
+          },
+        resetSVspacer2 = {
+          type = "description",
+          name = "\n",
+          order = 1.4,
+          },
+        resetSVheader3 = {
+          type = "header",
+          name = ns.reset_header_2[ns.locale],
+          order = 2.0,
+          },
+        resetALLSavedVariables = {
+          --disabled = function() return ns.Addon.db.profile.activate.HideMapNote end,
+          type = "execute",
+          name = ns.reset_name_3[ns.locale],
+          desc = "\n" .. ns.reset_ALL_SavedVariables_Text[ns.locale],
+          order = 2.1,
+          width = "full",
+          confirm = function()
+            return ns.reset_ALL_SavedVariables_Text[ns.locale]
+          end,
+          func = function()
+            ns.deleteALLSavedVariables()
+            self:FullUpdate()
+            HandyNotes:SendMessage("HandyNotes_NotifyUpdate", "MapNotes")
+            ReloadUI()
+          end,
+          },
+        },
+      },
+    }
   }
-}
 end

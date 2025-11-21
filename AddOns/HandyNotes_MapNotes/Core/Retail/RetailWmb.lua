@@ -247,8 +247,7 @@ local CurrentMapID = WorldMapFrame:GetMapID()
             or CurrentMapID == 627 or CurrentMapID == 628 or CurrentMapID == 629 or CurrentMapID == 831 or CurrentMapID == 832 
             or CurrentMapID == 1161 or CurrentMapID == 1163 or CurrentMapID == 1164 or CurrentMapID == 1165 or CurrentMapID == 1670 
             or CurrentMapID == 1671 or CurrentMapID == 1672 or CurrentMapID == 1673 or CurrentMapID == 2112 or CurrentMapID == 407 
-            or CurrentMapID == 2339 or CurrentMapID == 503 or CurrentMapID == 499 or CurrentMapID == 500 or CurrentMapID == 2322 
-            or CurrentMapID == 2346)
+            or CurrentMapID == 2339 or CurrentMapID == 503 or CurrentMapID == 499 or CurrentMapID == 500 or CurrentMapID == 2322)
         then
         
             if not ns.Addon.db.profile.activate.DungeonMap then
@@ -670,8 +669,7 @@ local CurrentMapID = WorldMapFrame:GetMapID()
             or CurrentMapID == 627 or CurrentMapID == 628 or CurrentMapID == 629 or CurrentMapID == 831 or CurrentMapID == 832 
             or CurrentMapID == 1161 or CurrentMapID == 1163 or CurrentMapID == 1164 or CurrentMapID == 1165 or CurrentMapID == 1670 
             or CurrentMapID == 1671 or CurrentMapID == 1672 or CurrentMapID == 1673 or CurrentMapID == 2112 or CurrentMapID == 407 
-            or CurrentMapID == 2339 or CurrentMapID == 503 or CurrentMapID == 499 or CurrentMapID == 500 or CurrentMapID == 2322 
-            or CurrentMapID == 2346)
+            or CurrentMapID == 2339 or CurrentMapID == 503 or CurrentMapID == 499 or CurrentMapID == 500 or CurrentMapID == 2322)
         then
         
             if not ns.Addon.db.profile.activate.Capitals then
@@ -700,8 +698,7 @@ local CurrentMapID = WorldMapFrame:GetMapID()
             or CurrentMapID == 627 or CurrentMapID == 628 or CurrentMapID == 629 or CurrentMapID == 831 or CurrentMapID == 832 
             or CurrentMapID == 1161 or CurrentMapID == 1163 or CurrentMapID == 1164 or CurrentMapID == 1165 or CurrentMapID == 1670 
             or CurrentMapID == 1671 or CurrentMapID == 1672 or CurrentMapID == 1673 or CurrentMapID == 2112 or CurrentMapID == 407 
-            or CurrentMapID == 2339 or CurrentMapID == 503 or CurrentMapID == 499 or CurrentMapID == 500 or CurrentMapID == 2322 
-            or CurrentMapID == 2346) 
+            or CurrentMapID == 2339 or CurrentMapID == 503 or CurrentMapID == 499 or CurrentMapID == 500 or CurrentMapID == 2322)
         then
         
             if not ns.Addon.db.profile.activate.Capitals then
@@ -979,8 +976,7 @@ local CurrentMapID = WorldMapFrame:GetMapID()
             or CurrentMapID == 627 or CurrentMapID == 628 or CurrentMapID == 629 or CurrentMapID == 831 or CurrentMapID == 832 
             or CurrentMapID == 1161 or CurrentMapID == 1163 or CurrentMapID == 1164 or CurrentMapID == 1165 or CurrentMapID == 1670 
             or CurrentMapID == 1671 or CurrentMapID == 1672 or CurrentMapID == 1673 or CurrentMapID == 2112 or CurrentMapID == 407 
-            or CurrentMapID == 2339 or CurrentMapID == 503 or CurrentMapID == 499 or CurrentMapID == 500 or CurrentMapID == 2322 
-            or CurrentMapID == 2346)
+            or CurrentMapID == 2339 or CurrentMapID == 503 or CurrentMapID == 499 or CurrentMapID == 500 or CurrentMapID == 2322)
     then
         GameTooltip:AddLine(HELPFRAME_REPORT_PLAYER_RIGHT_CLICK .. " => " .. "|cffff0000".. DUNGEONS .. "|cffffcc00" .. " " .. L["icons"] .. " " .. SHOW .. " / " .. HIDE,1,1,1)
         GameTooltip:Show()
@@ -1000,8 +996,7 @@ local CurrentMapID = WorldMapFrame:GetMapID()
             or CurrentMapID == 627 or CurrentMapID == 628 or CurrentMapID == 629 or CurrentMapID == 831 or CurrentMapID == 832 
             or CurrentMapID == 1161 or CurrentMapID == 1163 or CurrentMapID == 1164 or CurrentMapID == 1165 or CurrentMapID == 1670 
             or CurrentMapID == 1671 or CurrentMapID == 1672 or CurrentMapID == 1673 or CurrentMapID == 2112 or CurrentMapID == 407 
-            or CurrentMapID == 2339 or CurrentMapID == 503 or CurrentMapID == 499 or CurrentMapID == 500 or CurrentMapID == 2322 
-            or CurrentMapID == 2346)
+            or CurrentMapID == 2339 or CurrentMapID == 503 or CurrentMapID == 499 or CurrentMapID == 500 or CurrentMapID == 2322)
     then
         GameTooltip:AddLine(HELPFRAME_REPORT_PLAYER_RIGHT_CLICK .. " => " .. "|cffff0000".. L["Capitals"] .. "|cffffcc00" .. " " .. L["icons"] .. " " .. SHOW .. " / " .. HIDE,1,1,1)
         GameTooltip:Show()
@@ -1021,8 +1016,7 @@ local CurrentMapID = WorldMapFrame:GetMapID()
             or CurrentMapID == 627 or CurrentMapID == 628 or CurrentMapID == 629 or CurrentMapID == 831 or CurrentMapID == 832 
             or CurrentMapID == 1161 or CurrentMapID == 1163 or CurrentMapID == 1164 or CurrentMapID == 1165 or CurrentMapID == 1670 
             or CurrentMapID == 1671 or CurrentMapID == 1672 or CurrentMapID == 1673 or CurrentMapID == 2112 or CurrentMapID == 407 
-            or CurrentMapID == 2339 or CurrentMapID == 503 or CurrentMapID == 499 or CurrentMapID == 500 or CurrentMapID == 2322 
-            or CurrentMapID == 2346)
+            or CurrentMapID == 2339 or CurrentMapID == 503 or CurrentMapID == 499 or CurrentMapID == 500 or CurrentMapID == 2322)
     then
         GameTooltip:AddLine(HELPFRAME_REPORT_PLAYER_RIGHT_CLICK .. " => " .. "|cffff0000".. L["Capitals"] .. " & " ..  L["Capitals"] .. " - " .. MINIMAP_LABEL .. "|cffffcc00" .. " " .. L["icons"] .. " " .. SHOW .. " / " .. HIDE,1,1,1)
         GameTooltip:Show()
